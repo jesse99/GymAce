@@ -31,7 +31,7 @@ final class Program {
 
     // TODO support blocks
     // TODO support notes?
-    private(set) var name: String    
+    var name: String    
 }
 
 func makeTestProgram() -> Program {
@@ -41,7 +41,7 @@ func makeTestProgram() -> Program {
     let exercise = Exercise.durations(ExerciseData(name: "Bench Press", formalName: "Bench Press"))
     workout.addExercise(exercise)
 
-    let program = Program(name: "Test")
+    let program = Program(name: "Preview")
     program.active = true
     program.addWorkout(workout)
     return program

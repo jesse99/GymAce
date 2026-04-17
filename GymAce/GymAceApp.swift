@@ -7,11 +7,24 @@ struct GymAceApp: App {
         let schema = Schema([
             Program.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
             // TODO sounds like we need to explicitly save (this does happen automatically but not very often)
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let container = try ModelContainer(for: schema, configurations: [config])
+            
+            var descriptor = FetchDescriptor<Program>()
+            descriptor.fetchLimit = 1
+            guard try container.mainContext.fetch(descriptor).count == 0 else {return container}
+            
+            // If there are currently no programs add an empty one. TODO later use a wizard?
+            let program = Program(name: "My")
+            program.active = true
+            
+            container.mainContext.insert(program)
+            try container.mainContext.save()
+
+            return container
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }

@@ -16,13 +16,15 @@ struct EditWorkout: View {
                 TextField("Name", text: $workout.name)
                     .textContentType(.name)
                     .textInputAutocapitalization(.words)
+                    .textFieldStyle(.roundedBorder)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     isShowingInfo.toggle()
                 }
                 .sheet(isPresented: $isShowingInfo) {
                     InfoView(text: "The name shown in the Program view.")
-                        .adjustSheetHeightToContent()
+                        .presentationDetents([.height(80)])
+                        .presentationDragIndicator(.visible)
                 }
             }
         }
@@ -47,13 +49,13 @@ struct EditWorkout: View {
 }
 
 #Preview {
-    NavigationStack {
+    NavigationView {
         EditWorkout(editing: true, program: PreviewData.shared.defaultProgram, workout: PreviewData.shared.defaultProgram.workouts.first!)
     }
 }
 
 #Preview("Add New") {
-    NavigationStack {
+    NavigationView {
         EditWorkout(editing: false, program: PreviewData.shared.defaultProgram, workout: PreviewData.shared.defaultProgram.workouts.first!)
     }
 }

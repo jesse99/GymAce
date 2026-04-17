@@ -4,10 +4,10 @@ import SwiftData
 // ModelContainer for use by preview views.
 class PreviewData {
     static let shared = PreviewData()        // this is the only way to access the PreviewData instance
-    let modelContainer: ModelContainer
+    let container: ModelContainer
     
     var context: ModelContext {
-        modelContainer.mainContext
+        container.mainContext
     }
     
     var defaultProgram: Program {
@@ -20,7 +20,7 @@ class PreviewData {
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         do {
-            modelContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            container = try ModelContainer(for: schema, configurations: [modelConfiguration])
             context.insert(testProgram)
             try context.save()
         } catch {

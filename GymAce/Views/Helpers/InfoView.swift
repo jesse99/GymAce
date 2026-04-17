@@ -9,7 +9,7 @@ struct InfoView: View {
             .font(.body)
             .multilineTextAlignment(.leading)
             .textSelection(.enabled)
-            .padding()
+            //.padding()
     }
 }
 
