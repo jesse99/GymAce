@@ -14,11 +14,14 @@ struct ContentView: View {
     @State private var newWorkout: Workout?
 
     // TODO
-    // might be able to switch this back to a Grid view now
-    // have a due date col (for now can have a hard coded value)
-    //    or just handle the really simple cases
+    // have a due date col
+    //    probably want a computed property to create sorted tuple list
+    //    tuple has (workout, due date text, due date color)
+    //    may want this view to take a now argument so we can test different dates
+    //       might get stale though, maybe nil can be current time?
     // sort by due date, maybe secondary sort by name
     // need a way to disable/enable a workout (do this in workouts?)
+    // for help use TipKit or popovers?
     // need a toolbar at the bottom
     //    programs view
     //    settings view (for now just imperial or metric)
@@ -29,6 +32,8 @@ struct ContentView: View {
             if program != nil {
                 NavigationView {
                     VStack {
+                        // It'd be nicer to use a Grid here but Grid doesn't seem to
+                        // work very well with NavigationLink,
                         List {
                             ForEach(program!.workouts) { workout in
                                 HStack {

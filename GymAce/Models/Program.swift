@@ -34,17 +34,32 @@ final class Program {
     var name: String    
 }
 
-func makeTestProgram() -> Program {
-    let schedule = Schedule.days([.monday, .wednesday])
-    let workout = Workout("Upper", schedule)
+func makePreviewProgram() -> Program {
+    func makeUpper() -> Workout {
+        let schedule = Schedule.days([.monday, .wednesday])
+        let workout = Workout("Upper", schedule)
 
-    let exercise = Exercise.durations(ExerciseData(name: "Bench Press", formalName: "Bench Press"))
-    workout.addExercise(exercise)
+        let exercise = Exercise.durations(ExerciseData(name: "Bench Press", formalName: "Bench Press"))
+        workout.addExercise(exercise)
+
+        return workout
+    }
+
+    func makeLower() -> Workout {
+        let schedule = Schedule.days([.friday])
+        let workout = Workout("Lower", schedule)
+
+        let exercise = Exercise.durations(ExerciseData(name: "Squat", formalName: "High bar Squat"))
+        workout.addExercise(exercise)
+
+        return workout
+    }
 
     let program = Program(name: "Preview")
     program.active = true
-    program.addWorkout(workout)
+    program.addWorkout(makeUpper())
+    program.addWorkout(makeLower())
     return program
 }
 
-let testProgram: Program = makeTestProgram()
+let testProgram: Program = makePreviewProgram()
