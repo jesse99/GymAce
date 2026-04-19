@@ -36,7 +36,7 @@ final class Program {
 
 func makePreviewProgram() -> Program {
     func makeUpper() -> Workout {
-        let schedule = Schedule.days([.monday, .wednesday])
+        let schedule = Schedule.days(Weekdays(days: [1, 3]))    // mon and wed
         let workout = Workout("Upper", schedule)
 
         let exercise = Exercise.durations(ExerciseData(name: "Bench Press", formalName: "Bench Press"))
@@ -46,7 +46,7 @@ func makePreviewProgram() -> Program {
     }
 
     func makeLower() -> Workout {
-        let schedule = Schedule.days([.friday])
+        let schedule = Schedule.days(Weekdays(days: [5]))       // friday
         let workout = Workout("Lower", schedule)
 
         let exercise = Exercise.durations(ExerciseData(name: "Squat", formalName: "High bar Squat"))

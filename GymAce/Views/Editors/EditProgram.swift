@@ -50,6 +50,8 @@ struct EditProgram: View {
                     Button("", systemImage: "info.circle") {
                         isShowingInfo.toggle()
                     }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
                     .sheet(isPresented: $isShowingInfo) {
                         InfoView(text: "The title of the program, e.g. \"My\". Or you might have two programs like \"Gym\" and \"Home\".")
                             .presentationDetents([.height(80)])

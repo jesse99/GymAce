@@ -17,6 +17,8 @@ final class ExerciseData: nonisolated Codable {
     // TODO also started, finished, enabled, set info, weight info
 }
 
+// TODO will there be schema migration issues if new cases are added?
+// TODO will have to be careful about associated data, for example arrays seem problematic
 enum Exercise: nonisolated Codable {
     case durations(ExerciseData)
 }

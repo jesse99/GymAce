@@ -12,14 +12,22 @@ struct ContentView: View {
     }) var programs: [Program]
     var program: Program? { programs.first }
     @State private var newWorkout: Workout?
+    var today: Date = Date()
+    
+    private var entries: [WorkoutEntry] {
+        var e: [WorkoutEntry] = []
+        let calendar = Calendar.current
+        for i in (0...20) {
+            if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = self.program {
+                e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
+            }
+        }
+        return e
+    }
 
     // TODO
-    // have a due date col
-    //    probably want a computed property to create sorted tuple list
-    //    tuple has (workout, due date text, due date color)
-    //    may want this view to take a now argument so we can test different dates
-    //       might get stale though, maybe nil can be current time?
-    // sort by due date, maybe secondary sort by name
+    // should be able to schedule a workout
+    //    maybe just days per week
     // need a way to disable/enable a workout (do this in workouts?)
     // for help use TipKit or popovers?
     // need a toolbar at the bottom
@@ -35,17 +43,17 @@ struct ContentView: View {
                         // It'd be nicer to use a Grid here but Grid doesn't seem to
                         // work very well with NavigationLink,
                         List {
-                            ForEach(program!.workouts) { workout in
+                            ForEach(entries) { entry in
                                 HStack {
                                     NavigationLink {
-                                        Text("Do \(workout.name) workout")
+                                        Text("Do \(entry.workout.name) workout")
                                     } label: {
-                                        Text(workout.name)
-                                            .foregroundStyle(.blue)
+                                        Text(entry.workout.name)
                                     }
                                     .navigationLinkIndicatorVisibility(.hidden)
                                     Spacer()
-                                    Text("tomorrow")
+                                    Text(entry.label)
+                                        .foregroundColor(entry.color)
                                 }
                             }
                         }
@@ -77,3 +85,19 @@ struct ContentView: View {
     ContentView()
         .modelContainer(NoPreviewData.shared.modelContainer)
 }
+
+#Preview("Dates") {
+    ScrollView {
+        ContentView(today: Calendar.current.date(byAdding: .day, value: 0, to: Date.now)!)
+            .modelContainer(PreviewData.shared.container)
+        ContentView(today: Calendar.current.date(byAdding: .day, value: 1, to: Date.now)!)
+            .modelContainer(PreviewData.shared.container)
+        ContentView(today: Calendar.current.date(byAdding: .day, value: 2, to: Date.now)!)
+            .modelContainer(PreviewData.shared.container)
+        ContentView(today: Calendar.current.date(byAdding: .day, value: 3, to: Date.now)!)
+            .modelContainer(PreviewData.shared.container)
+        ContentView(today: Calendar.current.date(byAdding: .day, value: 4, to: Date.now)!)
+            .modelContainer(PreviewData.shared.container)
+    }
+}
+
