@@ -8,51 +8,168 @@ enum ActiveSheet: Identifiable {
 
 /// Used for both editing and adding new workouts.
 struct EditWorkout: View {
-    private var editing: Bool
-    @Bindable private var program: Program
-    @Bindable private var workout: Workout
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var context
-    @State private var schedule = 0
-    @State private var everyN = 2
-    @State private var weekdays: [Bool] = []
+    @Binding var name: String
+    @Binding var schedule: Schedule
     @State private var activeSheet: ActiveSheet? = nil
-    @FocusState private var isFocused: Bool
+    
+    @State private var anySchedule = Schedule.anyDay
+    @State private var everySchedule = Schedule.anyDay
+    @State private var daysSchedule = Schedule.anyDay
 
-    init(editing: Bool, program: Program, workout: Workout) {
-        self.program = program
-        self.workout = workout
-        _schedule = State(initialValue: workout.schedule.id())
-        self.editing = editing
+    init(name: Binding<String>, schedule: Binding<Schedule>) {
+        self._name = name
+        self._schedule = schedule
         
-        let calendar = Calendar.current
-        var weekdays = calendar.weekdaySymbols.map {_ in false}
-        switch workout.schedule {
+        // Save the original schedule state so when the user switches the
+        // type back to the original type they don't lose the original
+        // settings.
+        switch self.schedule {
         case .anyDay:
-            _weekdays = State(initialValue: weekdays)
+            _everySchedule = State(initialValue: .every(2))
+            _daysSchedule = State(initialValue: .days(Weekdays(days: [])))
         case .every(let n):
-            _everyN = State(initialValue: n)
-            _weekdays = State(initialValue: weekdays)
+            _everySchedule = State(initialValue: .every(n))
+            _daysSchedule = State(initialValue: .days(Weekdays(days: [])))
         case .days(let days):
-            for i in days.days {
-                weekdays[i] = true
-            }
-            _weekdays = State(initialValue: weekdays)
+            _everySchedule = State(initialValue: .every(2))
+            _daysSchedule = State(initialValue: .days(days))
         }
     }
     
+    private func toWeekdays(_ bools: [Bool]) -> Weekdays {
+        var days: [Int] = []
+        for i in bools.indices {
+            if bools[i] { days.append(i) }
+        }
+        return Weekdays(days: days)
+    }
+    
+    private var pickerBinding: Binding<Int> {
+        Binding(
+            get: {
+                switch schedule {
+                    case .anyDay: return 0
+                    case .every(_): return 1
+                    case .days(_): return 2
+                }
+            },
+            set: {
+                let oldSchedule = schedule
+                let newSchedule = $0
+                switch oldSchedule {
+                case .anyDay:
+                    self.anySchedule = oldSchedule
+                case .every(_):
+                    self.everySchedule = oldSchedule
+                case .days(_):
+                    self.daysSchedule = oldSchedule
+                }
+                
+                switch newSchedule {
+                case 0:
+                    self.schedule = self.anySchedule
+                case 1:
+                    self.schedule = self.everySchedule
+                case 2:
+                    self.schedule = self.daysSchedule
+                default:
+                    fatalError("bad pickerBinding")
+                }
+            }
+        )
+    }
+
+    private var everyNBinding: Binding<Int> {
+        Binding(
+            get: {
+                switch schedule {
+                    case .anyDay: return 0
+                    case .every(let n): return n
+                    case .days(_): return 2
+                }
+            },
+            set: {
+                self.schedule = .every($0)
+            }
+        )
+    }
+    
+    // We will get a runtime error here if the locale has more than seven weekdays.
+    // But it's very rare for locales to not have seven days and the few that do tend
+    // to have fewer than seven days.
+    private var weekdayBindings: [Binding<Bool>] {[
+        Binding(
+            get: {getWeekday(0)},
+            set: {setWeekday(0, $0)}
+        ),
+        Binding(
+            get: {getWeekday(1)},
+            set: {setWeekday(1, $0)}
+        ),
+        Binding(
+            get: {getWeekday(2)},
+            set: {setWeekday(2, $0)}
+        ),
+        Binding(
+            get: {getWeekday(3)},
+            set: {setWeekday(3, $0)}
+        ),
+        Binding(
+            get: {getWeekday(4)},
+            set: {setWeekday(4, $0)}
+        ),
+        Binding(
+            get: {getWeekday(5)},
+            set: {setWeekday(5, $0)}
+        ),
+        Binding(
+            get: {getWeekday(6)},
+            set: {setWeekday(6, $0)}
+        ),
+        Binding(
+            get: {getWeekday(7)},
+            set: {setWeekday(7, $0)}
+        )]
+    }
+    
+    private func getWeekday(_ i: Int) -> Bool {
+        switch schedule {
+            case .anyDay: return false
+            case .every(_): return false
+            case .days(let days): return days.includes(i+1) ? true : false
+        }
+    }
+    
+    private func setWeekday(_ i: Int, _ enable: Bool) {
+        switch schedule {
+            case .anyDay: break
+            case .every(_): break
+            case .days(let days):
+                var days = days.days
+                if enable {
+                    if !days.contains(i+1) {
+                        days.append(i+1)
+                        self.schedule = .days(Weekdays(days: days))
+                    }
+                } else {
+                    if let index = days.firstIndex(of: i+1) {
+                        days.remove(at: index)
+                        self.schedule = .days(Weekdays(days: days))
+                    }
+                }
+        }
+    }
+    
+    // TODO use onAppear to make the name textbox the focus?
     var body: some View {
         Form {
             HStack {
                 // TODO this seems to be dismissing this view, sometimes anyway...
                 // use an explicit (state) name field?
-                // or maybe we should have bindings to workout name and schedule
-                //    would be nice to preserve old schedule so we can restore it when switching back
-                TextField("Name", text: $workout.name)
+                TextField("Name", text: $name)
                     .textContentType(.name)
                     .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
-                    .focused($isFocused)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     activeSheet = .first
@@ -62,7 +179,7 @@ struct EditWorkout: View {
             }
 
             HStack {
-                Picker("", selection: $schedule) {
+                Picker("", selection: pickerBinding) {
                     Text("Any Day").tag(0)
                     Text("Every").tag(1)
                     Text("Week Days").tag(2)
@@ -77,17 +194,22 @@ struct EditWorkout: View {
             }
             
             Group {
-                if schedule == 1 {
-                    HStack {
-                        TextField("", value: $everyN, formatter: NumberFormatter())
-                            .keyboardType(.numberPad)
-                            .textFieldStyle(.roundedBorder)
-                        Text("days")
-                    }
-                } else if schedule == 2 {
-                    ForEach(0..<Calendar.current.weekdaySymbols.count, id: \.self) { i in
-                        Toggle(Calendar.current.standaloneWeekdaySymbols[i], isOn: $weekdays[i])
-                    }
+                switch schedule {
+                    case .anyDay:
+                        EmptyView()
+                    case .every(_):
+                        HStack {
+                            // I think NumberFormatter requires a number so it prevents
+                            // users from deleting the last digit.
+                            TextField("", value: everyNBinding, formatter: NumberFormatter())
+                                .keyboardType(.numberPad)
+                                .textFieldStyle(.roundedBorder)
+                            Text("days")
+                        }
+                    case .days(_):
+                        ForEach(0..<Calendar.current.weekdaySymbols.count, id: \.self) { i in
+                            Toggle(Calendar.current.standaloneWeekdaySymbols[i], isOn: weekdayBindings[i])
+                        }
                 }
             }
         }
@@ -95,56 +217,72 @@ struct EditWorkout: View {
             switch sheet {
             case .first:
                 InfoView(text: "The name shown in the Program view.")
-                    .presentationDetents([.height(80)]) // TODO review these heights
+                    .presentationDetents([.height(80)])
                     .presentationDragIndicator(.visible)
             case .second:
-                if schedule == 0 {
-                    InfoView(text: "The workout can be done whenever, e.g. cardio.")
-                        .presentationDetents([.height(80)])
-                        .presentationDragIndicator(.visible)
-                } else if schedule == 1 {
-                    InfoView(text: "The workout should be done every N days, e.g. 2 for every other day.")
-                        .presentationDetents([.height(80)])
-                        .presentationDragIndicator(.visible)
-                } else {
-                    InfoView(text: "The workout should be done on specified days, e.g. Mon and Wed.")
-                        .presentationDetents([.height(80)])
-                        .presentationDragIndicator(.visible)
+                switch schedule {
+                    case .anyDay:
+                        InfoView(text: "The workout can be done whenever, e.g. cardio.")
+                            .presentationDetents([.height(80)])
+                            .presentationDragIndicator(.visible)
+                    case .every(_):
+                        InfoView(text: "The workout should be done every N days, e.g. 2 for every other day.")
+                            .presentationDetents([.height(80)])
+                            .presentationDragIndicator(.visible)
+                    case .days(_):
+                        InfoView(text: "The workout should be done on specified days, e.g. Mon and Wed.")
+                            .presentationDetents([.height(80)])
+                            .presentationDragIndicator(.visible)
                 }
             }
         }
-        .navigationTitle(editing ? "Edit Workout" : "Add Workout")
+        .navigationTitle("Edit Workout")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            if !editing {
-                ToolbarItem(placement: .primaryAction) {
-                    // TODO do we want nested save buttons? will they work properly?
-                    Button("Save") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        program.deleteWorkout(workout) // TODO make sure that this works
-                        dismiss()
-                    }
-                }
-            }
-        }
-        // TODO
-        // when editing use above to persist schedule
-        // otherwise use onDisappear?
+    }
+}
+
+// TODO get rid of this
+struct AddWorkout: View {
+    @Binding private var name: String
+    @Binding private var schedule: Schedule
+
+    init(program: Program) {
+        let w = Workout("Untitled", .anyDay)
+        program.addWorkout(w)
+
+        let workout = Bindable(w)
+        self._name = workout.name
+        self._schedule = workout.schedule
+    }
+
+    var body: some View {
+        EditWorkout(name: $name, schedule: $schedule)
     }
 }
 
 #Preview {
+    @Previewable @State var program = PreviewData.shared.defaultProgram
+    let first = program.workouts.first!
+    let workout = Bindable(first)
     NavigationView {
-        EditWorkout(editing: true, program: PreviewData.shared.defaultProgram, workout: PreviewData.shared.defaultProgram.workouts.first!)
+        EditWorkout(name: workout.name, schedule: workout.schedule)
     }
 }
 
-#Preview("Add New") {
+#Preview("Two") {   // non-determistic as to which workout this will show
+    @Previewable @State var program = PreviewData.shared.defaultProgram
+    let second = program.workouts[1]
+    let workout = Bindable(second)
     NavigationView {
-        EditWorkout(editing: false, program: PreviewData.shared.defaultProgram, workout: PreviewData.shared.defaultProgram.workouts.first!)
+        EditWorkout(name: workout.name, schedule: workout.schedule)
+    }
+}
+
+#Preview("Three") {
+    @Previewable @State var program = PreviewData.shared.defaultProgram
+    let third = program.workouts[2]
+    let workout = Bindable(third)
+    NavigationView {
+        EditWorkout(name: workout.name, schedule: workout.schedule)
     }
 }

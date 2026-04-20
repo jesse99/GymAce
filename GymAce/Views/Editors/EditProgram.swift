@@ -2,44 +2,12 @@ import SwiftUI
 import SwiftData
 
 struct EditProgram: View {
-    @State var program: Program
-    @State private var newWorkout: Workout?
+    @Bindable var program: Program // Creates the binding to the object
     @State private var isShowingInfo = false
 
     var body: some View {
         VStack {
-            // Note that we don't allow these rows to be moved in edit mode
-            // because in ContentView they're sorted by due date.
-            List {
-                Section(header: Text("Workouts")) {
-                    ForEach(program.workouts) { workout in
-                        NavigationLink {
-                            EditWorkout(editing: true, program: program, workout: workout)
-                        } label: {
-                            Text(workout.name)
-                        }
-                    }
-                    .onDelete(perform: deleteWorkouts)
-                }
-            }
-            .listStyle(.plain)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addWorkout) {
-                        Label("Add Workout", systemImage: "plus")
-                    }
-                }
-            }
-            .sheet(item: $newWorkout) { workout in
-                NavigationStack {
-                    EditWorkout(editing: false, program: program, workout: workout)
-                }
-                .interactiveDismissDisabled()
-            }
-
+            // TODO start using TipView, see https://fatbobman.com/en/posts/mastering-tipkit-basic/
             Form {
                 HStack {
                     TextField("Name", text: $program.name)
@@ -59,26 +27,55 @@ struct EditProgram: View {
                     }
                 }
             }
+            .frame(height: 130)
 
+            // Note that we don't allow these rows to be moved in edit mode
+            // because in ContentView they're sorted by due date.
+            List {
+                Section(header: Text("Workouts")) {
+                    ForEach($program.workouts) { $workout in
+                        NavigationLink {
+                            EditWorkout(name: $workout.name, schedule: $workout.schedule)
+                        } label: {
+                            Text(workout.name)
+                        }
+                    }
+                    .onDelete(perform: deleteWorkouts)
+                }
+            }
+            .listStyle(.plain)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+                ToolbarItem {
+                    Button(action: addWorkout) {
+                        Label("Add Workout", systemImage: "plus")
+                    }
+                }
+            }
+            Spacer()
         }
+        .navigationTitle("Edit Program")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
     private func addWorkout() {
-        let newWorkout = Workout("Untitled", .anyDay)
-        program.addWorkout(newWorkout)
-        self.newWorkout = newWorkout
+        let workout = Workout("Untitled", .anyDay)
+        self.program.addWorkout(workout)
     }
     
     private func deleteWorkouts(offsets: IndexSet) {
         withAnimation {
-            program.deleteWorkouts(offsets)
+            self.program.deleteWorkouts(offsets)
         }
     }
 }
 
 #Preview {
+    @Previewable @State var program = PreviewData.shared.defaultProgram
     NavigationView {
-        EditProgram(program: PreviewData.shared.defaultProgram)
+        EditProgram(program: program)
             .modelContainer(PreviewData.shared.container)
     }
 }

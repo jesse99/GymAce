@@ -2,23 +2,21 @@ import SwiftUI
 import SwiftData
 
 /// Shows the workouts in the active program and when they are due. Note that the workouts
-/// are ordered by when they are due (e.g. if a workout is due today it will be dhown
+/// are ordered by when they are due (e.g. if a workout is due today it will be shown
 /// first) and workouts may appear multiple times (e.e. due might be today and then
 /// "in 7 days").
-struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
+struct ProgramView: View {
+    var today: Date = Date()        // used for custom previews
     @Query(filter: #Predicate<Program> { program in
         program.active
-    }) var programs: [Program]
-    var program: Program? { programs.first }
+    }) private var programs: [Program]
     @State private var newWorkout: Workout?
-    var today: Date = Date()
     
     private var entries: [WorkoutEntry] {
         var e: [WorkoutEntry] = []
         let calendar = Calendar.current
         for i in (0...20) {
-            if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = self.program {
+            if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = self.programs.first {
                 e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
             }
         }
@@ -26,9 +24,15 @@ struct ContentView: View {
     }
 
     // TODO
-    // should be able to schedule a workout
-    //    maybe just days per week
+    // don't allow empty names when editing
+    //    think we can use .navigationBarBackButtonHidden to hide the back button when it is invalid
+    //    and an error Text view to tell the user what the problem is
+    // probably want to require that workout names be unique
+    //    won't break anything but would be confusing
+    // probably want to move ProgramView into its own file
     // need a way to disable/enable a workout (do this in workouts?)
+    //    EditProgram should draw disabled workouts in gray
+    //    don't show disabled workouts in ProgramView
     // for help use TipKit or popovers?
     // need a toolbar at the bottom
     //    programs view
@@ -37,8 +41,8 @@ struct ContentView: View {
     //    also need this in NoContentView
     var body: some View {
         Group {
-            if program != nil {
-                NavigationView {
+            if let program = programs.first {
+                NavigationStack {
                     VStack {
                         // It'd be nicer to use a Grid here but Grid doesn't seem to
                         // work very well with NavigationLink,
@@ -58,19 +62,40 @@ struct ContentView: View {
                             }
                         }
                         .listStyle(.plain)
-                        .navigationTitle("\(program!.name) Workouts")
+                        .navigationTitle("\(program.name) Workouts")
                         .toolbar {
                             NavigationLink {
-                                EditProgram(program: program!)
+                                EditProgram(program: program)
                             } label: {
                                 Text("Edit")
                             }
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+struct NoProgramView: View {
+    var body: some View {
+        ContentUnavailableView("Use the Programs tab at the bottom of the screen to add a new program.", systemImage: "figure.run.square.stack.fill")
+        .padding()
+    }
+}
+
+struct ContentView: View {
+    @Query(filter: #Predicate<Program> { program in
+        program.active
+    }) var programs: [Program]
+    var today: Date = Date()        // used for custom previews
+   
+    var body: some View {
+        Group {
+            if !programs.isEmpty {
+                ProgramView(today: today)
             } else {
-                ContentUnavailableView("Use the Programs tab at the bottom of the screen to add a new program.", systemImage: "figure.run.square.stack.fill")
-                .padding()
+                NoProgramView()
             }
         }
     }
@@ -100,4 +125,3 @@ struct ContentView: View {
             .modelContainer(PreviewData.shared.container)
     }
 }
-

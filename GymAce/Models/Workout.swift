@@ -17,7 +17,8 @@ final class Workout {
     // TODO add completed
     var name: String
 
-    private(set) var schedule: Schedule
+    var schedule: Schedule
 
+    // TODO SwiftData won't preserve the ordering here: do we need to manage sorting ourself?
     private var exercises: [Exercise] = []
 }

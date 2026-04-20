@@ -27,6 +27,8 @@ final class Program {
     /// If true the program currently being used. At most one program should be active.
     var active = false
 
+    // Note that SwiftData will load these in a random order, but that's OK because the ContentView
+    // will sort them according to when they are due to be executed.
     var workouts: [Workout] = []
 
     // TODO support blocks
@@ -36,7 +38,7 @@ final class Program {
 
 func makePreviewProgram() -> Program {
     func makeUpper() -> Workout {
-        let schedule = Schedule.days(Weekdays(days: [1, 3]))    // mon and wed
+        let schedule = Schedule.days(Weekdays(days: [2, 4]))    // mon and wed
         let workout = Workout("Upper", schedule)
 
         let exercise = Exercise.durations(ExerciseData(name: "Bench Press", formalName: "Bench Press"))
@@ -46,10 +48,20 @@ func makePreviewProgram() -> Program {
     }
 
     func makeLower() -> Workout {
-        let schedule = Schedule.days(Weekdays(days: [5]))       // friday
+        let schedule = Schedule.days(Weekdays(days: [6]))       // friday
         let workout = Workout("Lower", schedule)
 
         let exercise = Exercise.durations(ExerciseData(name: "Squat", formalName: "High bar Squat"))
+        workout.addExercise(exercise)
+
+        return workout
+    }
+
+    func makeActiveRest() -> Workout {
+        let schedule = Schedule.every(2)
+        let workout = Workout("Active Rest", schedule)
+
+        let exercise = Exercise.durations(ExerciseData(name: "Walk", formalName: "Walk"))
         workout.addExercise(exercise)
 
         return workout
@@ -59,6 +71,7 @@ func makePreviewProgram() -> Program {
     program.active = true
     program.addWorkout(makeUpper())
     program.addWorkout(makeLower())
+    program.addWorkout(makeActiveRest())
     return program
 }
 
