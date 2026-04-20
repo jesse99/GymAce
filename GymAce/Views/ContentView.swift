@@ -3,7 +3,7 @@ import SwiftData
 
 /// Shows the workouts in the active program and when they are due. Note that the workouts
 /// are ordered by when they are due (e.g. if a workout is due today it will be shown
-/// first) and workouts may appear multiple times (e.e. due might be today and then
+/// first) and workouts may appear multiple times (e.g. due might be today and then
 /// "in 7 days").
 struct ProgramView: View {
     var today: Date = Date()        // used for custom previews
@@ -24,16 +24,13 @@ struct ProgramView: View {
     }
 
     // TODO
-    // don't allow empty names when editing
-    //    think we can use .navigationBarBackButtonHidden to hide the back button when it is invalid
-    //    and an error Text view to tell the user what the problem is
-    // probably want to require that workout names be unique
+    // probably want to require that workout names be unique and non-empty
     //    won't break anything but would be confusing
     // probably want to move ProgramView into its own file
+    // start using TipView, see https://fatbobman.com/en/posts/mastering-tipkit-basic/
     // need a way to disable/enable a workout (do this in workouts?)
     //    EditProgram should draw disabled workouts in gray
     //    don't show disabled workouts in ProgramView
-    // for help use TipKit or popovers?
     // need a toolbar at the bottom
     //    programs view
     //    settings view (for now just imperial or metric)

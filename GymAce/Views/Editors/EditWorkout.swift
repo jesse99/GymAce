@@ -241,25 +241,6 @@ struct EditWorkout: View {
     }
 }
 
-// TODO get rid of this
-struct AddWorkout: View {
-    @Binding private var name: String
-    @Binding private var schedule: Schedule
-
-    init(program: Program) {
-        let w = Workout("Untitled", .anyDay)
-        program.addWorkout(w)
-
-        let workout = Bindable(w)
-        self._name = workout.name
-        self._schedule = workout.schedule
-    }
-
-    var body: some View {
-        EditWorkout(name: $name, schedule: $schedule)
-    }
-}
-
 #Preview {
     @Previewable @State var program = PreviewData.shared.defaultProgram
     let first = program.workouts.first!

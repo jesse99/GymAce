@@ -5,9 +5,12 @@ struct EditProgram: View {
     @Bindable var program: Program // Creates the binding to the object
     @State private var isShowingInfo = false
 
+    var isValid: Bool {
+        !program.name.isEmpty
+    }
+
     var body: some View {
         VStack {
-            // TODO start using TipView, see https://fatbobman.com/en/posts/mastering-tipkit-basic/
             Form {
                 HStack {
                     TextField("Name", text: $program.name)
@@ -26,9 +29,15 @@ struct EditProgram: View {
                             .presentationDragIndicator(.visible)
                     }
                 }
+                if program.name.isEmpty {
+                    Text("Program name cannot be empty.")
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
             }
-            .frame(height: 130)
-
+            .formStyle(.columns)    // only decent way I can find to stop the form from taking way too much vertical space
+            .padding(7)
+            
             // Note that we don't allow these rows to be moved in edit mode
             // because in ContentView they're sorted by due date.
             List {
@@ -58,6 +67,7 @@ struct EditProgram: View {
         }
         .navigationTitle("Edit Program")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(!isValid)
     }
     
     private func addWorkout() {
