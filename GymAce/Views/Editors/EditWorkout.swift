@@ -8,6 +8,8 @@ enum ActiveSheet: Identifiable {
 
 /// Used for both editing and adding new workouts.
 struct EditWorkout: View {
+    var program: Program
+    var workout: Workout
     @Binding var name: String
     @Binding var schedule: Schedule
     @State private var activeSheet: ActiveSheet? = nil
@@ -16,7 +18,9 @@ struct EditWorkout: View {
     @State private var everySchedule = Schedule.anyDay
     @State private var daysSchedule = Schedule.anyDay
 
-    init(name: Binding<String>, schedule: Binding<Schedule>) {
+    init(program: Program, workout: Workout, name: Binding<String>, schedule: Binding<Schedule>) {
+        self.program = program
+        self.workout = workout
         self._name = name
         self._schedule = schedule
         
@@ -36,6 +40,20 @@ struct EditWorkout: View {
         }
     }
     
+    private var isNameEmpty: Bool {
+        self.name.isEmpty
+    }
+
+    private var doesNameExist: Bool {
+        self.program.workouts.count(where: {
+            $0 != self.workout && $0.name == self.name
+        }) > 0
+    }
+
+    private var isValid: Bool {
+        !isNameEmpty && !doesNameExist
+    }
+
     private func toWeekdays(_ bools: [Bool]) -> Weekdays {
         var days: [Int] = []
         for i in bools.indices {
@@ -164,8 +182,6 @@ struct EditWorkout: View {
     var body: some View {
         Form {
             HStack {
-                // TODO this seems to be dismissing this view, sometimes anyway...
-                // use an explicit (state) name field?
                 TextField("Name", text: $name)
                     .textContentType(.name)
                     .textInputAutocapitalization(.words)
@@ -176,6 +192,15 @@ struct EditWorkout: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.leading, 5)
+            }
+            if isNameEmpty {
+                Text("Workout name cannot be empty.")
+                    .foregroundColor(.red)
+                    .font(.footnote)
+            } else if doesNameExist {
+                Text("There is already a workout with that name.")
+                    .foregroundColor(.red)
+                    .font(.footnote)
             }
 
             HStack {
@@ -238,6 +263,7 @@ struct EditWorkout: View {
         }
         .navigationTitle("Edit Workout")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(!isValid)
     }
 }
 
@@ -246,7 +272,7 @@ struct EditWorkout: View {
     let first = program.workouts.first!
     let workout = Bindable(first)
     NavigationView {
-        EditWorkout(name: workout.name, schedule: workout.schedule)
+        EditWorkout(program: program, workout: first, name: workout.name, schedule: workout.schedule)
     }
 }
 
@@ -255,7 +281,7 @@ struct EditWorkout: View {
     let second = program.workouts[1]
     let workout = Bindable(second)
     NavigationView {
-        EditWorkout(name: workout.name, schedule: workout.schedule)
+        EditWorkout(program: program, workout: second, name: workout.name, schedule: workout.schedule)
     }
 }
 
@@ -264,6 +290,6 @@ struct EditWorkout: View {
     let third = program.workouts[2]
     let workout = Bindable(third)
     NavigationView {
-        EditWorkout(name: workout.name, schedule: workout.schedule)
+        EditWorkout(program: program, workout: third, name: workout.name, schedule: workout.schedule)
     }
 }

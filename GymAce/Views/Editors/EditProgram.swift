@@ -5,7 +5,7 @@ struct EditProgram: View {
     @Bindable var program: Program // Creates the binding to the object
     @State private var isShowingInfo = false
 
-    var isValid: Bool {
+    private var isValid: Bool {
         !program.name.isEmpty
     }
 
@@ -44,7 +44,7 @@ struct EditProgram: View {
                 Section(header: Text("Workouts")) {
                     ForEach($program.workouts) { $workout in
                         NavigationLink {
-                            EditWorkout(name: $workout.name, schedule: $workout.schedule)
+                            EditWorkout(program: program, workout: workout, name: $workout.name, schedule: $workout.schedule)
                         } label: {
                             Text(workout.name)
                         }
