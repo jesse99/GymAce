@@ -1,19 +1,15 @@
 import SwiftUI
 import SwiftData
 
-enum ActiveSheet: Identifiable {
-    case first, second
-    var id: Int { hashValue }
-}
-
 /// Used for both editing and adding new workouts.
 struct EditWorkout: View {
     var program: Program
     var workout: Workout
     @Binding var name: String
     @Binding var schedule: Schedule
-    @State private var activeSheet: ActiveSheet? = nil
-    
+    @State private var showNameHelp = false
+    @State private var showScheduleHelp = false
+
     @State private var anySchedule = Schedule.anyDay
     @State private var everySchedule = Schedule.anyDay
     @State private var daysSchedule = Schedule.anyDay
@@ -188,10 +184,15 @@ struct EditWorkout: View {
                     .textFieldStyle(.roundedBorder)
                 Spacer()
                 Button("", systemImage: "info.circle") {
-                    activeSheet = .first
+                    showNameHelp.toggle()
                 }
                 .buttonStyle(.plain)
                 .padding(.leading, 5)
+            }
+            if showNameHelp {
+                Text("The name shown in the Program view.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
             }
             if isNameEmpty {
                 Text("Workout name cannot be empty.")
@@ -212,10 +213,26 @@ struct EditWorkout: View {
                 .labelsHidden()
                 Spacer()
                 Button("", systemImage: "info.circle") {
-                    activeSheet = .second
+                    showScheduleHelp.toggle()
                 }
                 .buttonStyle(.plain)
                 .padding(.leading, 5)
+            }
+            if showScheduleHelp {
+                switch schedule {
+                    case .anyDay:
+                    Text("The workout can be done whenever, e.g. cardio.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                    case .every(_):
+                    Text("The workout should be done every N days, e.g. 2 for every other day.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                    case .days(_):
+                    Text("The workout should be done on specified days, e.g. Mon and Wed.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
             }
             
             Group {
@@ -235,29 +252,6 @@ struct EditWorkout: View {
                         ForEach(0..<Calendar.current.weekdaySymbols.count, id: \.self) { i in
                             Toggle(Calendar.current.standaloneWeekdaySymbols[i], isOn: weekdayBindings[i])
                         }
-                }
-            }
-        }
-        .sheet(item: $activeSheet) { sheet in
-            switch sheet {
-            case .first:
-                InfoView(text: "The name shown in the Program view.")
-                    .presentationDetents([.height(80)])
-                    .presentationDragIndicator(.visible)
-            case .second:
-                switch schedule {
-                    case .anyDay:
-                        InfoView(text: "The workout can be done whenever, e.g. cardio.")
-                            .presentationDetents([.height(80)])
-                            .presentationDragIndicator(.visible)
-                    case .every(_):
-                        InfoView(text: "The workout should be done every N days, e.g. 2 for every other day.")
-                            .presentationDetents([.height(80)])
-                            .presentationDragIndicator(.visible)
-                    case .days(_):
-                        InfoView(text: "The workout should be done on specified days, e.g. Mon and Wed.")
-                            .presentationDetents([.height(80)])
-                            .presentationDragIndicator(.visible)
                 }
             }
         }

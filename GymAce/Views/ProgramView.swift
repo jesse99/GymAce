@@ -24,8 +24,6 @@ struct ProgramView: View {
     }
 
     // TODO
-    // probably want to move ProgramView into its own file
-    // start using TipView, see https://fatbobman.com/en/posts/mastering-tipkit-basic/
     // need a way to disable/enable a workout (do this in workouts?)
     //    EditProgram should draw disabled workouts in gray
     //    don't show disabled workouts in ProgramView

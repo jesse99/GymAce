@@ -3,7 +3,7 @@ import SwiftData
 
 struct EditProgram: View {
     @Bindable var program: Program // Creates the binding to the object
-    @State private var isShowingInfo = false
+    @State private var showNameHelp = false
 
     private var isValid: Bool {
         !program.name.isEmpty
@@ -18,16 +18,22 @@ struct EditProgram: View {
                         .textContentType(.name)
                         .textInputAutocapitalization(.words)
                     Spacer()
+                    
+                    // get rid of all the TipView stuff
+                    // TODO what if we just toggle a field to show/hide a text field?
+                    // TODO use questionmark.circle?
+                    
                     Button("", systemImage: "info.circle") {
-                        isShowingInfo.toggle()
+                        showNameHelp.toggle()
                     }
                     .buttonStyle(.plain)
+                    .foregroundColor(.blue)
                     .padding(.leading, 5)
-                    .sheet(isPresented: $isShowingInfo) {
-                        InfoView(text: "The title of the program, e.g. \"My\". Or you might have two programs like \"Gym\" and \"Home\".")
-                            .presentationDetents([.height(80)])
-                            .presentationDragIndicator(.visible)
-                    }
+                }
+                if showNameHelp {
+                    Text("The program name, e.g. \"My\" or \"Gym\" and \"Home\".")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
                 }
                 if program.name.isEmpty {
                     Text("Program name cannot be empty.")
