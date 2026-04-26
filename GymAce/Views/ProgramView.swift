@@ -37,13 +37,12 @@ struct ProgramView: View {
             if let program = programs.first {
                 NavigationStack {
                     VStack {
-                        // It'd be nicer to use a Grid here but Grid doesn't seem to
-                        // work very well with NavigationLink,
+                        // TODO should be able to use a Grid here
                         List {
                             ForEach(entries) { entry in
                                 HStack {
                                     NavigationLink {
-                                        Text("Do \(entry.workout.name) workout")
+                                        WorkoutView(workout: entry.workout)
                                     } label: {
                                         Text(entry.workout.name)
                                     }

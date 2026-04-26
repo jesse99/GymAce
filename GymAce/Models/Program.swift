@@ -41,8 +41,9 @@ func makePreviewProgram() -> Program {
         let schedule = Schedule.days(Weekdays(days: [2, 4]))    // mon and wed
         let workout = Workout("Upper", schedule)
 
-        let exercise = Exercise.durations(ExerciseData(name: "Bench Press", formalName: "Bench Press"))
-        workout.addExercise(exercise)
+        workout.addReps(name: "Bench Press1", formalName: "Bench Press", worksets: [1, 2, 3])
+        workout.addReps(name: "Press2", formalName: "Bench Press", worksets: [2, 3, 4])
+        workout.addReps(name: "OHP3", formalName: "Bench Press", worksets: [3, 4, 5])
 
         return workout
     }
@@ -51,8 +52,9 @@ func makePreviewProgram() -> Program {
         let schedule = Schedule.days(Weekdays(days: [6]))       // friday
         let workout = Workout("Lower", schedule)
 
-        let exercise = Exercise.durations(ExerciseData(name: "Squat", formalName: "High bar Squat"))
-        workout.addExercise(exercise)
+        workout.addReps(name: "Squat1", formalName: "High bar Squat", worksets: [1, 2, 3])
+        workout.addReps(name: "Deadlift2", formalName: "High bar Squat", worksets: [2, 3, 4])
+        workout.addReps(name: "Face Pulls3", formalName: "High bar Squat", worksets: [3, 4, 5])
 
         return workout
     }
@@ -61,8 +63,9 @@ func makePreviewProgram() -> Program {
         let schedule = Schedule.every(2)
         let workout = Workout("Active Rest", schedule)
 
-        let exercise = Exercise.durations(ExerciseData(name: "Walk", formalName: "Walk"))
-        workout.addExercise(exercise)
+        workout.addDurations(name: "Quad Stretch1", formalName: "Quad Stretch", secs: [10, 20, 30])
+        workout.addDurations(name: "Third World Squat2", formalName: "Quad Stretch", secs: [20, 30, 40])
+        workout.addDurations(name: "Cossack Squat3", formalName: "Quad Stretch", secs: [30, 30, 30, 40])
 
         return workout
     }
