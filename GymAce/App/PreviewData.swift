@@ -17,6 +17,7 @@ class PreviewData {
     private init() {
         let schema = Schema([
             Program.self,
+            WeightSet.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         do {
@@ -45,6 +46,7 @@ class NoPreviewData {
     private init() {
         let schema = Schema([
             Program.self,
+            WeightSet.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         do {

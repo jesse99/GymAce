@@ -6,8 +6,9 @@ struct GymAceApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Program.self,
+            WeightSet.self
         ])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let config = ModelConfiguration("store1", schema: schema, isStoredInMemoryOnly: false)
 
         do {
             // TODO sounds like we need to explicitly save (this does happen automatically but not very often)

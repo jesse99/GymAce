@@ -40,11 +40,6 @@
 			path = GymAceTests;
 			sourceTree = "<group>";
 		};
-		373EB95B2F904F7300DF75A4 /* GymAceUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GymAceUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +72,6 @@
 			children = (
 				373EB9412F904F7100DF75A4 /* GymAce */,
 				373EB9512F904F7300DF75A4 /* GymAceTests */,
-				373EB95B2F904F7300DF75A4 /* GymAceUITests */,
 				373EB9402F904F7100DF75A4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -152,9 +146,6 @@
 			);
 			dependencies = (
 				373EB95A2F904F7300DF75A4 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				373EB95B2F904F7300DF75A4 /* GymAceUITests */,
 			);
 			name = GymAceUITests;
 			packageProductDependencies = (

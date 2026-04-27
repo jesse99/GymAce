@@ -132,7 +132,7 @@ final class Exercise {
     // Shown second in the exercise view, e.g. "5 reps at 140 lbs" or "30s".
     func subhead() -> String {
         // TODO all of these should include weights
-        var index = fixedIndex()
+        let index = fixedIndex()
         if let durations = self.durations {
             return secsToStr(durations.secs[index])
         }

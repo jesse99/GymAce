@@ -1,36 +1,81 @@
-//
-//  GymAceTests.swift
-//  GymAceTests
-//
-//  Created by Jesse Vorisek on 4/15/26.
-//
-
-import XCTest
+import Testing
 @testable import GymAce
 
-final class GymAceTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+struct EnumerateTests {
+    @Test("No plates")
+    func enumerate0() {
+        let plates: [Plate] = []
+        let v = enumeratePlates(plates)
+        #expect(v.count == 0)
+    }
+    
+    @Test("One weight x2")
+    func enumerate1() {
+        let plates: [Plate] = [Plate(45.0, 2)]
+        let v = enumeratePlates(plates)
+        #expect(v.count == 1)
+        #expect(v[0] == [Plate(45.0, 1)])
+    }
+    
+    @Test("One weight x4")
+    func enumerate2() {
+        let plates: [Plate] = [Plate(45.0, 4)]
+        let v = enumeratePlates(plates)
+        #expect(v.count == 2)
+        #expect(v[0] == [Plate(45.0, 1)])
+        #expect(v[1] == [Plate(45.0, 2)])
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    @Test("Two weights")
+    func enumerate3() {
+        let plates: [Plate] = [Plate(45.0, 2), Plate(25.0, 2)]
+        let v = enumeratePlates(plates)
+        #expect(v.count == 3)
+        #expect(v[0] == [Plate(25.0, 1)])
+        #expect(v[1] == [Plate(45.0, 1)])
+        #expect(v[2] == [Plate(45.0, 1), Plate(25.0, 1)])
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    @Test("Two weights - different counts")
+    func enumerate4() {
+        let plates: [Plate] = [Plate(45.0, 2), Plate(25.0, 4)]
+        let v = enumeratePlates(plates)
+//        print("\(v)")
+        #expect(v.count == 5)
+        #expect(v[0] == [Plate(25.0, 1)])
+        #expect(v[1] == [Plate(45.0, 1)])
+        #expect(v[2] == [Plate(25.0, 2)])
+        #expect(v[3] == [Plate(45.0, 1), Plate(25.0, 1)])
+        #expect(v[4] == [Plate(45.0, 1), Plate(25.0, 2)])
     }
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    @Test("Two weights x4")
+    func enumerate5() {
+        let plates: [Plate] = [Plate(45.0, 4), Plate(25.0, 4)]
+        let v = enumeratePlates(plates)
+        #expect(v.count == 8)
+        #expect(v[0] == [Plate(25.0, 1)])
+        #expect(v[1] == [Plate(45.0, 1)])
+        #expect(v[2] == [Plate(25.0, 2)])
+        #expect(v[3] == [Plate(45.0, 1), Plate(25.0, 1)])
+        #expect(v[4] == [Plate(45.0, 2)])
+        #expect(v[5] == [Plate(45.0, 1), Plate(25.0, 2)])
+        #expect(v[6] == [Plate(45.0, 2), Plate(25.0, 1)])
+        #expect(v[7] == [Plate(45.0, 2), Plate(25.0, 2)])
     }
 
+    @Test("Many weights")
+    func enumerate6() {
+        let plates: [Plate] = [
+            Plate(100.0, 4),        // 6074 before pruning
+            Plate(45.0, 4),
+            Plate(25.0, 2),
+            Plate(10.0, 2),
+            Plate(5.0, 2),
+            Plate(2.5, 2),
+            Plate(1.25, 2),
+        ]
+        let v = enumeratePlates(plates)
+        #expect(v.count == 247)
+    }
 }
