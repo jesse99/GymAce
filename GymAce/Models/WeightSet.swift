@@ -7,9 +7,85 @@ import SwiftData
 // want 15 bumper x4. Though this is probably more doable now that we're enumerating
 // plates.
 
+enum Units: nonisolated Codable {
+    /// Weights are in pounds.
+    case Imperial
+    
+    /// Weights are in kilograms.
+    case Metric
+    
+    /// Used when we don't care about the units, e.g. when printing plates to use.
+    case None
+}
+
+/// Converts a weight into a user friendly string representation.
+func formatWeight(_ weight: Float, _ units: Units) -> String {
+    var s = "\(weight, default: "%.3")"
+    while s.hasSuffix("0") {
+        s.removeLast(1)
+    }
+    if s.hasSuffix(".") {
+        s.removeLast(1)
+    }
+    
+    switch units {
+    case .Imperial: return "\(s) lbs"
+    case .Metric: return "\(s) kg"
+    case .None: return s
+    }
+}
+
+/// A weight mapped to the weights available in a WeightSet. For example, 135 lbs might be mapped to a 45 lb
+/// plate (plus 45 pounds for a barbell).
+struct ActualWeight {
+    private let weight: InternalWeight
+    
+    /// The weight. For discrete this will be a single weight, e.g. for dumbbells we only count one
+    /// dumbbell. For dual plates we include both sides and the bar weight (if present).
+    func value() -> Float {
+        switch weight {
+        case .Discrete(let v, _): v
+        case .Error(_, let v): v
+        case .Plates(let p): p.totalWeight()
+        }
+    }
+
+    /// The weight as a string, e.g. "165 lbs".
+    func text() -> String {
+        switch weight {
+        case .Discrete(let v, let u): formatWeight(v, u)
+        case .Error(_, _): ""
+        case .Plates(let p): formatWeight(p.totalWeight(), p.units)
+        }
+    }
+
+    /// More information about the weight e.g. "45 + 10 + 5" (if plates are being used)
+    /// or "40 + 2.5 magnet" (for dumbbells with optional magnets). Note that for
+    /// DualPlates this returns the plates for only one side.
+    func details() -> String? {
+        switch weight {
+        case .Discrete(_, _): nil
+        case .Error(let m, _): m
+        case .Plates(let p): p.details()
+        }
+    }
+
+    fileprivate init(discrete: Float, _ units: Units) {
+        self.weight = .Discrete(discrete, units)
+    }
+    
+    fileprivate init(error: String, _ target: Float) {
+        self.weight = .Error(error, target)
+    }
+
+    fileprivate init(plates: InternalPlates) {
+        self.weight = .Plates(plates)
+    }
+}
+
 /// How many plates the user has for a particular weight.
 @Model
-final class Plate: CustomDebugStringConvertible, Equatable {
+final class Plate: CustomDebugStringConvertible, Comparable, Equatable {
     var weight: Float
     var count: Int
     
@@ -17,35 +93,64 @@ final class Plate: CustomDebugStringConvertible, Equatable {
         self.weight = weight
         self.count = count
     }
-        
+    
+    func totalWeight() -> Float {
+        return weight * Float(count)
+    }
+    
     var debugDescription: String {
         return "\(weight, default: "%.1f") x\(count)"
     }
 
+    // This is used with binarySearch to find a match for a target weight.
+    static func <(lhs: Plate, rhs: Plate) -> Bool {
+        return lhs.comparableWeight() < rhs.comparableWeight()
+    }
+    
+    private func comparableWeight() -> Int {
+        return Int(1000 * totalWeight())
+    }
+    
+    // Model classes are automatically given an equality operator
+    // based on identify (and that is not replaced by the Comparable
+    // version) so we need to provide our own for binarySearch.
     static func ==(lhs: Plate, rhs: Plate) -> Bool {
-        return Int(1000*lhs.weight) == Int( 1000*rhs.weight) && lhs.count == rhs.count
+        return lhs.comparableWeight() == rhs.comparableWeight()
     }
 }
 
 /// Used for equipment like barbells where plates are added to both sides. When
 /// displaying plate counts to the user only the plates for one side are listed.
 @Model
-final class DualPlates: CustomReflectable {
+final class DualPlates {
     var plates: [Plate]
     var bar: Float?
+    var units: Units
     
-    init(plates: [Plate], bar: Float? = nil) {
+    init(plates: [Plate], bar: Float? = nil, units: Units) {
         self.plates = plates
         self.bar = bar
+        self.units = units
     }
     
-    var customMirror: Mirror {
-        let s = plates.map {"\($0.weight, default: "%.1f"))x\($0.count)"}.joined(separator: ", ")
-        if let bar = self.bar {
-            return Mirror(self, children: ["plates": s, "bar": bar])
-        } else {
-            return Mirror(self, children: ["plates": s])
-        }
+    // Sort plates from largest to smallest using just weight, not
+    // weight*count. This is used to bias enumeratePlates to preferring
+    // the largest plates. (And SwiftData will populate plates after
+    // init runs using a random order).
+    func resort() {
+        plates.sort {$0.weight > $1.weight}
+    }
+}
+
+/// Used for stuff like dumbbells and cable machines.
+@Model
+final class DiscreteWeights {
+    var weights: [Float]    // TODO might want to add a new field for magnets
+    var units: Units
+    
+    init(weights: [Float], units: Units) {
+        self.weights = weights
+        self.units = units
     }
 }
 
@@ -56,152 +161,112 @@ final class WeightSet {
     var name: String
     
     /// Used for stuff like dumbbells and cable machines.
-    private(set) var discrete: [Float]?
+    private(set) var discrete: DiscreteWeights?
     
     /// Used for stuff like barbell exercises and leg presses. Plates are added in pairs.
-    /// Includes an optional bar weight. Second tuple value is the bar weight.
+    /// Includes an optional bar weight.
     private(set) var dual: DualPlates?
     
     // TODO should also have single plates
     
     // All non-duplicate combinations of DualPlates for every weight sorted by smallest
     // weight to largest. Note that these are the plates added to one side of the bar.
-    @Transient private var combos: [[Plate]] = []   // SwiftData can't handle this so we'll rebuild it on load
+    @Transient private var combos: [InternalPlates] = []   // SwiftData can't persist this so we'll rebuild it on load
     
-    init(name: String, discrete: [Float]? = nil, dual: DualPlates? = nil) {
+    init(name: String, discrete: DiscreteWeights? = nil, dual: DualPlates? = nil) {
+        assert(discrete != nil || dual != nil)  // TODO do we want this assert?
         self.name = name
         self.discrete = discrete
         self.dual = dual
     }
     
+    func setWeights(discrete: DiscreteWeights) {
+        self.discrete = discrete
+    }
+    
+    func setWeights(dual: DualPlates) {
+        self.dual = dual
+        combos.removeAll()  
+    }
+    
+    /// Used for warmups and backoff sets. May return a weight larger than target.
+    func closest(target: Float) -> ActualWeight {
+        if let discrete = self.discrete {
+            return ActualWeight(discrete: closestDiscrete(target, discrete.weights), discrete.units)
+        }
+        if let dual = self.dual {
+            if combos.isEmpty {
+                dual.resort()
+                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
+            }
+            return ActualWeight(plates: closestDual(target, combos, dual.bar, dual.units))
+        }
+        return ActualWeight(error: "There's no weight set to use.", target)
+    }
+    
+    // TODO should some of this stuff go into logic? do we even want logic?
+    
+    // TODO implement lower
+    
+    // TODO implement upper
+    // TODO are there unit tests for these?
+    // TODO need advance
+    
     // TODO if dual is changed will need to reset combos
-}
-
-// TODO need to sort plates before calling enumeratePlates, smallest to largest
-
-// Returns all combinations of plates sorted from smallest total weight to largest.
-// For duplicate total weights the combination with the least plates is returned,
-// so [45] is returned but not [10, 35]. Plates should be sorted from largest to smallest.
-func enumeratePlates(_ plates: [Plate]) -> [[Plate]] {  // internal access so that unit tests can test it
-    // Takes an n representing the number of plates where n is encoded like 2045 where
-    // the 2 means 2 of the smallest plate, 0 of the next largest, 4 of the next, and
-    // 5 of the largest plate.
-    struct EncodedCounts: Sequence {
-        let n: UInt64
-
-        // Returns (count, index) tuples where count is the number of plates at index
-        // where the first tuple is index 0 and represents the largest plate. So for
-        // 2045 this will return (5, 0) and (4, 1) and (2, 3).
-        func makeIterator() -> EncodedIterator {
-            return EncodedIterator(n)
+    
+    private func closestDiscrete(_ target: Float, _ weights: [Float]) -> Float {
+        let (lower, upper) = findDiscrete(target, weights);
+        if target - lower <= upper - target {
+            return lower
+        } else {
+            return upper
         }
     }
-
-    struct EncodedIterator: IteratorProtocol {
-        var n: UInt64
-        var i: UInt64
-        
-        init(_ n: UInt64) {
-            self.n = n
-            self.i = 0
-        }
-        
-        mutating func next() -> (Int, UInt64)? {
-            if self.n > 0 {
-                let count = self.n % 10
-                let index = self.i
-                
-                self.n /= 10
-                self.i += 1
-                
-                return (Int(count), index)
+    
+    private func closestDual(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        func findBest(_ target: Float, _ lhs: InternalPlates, _ rhs: InternalPlates) -> InternalPlates {
+            let l = lhs.totalWeight()
+            let r = rhs.totalWeight()
+            if abs(target - l) < abs(target - r) {
+                return lhs
             } else {
-                return nil
+                return rhs
+            }
+        }
+
+        // Little tricky here: InternalPlates tracks the number of plates on one side
+        // so we need to divide by 2, but that won't quite work unless we also set
+        // bar to nil.
+        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units)
+        
+        switch enums.binarySearch(t) {
+        case .found(let i): return enums[i]
+        case .missing(let i):
+            if i > 0 {
+                return findBest(target, enums[i - 1], enums[i])
+            } else if !enums.isEmpty {
+                let empty = InternalPlates(plates: [], bar: bar, units: units)
+                return findBest(target, empty, enums[i])
+            } else {
+                let empty = InternalPlates(plates: [], bar: bar, units: units)
+                return empty
             }
         }
     }
     
-    enum Status {
-        case Valid
-        case Invalid
-        case Overflow
-    }
-
-    // Returns .Valid if n is compatible with the specified plates.
-    func isValid(_ n: UInt64, _ plates: [Plate]) -> Status {
-        // TODO: need to restrict max plate count to 9 (could relax this with UInt128)
-        for (count, index) in EncodedCounts(n: n) {
-            if index >= plates.count {
-                return .Overflow
-            } else if 2 * count > plates[Int(index)].count {
-                // TODO 2* should only be done for dual plates
-                return .Invalid
+    private func findDiscrete(_ target: Float, _ weights: [Float]) -> (Float, Float) {
+        var lower = weights.first ?? 0.0
+        var upper = Float.greatestFiniteMagnitude
+        
+        for candidate in weights {
+            if candidate > lower && candidate <= target {
+                lower = candidate
+            }
+            if candidate < upper && candidate >= target {
+                upper = candidate
             }
         }
-        return .Valid
+        
+        return (lower, upper)
     }
-
-    // Attempt to increment n until we run out of plates.
-    func increment(_ n: UInt64, _ plates: [Plate]) -> UInt64? {
-        var n = n
-        while true {
-            n += 1
-            switch isValid(n, plates) {
-            case .Valid: return n
-            case .Overflow: return nil
-            case .Invalid: continue
-            }
-        }
-    }
-
-    // Get the set of plates for an encoded weight. Note that we may not use
-    // these plates, e.g. there might be a set of plates for the total weight
-    // that uses less plates.
-    func getCandidate(_ n: UInt64, _ plates: [Plate]) -> [Plate] {
-        var possible: [Plate] = []
-        possible.reserveCapacity(plates.count)
-        for (count, index) in EncodedCounts(n: n) {
-            assert(count <= plates[Int(index)].count)
-            if count > 0 {
-                let plate = Plate(plates[Int(index)].weight, count)
-                possible.append(plate)
-            }
-        }
-        return possible
-    }
-
-    // I expect that there are smarter ways to do this, but:
-    // 1) This is very fast even with lots of plate sizes and counts.
-    // 2) This will work even for those unfortunates with really weird collections of plates.
-    var n: UInt64 = 0
-    var candidates: [Int: [Plate]] = [:]        // the Int is actually a weight (iffy to use Float as a dictionary key)
-    while let new = increment(n, plates) {
-        n = new
-        let candidate = getCandidate(n, plates)
-
-        let weight = candidate.reduce(0.0) { (total, plate) in
-            total + Float(plate.count)*plate.weight
-        }
-        let candidate_weight = 1000 * Int(weight)
-        let candidate_count = candidate.reduce(0) { $0 + $1.count}
-        if let old = candidates[candidate_weight] {
-            // Prefer solutions with the least number of plates.
-            let old_count = old.reduce(0) { $0 + $1.count}
-            if candidate_count < old_count {
-                candidates[candidate_weight] = candidate
-            }
-        } else {
-            candidates[candidate_weight] = candidate
-        }
-    }
-    var result: [[Plate]] = Array(candidates.values)
-    result.sort {
-        // sort so smallest total weights are first
-        let a = $0.reduce(0) {$0 + Float($1.count)*$1.weight}
-        let b = $1.reduce(0) {$0 + Float($1.count)*$1.weight}
-        let a2 = Int(1000.0 * a)
-        let b2 = Int(1000.0 * b)
-        return a2 < b2
-    }
-    return result
 }

@@ -3,7 +3,7 @@ import SwiftData
 
 /// List of exercises to be performed on a particular day.
 @Model
-final class Workout {
+final class Workout {   // TODO may want to use CustomReflectable for some of the more complex Model types
     // TODO support enabled/disabled
     // TODO add completed
     var name: String
