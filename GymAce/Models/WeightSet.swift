@@ -182,11 +182,28 @@ final class WeightSet {
     
     func setWeights(discrete: DiscreteWeights) {
         self.discrete = discrete
+        combos.removeAll()          // don't really need to do this, but it will free up a bit of memory
     }
     
     func setWeights(dual: DualPlates) {
         self.dual = dual
         combos.removeAll()  
+    }
+    
+    /// Return the next weight larger than target..
+    func advance(target: Float) -> ActualWeight {
+        if let discrete = self.discrete {
+            let (_, upper) = findDiscrete(target, discrete.weights);
+            return ActualWeight(discrete: upper, discrete.units)
+        }
+        if let dual = self.dual {
+            if combos.isEmpty {
+                dual.resort()
+                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
+            }
+            return ActualWeight(plates: upperDual(target, combos, dual.bar, dual.units))
+        }
+        return ActualWeight(error: "There's no weight set to use.", target)
     }
     
     /// Used for warmups and backoff sets. May return a weight larger than target.
@@ -204,16 +221,40 @@ final class WeightSet {
         return ActualWeight(error: "There's no weight set to use.", target)
     }
     
-    // TODO should some of this stuff go into logic? do we even want logic?
+    /// Used for worksets. Will not return a weight larger than target.
+    func lower(target: Float) -> ActualWeight {
+        if let discrete = self.discrete {
+            let (lower, _) = findDiscrete(target, discrete.weights);
+            return ActualWeight(discrete: lower, discrete.units)
+        }
+        if let dual = self.dual {
+            if combos.isEmpty {
+                dual.resort()
+                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
+            }
+            return ActualWeight(plates: lowerDual(target, combos, dual.bar, dual.units))
+        }
+        return ActualWeight(error: "There's no weight set to use.", target)
+    }
     
-    // TODO implement lower
+    /// Returns the netxt weight larger than target.
+    func upper(target: Float) -> ActualWeight {
+        if let discrete = self.discrete {
+            let (_, upper) = findDiscrete(target, discrete.weights);
+            return ActualWeight(discrete: upper, discrete.units)
+        }
+        if let dual = self.dual {
+            if combos.isEmpty {
+                dual.resort()
+                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
+            }
+            return ActualWeight(plates: upperDual(target, combos, dual.bar, dual.units))
+        }
+        return ActualWeight(error: "There's no weight set to use.", target)
+    }
     
-    // TODO implement upper
-    // TODO are there unit tests for these?
     // TODO need advance
-    
-    // TODO if dual is changed will need to reset combos
-    
+        
     private func closestDiscrete(_ target: Float, _ weights: [Float]) -> Float {
         let (lower, upper) = findDiscrete(target, weights);
         if target - lower <= upper - target {
@@ -248,8 +289,43 @@ final class WeightSet {
                 let empty = InternalPlates(plates: [], bar: bar, units: units)
                 return findBest(target, empty, enums[i])
             } else {
-                let empty = InternalPlates(plates: [], bar: bar, units: units)
-                return empty
+                return InternalPlates(plates: [], bar: bar, units: units)
+            }
+        }
+    }
+
+    // TODO may want to make these internal for unit tests
+    private func lowerDual(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units)
+        switch enums.binarySearch(t) {
+        case .found(let i): return enums[i]
+        case .missing(let i):
+            if i > 0 {
+                return enums[i - 1]
+            } else {
+                return InternalPlates(plates: [], bar: bar, units: units)
+            }
+        }
+    }
+
+    private func upperDual(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units)
+        switch enums.binarySearch(t) {
+        case .found(let i):
+            if i + 1 < enums.count {
+                return enums[i + 1]
+            } else {
+                return enums[i]
+            }
+        case .missing(let i):
+            if target < (bar ?? 0.0) || enums.isEmpty {
+                return InternalPlates(plates: [], bar: bar, units: units)
+            } else {
+                if i < enums.count {
+                    return enums[i]
+                } else {
+                    return enums[i - 1]
+                }
             }
         }
     }
@@ -262,7 +338,7 @@ final class WeightSet {
             if candidate > lower && candidate <= target {
                 lower = candidate
             }
-            if candidate < upper && candidate >= target {
+            if candidate < upper && candidate > target {
                 upper = candidate
             }
         }

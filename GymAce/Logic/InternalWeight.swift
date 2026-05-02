@@ -8,7 +8,7 @@ enum InternalWeight {
 }
 
 // This is very much like DualPlates but can also be used by SinglePlates once we add that.
-struct InternalPlates: Comparable {
+struct InternalPlates: Comparable, Equatable {
     /// Sorted from largest to smallest.
     let plates: [Plate]
     
@@ -53,6 +53,10 @@ struct InternalPlates: Comparable {
         return lhs.comparableWeight() < rhs.comparableWeight()
     }
         
+    static func ==(lhs: InternalPlates, rhs: InternalPlates) -> Bool {
+        return lhs.comparableWeight() == rhs.comparableWeight()
+    }
+
     private func comparableWeight() -> Int {
         return Int(1000 * totalWeight())
     }
