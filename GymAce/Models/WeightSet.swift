@@ -70,7 +70,7 @@ struct ActualWeight {
         }
     }
 
-    fileprivate init(discrete: Float, _ units: Units) {
+    init(discrete: Float, _ units: Units) {
         self.weight = .Discrete(discrete, units)
     }
     
@@ -173,6 +173,16 @@ final class WeightSet {
     // weight to largest. Note that these are the plates added to one side of the bar.
     @Transient private var combos: [InternalPlates] = []   // SwiftData can't persist this so we'll rebuild it on load
     
+    var units: Units {
+        if let discrete = self.discrete {
+            return discrete.units
+        }
+        if let dual = self.dual {
+            return dual.units
+        }
+        return .None
+    }
+    
     init(name: String, discrete: DiscreteWeights? = nil, dual: DualPlates? = nil) {
         assert(discrete != nil || dual != nil)  // TODO do we want this assert?
         self.name = name
@@ -252,9 +262,7 @@ final class WeightSet {
         }
         return ActualWeight(error: "There's no weight set to use.", target)
     }
-    
-    // TODO need advance
-        
+            
     private func closestDiscrete(_ target: Float, _ weights: [Float]) -> Float {
         let (lower, upper) = findDiscrete(target, weights);
         if target - lower <= upper - target {

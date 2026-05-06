@@ -16,12 +16,19 @@ class PreviewData {
     
     private init() {
         let schema = Schema([
+            Exercise.self,
             Program.self,
             WeightSet.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         do {
             container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+//            for ws in testWeightSets.values {
+//                container.mainContext.insert(ws)
+//            }
+//            for exercise in testExercises.values {
+//                context.insert(exercise)
+//            }
             context.insert(testProgram)
             try context.save()
         } catch {
@@ -39,12 +46,13 @@ class NoPreviewData {
         modelContainer.mainContext
     }
     
-    var defaultProgram: Program {
-        testProgram
-    }
+//    var defaultProgram: Program {
+//        testProgram
+//    }
     
     private init() {
         let schema = Schema([
+            Exercise.self,
             Program.self,
             WeightSet.self
         ])

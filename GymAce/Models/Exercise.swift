@@ -1,6 +1,55 @@
 import Foundation
 import SwiftData
 
+enum CompletedSet: Codable {
+    /// seconds
+    case duration(Int)
+
+    /// rep count
+    case reps(Int)
+
+//    /// rep count and percent
+//    case percent(Int, Int)
+}
+
+struct Completed: Codable, Comparable, Equatable {
+    var sets: [CompletedSet]
+    var weight: Float?
+    var started: Date
+    var completed: Date?
+    
+    /// Returns true if the exercise was started long enough ago that it should be considered an exercise
+    /// that the user has abandoned.
+    var isStale: Bool {
+        let delta = started.distance(to: Date.now)
+        return delta/3600.0 > 4.0   // aka more than 4 hours
+    }
+    
+    init(weight: Float?) {
+        self.sets = []
+        self.weight = weight
+        self.started = Date()
+        self.completed = nil
+    }
+    
+    static func ==(lhs: Completed, rhs: Completed) -> Bool {
+        if let l = lhs.completed, let r = rhs.completed {
+            return l == r
+        }
+        return rhs.completed == nil && rhs.completed == nil
+    }
+
+    static func <(lhs: Completed, rhs: Completed) -> Bool {
+        if let l = lhs.completed, let r = rhs.completed {
+            return l < r
+        }
+        if rhs.completed == nil {
+            return true
+        }
+        return false
+    }
+}
+
 @Model
 final class DurationsData {
     var secs: [Int]
@@ -21,21 +70,37 @@ struct FixedReps: Codable {
 struct VariableReps: Codable {
     var min: Int
     var max: Int
+    
+    init(_ reps: Int) {
+        self.min = reps
+        self.max = reps
+    }
+
+    init(_ min: Int, to: Int) {
+        self.min = min
+        self.max = to
+    }
+    
+    func clamp(_ n: Int) -> Int {
+        if n < min {
+            return min
+        } else if n > max {
+            return max
+        }
+        return n
+    }
 }
 
 @Model
 final class RepsData {
     var warmups: [FixedReps]
     var worksets: [VariableReps]
-    var backoff: [FixedReps]     // TODO support this
+    var backoff: [FixedReps]
     
-    // I think here what we want is:
-    // if the current weight matches last completed then use last completed reps
-    //    but clamp to current min/max
-    // if current weight is larger than last completed then use min reps
-    // otherwise use max reps
-//    var expected: [Int]
-    
+    var isVariable: Bool {
+        worksets.contains(where: { $0.min < $0.max })
+    }
+        
     init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps]) {
         self.warmups = warmups
         self.worksets = worksets
@@ -50,32 +115,28 @@ final class RepsData {
 // Ideally this would be an enum but enums can't be models, just codables. Codeable would
 // work for relatively sumple enums but we really want to bind to this state so this
 // awkward model seems better.
+//
+/// How to perform an exercise. These are added to workouts using ExerciseEntry.
 @Model
 final class Exercise {
-    /// User name, just for presentation
+    /// User name, used to identify an exercise for workouts to use.
     var name: String
+//    @Attribute(.unique) var name: String  // TODO was getting errors trying to save with this enabled
 
     /// Official name, used to lookup notes for an exercise
     var formalName: String
-
-    /// Model array ordering isn't stable so this is used to sort the exercises into
-    /// the order the user wants to use.
-    var order: Int
     
-    /// The set the user is currently performing in an exercise screen (this doesn't
-    /// belong to the view because we want the user to be able to go to another
-    /// exercise to super set or goto settings without losing their place). Note that
-    /// if this is >= the number of sets the user is considered to have finished the
-    /// exercise.
-    var setIndex: Int
+    /// Opitional set of weights to use with the exercise.
+    var weightSet: WeightSet?
+
+    /// Base weight to use for each workset. If a weightSet is present then this weight will be mapped
+    /// onto those weights (possibly modified by a per-set percentage).
+    var weight: Float?
+    
+    /// Record of when and how well the user last did the exercise. Note that these are not sorted.
+    var history: [Completed] = []
     
     // TODO add these
-//    pub started: Option<DateTime<Local>>,
-//    pub finished: bool,
-//    pub enabled: bool,
-//    pub current_index: SetIndex,
-//    pub weightset: Option<String>,
-//    pub weight: Option<f32>, // base weight to use for each workset, often modified by per-set percent
 //    pub rest: Option<i32>,   // used for work sets
 //    pub last_rest: Option<i32>, // overrides rest.last()
 
@@ -86,97 +147,33 @@ final class Exercise {
     /// or a rep range, e.g. 3x8-12 cable crunches.
     var reps: RepsData?
     
-    init (name: String, formalName: String, order: Int, durations: DurationsData? = nil, reps: RepsData? = nil) {
+    @Transient private var sortedHistory = false
+
+    init (name: String, formalName: String, durations: DurationsData? = nil, reps: RepsData? = nil, weights: WeightSet? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
-        self.order = order
+        self.weightSet = weights
+        self.weight = weight
         self.durations = durations
         self.reps = reps
-        self.setIndex = 0
     }
     
-    func finished() -> Bool {
-        if let durations = self.durations {
-            return setIndex >= durations.secs.count
-        }
-        if let reps = self.reps {
-            return setIndex >= reps.warmups.count + reps.worksets.count + reps.backoff.count
-        }
-        return true
-    }
-    
-    // Shown first in the exercise view, e.g. "Workset 1 of 3" or "Set 1 of 3".
-    func headline() -> String {
-        var index = fixedIndex()
-        if let durations = self.durations {
-            return "Set \(index + 1) of \(durations.secs.count)"
-        }
-        if let reps = self.reps {
-            if index < reps.warmups.count {
-                return "Warmup \(index + 1) of \(reps.warmups.count)"
-            }
-            index -= reps.warmups.count
-            
-            if index < reps.worksets.count {
-                return "Workset \(index + 1) of \(reps.worksets.count)"
-            }
-            index -= reps.worksets.count
-
-            if index < reps.backoff.count {
-                return "Backoff \(index + 1) of \(reps.backoff.count)"
-            }
-        }
-        return "Set \(index + 1)?"
-    }
-    
-    // Shown second in the exercise view, e.g. "5 reps at 140 lbs" or "30s".
-    func subhead() -> String {
-        // TODO all of these should include weights
-        let index = fixedIndex()
-        if let durations = self.durations {
-            return secsToStr(durations.secs[index])
-        }
-        if let reps = self.reps {
-            var index = index
-            if index < reps.warmups.count {
-                return "\(reps.warmups[index].reps) reps"
-            }
-            index -= reps.warmups.count
-            
-            if index < reps.worksets.count {
-                if reps.worksets[index].min == reps.worksets[index].max {
-                    return "\(reps.worksets[index].min) reps"
-                } else {
-                    // TODO do a better job with expected reps
-                    return "\(reps.worksets[index].min)-\(reps.worksets[index].max) reps"
-                }
-            }
-            index -= reps.worksets.count
-
-            if index < reps.backoff.count {
-                return "\(reps.backoff[index].reps) reps"
-            }
-        }
-        return "?"
-    }
-    
-    // Shown third in the exercise view, e.g. "45 + 2.5".
-    func footer() -> String? {
-        // TODO need to use the current weightset
-        return "45 + 2.5"
-    }
-    
-    // Shown fourth in the exercise view, e.g. "90% of 225 lbs".
-    func subfooter() -> String? {
-        // TODO need to use the current percent and weightset
-        return "90% of 225 lbs"
-    }
-    
-    /// Shown in WorkoutView next to the exercise name: brief summary of what the user is expected to do,
+    /// Shown in WorkoutView next to the exercise name: brief summary of what the user is expected to do.
+    /// For example, "30sx3" or "8-12x3 @ 135 lbs".
     func details() -> String {
+        var suffix = ""
+        if let weight = self.weight {
+            if let ws = self.weightSet {
+                let actual = ws.lower(target: weight)
+                suffix = " @ \(actual.text())"
+            } else {
+                suffix = " @ \(formatWeight(weight, .None))"
+            }
+        }
+        
         if let durations = self.durations {
             let a = durations.secs.map {"\($0)s"}
-            return joinLabels(a)
+            return joinLabels(a) + suffix
         }
         if let reps = self.reps {
             let a = reps.worksets.map {
@@ -190,20 +187,17 @@ final class Exercise {
                     "\($0.min)-\($0.max) reps"
                 }
             }
-            return joinLabels(a)
+            return joinLabels(a) + suffix
         }
         return ""
     }
     
-    private func fixedIndex() -> Int {
-        if let durations = self.durations {
-            return setIndex >= durations.secs.count ? durations.secs.count - 1 : setIndex
+    func latestCompleted() -> Completed? {
+        if !sortedHistory {
+            history.sort()
+            sortedHistory = true
         }
-        if let reps = self.reps {
-            let count = reps.warmups.count + reps.worksets.count + reps.backoff.count
-            return setIndex >= count ? count - 1 : setIndex
-        }
-        return setIndex
+        return history.last
     }
 }
 

@@ -8,10 +8,10 @@ struct WorkoutView: View {
     // TODO or maybe that state can be stored at the top level of the store?
     @Bindable var workout: Workout
     
-    private var exercisesBinding: Binding<[Exercise]> {
+    private var exercisesBinding: Binding<[ExerciseEntry]> {
         Binding(
             get: {
-                workout.exercises.sorted {
+                workout.entries.sorted {
                     $0.order < $1.order
                 }
             },
@@ -35,17 +35,17 @@ struct WorkoutView: View {
                 Text("Duration").bold()
                     .gridColumnAlignment( .leading )
             }
-            ForEach(exercisesBinding) { $exercise in
+            ForEach(exercisesBinding) { $entry in
                 GridRow {
                     NavigationLink {
-                        ExerciseView(exercise: $exercise)
+                        ExerciseView(entry: $entry)
                     } label: {
-                        Text(exercise.name)
+                        Text(entry.exercise.name)
                     }
                     .navigationLinkIndicatorVisibility(.hidden)
                     .gridColumnAlignment( .leading )
 
-                    Text(exercise.details())
+                    Text(entry.exercise.details())
                         .gridColumnAlignment( .leading )
 
                     Text("-")   // TODO implement this, will also need a footer with total duration

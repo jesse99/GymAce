@@ -2,54 +2,67 @@ import SwiftUI
 import SwiftData
 
 struct ExerciseView: View {
-    @Binding var exercise: Exercise
-    @Environment(\.dismiss) var dismiss // Define the environment action
+    @Binding var entry: ExerciseEntry
+    @Environment(\.dismiss) var dismiss 
+    @State private var advance = false
 
-    // TODO
-    // need some sort of Exercise.refresh method
-    //    call this in onAppear
-    //    should reset set state if it's been too long (or it's >= max sets)
     var body: some View {
         VStack {
             // Warmup 3 of 3
-            Text(exercise.headline())
+            Text(entry.headline())
                 .font(Font.headline.bold())
                 .padding(2)
             
             // 5 reps @ 225 lbs
-            Text(exercise.subhead())
+            Text(entry.subhead())
                 .font(Font.subheadline)
             
             // 45x2
-            if let s = exercise.footer() {
+            if let s = entry.footer() {
                 Text(s)
                     .font(Font.footnote)
                     .padding(.bottom, 2)
             }
             
             // 90% of 250 lbs
-            if let s = exercise.subfooter() {
+            if let s = entry.subfooter() {
                 Text(s)
                     .font(Font.caption2)
                     .padding(2)
             }
             
+            // TODO
+            // only show reps picker after timer finishes (if there is one)
+            
             // Next/Finished button
-            if exercise.finished() {
+            if entry.finished() {
                 Button("Finished") {
-                    exercise.setIndex = 0
+                    // We won't call done if the user swipes back but it seems to make
+                    // sense to call done only when the user presses Finished...
+                    entry.completedAll()    // TODO this should also save
                     dismiss()
                 }
                 .padding(.top, 20)
             } else {
+                if entry.hasExpected {
+                    Picker("", selection: $entry.expectedReps) {
+                        ForEach(0...entry.maxEpectedReps, id: \.self) {n in
+                            Text("\(n) reps").tag(n)
+                        }
+                    }
+                    .labelsHidden()
+                }
                 Button("Next") {
-                    exercise.setIndex += 1
+                    entry.completedSet()
                 }
                 .padding(.top, 20)
             }
         }
-        .navigationTitle(exercise.name)
+        .navigationTitle(entry.exercise.name)
         .padding(20)
+        .onAppear {
+            entry.started()
+        }
         Spacer()
     }
 }
@@ -57,7 +70,7 @@ struct ExerciseView: View {
 #Preview {
     @Previewable @State var workout = PreviewData.shared.defaultProgram.workouts[0]
     NavigationStack {
-        ExerciseView(exercise: $workout.exercises[0])
+        ExerciseView(entry: $workout.entries[0])
             .modelContainer(PreviewData.shared.container)
     }
 }
@@ -65,7 +78,7 @@ struct ExerciseView: View {
 #Preview("second") {
     @Previewable @State var workout = PreviewData.shared.defaultProgram.workouts[1]
     NavigationStack {
-        ExerciseView(exercise: $workout.exercises[0])
+        ExerciseView(entry: $workout.entries[0])
             .modelContainer(PreviewData.shared.container)
     }
 }
