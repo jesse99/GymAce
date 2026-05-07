@@ -97,14 +97,18 @@ final class RepsData {
     var worksets: [VariableReps]
     var backoff: [FixedReps]
     
+    /// Seconds to rest for worksets.
+    var rest: Int?
+
     var isVariable: Bool {
         worksets.contains(where: { $0.min < $0.max })
     }
         
-    init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps]) {
+    init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps], rest: Int? = nil) {
         self.warmups = warmups
         self.worksets = worksets
         self.backoff = backoff
+        self.rest = rest
     }
 }
 
@@ -223,5 +227,15 @@ func joinLabels(_ labels: [String]) -> String {
 }
 
 func secsToStr(_ secs: Int) -> String {
-    "\(secs)s"          // TODO handle longer times better
+    if secs > 60*60 {
+        let n = Float(secs)/(60.0*60.0)
+        return String(format: "%.1f hours", n)
+    } else if secs > 60 {
+        let n = Float(secs)/60.0
+        return String(format: "%.1f mins", n)
+    } else if secs == 1 {
+        return "1 sec"
+    } else {
+        return "\(secs) secs"
+    }
 }

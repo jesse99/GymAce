@@ -4,7 +4,8 @@ import SwiftData
 struct ExerciseView: View {
     @Binding var entry: ExerciseEntry
     @Environment(\.dismiss) var dismiss 
-    @State private var advance = false
+    @State private var resting = false
+    @State private var targetDate: Date = Date.now
 
     var body: some View {
         VStack {
@@ -30,9 +31,13 @@ struct ExerciseView: View {
                     .font(Font.caption2)
                     .padding(2)
             }
-            
-            // TODO
-            // only show reps picker after timer finishes (if there is one)
+                        
+            // The way this works is that the user does a set.
+            // View will have a Next button (and optionally a picker for actual reps).
+            // When that Next is pressed we will show a timer (if there is rest enabled).
+            // When resting the button will change to "Stop Resting".
+            // If Stop Resting is pressed (or Next with no rest) then the view changes to show the next set.
+            // If there are no more sets then the button changes to "Finished".
             
             // Next/Finished button
             if entry.finished() {
@@ -44,18 +49,47 @@ struct ExerciseView: View {
                 }
                 .padding(.top, 20)
             } else {
-                if entry.hasExpected {
-                    Picker("", selection: $entry.expectedReps) {
-                        ForEach(0...entry.maxEpectedReps, id: \.self) {n in
-                            Text("\(n) reps").tag(n)
+                if resting {
+                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                        let remaining = Int(targetDate.timeIntervalSince(context.date))
+                        if remaining > 0 {
+                            Text(secsToStr(remaining))
+                                .font(.largeTitle)
+                                .foregroundColor(.red)
+                        } else if remaining > -5 {
+                            Text("done")
+                                .font(.largeTitle)
+                                .foregroundColor(.green)
+                        } else {
+                            Text(secsToStr(-remaining) + " over")
+                                .font(.largeTitle)
+                                .foregroundColor(.green)
                         }
                     }
-                    .labelsHidden()
+                    Button("Stop Resting") {
+                        entry.completedSet()
+                        resting = false
+                    }
+                    .padding(.top, 20)
+                } else {
+                    if entry.hasExpected {
+                        Picker("", selection: $entry.expectedReps) {
+                            ForEach(0...entry.maxEpectedReps, id: \.self) {n in
+                                Text("\(n) reps").tag(n)
+                            }
+                        }
+                        .labelsHidden()
+                    }
+                    Button("Next") {
+                        if let rest = entry.rest {
+                            resting = true
+                            targetDate = Date().addingTimeInterval(TimeInterval(rest))
+                        } else {
+                            entry.completedSet()
+                        }
+                    }
+                    .padding(.top, 20)
                 }
-                Button("Next") {
-                    entry.completedSet()
-                }
-                .padding(.top, 20)
             }
         }
         .navigationTitle(entry.exercise.name)

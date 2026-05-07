@@ -10,8 +10,8 @@ fileprivate func makeDurations(name: String, formalName: String, secs: [Int], we
     }
 }
 
-fileprivate func makeReps(name: String, formalName: String, warmups: [FixedReps] = [], worksets: [VariableReps], backoff: [FixedReps] = [], weights: String? = nil, weight: Float? = nil) -> Exercise {
-    let reps = RepsData(warmups: warmups, worksets: worksets, backoff: backoff)
+fileprivate func makeReps(name: String, formalName: String, warmups: [FixedReps] = [], worksets: [VariableReps], backoff: [FixedReps] = [], weights: String? = nil, weight: Float? = nil, rest: Int? = nil) -> Exercise {
+    let reps = RepsData(warmups: warmups, worksets: worksets, backoff: backoff, rest: rest)
     if let n = weights {
         return Exercise(name: name, formalName: formalName, reps: reps, weights: testWeightSets[n], weight: weight)
     } else {
@@ -50,22 +50,22 @@ fileprivate func makePreviewExercises() -> [String: Exercise] {
 
     let backoff = [FixedReps(reps: 5, percent: 80)]
 
-    var exercise = makeReps(name: "Light Bench", formalName: "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual", weight: 130)
+    var exercise = makeReps(name: "Light Bench", formalName: "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual", weight: 130, rest: 10)
     exercises[exercise.name] = exercise
     
-    exercise = makeReps(name: "Heavy Bench", formalName: "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 145)
+    exercise = makeReps(name: "Heavy Bench", formalName: "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 145, rest: 12)
     exercises[exercise.name] = exercise
     
-    exercise = makeReps(name: "OHP", formalName: "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 80)
+    exercise = makeReps(name: "OHP", formalName: "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 80, rest: 9)
     exercises[exercise.name] = exercise
     
-    exercise = makeReps(name: "Squat", formalName: "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual", weight: 140)
+    exercise = makeReps(name: "Squat", formalName: "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual", weight: 140, rest: 8)
     exercises[exercise.name] = exercise
     
-    exercise = makeReps(name: "Deadlift", formalName: "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual", weight: 230)
+    exercise = makeReps(name: "Deadlift", formalName: "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual", weight: 230, rest: 10)
     exercises[exercise.name] = exercise
     
-    exercise = makeReps(name: "Face Pulls", formalName: "Face Pulls", worksets: reps12, weights: "Cable", weight: 40.0)
+    exercise = makeReps(name: "Face Pulls", formalName: "Face Pulls", worksets: reps12, weights: "Cable", weight: 40.0, rest: 5)
     exercises[exercise.name] = exercise
     
     exercise = makeDurations(name: "Quad Stretch", formalName: "Quad Stretch", secs: [10, 20, 30])

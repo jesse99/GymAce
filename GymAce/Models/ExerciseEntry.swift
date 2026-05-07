@@ -68,6 +68,17 @@ final class ExerciseEntry {
         return 0
     }
     
+    var rest: Int? {
+        if let reps = exercise.reps {
+            var index = fixedIndex()
+            index -= reps.warmups.count
+            if index >= 0 && index < reps.worksets.count {
+                return reps.rest    // TODO should return nil for the last set of the last exercise in a workout
+            }
+        }
+        return nil
+    }
+
     // TODO add this
 //    pub enabled: bool,
 
@@ -132,58 +143,8 @@ final class ExerciseEntry {
         }
     }
     
-    // I think here what we want is:
-    // if the current weight matches last completed then use last completed reps
-    //    but clamp to current min/max
-    // if current weight is larger than last completed then use min reps
-    // otherwise use max reps
-
-//    /// Returns the expected and max reps the user is expected to do for worksets.
-//    func expectedReps() -> (Int, Int)? {
-//        if let reps = exercise.reps, reps.isVariable {
-//            var index = fixedIndex()
-//            if index < reps.warmups.count {
-//                return nil
-//            }
-//            
-//            index -= reps.warmups.count
-//            if index < reps.worksets.count {
-//                let min = reps.worksets[index].min
-//                let max = reps.worksets[index].max
-//                if min < max {
-//                    if let last = exercise.latestCompleted() {
-//                        if let new = exercise.weight, let old = last.weight, new > old {
-//                            // User has upped the weight since last time.
-//                            return (min, max)
-//                        } else if index < last.sets.count {
-//                            switch last.sets[index] {
-//                            case .reps(let n): return (reps.worksets[index].clamp(n), max)
-//                            default: return (min, max)
-//                            }
-//                        } else {
-//                            // User has changed sets so that they no longer match last sets.
-//                            return (min, max)
-//                        }
-//                    } else {
-//                        // User hasn't finished this exercise yet.
-//                        return (min, max)
-//                    }
-//                }
-//            }
-//        }
-//        return nil
-//    }
-    
     /// Called after each set is completed.
     func completedSet() {
-//        if var c = self.current {
-//            if let _ = exercise.durations {
-//                c.sets.append(.duration(n))
-//            }
-//            if let _ = self.exercise.reps {
-//                c.sets.append(.reps(n))
-//            }
-//        }
         setIndex += 1
     }
     
