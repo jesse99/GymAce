@@ -3,23 +3,10 @@ import SwiftData
 
 /// Lists the exercises within a workout.
 struct WorkoutView: View {
-    // TODO if we store state like when an exercise was started here then
-    // we may want to make this @State (or @Obserable?)
-    // TODO or maybe that state can be stored at the top level of the store?
+    var model: Model
+    var program: Program
     @Bindable var workout: Workout
     
-    private var exercisesBinding: Binding<[ExerciseEntry]> {
-        Binding(
-            get: {
-                workout.entries.sorted {
-                    $0.order < $1.order
-                }
-            },
-            set: {_ in 
-            }
-        )
-    }
-
     // TODO will have nav links so need to use a list?
     //      or will grid work if we disable the chevron?
     // TODO should Workout have info about the current workout?
@@ -35,21 +22,33 @@ struct WorkoutView: View {
                 Text("Duration").bold()
                     .gridColumnAlignment( .leading )
             }
-            ForEach(exercisesBinding) { $entry in
-                GridRow {
-                    NavigationLink {
-                        ExerciseView(entry: $entry)
-                    } label: {
-                        Text(entry.exercise.name)
+            ForEach($workout.entries, id: \.name) { $entry in
+                if let exercise = program.findExercise(entry.name) {
+                    GridRow {
+                        NavigationLink {
+                            ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
+                        } label: {
+                            Text(entry.name)
+                        }
+                        .navigationLinkIndicatorVisibility(.hidden)
+                        .gridColumnAlignment(.leading )
+                        
+                        Text(exercise.details(model))
+                            .gridColumnAlignment( .leading )
+                        
+                        Text("-")   // TODO implement this, will also need a footer with total duration
+                            .gridColumnAlignment( .leading )
                     }
-                    .navigationLinkIndicatorVisibility(.hidden)
-                    .gridColumnAlignment( .leading )
+                } else {
+                    GridRow {
+                        Text(entry.name)
+                            .gridColumnAlignment(.leading )
+                        Text("not found")
+                            .gridColumnAlignment( .leading )
+                        Text("-")
+                            .gridColumnAlignment( .leading )
+                    }
 
-                    Text(entry.exercise.details())
-                        .gridColumnAlignment( .leading )
-
-                    Text("-")   // TODO implement this, will also need a footer with total duration
-                        .gridColumnAlignment( .leading )
                 }
             }
         }
@@ -59,23 +58,29 @@ struct WorkoutView: View {
     }
 }
 
-#Preview {
+#Preview("Upper") {
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[0]
     NavigationStack {
-        WorkoutView(workout: PreviewData.shared.defaultProgram.workouts.first!)
-            .modelContainer(PreviewData.shared.container)
+        WorkoutView(model: model, program: program, workout: workout)
     }
 }
 
-#Preview("second)") {
+#Preview("Lower)") {
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[1]
     NavigationStack {
-        WorkoutView(workout: PreviewData.shared.defaultProgram.workouts[1])
-            .modelContainer(PreviewData.shared.container)
+        WorkoutView(model: model, program: program, workout: workout)
     }
 }
 
-#Preview("third)") {
+#Preview("Active Rest)") {
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[2]
     NavigationStack {
-        WorkoutView(workout: PreviewData.shared.defaultProgram.workouts[2])
-            .modelContainer(PreviewData.shared.container)
+        WorkoutView(model: model, program: program, workout: workout)
     }
 }

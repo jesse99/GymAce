@@ -1,27 +1,39 @@
 import SwiftUI
-import SwiftData
 
 /// Shows the workouts in the active program and when they are due. Note that the workouts
 /// are ordered by when they are due (e.g. if a workout is due today it will be shown
 /// first) and workouts may appear multiple times (e.g. due might be today and then
 /// "in 7 days").
 struct ProgramView: View {
-    var today: Date = Date()        // used for custom previews
-    @Query(filter: #Predicate<Program> { program in
-        program.active
-    }) private var programs: [Program]
-    @State private var newWorkout: Workout?
+    var today: Date        // used for custom previews
+    @Bindable var model: Model
+    @State private var newWorkout: Workout? = nil
     
     private var entries: [WorkoutEntry] {
         var e: [WorkoutEntry] = []
         let calendar = Calendar.current
         for i in (0...20) {
-            if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = self.programs.first {
+            if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = model.active() {
                 e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
             }
         }
         return e
     }
+
+//    private var entriesBinding: Binding<[WorkoutEntry]> {
+//        Binding(
+//            get: {
+//                var e: [WorkoutEntry] = []
+//                let calendar = Calendar.current
+//                for i in (0...20) {
+//                    if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = model.active() {
+//                        e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
+//                    }
+//                }
+//                return e            },
+//            set: {_ in }
+//        )
+//    }
 
     // TODO
     // need a way to disable/enable a workout (do this in workouts?)
@@ -34,7 +46,7 @@ struct ProgramView: View {
     //    also need this in NoContentView
     var body: some View {
         Group {
-            if let program = programs.first {
+            if let program = model.active() {
                 NavigationStack {
                     VStack {
                         // TODO should be able to use a Grid here
@@ -42,7 +54,7 @@ struct ProgramView: View {
                             ForEach(entries) { entry in
                                 HStack {
                                     NavigationLink {
-                                        WorkoutView(workout: entry.workout)
+                                        WorkoutView(model: model, program: program, workout: entry.workout)
                                     } label: {
                                         Text(entry.workout.name)
                                     }
@@ -54,10 +66,10 @@ struct ProgramView: View {
                             }
                         }
                         .listStyle(.plain)
-                        .navigationTitle("\(program.name) Workouts")
+                        .navigationTitle("\(model.activeProgram) Workouts")
                         .toolbar {
                             NavigationLink {
-                                EditProgram(program: program)
+                                EditProgram(model: model, program: program)
                             } label: {
                                 Text("Edit")
                             }
@@ -70,21 +82,17 @@ struct ProgramView: View {
 }
 
 #Preview {
-    ProgramView(today: Date())
-        .modelContainer(PreviewData.shared.container)
+    ProgramView(today: Date(), model: previewModel())
 }
 
-#Preview("Dates") {
-    ScrollView {
-        ProgramView(today: Calendar.current.date(byAdding: .day, value: 0, to: Date.now)!)
-            .modelContainer(PreviewData.shared.container)
-        ProgramView(today: Calendar.current.date(byAdding: .day, value: 1, to: Date.now)!)
-            .modelContainer(PreviewData.shared.container)
-        ProgramView(today: Calendar.current.date(byAdding: .day, value: 2, to: Date.now)!)
-            .modelContainer(PreviewData.shared.container)
-        ProgramView(today: Calendar.current.date(byAdding: .day, value: 3, to: Date.now)!)
-            .modelContainer(PreviewData.shared.container)
-        ProgramView(today: Calendar.current.date(byAdding: .day, value: 4, to: Date.now)!)
-            .modelContainer(PreviewData.shared.container)
-    }
+#Preview("Tomorrow") {
+    ProgramView(today: Calendar.current.date(byAdding: .day, value: 1, to: Date.now)!, model: previewModel())
+}
+
+#Preview("In 2 days") {
+    ProgramView(today: Calendar.current.date(byAdding: .day, value: 2, to: Date.now)!, model: previewModel())
+}
+
+#Preview("In 3 days") {
+    ProgramView(today: Calendar.current.date(byAdding: .day, value: 3, to: Date.now)!, model: previewModel())
 }

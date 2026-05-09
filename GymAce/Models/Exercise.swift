@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 
 enum CompletedSet: Codable {
     /// seconds
@@ -8,8 +7,8 @@ enum CompletedSet: Codable {
     /// rep count
     case reps(Int)
 
-//    /// rep count and percent
-//    case percent(Int, Int)
+    /// rep count
+    case percent(Int)
 }
 
 struct Completed: Codable, Comparable, Equatable {
@@ -50,10 +49,9 @@ struct Completed: Codable, Comparable, Equatable {
     }
 }
 
-@Model
-final class DurationsData {
+struct DurationsData: Codable {
     var secs: [Int]
-    var targetSecs: Int?
+    var targetSecs: Int?    // TODO support this? support progression somehow?
     
     init(secs: [Int], targetSecs: Int? = nil) {
         self.secs = secs
@@ -61,7 +59,6 @@ final class DurationsData {
     }
 }
 
-// These are Codable instead of @Model so that arrays of them are stable.
 struct FixedReps: Codable {
     var reps: Int
     var percent: Int
@@ -91,11 +88,11 @@ struct VariableReps: Codable {
     }
 }
 
-@Model
-final class RepsData {
+struct RepsData: Codable {
     var warmups: [FixedReps]
     var worksets: [VariableReps]
     var backoff: [FixedReps]
+    var version: Int = 1
     
     /// Seconds to rest for worksets.
     var rest: Int?
@@ -112,95 +109,103 @@ final class RepsData {
     }
 }
 
-// TODO
-// will there be schema migration issues if new cases are added?
-// add a percentage based exercise, should be based on last completed for another exercise
-//
-// Ideally this would be an enum but enums can't be models, just codables. Codeable would
-// work for relatively sumple enums but we really want to bind to this state so this
-// awkward model seems better.
-//
-/// How to perform an exercise. These are added to workouts using ExerciseEntry.
-@Model
-final class Exercise {
-    /// User name, used to identify an exercise for workouts to use.
+struct PercentData: Codable {
+    /// The name of another exercise.
     var name: String
-//    @Attribute(.unique) var name: String  // TODO was getting errors trying to save with this enabled
+    
+    /// The weight for this exercise will be the last completed weight for the above names
+    /// exercise multipled by this percent.
+    var percent: Int
+    
+    var reps: [Int]
+    
+    /// Seconds to rest.
+    var rest: Int?
+}
+
+enum ExerciseData: Codable {
+    case durations(DurationsData)
+    case reps(RepsData)
+    case percent(PercentData)
+}
+
+/// How to perform an exercise. These are added to workouts using ExerciseEntry.
+@Observable
+final class Exercise: Codable {
+    /// The name shown in the workout view.
+    var name: String
 
     /// Official name, used to lookup notes for an exercise
     var formalName: String
     
-    /// Opitional set of weights to use with the exercise.
-    var weightSet: WeightSet?
+    /// Optional set of weights to use with the exercise.
+    var weightSet: String?
 
     /// Base weight to use for each workset. If a weightSet is present then this weight will be mapped
     /// onto those weights (possibly modified by a per-set percentage).
     var weight: Float?
     
-    /// Record of when and how well the user last did the exercise. Note that these are not sorted.
+    /// Record of when and how well the user last did the exercise.
     var history: [Completed] = []
     
-    // TODO add these
-//    pub rest: Option<i32>,   // used for work sets
-//    pub last_rest: Option<i32>, // overrides rest.last()
-
-    /// An exercise that is performed for a set amount of time, e.g. stretching.
-    var durations: DurationsData?
+    /// Exercise specific data.
+    var data: ExerciseData
     
-    /// An exercise that is either done for a fixed amount of reps, e.g. 3x5 bench press
-    /// or a rep range, e.g. 3x8-12 cable crunches.
-    var reps: RepsData?
-    
-    @Transient private var sortedHistory = false
+    var enabled: Bool = true    // TODO support this
 
-    init (name: String, formalName: String, durations: DurationsData? = nil, reps: RepsData? = nil, weights: WeightSet? = nil, weight: Float? = nil) {
+    var version: Int = 1
+
+    init (name: String, formalName: String, durations: DurationsData, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
         self.weightSet = weights
         self.weight = weight
-        self.durations = durations
-        self.reps = reps
+        self.data = .durations(durations)
+    }
+    
+    init (name: String, formalName: String, reps: RepsData, weights: String? = nil, weight: Float? = nil) {
+        self.name = name
+        self.formalName = formalName
+        self.weightSet = weights
+        self.weight = weight
+        self.data = .reps(reps)
     }
     
     /// Shown in WorkoutView next to the exercise name: brief summary of what the user is expected to do.
     /// For example, "30sx3" or "8-12x3 @ 135 lbs".
-    func details() -> String {
+    func details(_ model: Model) -> String {
         var suffix = ""
         if let weight = self.weight {
-            if let ws = self.weightSet {
+            if let name = weightSet, let ws = model.weightSets[name] {
                 let actual = ws.lower(target: weight)
                 suffix = " @ \(actual.text())"
             } else {
                 suffix = " @ \(formatWeight(weight, .None))"
             }
         }
-        
-        if let durations = self.durations {
-            let a = durations.secs.map {"\($0)s"}
-            return joinLabels(a) + suffix
-        }
-        if let reps = self.reps {
-            let a = reps.worksets.map {
-                if $0.min == $0.max {
-                    if $0.max == 1 {
-                        "1 rep"
+        switch data {
+            case .reps(let r):
+                let a = r.worksets.map {
+                    if $0.min == $0.max {
+                        if $0.max == 1 {
+                            "1 rep"
+                        } else {
+                            "\($0.min) reps"
+                        }
                     } else {
-                        "\($0.min) reps"
+                        "\($0.min)-\($0.max) reps"
                     }
-                } else {
-                    "\($0.min)-\($0.max) reps"
                 }
-            }
-            return joinLabels(a) + suffix
+                return joinLabels(a) + suffix
+            case .durations(let d):
+                let a = d.secs.map {"\($0)s"}
+                return joinLabels(a) + suffix
+            case .percent(let p):
+                return "\(p.percent) percent of something"
         }
-        return ""
     }
     
     func latestCompleted() -> Completed? {
-        if !sortedHistory {
-            history.sort()
-            sortedHistory = true
-        }
         return history.last
     }
 }

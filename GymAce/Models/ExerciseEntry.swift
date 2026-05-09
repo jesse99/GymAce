@@ -1,16 +1,11 @@
 import Foundation
-import SwiftData
 
-/// Used to order exercises within a workout and to maintain the transient state associated with an exercise.
-@Model
-final class ExerciseEntry {
-    /// The actual exercise.
-    var exercise: Exercise
+/// Used to maintain the transient state associated with an exercise in a workout.
+@Observable
+final class ExerciseEntry: Codable {
+    /// The name of the actual exercise.
+    var name: String
 
-    /// Model array ordering isn't stable so this is used to sort the exercises into
-    /// the order the user wants to use.
-    var order: Int
-    
     /// The set the user is currently performing in an exercise screen (this doesn't
     /// belong to the view because we want the user to be able to go to another
     /// exercise to super set or goto settings without losing their place). Note that
@@ -21,87 +16,94 @@ final class ExerciseEntry {
     /// Set if the user is currently performing the exercise. Added to Exercise.history if the user finishes the exercise.
     var current: Completed? = nil
 
+    var enabled: Bool = true    // TODO support this
+    
+    var version: Int = 1
+
+    init (name: String) {
+        self.name = name
+        self.setIndex = 0
+    }
+
     /// Returns true if the user is on a workset with an expected rep that may be changed to an actual rep.
-    var hasExpected: Bool {
-        if let reps = exercise.reps, reps.isVariable, !finished() {
-            var index = fixedIndex()
-            index -= reps.warmups.count
-            if index >= 0 && index < reps.worksets.count {
-                let min = reps.worksets[index].min
-                let max = reps.worksets[index].max
-                return min < max
+    func hasExpected(_ exercise: Exercise) -> Bool {
+        if case let .reps(d) = exercise.data {
+            if d.isVariable, !finished(exercise) {
+                var index = fixedIndex(exercise)
+                index -= d.warmups.count
+                if index >= 0 && index < d.worksets.count {
+                    let min = d.worksets[index].min
+                    let max = d.worksets[index].max
+                    return min < max
+                }
             }
         }
         return false
     }
 
-    /// Used to get the expected rep and optionally set the actual rep.
-    var expectedReps: Int {
-        get {
-            if let reps = exercise.reps {
-                var index = fixedIndex()
-                index -= reps.warmups.count
-                if index >= 0 && index < current!.sets.count {
-                    switch current!.sets[index] {
-                    case .reps(let n): return n
-                    default: return 0
-                    }
+    func expectedReps(_ exercise: Exercise) -> Int {
+        if case let .reps(d) = exercise.data {
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            if index >= 0 && index < current!.sets.count {
+                switch current!.sets[index] {
+                case .reps(let n): return n
+                default: return 0
                 }
             }
-            return 0
-        }
-        set {
-            if let reps = exercise.reps {
-                var index = fixedIndex()
-                index -= reps.warmups.count
-                current!.sets[index] = .reps(newValue)
-            }
-        }
-    }
-    
-    var maxEpectedReps: Int {
-        if let reps = exercise.reps {
-            var index = fixedIndex()
-            index -= reps.warmups.count
-            return reps.worksets[index].max
         }
         return 0
     }
     
-    var rest: Int? {
-        if let reps = exercise.reps {
-            var index = fixedIndex()
-            index -= reps.warmups.count
-            if index >= 0 && index < reps.worksets.count {
-                return reps.rest    // TODO should return nil for the last set of the last exercise in a workout
+    func setActualReps(_ exercise: Exercise, _ actual: Int) {
+        if case let .reps(d) = exercise.data {
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            current!.sets[index] = .reps(actual)
+        }
+    }
+    
+    func maxEpectedReps(_ exercise: Exercise) -> Int {
+        if case let .reps(d) = exercise.data {
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            return d.worksets[index].max
+        }
+        return 0
+    }
+    
+    func rest(_ exercise: Exercise) -> Int? {
+        switch exercise.data {
+        case .durations(let d):
+            if setIndex >= 0 && setIndex < d.secs.count {
+                return d.secs[setIndex]
+            }
+        case .percent(let d):
+            return d.rest
+        case .reps(let d):
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            if index >= 0 && index < d.worksets.count {
+                return d.rest    // TODO should return nil for the last set of the last exercise in a workout
             }
         }
         return nil
     }
-
-    // TODO add this
-//    pub enabled: bool,
-
-    init (exercise: Exercise, order: Int) {
-        self.exercise = exercise
-        self.order = order
-        self.setIndex = 0
-    }
     
     /// Called when the user starts an exercise. Resets setIndex and current if needed.
-    func started() {
+    func started(_ exercise: Exercise) {
         if let c = self.current {
             if c.isStale {
-                reset()
+                reset(exercise)
             }
         } else {
-            reset()
+            reset(exercise)
         }
     }
 
     /// Start the exercise all over (or for the first time).
-    func reset() {
-        func findExpected(_ reps: VariableReps, _ index: Int) -> Int {
+    func reset(_ exercise: Exercise) {
+        func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
             // Usually we'll just return reps.min except for a few cases:
             if let last = exercise.latestCompleted() {
                 if let new = exercise.weight, let old = last.weight {
@@ -130,15 +132,19 @@ final class ExerciseEntry {
         // Pre-populate sets with whatever the user is expected to do. For reps, at
         // least, we'll normally give the user a chance to over-write this with how
         // much they actually did.
-        if let durations = exercise.durations {
-            for d in durations.secs {
-                current!.sets.append(.duration(d))
+        switch exercise.data {
+        case .durations(let d):
+            for s in d.secs {
+                current!.sets.append(.duration(s))
             }
-        }
-        if let reps = exercise.reps {
-            for (index, reps) in reps.worksets.enumerated() {
-                let n = findExpected(reps, index)
-                current!.sets.append(.reps(n))
+        case .reps(let d):
+            for (index, reps) in d.worksets.enumerated() {
+                let r = findExpected(exercise, reps, index)
+                current!.sets.append(.reps(r))
+            }
+        case .percent(let d):
+            for r in d.reps {
+                current!.sets.append(.reps(r))
             }
         }
     }
@@ -150,155 +156,146 @@ final class ExerciseEntry {
     
     /// Called when the user completes an exercise. Adds current to Exercise.history and then resets
     /// current.
-    func completedAll() {
+    func completedAll(_ exercise: Exercise) {
         if var c = current {
             c.completed = Date()
             exercise.history.append(c)
         }
         setIndex = 0
         current = nil
-        if let l = exercise.history.last {
-            if let w = l.weight {
-                print("weight: \(w)")
-            } else {
-                print("weight: nil")
-            }
-            print("started: \(l.started)")
-            if let c = l.completed {
-                print("completed: \(c)")
-            } else {
-                print("completed: nil")
-            }
-            for s in l.sets {
-                switch s {
-                    case .duration(let n): print("\(n)s")
-                    case .reps(let n): print("\(n) reps")
-                }
-            }
-        }
     }
     
-    func finished() -> Bool {
-        if let durations = exercise.durations {
-            return setIndex >= durations.secs.count
+    func finished(_ exercise: Exercise) -> Bool {
+        switch exercise.data {
+            case .durations(let d): return setIndex >= d.secs.count
+            case .reps(let d): return setIndex >= d.warmups.count + d.worksets.count + d.backoff.count
+            case .percent(let d): return setIndex >= d.reps.count
         }
-        if let reps = exercise.reps {
-            return setIndex >= reps.warmups.count + reps.worksets.count + reps.backoff.count
-        }
-        return true
     }
     
     // Shown first in the exercise view, e.g. "Workset 1 of 3" or "Set 1 of 3".
-    func headline() -> String {
-        var index = fixedIndex()
-        if let durations = exercise.durations {
-            return "Set \(index + 1) of \(durations.secs.count)"
+    func headline(_ exercise: Exercise) -> String {
+        var index = fixedIndex(exercise)
+        switch exercise.data {
+            case .durations(let d):
+                return "Set \(index + 1) of \(d.secs.count)"
+            case .reps(let d):
+                if index < d.warmups.count {
+                    return "Warmup \(index + 1) of \(d.warmups.count)"
+                }
+                
+                index -= d.warmups.count
+                if index < d.worksets.count {
+                    return "Workset \(index + 1) of \(d.worksets.count)"
+                }
+                
+                index -= d.worksets.count
+                if index < d.backoff.count {
+                    return "Backoff \(index + 1) of \(d.backoff.count)"
+                }
+            case .percent(_):
+                return "Set \(index + 1)?"
         }
-        if let reps = exercise.reps {
-            if index < reps.warmups.count {
-                return "Warmup \(index + 1) of \(reps.warmups.count)"
-            }
-            
-            index -= reps.warmups.count
-            if index < reps.worksets.count {
-                return "Workset \(index + 1) of \(reps.worksets.count)"
-            }
-            
-            index -= reps.worksets.count
-            if index < reps.backoff.count {
-                return "Backoff \(index + 1) of \(reps.backoff.count)"
-            }
-        }
-        return "Set \(index + 1)?"
+        return ""
     }
     
     // Shown second in the exercise view, e.g. "5 reps @ 140 lbs" or "30s".
-    func subhead() -> String {
+    func subhead(_ model: Model, _ program: Program, _ exercise: Exercise) -> String {
         var suffix = ""
-        if let actual = actualWeight() {
+        if let actual = actualWeight(model, program) {
             suffix = " @ \(actual.text())"
         }
         
-        let index = fixedIndex()
-        if let durations = exercise.durations {
-            return secsToStr(durations.secs[index]) + suffix
-        }
-        if let reps = exercise.reps {
-            var index = index
-            if index < reps.warmups.count {
-                return "\(reps.warmups[index].reps) reps" + suffix
-            }
-            
-            index -= reps.warmups.count
-            if index < reps.worksets.count {
-                if reps.worksets[index].min == reps.worksets[index].max {
-                    return "\(reps.worksets[index].min) reps" + suffix
-                } else {
-                    // TODO do a better job with expected reps
-                    return "\(reps.worksets[index].min)-\(reps.worksets[index].max) reps" + suffix
+        let index = fixedIndex(exercise)
+        switch exercise.data {
+            case .durations(let d):
+                return secsToStr(d.secs[index]) + suffix
+            case .reps(let d):
+                var index = index
+                if index < d.warmups.count {
+                    return "\(d.warmups[index].reps) reps" + suffix
                 }
-            }
-            
-            index -= reps.worksets.count
-            if index < reps.backoff.count {
-                return "\(reps.backoff[index].reps) reps" + suffix
-            }
+                
+                index -= d.warmups.count
+                if index < d.worksets.count {
+                    if d.worksets[index].min == d.worksets[index].max {
+                        return "\(d.worksets[index].min) reps" + suffix
+                    } else {
+                        return "\(d.worksets[index].min)-\(d.worksets[index].max) reps" + suffix
+                    }
+                }
+                
+                index -= d.worksets.count
+                if index < d.backoff.count {
+                    return "\(d.backoff[index].reps) reps" + suffix
+                }
+            case .percent(let d):
+                return "\(d.reps[index]) reps" + suffix
         }
-        return "?"
+        return ""
     }
     
     // Shown third in the exercise view, e.g. "45 + 2.5".
-    func footer() -> String? {
-        if let actual = actualWeight() {
+    func footer(_ model: Model, _ program: Program) -> String? {
+        if let actual = actualWeight(model, program) {
             return actual.details()
         }
         return nil
     }
     
     // Shown fourth in the exercise view, e.g. "90% of 225 lbs".
-    func subfooter() -> String? {
-        if let weight = exercise.weight, let ws = exercise.weightSet, let reps = exercise.reps {
-            var index = fixedIndex()
-            if index < reps.warmups.count {
-                return "\(reps.warmups[index].percent)% of \(formatWeight(weight, ws.units))"
+    func subfooter(_ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
+        if let exercise = program.findExercise(name), let weight = exercise.weight, case let .reps(d) = exercise.data {
+            var weightStr: String
+            if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                weightStr = formatWeight(weight, ws.units)
+            } else {
+                weightStr = formatWeight(weight, .None)
             }
             
-            index -= reps.warmups.count
-            if index < reps.worksets.count {
+            var index = fixedIndex(exercise)
+            if index < d.warmups.count {
+                return "\(d.warmups[index].percent)% of \(weightStr)"
+            }
+            
+            index -= d.warmups.count
+            if index < d.worksets.count {
                 return nil
             }
             
-            index -= reps.worksets.count
-            if index < reps.backoff.count {
-                return "\(reps.backoff[index].percent)% of \(formatWeight(weight, ws.units))"
+            index -= d.worksets.count
+            if index < d.backoff.count {
+                return "\(d.backoff[index].percent)% of \(weightStr)"
             }
         }
         return nil
     }
     
-    private func actualWeight() -> ActualWeight? {
-        if let weight = exercise.weight {
-            if let ws = exercise.weightSet {
-                if exercise.durations != nil {
-                    return ws.lower(target: weight)
-                }
-                if let reps = exercise.reps {
-                    var index = fixedIndex()
-                    if index < reps.warmups.count {
-                        let p = Float(reps.warmups[index].percent) / 100.0
-                        return ws.closest(target: p*weight)
-                    }
-                    
-                    index -= reps.warmups.count
-                    if index < reps.worksets.count {
+    private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
+        if let exercise = program.findExercise(name), let weight = exercise.weight {
+            if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                switch exercise.data {
+                    case .durations(_):
                         return ws.lower(target: weight)
-                    }
-
-                    index -= reps.worksets.count
-                    if index < reps.backoff.count {
-                        let p = Float(reps.backoff[index].percent) / 100.0
-                        return ws.closest(target: p*weight)
-                    }
+                    case .reps(let d):
+                        var index = fixedIndex(exercise)
+                        if index < d.warmups.count {
+                            let p = Float(d.warmups[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                        
+                        index -= d.warmups.count
+                        if index < d.worksets.count {
+                            return ws.lower(target: weight)
+                        }
+                        
+                        index -= d.worksets.count
+                        if index < d.backoff.count {
+                            let p = Float(d.backoff[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                    case .percent(_):
+                        return ws.lower(target: weight)
                 }
             }
             return ActualWeight(discrete: weight, .None)
@@ -306,14 +303,15 @@ final class ExerciseEntry {
         return nil
     }
     
-    private func fixedIndex() -> Int {
-        if let durations = exercise.durations {
-            return setIndex >= durations.secs.count ? durations.secs.count - 1 : setIndex
+    private func fixedIndex(_ exercise: Exercise) -> Int {
+        switch exercise.data {
+            case .durations(let d):
+                return setIndex >= d.secs.count ? d.secs.count - 1 : setIndex
+            case .reps(let d):
+                let count = d.warmups.count + d.worksets.count + d.backoff.count
+                return setIndex >= count ? count - 1 : setIndex
+            case .percent(let d):
+                return setIndex >= d.reps.count ? d.reps.count - 1 : setIndex
         }
-        if let reps = exercise.reps {
-            let count = reps.warmups.count + reps.worksets.count + reps.backoff.count
-            return setIndex >= count ? count - 1 : setIndex
-        }
-        return setIndex
     }
 }

@@ -1,50 +1,24 @@
 import SwiftUI
-import SwiftData
 
+// TODO
+// save the model (but not the preview program)
+//    https://www.swiftjectivec.com/stupid-and-quick-persistency-on-ios-with-swift/
+// load the model (add preview, if debug?)
+// views should use Bindable for model objects
 @main
 struct GymAceApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Exercise.self,
-            Program.self,
-            WeightSet.self
-        ])
-        let config = ModelConfiguration("store1", schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            // TODO sounds like we need to explicitly save (this does happen automatically but not very often)
-            let container = try ModelContainer(for: schema, configurations: [config])
-            
-            try container.mainContext.delete(model: Program.self)    // TODO for now blow away old store
-            
-            var descriptor = FetchDescriptor<Program>()
-            descriptor.fetchLimit = 1
-            guard try container.mainContext.fetch(descriptor).count == 0 else {return container}
-            
-            // If there are currently no programs add an empty one. TODO later use a wizard? or a mostly empty program?
-//            for ws in testWeightSets.values {
-//                container.mainContext.insert(ws)
-//            }
-//            for exercise in testExercises.values {
-//                container.mainContext.insert(exercise)
-//            }
-            let program = testProgram
-//            let program = Program(name: "My")
-//            program.active = true
-            container.mainContext.insert(program)
-            
-            try container.mainContext.save()
-
-            return container
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+    var model: Model
+    
+    init() {
+        model = Model.load()
+        if model.programs.isEmpty {
+            model = previewModel()
         }
-    }()
+    }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(model: model)
         }
-        .modelContainer(sharedModelContainer)
     }
 }

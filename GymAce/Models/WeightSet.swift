@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 
 // TODO Might want to support bumper plates though that would get quite annoying because
 // we'd want to use them whenever possible. For example, if we had [15 bumper x8, 20 x6]
@@ -7,7 +6,7 @@ import SwiftData
 // want 15 bumper x4. Though this is probably more doable now that we're enumerating
 // plates.
 
-enum Units: nonisolated Codable {
+enum Units: Codable {
     /// Weights are in pounds.
     case Imperial
     
@@ -84,8 +83,7 @@ struct ActualWeight {
 }
 
 /// How many plates the user has for a particular weight.
-@Model
-final class Plate: CustomDebugStringConvertible, Comparable, Equatable {
+struct Plate: CustomDebugStringConvertible, Codable, Comparable, Equatable {
     var weight: Float
     var count: Int
     
@@ -121,32 +119,73 @@ final class Plate: CustomDebugStringConvertible, Comparable, Equatable {
 
 /// Used for equipment like barbells where plates are added to both sides. When
 /// displaying plate counts to the user only the plates for one side are listed.
-@Model
-final class DualPlates {
-    var plates: [Plate]
+final class DualPlates: Codable {
+    var plates: [Plate] // sorted by largest to smallest using just weight (so enumeratePlates prefers larger weights)
     var bar: Float?
     var units: Units
     
+    // All non-duplicate combinations of plates for every weight sorted by smallest
+    // weight to largest. Note that these are the plates added to one side of the bar.
+    private var combos: [InternalPlates] = []
+    
     init(plates: [Plate], bar: Float? = nil, units: Units) {
-        self.plates = plates
+        self.plates = plates.sorted(by: {$1.weight < $0.weight})
         self.bar = bar
         self.units = units
     }
     
-    // Sort plates from largest to smallest using just weight, not
-    // weight*count. This is used to bias enumeratePlates to preferring
-    // the largest plates. (And SwiftData will populate plates after
-    // init runs using a random order).
-    func resort() {
-        plates.sort {$0.weight > $1.weight}
+    func findCombos() -> [InternalPlates] {
+#if DEBUG
+        for i in plates.indices {
+            if i > 0 {
+                assert(plates[i-1].weight > plates[i].weight)
+            }
+        }
+#endif
+        if combos.isEmpty {
+            combos = enumeratePlates(plates, bar: bar, units: units)
+        }
+        return combos
+    }
+}
+
+/// Used for equipment like T bar rows where plates are added to one sides.
+final class SinglePlates: Codable {
+    var plates: [Plate] // sorted by largest to smallest using just weight (so enumeratePlates prefers larger weights)
+    var bar: Float?
+    var units: Units
+    
+    // All non-duplicate combinations of plates for every weight sorted by smallest
+    // weight to largest. Note that these are the plates added to one side of the bar.
+    private var combos: [InternalPlates] = []
+    
+    init(plates: [Plate], bar: Float? = nil, units: Units) {
+        self.plates = plates.sorted(by: {$1.weight < $0.weight})
+        self.bar = bar
+        self.units = units
+    }
+    
+    
+    func findCombos() -> [InternalPlates] {
+#if DEBUG
+        for i in plates.indices {
+            if i > 0 {
+                assert(plates[i-1].weight > plates[i].weight)
+            }
+        }
+#endif
+        if combos.isEmpty {
+//            combos = enumeratePlates(plates, bar: bar, units: units)  // TODO need a flag for single or dual
+        }
+        return combos
     }
 }
 
 /// Used for stuff like dumbbells and cable machines.
-@Model
-final class DiscreteWeights {
-    var weights: [Float]    // TODO might want to add a new field for magnets
+struct DiscreteWeights: Codable {
+    var weights: [Float]
     var units: Units
+    var magnets: [Float] = []    // TODO support this?
     
     init(weights: [Float], units: Units) {
         self.weights = weights
@@ -155,112 +194,77 @@ final class DiscreteWeights {
 }
 
 /// Collections of weights that are shared across programs, e.g. there could be sets
-/// for dummbells, a cable machine, plates for OHP, and plates for deadlifts.
-@Model
-final class WeightSet {
-    var name: String
-    
+/// for dumbbells, a cable machine, plates for OHP, and plates for deadlifts.
+enum WeightSet: Codable {
     /// Used for stuff like dumbbells and cable machines.
-    private(set) var discrete: DiscreteWeights?
+    case discrete(DiscreteWeights)
     
     /// Used for stuff like barbell exercises and leg presses. Plates are added in pairs.
     /// Includes an optional bar weight.
-    private(set) var dual: DualPlates?
-    
-    // TODO should also have single plates
-    
-    // All non-duplicate combinations of DualPlates for every weight sorted by smallest
-    // weight to largest. Note that these are the plates added to one side of the bar.
-    @Transient private var combos: [InternalPlates] = []   // SwiftData can't persist this so we'll rebuild it on load
-    
+    case dual(DualPlates)
+
+    /// Used for stuff like T bar rows and landmines. Includes an optional bar weight.
+    case single(SinglePlates)
+}
+
+extension WeightSet {    
     var units: Units {
-        if let discrete = self.discrete {
-            return discrete.units
+        switch self {
+            case .discrete(let d): return d.units
+            case .dual(let d): return d.units
+            case .single(let d): return d.units
         }
-        if let dual = self.dual {
-            return dual.units
-        }
-        return .None
-    }
-    
-    init(name: String, discrete: DiscreteWeights? = nil, dual: DualPlates? = nil) {
-        assert(discrete != nil || dual != nil)  // TODO do we want this assert?
-        self.name = name
-        self.discrete = discrete
-        self.dual = dual
-    }
-    
-    func setWeights(discrete: DiscreteWeights) {
-        self.discrete = discrete
-        combos.removeAll()          // don't really need to do this, but it will free up a bit of memory
-    }
-    
-    func setWeights(dual: DualPlates) {
-        self.dual = dual
-        combos.removeAll()  
     }
     
     /// Return the next weight larger than target..
     func advance(target: Float) -> ActualWeight {
-        if let discrete = self.discrete {
-            let (_, upper) = findDiscrete(target, discrete.weights);
-            return ActualWeight(discrete: upper, discrete.units)
+        switch self {
+            case .discrete(let d):
+                let (_, upper) = findDiscrete(target, d.weights);
+                return ActualWeight(discrete: upper, d.units)
+            case .dual(let d):
+                return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
+            case .single(let d):
+                fatalError("not supported")
         }
-        if let dual = self.dual {
-            if combos.isEmpty {
-                dual.resort()
-                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
-            }
-            return ActualWeight(plates: upperDual(target, combos, dual.bar, dual.units))
-        }
-        return ActualWeight(error: "There's no weight set to use.", target)
     }
     
     /// Used for warmups and backoff sets. May return a weight larger than target.
     func closest(target: Float) -> ActualWeight {
-        if let discrete = self.discrete {
-            return ActualWeight(discrete: closestDiscrete(target, discrete.weights), discrete.units)
+        switch self {
+            case .discrete(let d):
+                return ActualWeight(discrete: closestDiscrete(target, d.weights), d.units)
+            case .dual(let d):
+                return ActualWeight(plates: closestDual(target, d.findCombos(), d.bar, d.units))
+            case .single(let d):
+                fatalError("not supported")
         }
-        if let dual = self.dual {
-            if combos.isEmpty {
-                dual.resort()
-                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
-            }
-            return ActualWeight(plates: closestDual(target, combos, dual.bar, dual.units))
-        }
-        return ActualWeight(error: "There's no weight set to use.", target)
     }
     
     /// Used for worksets. Will not return a weight larger than target.
     func lower(target: Float) -> ActualWeight {
-        if let discrete = self.discrete {
-            let (lower, _) = findDiscrete(target, discrete.weights);
-            return ActualWeight(discrete: lower, discrete.units)
+        switch self {
+            case .discrete(let d):
+                let (lower, _) = findDiscrete(target, d.weights);
+                return ActualWeight(discrete: lower, d.units)
+            case .dual(let d):
+                return ActualWeight(plates: lowerDual(target, d.findCombos(), d.bar, d.units))
+            case .single(let d):
+                fatalError("not supported")
         }
-        if let dual = self.dual {
-            if combos.isEmpty {
-                dual.resort()
-                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
-            }
-            return ActualWeight(plates: lowerDual(target, combos, dual.bar, dual.units))
-        }
-        return ActualWeight(error: "There's no weight set to use.", target)
     }
     
     /// Returns the netxt weight larger than target.
     func upper(target: Float) -> ActualWeight {
-        if let discrete = self.discrete {
-            let (_, upper) = findDiscrete(target, discrete.weights);
-            return ActualWeight(discrete: upper, discrete.units)
+        switch self {
+            case .discrete(let d):
+                let (_, upper) = findDiscrete(target, d.weights);
+                return ActualWeight(discrete: upper, d.units)
+            case .dual(let d):
+                return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
+            case .single(let d):
+                fatalError("not supported")
         }
-        if let dual = self.dual {
-            if combos.isEmpty {
-                dual.resort()
-                combos = enumeratePlates(dual.plates, bar: dual.bar, units: dual.units)
-            }
-            return ActualWeight(plates: upperDual(target, combos, dual.bar, dual.units))
-        }
-        return ActualWeight(error: "There's no weight set to use.", target)
     }
             
     private func closestDiscrete(_ target: Float, _ weights: [Float]) -> Float {

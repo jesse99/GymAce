@@ -2,27 +2,34 @@ import SwiftUI
 import SwiftData
 
 struct EditProgram: View {
-    @Bindable var program: Program // Creates the binding to the object
+    @Bindable var model: Model
+    @Bindable var program: Program
     @State private var showNameHelp = false
+    
+    // Note that here we are always editing the active program so we do know which name to use.
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {return model.activeProgram},
+            set: {model.renameProgram(program, $0)}
+        )
+    }
 
     private var isValid: Bool {
-        !program.name.isEmpty
+        !model.activeProgram.isEmpty
     }
 
     var body: some View {
         VStack {
             Form {
                 HStack {
-                    TextField("Name", text: $program.name)
+                    TextField("Name", text: nameBinding)
                         .textFieldStyle(.roundedBorder)
                         .textContentType(.name)
                         .textInputAutocapitalization(.words)
                     Spacer()
                     
-                    // get rid of all the TipView stuff
                     // TODO what if we just toggle a field to show/hide a text field?
-                    // TODO use questionmark.circle?
-                    
+                    // TODO use questionmark.circle?                    
                     Button("", systemImage: "info.circle") {
                         showNameHelp.toggle()
                     }
@@ -35,7 +42,7 @@ struct EditProgram: View {
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
-                if program.name.isEmpty {
+                if model.activeProgram.isEmpty {
                     Text("Program name cannot be empty.")
                         .foregroundColor(.red)
                         .font(.footnote)
@@ -43,14 +50,14 @@ struct EditProgram: View {
             }
             .formStyle(.columns)    // only decent way I can find to stop the form from taking way too much vertical space
             .padding(7)
-            
+                        
             // Note that we don't allow these rows to be moved in edit mode
             // because in ContentView they're sorted by due date.
             List {
-                Section(header: Text("Workouts")) {
+                Section(header: Text("\(program.workouts.count) Workouts")) {
                     ForEach($program.workouts) { $workout in
                         NavigationLink {
-                            EditWorkout(program: program, workout: workout, name: $workout.name, schedule: $workout.schedule)
+                            EditWorkout(program: program, workout: workout)
                         } label: {
                             Text(workout.name)
                         }
@@ -89,9 +96,9 @@ struct EditProgram: View {
 }
 
 #Preview {
-    @Previewable @State var program = PreviewData.shared.defaultProgram
+    let model = previewModel()
+    let program = model.programs[0]
     NavigationView {
-        EditProgram(program: program)
-            .modelContainer(PreviewData.shared.container)
+        EditProgram(model: model, program: program)
     }
 }

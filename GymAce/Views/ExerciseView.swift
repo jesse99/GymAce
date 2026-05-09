@@ -1,32 +1,42 @@
+import Foundation
 import SwiftUI
-import SwiftData
 
 struct ExerciseView: View {
-    @Binding var entry: ExerciseEntry
+    var model: Model
+    var program: Program
+    var exercise: Exercise
+    @Bindable var entry: ExerciseEntry
     @Environment(\.dismiss) var dismiss 
     @State private var resting = false
     @State private var targetDate: Date = Date.now
 
+    private var expectedBinding: Binding<Int> {
+        Binding(
+            get: {return entry.expectedReps(exercise)},
+            set: {entry.setActualReps(exercise, $0)}
+        )
+    }
+
     var body: some View {
         VStack {
             // Warmup 3 of 3
-            Text(entry.headline())
+            Text(entry.headline(exercise))
                 .font(Font.headline.bold())
                 .padding(2)
             
             // 5 reps @ 225 lbs
-            Text(entry.subhead())
+            Text(entry.subhead(model, program, exercise))
                 .font(Font.subheadline)
             
             // 45x2
-            if let s = entry.footer() {
+            if let s = entry.footer(model, program) {
                 Text(s)
                     .font(Font.footnote)
                     .padding(.bottom, 2)
             }
             
             // 90% of 250 lbs
-            if let s = entry.subfooter() {
+            if let s = entry.subfooter(model, program, exercise) {
                 Text(s)
                     .font(Font.caption2)
                     .padding(2)
@@ -40,11 +50,11 @@ struct ExerciseView: View {
             // If there are no more sets then the button changes to "Finished".
             
             // Next/Finished button
-            if entry.finished() {
+            if entry.finished(exercise) {
                 Button("Finished") {
                     // We won't call done if the user swipes back but it seems to make
                     // sense to call done only when the user presses Finished...
-                    entry.completedAll()    // TODO this should also save
+                    entry.completedAll(exercise)    // TODO this should also save
                     dismiss()
                 }
                 .padding(.top, 20)
@@ -66,22 +76,23 @@ struct ExerciseView: View {
                                 .foregroundColor(.green)
                         }
                     }
+                    .padding(.top, 5)
                     Button("Stop Resting") {
                         entry.completedSet()
                         resting = false
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 5)
                 } else {
-                    if entry.hasExpected {
-                        Picker("", selection: $entry.expectedReps) {
-                            ForEach(0...entry.maxEpectedReps, id: \.self) {n in
+                    if entry.hasExpected(exercise) {
+                        Picker("", selection: expectedBinding) {
+                            ForEach(0...entry.maxEpectedReps(exercise), id: \.self) {n in
                                 Text("\(n) reps").tag(n)
                             }
                         }
                         .labelsHidden()
                     }
                     Button("Next") {
-                        if let rest = entry.rest {
+                        if let rest = entry.rest(exercise) {
                             resting = true
                             targetDate = Date().addingTimeInterval(TimeInterval(rest))
                         } else {
@@ -91,28 +102,41 @@ struct ExerciseView: View {
                     .padding(.top, 20)
                 }
             }
+            
+            // TODO add a ListView? for history
+            //      symbol, short date, worksets & weight
+            // TODO history should show in progress stats, no symbol? or a special one?
+            // TODO use a disclosure group (https://chriswu.com/posts/swiftui/disclosure1/)
+            //      or maybe a TabView to also show notes
+            // TODO use a nav link to allow worksets to be edited
         }
-        .navigationTitle(entry.exercise.name)
+        .navigationTitle(entry.name)
         .padding(20)
         .onAppear {
-            entry.started()
+            entry.started(exercise)
         }
         Spacer()
     }
 }
 
 #Preview {
-    @Previewable @State var workout = PreviewData.shared.defaultProgram.workouts[0]
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[0]
+    let entry = workout.entries[0]
+    let exercise = program.findExercise(entry.name)!
     NavigationStack {
-        ExerciseView(entry: $workout.entries[0])
-            .modelContainer(PreviewData.shared.container)
+        ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
     }
 }
 
 #Preview("second") {
-    @Previewable @State var workout = PreviewData.shared.defaultProgram.workouts[1]
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[1]
+    let entry = workout.entries[0]
+    let exercise = program.findExercise(entry.name)!
     NavigationStack {
-        ExerciseView(entry: $workout.entries[0])
-            .modelContainer(PreviewData.shared.container)
+        ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
     }
 }

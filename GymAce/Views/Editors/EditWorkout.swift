@@ -1,12 +1,9 @@
 import SwiftUI
-import SwiftData
 
 /// Used for both editing and adding new workouts.
 struct EditWorkout: View {
-    var program: Program
-    var workout: Workout
-    @Binding var name: String
-    @Binding var schedule: Schedule
+    @Bindable var program: Program
+    @Bindable var workout: Workout
     @State private var showNameHelp = false
     @State private var showScheduleHelp = false
 
@@ -14,16 +11,31 @@ struct EditWorkout: View {
     @State private var everySchedule = Schedule.anyDay
     @State private var daysSchedule = Schedule.anyDay
 
-    init(program: Program, workout: Workout, name: Binding<String>, schedule: Binding<Schedule>) {
+//    private var nameBinding: Binding<String> {
+//        Binding(
+//            get: {return self.name},
+//            set: {
+//                wor $0)
+//                self.name = $0
+//            }
+//        )
+//    }
+
+//    private var scheduleBinding: Binding<Schedule> {
+//        Binding(
+//            get: {return self.workout.schedule},
+//            set: {workout.schedule = $0}
+//        )
+//    }
+
+    init(program: Program, workout: Workout) {
         self.program = program
         self.workout = workout
-        self._name = name
-        self._schedule = schedule
         
         // Save the original schedule state so when the user switches the
         // type back to the original type they don't lose the original
         // settings.
-        switch self.schedule {
+        switch workout.schedule {
         case .anyDay:
             _everySchedule = State(initialValue: .every(2))
             _daysSchedule = State(initialValue: .days(Weekdays(days: [])))
@@ -37,12 +49,12 @@ struct EditWorkout: View {
     }
     
     private var isNameEmpty: Bool {
-        self.name.isEmpty
+        self.workout.name.isEmpty
     }
 
     private var doesNameExist: Bool {
         self.program.workouts.count(where: {
-            $0 != self.workout && $0.name == self.name
+            $0.id != self.workout.id && $0.name == self.workout.name
         }) > 0
     }
 
@@ -61,14 +73,14 @@ struct EditWorkout: View {
     private var pickerBinding: Binding<Int> {
         Binding(
             get: {
-                switch schedule {
+                switch workout.schedule {
                     case .anyDay: return 0
                     case .every(_): return 1
                     case .days(_): return 2
                 }
             },
             set: {
-                let oldSchedule = schedule
+                let oldSchedule = workout.schedule
                 let newSchedule = $0
                 switch oldSchedule {
                 case .anyDay:
@@ -81,11 +93,11 @@ struct EditWorkout: View {
                 
                 switch newSchedule {
                 case 0:
-                    self.schedule = self.anySchedule
+                    self.workout.schedule = self.anySchedule
                 case 1:
-                    self.schedule = self.everySchedule
+                    self.workout.schedule = self.everySchedule
                 case 2:
-                    self.schedule = self.daysSchedule
+                    self.workout.schedule = self.daysSchedule
                 default:
                     fatalError("bad pickerBinding")
                 }
@@ -96,14 +108,14 @@ struct EditWorkout: View {
     private var everyNBinding: Binding<Int> {
         Binding(
             get: {
-                switch schedule {
+                switch workout.schedule {
                     case .anyDay: return 0
                     case .every(let n): return n
                     case .days(_): return 2
                 }
             },
             set: {
-                self.schedule = .every($0)
+                self.workout.schedule = .every($0)
             }
         )
     }
@@ -147,7 +159,7 @@ struct EditWorkout: View {
     }
     
     private func getWeekday(_ i: Int) -> Bool {
-        switch schedule {
+        switch workout.schedule {
             case .anyDay: return false
             case .every(_): return false
             case .days(let days): return days.includes(i+1) ? true : false
@@ -155,7 +167,7 @@ struct EditWorkout: View {
     }
     
     private func setWeekday(_ i: Int, _ enable: Bool) {
-        switch schedule {
+        switch workout.schedule {
             case .anyDay: break
             case .every(_): break
             case .days(let days):
@@ -163,12 +175,12 @@ struct EditWorkout: View {
                 if enable {
                     if !days.contains(i+1) {
                         days.append(i+1)
-                        self.schedule = .days(Weekdays(days: days))
+                        self.workout.schedule = .days(Weekdays(days: days))
                     }
                 } else {
                     if let index = days.firstIndex(of: i+1) {
                         days.remove(at: index)
-                        self.schedule = .days(Weekdays(days: days))
+                        self.workout.schedule = .days(Weekdays(days: days))
                     }
                 }
         }
@@ -178,7 +190,7 @@ struct EditWorkout: View {
     var body: some View {
         Form {
             HStack {
-                TextField("Name", text: $name)
+                TextField("Name", text: $workout.name)
                     .textContentType(.name)
                     .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
@@ -219,7 +231,7 @@ struct EditWorkout: View {
                 .padding(.leading, 5)
             }
             if showScheduleHelp {
-                switch schedule {
+                switch workout.schedule {
                     case .anyDay:
                     Text("The workout can be done whenever, e.g. cardio.")
                         .foregroundColor(.blue)
@@ -236,7 +248,7 @@ struct EditWorkout: View {
             }
             
             Group {
-                switch schedule {
+                switch workout.schedule {
                     case .anyDay:
                         EmptyView()
                     case .every(_):
@@ -262,28 +274,28 @@ struct EditWorkout: View {
 }
 
 #Preview {
-    @Previewable @State var program = PreviewData.shared.defaultProgram
-    let first = program.workouts.first!
-    let workout = Bindable(first)
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[0]
     NavigationView {
-        EditWorkout(program: program, workout: first, name: workout.name, schedule: workout.schedule)
+        EditWorkout(program: program, workout: workout)
     }
 }
 
-#Preview("Two") {   // non-determistic as to which workout this will show
-    @Previewable @State var program = PreviewData.shared.defaultProgram
-    let second = program.workouts[1]
-    let workout = Bindable(second)
+#Preview("Two") {
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[1]
     NavigationView {
-        EditWorkout(program: program, workout: second, name: workout.name, schedule: workout.schedule)
+        EditWorkout(program: program, workout: workout)
     }
 }
 
 #Preview("Three") {
-    @Previewable @State var program = PreviewData.shared.defaultProgram
-    let third = program.workouts[2]
-    let workout = Bindable(third)
+    let model = previewModel()
+    let program = model.programs[9]
+    let workout = program.workouts[2]
     NavigationView {
-        EditWorkout(program: program, workout: third, name: workout.name, schedule: workout.schedule)
+        EditWorkout(program: program, workout: workout)
     }
 }

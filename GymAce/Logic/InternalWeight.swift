@@ -1,14 +1,14 @@
 // These items should only be used by WeightSet.
 import Foundation
 
-enum InternalWeight {
+enum InternalWeight: Codable {
     case Discrete(Float, Units)
     case Error(String, Float)
     case Plates(InternalPlates)
 }
 
 // This is very much like DualPlates but can also be used by SinglePlates once we add that.
-struct InternalPlates: Comparable, Equatable {
+struct InternalPlates: Codable, Comparable, Equatable {
     /// Sorted from largest to smallest.
     let plates: [Plate]
     
