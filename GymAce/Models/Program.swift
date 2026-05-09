@@ -11,10 +11,17 @@ final class Program: Codable {
 
     var workouts: [Workout] = []
     
-    // TODO support blocks
-    
     var note: String = ""   // TODO support this?
         
+    /// Number of weeks till the next rest days from the last rest.
+    var restWeek: Int? = nil    // TODO support this
+    
+    /// Number of days to rest.
+    var restDays: Int = 7
+    
+    /// Date the last rest started.
+    var lastRest: Date? = nil
+
     var version: Int = 1
 
     init(_ name: String) {

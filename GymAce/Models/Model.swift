@@ -4,7 +4,7 @@ fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce1").a
 
 @Observable
 final class Model: Codable {
-    var weightSets: [String: WeightSet] = [:]   // TODO should we move name into the types?
+    var weightSets: [String: WeightSet] = [:]
     var programs: [Program] = []
     var activeProgram: String = ""
         
