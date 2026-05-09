@@ -54,7 +54,8 @@ struct ExerciseView: View {
                 Button("Finished") {
                     // We won't call done if the user swipes back but it seems to make
                     // sense to call done only when the user presses Finished...
-                    entry.completedAll(exercise)    // TODO this should also save
+                    entry.completedAll(exercise)
+                    model.save()
                     dismiss()
                 }
                 .padding(.top, 20)
