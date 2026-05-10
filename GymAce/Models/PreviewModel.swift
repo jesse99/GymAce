@@ -34,6 +34,19 @@ fileprivate func addPreviewWeightSets(_ model: Model) {
     model.weightSets["Trapbar"] = WeightSet.dual(dual)
 }
 
+fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, sets: [CompletedSet], weight: Float? = nil) {
+    let calendar = Calendar.current
+    var c = Completed(weight: nil, units: .None)
+    c.completed = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
+    c.started = c.completed!
+    c.sets = sets
+    if let w = weight {
+        c.weight = w
+        c.units = .Imperial
+    }
+    exercise.history.append(c)
+}
+
 fileprivate func addPreviewExercises(_ program: Program) {    
     let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
     let dwarmup = [FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 75), FixedReps(reps: 1, percent: 90)]
@@ -45,6 +58,9 @@ fileprivate func addPreviewExercises(_ program: Program) {
     let backoff = [FixedReps(reps: 5, percent: 80)]
 
     var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual Plates", weight: 130, rest: 10)
+    addCompleted(exercise, daysAgo: 5, sets: [.reps(5), .reps(5), .reps(5)], weight: 130)
+    addCompleted(exercise, daysAgo: 3, sets: [.reps(5), .reps(5), .reps(5)], weight: 135)
+    addCompleted(exercise, daysAgo: 1, sets: [.reps(5), .reps(5), .reps(5)], weight: 135)
     program.exercises.append(exercise)
 
     exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 145, rest: 12)
@@ -63,6 +79,9 @@ fileprivate func addPreviewExercises(_ program: Program) {
     program.exercises.append(exercise)
 
     exercise = makeDurations("Quad Stretch", "Quad Stretch", secs: [10, 20, 30])
+    addCompleted(exercise, daysAgo: 5, sets: [.duration(10), .duration(10), .duration(10)])
+    addCompleted(exercise, daysAgo: 3, sets: [.duration(20), .duration(20), .duration(20)])
+    addCompleted(exercise, daysAgo: 1, sets: [.duration(20), .duration(20), .duration(20)])
     program.exercises.append(exercise)
 
     exercise = makeDurations("Third World Squat", "Third World Squat2", secs: [20, 30, 40], weights: "Dumbbells", weight: 80.0)

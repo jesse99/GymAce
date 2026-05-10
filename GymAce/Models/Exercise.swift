@@ -14,6 +14,7 @@ enum CompletedSet: Codable {
 struct Completed: Codable, Comparable, Equatable {
     var sets: [CompletedSet]
     var weight: Float?
+    var units: Units
     var started: Date
     var completed: Date?
     
@@ -24,11 +25,82 @@ struct Completed: Codable, Comparable, Equatable {
         return delta/3600.0 > 4.0   // aka more than 4 hours
     }
     
-    init(weight: Float?) {
+    init(weight: Float?, units: Units) {
         self.sets = []
         self.weight = weight
+        self.units = units
         self.started = Date()
         self.completed = nil
+    }
+    
+    /// Used to show the user what happened for that workout.
+    func details() -> String {
+        var trailer = ""
+        if let weight = self.weight {
+            trailer = " @ " + formatWeight(weight, self.units)
+        }
+
+        var labels: [String] = []
+        var suffix = ""
+        for s in self.sets {
+            switch s {
+            case .reps(let r):
+                labels.append("\(r)")
+                suffix = " reps"
+            case .percent(let r):
+                labels.append("\(r)")
+                suffix = " reps"
+            case .duration(let s):
+                labels.append(secsToStr(s))
+            }
+        }
+        return joinLabels(labels) + suffix + trailer
+    }
+    
+    // Returns +1 if self is better than rhs.
+    // Returns  0 if self is equal to rhs.
+    // Returns -1 if self is worse than rhs.
+    func better(_ rhs: Completed) -> Int {
+        if let lw = self.weight {
+            if let rw = rhs.weight {
+                let li = Int(1000.0*lw)
+                let ri = Int(1000.0*rw)
+                if li > ri {
+                    return 1    // left has more weight
+                } else if li < ri {
+                    return -1   // left has less weight
+                }
+            } else {
+                return 1    // only left has weight
+            }
+        } else if rhs.weight != nil {
+            return -1       // only right has weight
+        }
+        
+        let lc = self.completedReps()
+        let rc = rhs.completedReps()
+        if lc > rc {
+            return 1     // same weights but left did more reps
+        } else if lc == rc {
+            return 0     // same weights and reps
+        } else {
+            return -1    // same weights but left did less reps
+        }
+    }
+    
+    private func completedReps() -> Int {
+        var reps: Int = 0
+        for s in self.sets {
+            switch s {
+            case .reps(let v):
+                reps += v
+            case .percent(let v):
+                reps += v
+            case .duration(let v):
+                reps += v
+            }
+        }
+        return reps
     }
     
     static func ==(lhs: Completed, rhs: Completed) -> Bool {

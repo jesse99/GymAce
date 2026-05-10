@@ -29,7 +29,7 @@ struct Weekdays: Codable {
     /// localization these are ints from 1 to N where N depends on the current locale. For
     /// the Gregorian calendar it'll be:
     /// Sun  Mon  Tue  Wed  Thu  Fri  Sat    these are the calendar.shortWeekdaySymbols names for Gregorian
-    /// 1    2    3    4    5    6    7
+    /// 1      2        3     4        5      6    7
     let days: [Int]
     
     func includes(_ day: Int) -> Bool {

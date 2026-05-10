@@ -41,7 +41,7 @@ struct ExerciseView: View {
                     .font(Font.caption2)
                     .padding(2)
             }
-                        
+            
             // The way this works is that the user does a set.
             // View will have a Next button (and optionally a picker for actual reps).
             // When that Next is pressed we will show a timer (if there is rest enabled).
@@ -114,9 +114,59 @@ struct ExerciseView: View {
         .navigationTitle(entry.name)
         .padding(20)
         .onAppear {
-            entry.started(program, exercise)
+            entry.started(model, program, exercise)
         }
-        Spacer()
+//        Spacer()
+        TabView {
+            List {
+                ForEach(entry.history(exercise), id: \.index) {
+                    completedView($0)
+                }
+            }
+            .listStyle(.plain)
+            .tabItem {Label("History", systemImage: "figure.run")}
+            
+            Text("Notes")
+            .tabItem {Label("Notes",systemImage: "book.pages")}
+        }
+    }
+}
+
+@ViewBuilder
+private func completedView(_ snapshot: Snapshot) -> some View {
+    HStack {
+        // icon labeling how well the user did compared to prior workout
+        if snapshot.current.completed != nil || snapshot.finished {
+            if let prior = snapshot.prior {
+                let better = snapshot.current.better(prior)
+                if better == 1 {
+                    Image(systemName: "hand.thumbsup.fill")   // current is better
+                        .foregroundColor(.green)
+                } else if better == 0 {
+                    Image(systemName: "staroflife.fill")   // current is same as prior
+                } else {
+                    Image(systemName: "hand.thumbsdown.fill")   // current is worse
+                        .foregroundColor(.red)
+                }
+            } else {
+                Image(systemName: "staroflife.fill")
+            }
+        } else {
+            Image(systemName: "questionmark.square.dashed")   // in progress
+        }
+        
+        // the date the workout happened
+        if let days = Date().daysBetween(snapshot.current.started) {
+            Text(Date().daysStr(days))
+        } else {
+            Text("?")
+        }
+        
+        // details for the workout, TODO these need to be nav links so that the user can edit them
+        // (but don't allow in progress to be edited)
+        if snapshot.current.completed != nil || snapshot.finished {
+            Text(snapshot.current.details())
+        }
     }
 }
 

@@ -9,26 +9,12 @@ struct WorkoutEntry: Identifiable {
     
     init(_ workout: Workout, delta: Int, today: Date) {
         self.workout = workout
-        
-        let calendar = Calendar.current
-        let daysInWeek = calendar.weekdaySymbols.count
+        self.label = today.daysStr(delta)
         if delta == 0 {
-            self.label = "Today"
             self.color = .orange
         } else if delta == 1 {
-            self.label = "Tomorrow"
             self.color = .blue
-        } else if delta < daysInWeek {
-            if let date = calendar.date(byAdding: .day, value: delta, to: today) {
-                let day: Int = calendar.component(.weekday, from: date)
-                self.label = calendar.weekdaySymbols[day - 1]
-                self.color = .black
-            } else {
-                self.label = "?"
-                self.color = .black
-            }
         } else {
-            self.label = "In \(delta) days"
             self.color = .black
         }
     }
@@ -64,7 +50,7 @@ extension Program {
             }
         }
         
-        let entries: [WorkoutEntry] = if let delta = calendar.dateComponents([.day], from: today, to: on).day {
+        let entries: [WorkoutEntry] = if let delta = today.daysBetween(on){
             candidates.map { WorkoutEntry($0, delta: delta, today: today) }
         } else {
             []

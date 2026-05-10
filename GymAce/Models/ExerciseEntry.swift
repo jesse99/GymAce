@@ -92,18 +92,18 @@ final class ExerciseEntry: Codable {
     }
     
     /// Called when the user starts an exercise. Resets setIndex and current if needed.
-    func started(_ program: Program, _ exercise: Exercise) {
+    func started(_ model: Model, _ program: Program, _ exercise: Exercise) {
         if let c = self.current {
             if c.isStale {
-                reset(program, exercise)
+                reset(model, program, exercise)
             }
         } else {
-            reset(program, exercise)
+            reset(model, program, exercise)
         }
     }
 
     /// Start the exercise all over (or for the first time).
-    func reset(_ program: Program, _ exercise: Exercise) {
+    func reset(_ model: Model, _ program: Program, _ exercise: Exercise) {
         func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
             // Usually we'll just return reps.min except for a few cases:
             if let last = exercise.latestCompleted() {
@@ -128,7 +128,11 @@ final class ExerciseEntry: Codable {
         }
         
         setIndex = 0
-        current = Completed(weight: exercise.findWeight(program))
+        if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+            current = Completed(weight: exercise.findWeight(program), units: ws.units)
+        } else {
+            current = Completed(weight: exercise.findWeight(program), units: .None)
+        }
         
         // Pre-populate sets with whatever the user is expected to do. For reps, at
         // least, we'll normally give the user a chance to over-write this with how
@@ -299,6 +303,10 @@ final class ExerciseEntry: Codable {
         return nil
     }
     
+    func history(_ exercise: Exercise) -> HistorySnapshot {
+        return HistorySnapshot(entry: self, exercise: exercise)
+    }
+
     private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
         if let exercise = program.findExercise(name), let weight = exercise.weight {
             if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
@@ -350,6 +358,40 @@ final class ExerciseEntry: Codable {
             case .percent(let d):
                 let count = d.warmups.count + d.worksets.count
                 return setIndex >= count ? count - 1 : setIndex
+        }
+    }
+}
+
+struct Snapshot {
+    let current: Completed
+    let prior: Completed?
+    let finished: Bool
+    let index: Int          // for ForEach
+}
+
+struct HistorySnapshot: RandomAccessCollection {
+    let entry: ExerciseEntry
+    let exercise: Exercise
+    let maxItems = 20
+    
+    var startIndex: Int { 0 }
+    var endIndex: Int { Swift.min(exercise.history.endIndex, maxItems) + (entry.current != nil ? 1 : 0) }
+    
+    subscript(position: Int) -> Snapshot {
+        if let current = entry.current, position == 0 {
+            return Snapshot(current: current, prior: previous(position), finished: entry.finished(exercise), index: position)
+        }
+        
+        let i = exercise.history.count - position
+        return Snapshot(current: exercise.history[i], prior: previous(position), finished: true, index: position)
+    }
+    
+    private func previous(_ position: Int) -> Completed! {
+        let i = exercise.history.count - position - 1
+        if i >= 0 && i < exercise.history.count {
+            return exercise.history[i]
+        } else {
+            return nil
         }
     }
 }

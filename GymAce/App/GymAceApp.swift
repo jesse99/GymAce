@@ -52,6 +52,7 @@ fileprivate func addMyExercises(_ program: Program) {
     
     let reps1 = [VariableReps(3, to: 5)]
     let reps2 = [VariableReps(3, to: 5), VariableReps(3, to: 5)]
+    let reps3 = [VariableReps(3, to: 5), VariableReps(3, to: 5), VariableReps(3, to: 5)]
     let reps12 = [VariableReps(8, to: 12), VariableReps(8, to: 12), VariableReps(8, to: 12)]
 
     var exercise = makeDurations("Quad Stretch", "Quad Stretch", secs: [30])
@@ -69,17 +70,44 @@ fileprivate func addMyExercises(_ program: Program) {
     exercise = makeReps("Trap Deadlift", "Trap Deadlift", warmups: dwarmup, worksets: reps1, weights: "Dual Plates", weight: 235, rest: nil)
     program.exercises.append(exercise)
     
-//    var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual", weight: 130, rest: 10)
-//    program.exercises.append(exercise)
-//
-//    exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 145, rest: 12)
-//    program.exercises.append(exercise)
-//
-//    exercise = makeReps("OHP", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 80, rest: 9)
-//    program.exercises.append(exercise)
+    exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual", rest: Int(3.0*60))
+    program.exercises.append(exercise)
+
+    exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+    program.exercises.append(exercise)
+
+    let creps = [VariableReps(3, to: 8), VariableReps(3, to: 8)]
+    exercise = makeReps("Chin Ups", "Chin Ups", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+    program.exercises.append(exercise)
+
+    exercise = makeReps("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
+    program.exercises.append(exercise)
 }
 
 fileprivate func addMyProgram(_ model: Model) {
+    func addBench(_ program: Program) {
+        let schedule = Schedule.days(Weekdays(days: [3]))    // tues
+        let workout = Workout("Bench", schedule)
+        
+        workout.addExercise(name: "Heavy Bench")
+        workout.addExercise(name: "OHP")
+        workout.addExercise(name: "Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+
+    func addSquat(_ program: Program) {
+        let schedule = Schedule.days(Weekdays(days: [5]))    // thurs
+        let workout = Workout("Squat", schedule)
+        
+        workout.addExercise(name: "Light Bench")
+        workout.addExercise(name: "Quad Stretch")
+        workout.addExercise(name: "Heavy Squat")
+        workout.addExercise(name: "Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+
     func addDeadlift(_ program: Program) {
         let schedule = Schedule.days(Weekdays(days: [1]))    // sun
         let workout = Workout("Deadlift", schedule)
@@ -94,6 +122,8 @@ fileprivate func addMyProgram(_ model: Model) {
 
     let program = Program("My")
     addMyExercises(program)
+    addBench(program)
+    addSquat(program)
     addDeadlift(program)
     model.programs.append(program)
 }
