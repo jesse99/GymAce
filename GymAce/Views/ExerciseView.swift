@@ -114,7 +114,7 @@ struct ExerciseView: View {
         .navigationTitle(entry.name)
         .padding(20)
         .onAppear {
-            entry.started(exercise)
+            entry.started(program, exercise)
         }
         Spacer()
     }

@@ -1,18 +1,15 @@
+import Foundation
 import SwiftUI
 
-// TODO
-// save the model (but not the preview program)
-//    https://www.swiftjectivec.com/stupid-and-quick-persistency-on-ios-with-swift/
-// load the model (add preview, if debug?)
-// views should use Bindable for model objects
 @main
 struct GymAceApp: App {
     var model: Model
     
     init() {
         model = Model.load()
-        if model.programs.isEmpty {
+        if model.programs.isEmpty { // TODO only do this if DEBUG?
             model = previewModel()
+            addMyProgram(model)
         }
     }
 
@@ -21,4 +18,82 @@ struct GymAceApp: App {
             ContentView(model: model)
         }
     }
+}
+
+// TODO get rid of this stuff at some point
+fileprivate func makeDurations(_ name: String, _ formalName: String, secs: [Int], weights: String? = nil, weight: Float? = nil) -> Exercise {
+    let durations = DurationsData(secs: secs, targetSecs: nil)
+    if let n = weights {
+        return Exercise(name: name, formalName: formalName, durations: durations, weights: n, weight: weight)
+    } else {
+        return Exercise(name: name, formalName: formalName, durations: durations)
+    }
+}
+
+fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps] = [], weights: String, weight: Float, rest: Int?) -> Exercise {
+    let reps = RepsData(warmups: warmups, worksets: worksets, backoff: backoff, rest: rest)
+    return Exercise(name: name, formalName: formalName, reps: reps, weights: weights, weight: weight)
+}
+
+fileprivate func makePercent(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [Int], weights: String, rest: Int) -> Exercise {
+    let percent = PercentData(other: other, percent: percent, warmups: warmups, worksets: worksets)
+    return Exercise(name: name, formalName: formalName, percent: percent, weights: weights)
+}
+
+// These are in the preview model code
+//model.weightSets["Cable Machine"]
+//model.weightSets["Dual Plates"]
+//model.weightSets["Dumbbells"]
+//model.weightSets["Trapbar"]
+
+fileprivate func addMyExercises(_ program: Program) {
+    let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+    let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+    
+    let reps1 = [VariableReps(3, to: 5)]
+    let reps2 = [VariableReps(3, to: 5), VariableReps(3, to: 5)]
+    let reps12 = [VariableReps(8, to: 12), VariableReps(8, to: 12), VariableReps(8, to: 12)]
+
+    var exercise = makeDurations("Quad Stretch", "Quad Stretch", secs: [30])
+    program.exercises.append(exercise)
+
+    exercise = makePercent("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual Plates", rest: Int(3.5*60))
+    program.exercises.append(exercise)
+
+    exercise = makeReps("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+    program.exercises.append(exercise)
+
+    exercise = makeReps("Face Pulls", "Face Pulls", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
+    program.exercises.append(exercise)
+
+    exercise = makeReps("Trap Deadlift", "Trap Deadlift", warmups: dwarmup, worksets: reps1, weights: "Dual Plates", weight: 235, rest: nil)
+    program.exercises.append(exercise)
+    
+//    var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual", weight: 130, rest: 10)
+//    program.exercises.append(exercise)
+//
+//    exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 145, rest: 12)
+//    program.exercises.append(exercise)
+//
+//    exercise = makeReps("OHP", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 80, rest: 9)
+//    program.exercises.append(exercise)
+}
+
+fileprivate func addMyProgram(_ model: Model) {
+    func addDeadlift(_ program: Program) {
+        let schedule = Schedule.days(Weekdays(days: [1]))    // sun
+        let workout = Workout("Deadlift", schedule)
+        
+        workout.addExercise(name: "Quad Stretch")
+        workout.addExercise(name: "Light Squat")
+        workout.addExercise(name: "Face Pulls")
+        workout.addExercise(name: "Trap Deadlift")
+        
+        program.addWorkout(workout)
+    }
+
+    let program = Program("My")
+    addMyExercises(program)
+    addDeadlift(program)
+    model.programs.append(program)
 }

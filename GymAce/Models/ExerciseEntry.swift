@@ -41,6 +41,7 @@ final class ExerciseEntry: Codable {
         return false
     }
 
+    /// The reps that the user is expected to do. only used when the number of reps is variable.
     func expectedReps(_ exercise: Exercise) -> Int {
         if case let .reps(d) = exercise.data {
             var index = fixedIndex(exercise)
@@ -91,18 +92,18 @@ final class ExerciseEntry: Codable {
     }
     
     /// Called when the user starts an exercise. Resets setIndex and current if needed.
-    func started(_ exercise: Exercise) {
+    func started(_ program: Program, _ exercise: Exercise) {
         if let c = self.current {
             if c.isStale {
-                reset(exercise)
+                reset(program, exercise)
             }
         } else {
-            reset(exercise)
+            reset(program, exercise)
         }
     }
 
     /// Start the exercise all over (or for the first time).
-    func reset(_ exercise: Exercise) {
+    func reset(_ program: Program, _ exercise: Exercise) {
         func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
             // Usually we'll just return reps.min except for a few cases:
             if let last = exercise.latestCompleted() {
@@ -127,7 +128,7 @@ final class ExerciseEntry: Codable {
         }
         
         setIndex = 0
-        current = Completed(weight: exercise.weight)
+        current = Completed(weight: exercise.findWeight(program))
         
         // Pre-populate sets with whatever the user is expected to do. For reps, at
         // least, we'll normally give the user a chance to over-write this with how
@@ -143,8 +144,8 @@ final class ExerciseEntry: Codable {
                 current!.sets.append(.reps(r))
             }
         case .percent(let d):
-            for r in d.reps {
-                current!.sets.append(.reps(r))
+            for reps in d.worksets {
+                current!.sets.append(.reps(reps))
             }
         }
     }
@@ -169,7 +170,7 @@ final class ExerciseEntry: Codable {
         switch exercise.data {
             case .durations(let d): return setIndex >= d.secs.count
             case .reps(let d): return setIndex >= d.warmups.count + d.worksets.count + d.backoff.count
-            case .percent(let d): return setIndex >= d.reps.count
+            case .percent(let d): return setIndex >= d.warmups.count + d.worksets.count
         }
     }
     
@@ -230,7 +231,15 @@ final class ExerciseEntry: Codable {
                     return "\(d.backoff[index].reps) reps" + suffix
                 }
             case .percent(let d):
-                return "\(d.reps[index]) reps" + suffix
+                var index = index
+                if index < d.warmups.count {
+                    return "\(d.warmups[index].reps) reps" + suffix
+                }
+                
+                index -= d.warmups.count
+                if index < d.worksets.count {
+                    return "\(d.worksets[index]) reps" + suffix
+                }
         }
         return ""
     }
@@ -245,27 +254,46 @@ final class ExerciseEntry: Codable {
     
     // Shown fourth in the exercise view, e.g. "90% of 225 lbs".
     func subfooter(_ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
-        if let exercise = program.findExercise(name), let weight = exercise.weight, case let .reps(d) = exercise.data {
-            var weightStr: String
-            if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                weightStr = formatWeight(weight, ws.units)
-            } else {
-                weightStr = formatWeight(weight, .None)
+        switch exercise.data {
+        case .reps(let d):
+            if let exercise = program.findExercise(name), let weight = exercise.findWeight(program) {
+                var weightStr: String
+                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                    weightStr = formatWeight(weight, ws.units)
+                } else {
+                    weightStr = formatWeight(weight, .None)
+                }
+                
+                var index = fixedIndex(exercise)
+                if index < d.warmups.count {
+                    return "\(d.warmups[index].percent)% of \(weightStr)"
+                }
+                
+                index -= d.warmups.count
+                if index < d.worksets.count {
+                    return nil
+                }
+                
+                index -= d.worksets.count
+                if index < d.backoff.count {
+                    return "\(d.backoff[index].percent)% of \(weightStr)"
+                }
             }
-            
-            var index = fixedIndex(exercise)
-            if index < d.warmups.count {
-                return "\(d.warmups[index].percent)% of \(weightStr)"
-            }
-            
-            index -= d.warmups.count
-            if index < d.worksets.count {
-                return nil
-            }
-            
-            index -= d.worksets.count
-            if index < d.backoff.count {
-                return "\(d.backoff[index].percent)% of \(weightStr)"
+        case .durations(_):
+            break
+        case .percent(let d):
+            if let exercise = program.findExercise(name), let weight = exercise.findWeight(program) {
+                var weightStr: String
+                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                    weightStr = formatWeight(weight, ws.units)
+                } else {
+                    weightStr = formatWeight(weight, .None)
+                }
+                
+                let index = fixedIndex(exercise)
+                if index < d.warmups.count {
+                    return "\(d.warmups[index].percent)% of \(weightStr)"
+                }
             }
         }
         return nil
@@ -294,8 +322,17 @@ final class ExerciseEntry: Codable {
                             let p = Float(d.backoff[index].percent) / 100.0
                             return ws.closest(target: p*weight)
                         }
-                    case .percent(_):
-                        return ws.lower(target: weight)
+                    case .percent(let d):
+                        var index = fixedIndex(exercise)
+                        if index < d.warmups.count {
+                            let p = Float(d.warmups[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                        
+                        index -= d.warmups.count
+                        if index < d.worksets.count {
+                            return ws.lower(target: weight)
+                        }
                 }
             }
             return ActualWeight(discrete: weight, .None)
@@ -311,7 +348,8 @@ final class ExerciseEntry: Codable {
                 let count = d.warmups.count + d.worksets.count + d.backoff.count
                 return setIndex >= count ? count - 1 : setIndex
             case .percent(let d):
-                return setIndex >= d.reps.count ? d.reps.count - 1 : setIndex
+                let count = d.warmups.count + d.worksets.count
+                return setIndex >= count ? count - 1 : setIndex
         }
     }
 }

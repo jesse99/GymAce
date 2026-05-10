@@ -111,16 +111,18 @@ struct RepsData: Codable {
 
 struct PercentData: Codable {
     /// The name of another exercise.
-    var name: String
+    var other: String
     
     /// The weight for this exercise will be the last completed weight for the above names
     /// exercise multipled by this percent.
     var percent: Int
     
-    var reps: [Int]
-    
-    /// Seconds to rest.
+    var warmups: [FixedReps]
+    var worksets: [Int]
+
+    /// Seconds to rest for worksets.
     var rest: Int?
+    var version: Int = 1
 }
 
 enum ExerciseData: Codable {
@@ -171,11 +173,43 @@ final class Exercise: Codable {
         self.data = .reps(reps)
     }
     
+    init (name: String, formalName: String, percent: PercentData, weights: String? = nil, weight: Float? = nil) {
+        self.name = name
+        self.formalName = formalName
+        self.weightSet = weights
+        self.data = .percent(percent)
+    }
+    
+    /// Find the weight the user should use for this exercise. Normally this is just self.weight but
+    /// for percent exercises it'll be different.
+    func findWeight(_ program: Program) -> Float? {
+        switch self.data {
+        case .reps(_), .durations(_):
+            if let weight = self.weight {
+                return weight
+            }
+        case .percent(let d):
+            if let other = program.findExercise(d.other) {
+                if let completed = other.latestCompleted() {
+                    if let weight = completed.weight {
+                        return Float(d.percent) * weight / 100.0
+                    }
+                }
+                
+                // If no completed then fall back on expected weight.
+                if let weight = other.findWeight(program) {
+                    return Float(d.percent) * weight / 100.0
+                }
+            }
+        }
+        return nil
+    }
+    
     /// Shown in WorkoutView next to the exercise name: brief summary of what the user is expected to do.
     /// For example, "30sx3" or "8-12x3 @ 135 lbs".
-    func details(_ model: Model) -> String {
+    func details(_ model: Model, _ program: Program) -> String {
         var suffix = ""
-        if let weight = self.weight {
+        if let weight = findWeight(program) {
             if let name = weightSet, let ws = model.weightSets[name] {
                 let actual = ws.lower(target: weight)
                 suffix = " @ \(actual.text())"
@@ -200,8 +234,15 @@ final class Exercise: Codable {
             case .durations(let d):
                 let a = d.secs.map {"\($0)s"}
                 return joinLabels(a) + suffix
-            case .percent(let p):
-                return "\(p.percent) percent of something"
+            case .percent(let d):
+                let a = d.worksets.map {
+                    if $0 == 1 {
+                        "1 rep"
+                    } else {
+                        "\($0) reps"
+                    }
+                }
+                return joinLabels(a) + suffix
         }
     }
     

@@ -33,7 +33,7 @@ struct WorkoutView: View {
                         .navigationLinkIndicatorVisibility(.hidden)
                         .gridColumnAlignment(.leading )
                         
-                        Text(exercise.details(model))
+                        Text(exercise.details(model, program))
                             .gridColumnAlignment( .leading )
                         
                         Text("-")   // TODO implement this, will also need a footer with total duration

@@ -19,15 +19,19 @@ fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedR
 }
 
 fileprivate func addPreviewWeightSets(_ model: Model) {
-    let cable = DiscreteWeights(weights: [10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0], units: .Imperial)
-    model.weightSets["Cable"] = WeightSet.discrete(cable)
+    let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
+    model.weightSets["Cable Machine"] = WeightSet.discrete(cable)
 
-    let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0], units: .Imperial)
+    let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
     model.weightSets["Dumbbells"] = WeightSet.discrete(dumbbells)
 
-    let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 4)]
-    let dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
-    model.weightSets["Dual"] = WeightSet.dual(dual)
+    var plates = [Plate(2.5, 4), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    var dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
+    model.weightSets["Dual Plates"] = WeightSet.dual(dual)
+
+    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
+    model.weightSets["Trapbar"] = WeightSet.dual(dual)
 }
 
 fileprivate func addPreviewExercises(_ program: Program) {    
@@ -40,22 +44,22 @@ fileprivate func addPreviewExercises(_ program: Program) {
 
     let backoff = [FixedReps(reps: 5, percent: 80)]
 
-    var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual", weight: 130, rest: 10)
+    var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual Plates", weight: 130, rest: 10)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 145, rest: 12)
+    exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 145, rest: 12)
     program.exercises.append(exercise)
     
-    exercise = makeReps("OHP", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual", weight: 80, rest: 9)
+    exercise = makeReps("OHP", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: 9)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Squat", "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual", weight: 140, rest: 8)
+    exercise = makeReps("Squat", "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 140, rest: 8)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual", weight: 230, rest: 10)
+    exercise = makeReps("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual Plates", weight: 230, rest: 10)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Face Pulls", "Face Pulls", worksets: reps12, weights: "Cable", weight: 40.0, rest: 5)
+    exercise = makeReps("Face Pulls", "Face Pulls", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 5)
     program.exercises.append(exercise)
 
     exercise = makeDurations("Quad Stretch", "Quad Stretch", secs: [10, 20, 30])

@@ -68,10 +68,24 @@ struct ProgramView: View {
                         .listStyle(.plain)
                         .navigationTitle("\(model.activeProgram) Workouts")
                         .toolbar {
-                            NavigationLink {
-                                EditProgram(model: model, program: program)
-                            } label: {
-                                Text("Edit")
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Menu {
+                                    NavigationLink(destination: EditProgram(model: model, program: program)) {
+                                        Text("Edit Program")
+                                    }
+//                                    NavigationLink(destination: Text("Supported Page")) {
+//                                        Text("Edit Weight Sets")  // TODO support these
+//                                    }
+//                                    NavigationLink(destination: Text("Request Page")) {
+//                                        Text("Set Current Week")
+//                                    }
+                                    NavigationLink(destination: Text("use a sheet?")) {
+                                        Text("Switch Program")
+                                    }
+                                } label: {
+                                    Image(systemName: "line.horizontal.3")
+                                        .foregroundColor(.blue)
+                                }
                             }
                         }
                     }
