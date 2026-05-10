@@ -11,23 +11,6 @@ struct EditWorkout: View {
     @State private var everySchedule = Schedule.anyDay
     @State private var daysSchedule = Schedule.anyDay
 
-//    private var nameBinding: Binding<String> {
-//        Binding(
-//            get: {return self.name},
-//            set: {
-//                wor $0)
-//                self.name = $0
-//            }
-//        )
-//    }
-
-//    private var scheduleBinding: Binding<Schedule> {
-//        Binding(
-//            get: {return self.workout.schedule},
-//            set: {workout.schedule = $0}
-//        )
-//    }
-
     init(program: Program, workout: Workout) {
         self.program = program
         self.workout = workout

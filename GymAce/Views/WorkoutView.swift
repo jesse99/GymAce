@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 /// Lists the exercises within a workout.
 struct WorkoutView: View {

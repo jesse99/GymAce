@@ -20,21 +20,6 @@ struct ProgramView: View {
         return e
     }
 
-//    private var entriesBinding: Binding<[WorkoutEntry]> {
-//        Binding(
-//            get: {
-//                var e: [WorkoutEntry] = []
-//                let calendar = Calendar.current
-//                for i in (0...20) {
-//                    if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = model.active() {
-//                        e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
-//                    }
-//                }
-//                return e            },
-//            set: {_ in }
-//        )
-//    }
-
     // TODO
     // need a way to disable/enable a workout (do this in workouts?)
     //    EditProgram should draw disabled workouts in gray
@@ -73,15 +58,15 @@ struct ProgramView: View {
                                     NavigationLink(destination: EditProgram(model: model, program: program)) {
                                         Text("Edit Program")
                                     }
-//                                    NavigationLink(destination: Text("Supported Page")) {
+                                    NavigationLink(destination: EditPrograms(model: model)) {
+                                        Text("Edit Programs")
+                                    }
+//                                    NavigationLink(destination: Text("Weight Sets")) {
 //                                        Text("Edit Weight Sets")  // TODO support these
 //                                    }
-//                                    NavigationLink(destination: Text("Request Page")) {
+//                                    NavigationLink(destination: Text("Current Week")) {
 //                                        Text("Set Current Week")
 //                                    }
-                                    NavigationLink(destination: Text("use a sheet?")) {
-                                        Text("Switch Program")
-                                    }
                                 } label: {
                                     Image(systemName: "line.horizontal.3")
                                         .foregroundColor(.blue)

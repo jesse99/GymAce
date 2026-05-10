@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce1").appendingPathExtension("json")
 
@@ -10,6 +11,14 @@ final class Model: Codable {
         
     func active() -> Program? {
         return programs.first(where: {$0.name == activeProgram})
+    }
+    
+    func addProgram(_ program: Program) {
+        self.programs.append(program)
+    }
+    
+    func deletePrograms(_ offsets: IndexSet) {
+        self.programs.remove(atOffsets: offsets)
     }
     
     func renameProgram(_ program: Program, _ newName: String) {
@@ -25,7 +34,7 @@ final class Model: Codable {
             let model = try JSONDecoder().decode(Model.self, from: data)
             return model
         } catch {
-            return previewModel()   // TODO only do this if url doesn't exist?
+            return Model()
         }
     }
     

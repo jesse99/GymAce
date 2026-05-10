@@ -4,13 +4,14 @@ import SwiftUI
 /// A list of workouts that the user performs. Workouts are scheduled (e.g. Lower on Monday and Upper on Wednesday)
 /// and contain a list of exercises (e.g. Bench Press, Overhead Press, and Pull ups).
 @Observable
-final class Program: Codable {
+final class Program: Codable, Identifiable {
     var name: String
     
     var exercises: [Exercise] = []
 
     var workouts: [Workout] = []
     
+    /// Shown in ProgramView. Typically has notes for things like how to handle progression.
     var note: String = ""   // TODO support this?
         
     /// Number of weeks till the next rest days from the last rest.
@@ -21,6 +22,11 @@ final class Program: Codable {
     
     /// Date the last rest started.
     var lastRest: Date? = nil
+    
+    /// Shown in EditProgramsView when the program is selected.
+    var description = ""
+
+    var id = UUID()
 
     var version: Int = 1
 

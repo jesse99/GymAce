@@ -1,5 +1,4 @@
 import SwiftUI
-import SwiftData
 
 struct EditProgram: View {
     @Bindable var model: Model
@@ -54,7 +53,7 @@ struct EditProgram: View {
             // Note that we don't allow these rows to be moved in edit mode
             // because in ContentView they're sorted by due date.
             List {
-                Section(header: Text("\(program.workouts.count) Workouts")) {
+                Section(header: Text("Workouts")) {
                     ForEach($program.workouts) { $workout in
                         NavigationLink {
                             EditWorkout(program: program, workout: workout)
