@@ -58,6 +58,7 @@ struct ExerciseView: View {
                     model.save()
                     dismiss()
                 }
+                .buttonStyle(.borderedProminent)
                 .padding(.top, 20)
             } else {
                 if resting {
@@ -82,6 +83,7 @@ struct ExerciseView: View {
                         entry.completedSet()
                         resting = false
                     }
+                    .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
                 } else {
                     if entry.hasExpected(exercise) {
@@ -100,6 +102,7 @@ struct ExerciseView: View {
                             entry.completedSet()
                         }
                     }
+                    .buttonStyle(.borderedProminent)
                     .padding(.top, 20)
                 }
             }
