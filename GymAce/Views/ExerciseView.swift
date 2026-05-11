@@ -3,13 +3,11 @@ import Foundation
 import SwiftUI
 
 struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to scale font sizes
-    var model: Model
+    var model: Model        // see https://www.swiftyplace.com/blog/swiftui-font-and-texts
     var program: Program
     var exercise: Exercise
     @Bindable var entry: ExerciseEntry
     @Environment(\.dismiss) var dismiss 
-    @State private var resting = false
-    @State private var targetDate: Date = Date.now
 
     private var expectedBinding: Binding<Int> {
         Binding(
@@ -62,10 +60,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 .buttonStyle(.borderedProminent)
                 .padding(.top, 20)
             } else {
-                if resting {
+                if entry.timer.resting {
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = remainingSecs(context.date)
-                        if remaining > 0 {
+                        if remaining >= 0 {             // = 0 for manual timer
                             Text(secsToStr(remaining))
                                 .font(.largeTitle)
                                 .foregroundColor(.red)
@@ -81,8 +79,12 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     .padding(.top, 5)
                     Button("Stop Resting") {
-                        entry.completedSet()
-                        resting = false
+                        if entry.timer.manualDate != nil {
+                            entry.timer.manualDate = nil
+                        } else {
+                            entry.completedSet()
+                        }
+                        entry.timer.resting = false
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
@@ -97,8 +99,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     Button("Next") {
                         if let rest = entry.rest(exercise) {
-                            resting = true
-                            targetDate = Date().addingTimeInterval(TimeInterval(rest))
+                            entry.timer.resting = true
+                            entry.timer.targetDate = Date().addingTimeInterval(TimeInterval(rest))
+                            entry.timer.manualDate = nil
                         } else {
                             entry.completedSet()
                         }
@@ -109,6 +112,17 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
         }
         .navigationTitle(entry.name)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {    // TODO add Edit Exercise? or minor edits?
+                Menu {
+                    Button("Reset Exercise", action: resetExercise)
+                    Button("Start Timer", action: startTimer)
+                } label: {
+                    Image(systemName: "line.horizontal.3")
+                        .foregroundColor(.blue)
+                }
+            }
+        }
         .padding(20)
         .onAppear {
             entry.started(model, program, exercise)
@@ -131,13 +145,26 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
     }
     
+    private func resetExercise() {
+        entry.timer.resting = false
+        entry.reset(model, program, exercise)
+    }
+
+    private func startTimer() {
+        entry.timer.resting = true
+        entry.timer.manualDate = Date()
+    }
+    
     private func remainingSecs(_ date: Date) -> Int {
-        let remaining = Int(targetDate.timeIntervalSince(date))
-        if remaining == 0 { // can't just drop logic into a view so we'll use a lame side effect
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)    // this version works in the background
+        if let manual = entry.timer.manualDate {
+            return Int(Date().timeIntervalSince(manual))
+        } else {
+            let remaining = Int(entry.timer.targetDate.timeIntervalSince(date))
+            if remaining == 0 { // can't just drop logic into a view so we'll use a lame side effect
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)    // this version works in the background
+            }
+            return remaining
         }
-        
-        return remaining
     }
 }
 

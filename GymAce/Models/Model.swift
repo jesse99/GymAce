@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce1").appendingPathExtension("json")
+fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce2").appendingPathExtension("json")
 
 @Observable
 final class Model: Codable {

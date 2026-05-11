@@ -1,5 +1,17 @@
 import Foundation
 
+struct Timer: Codable {
+    /// If true ExerciseView will show a timer.
+    var resting = false
+    
+    /// The usual case: the timer counts now from now till targetDate.
+    var targetDate: Date = Date.now
+    
+    /// Used when the user manually starts a timer. Because we may not know
+    /// how long to rest we'll just count up from when the timer started to infinity.
+    var manualDate: Date? = nil
+}
+
 /// Used to maintain the transient state associated with an exercise in a workout.
 @Observable
 final class ExerciseEntry: Codable {
@@ -17,6 +29,10 @@ final class ExerciseEntry: Codable {
     var current: Completed? = nil
 
     var enabled: Bool = true    // TODO support this
+    
+    // This is here so that the user can do things like supersets without
+    // losing the timer position.
+    var timer: Timer = Timer()
     
     var version: Int = 1
 
