@@ -78,7 +78,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         }
                     }
                     .padding(.top, 5)
-                    Button("Stop Resting") {
+                    Button(stopTitle()) {
                         entry.completedSet()
                         if entry.finished(exercise) {
                             entry.mode = .finished
@@ -114,7 +114,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         }
                         .labelsHidden()
                     }
-                    Button("Next") {
+                    Button(nextTitle()) {
                         if let rest = entry.rest(exercise) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
                         } else {
@@ -170,6 +170,20 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
             .tabItem {Label("Notes",systemImage: "book.pages")}
         }
+    }
+    
+    private func nextTitle() -> String {
+        if case .durations = exercise.data {
+            return "Start"
+        }
+        return "Next"
+    }
+    
+    private func stopTitle() -> String {
+        if case .durations = exercise.data {
+            return "Stop"
+        }
+        return "Stop Resting"
     }
     
     private func resetExercise() {
