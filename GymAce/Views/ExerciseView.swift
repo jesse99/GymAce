@@ -2,7 +2,7 @@ import AudioToolbox
 import Foundation
 import SwiftUI
 
-struct ExerciseView: View {
+struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to scale font sizes
     var model: Model
     var program: Program
     var exercise: Exercise
@@ -22,24 +22,24 @@ struct ExerciseView: View {
         VStack {
             // Warmup 3 of 3
             Text(entry.headline(exercise))
-                .font(Font.headline.bold())
+                .font(Font.headline)
                 .padding(2)
             
             // 5 reps @ 225 lbs
             Text(entry.subhead(model, program, exercise))
-                .font(Font.subheadline)
+                .font(Font.body)
             
             // 45x2
             if let s = entry.footer(model, program) {
                 Text(s)
-                    .font(Font.footnote)
+                    .font(Font.body)
                     .padding(.bottom, 2)
             }
             
             // 90% of 250 lbs
             if let s = entry.subfooter(model, program, exercise) {
                 Text(s)
-                    .font(Font.caption2)
+                    .font(Font.footnote)
                     .padding(2)
             }
             
