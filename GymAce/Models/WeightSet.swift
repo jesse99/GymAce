@@ -224,7 +224,7 @@ extension WeightSet {
                 return ActualWeight(discrete: upper, d.units)
             case .dual(let d):
                 return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
-            case .single(let d):
+            case .single(_):
                 fatalError("not supported")
         }
     }
@@ -236,7 +236,7 @@ extension WeightSet {
                 return ActualWeight(discrete: closestDiscrete(target, d.weights), d.units)
             case .dual(let d):
                 return ActualWeight(plates: closestDual(target, d.findCombos(), d.bar, d.units))
-            case .single(let d):
+            case .single(_):
                 fatalError("not supported")
         }
     }
@@ -249,7 +249,7 @@ extension WeightSet {
                 return ActualWeight(discrete: lower, d.units)
             case .dual(let d):
                 return ActualWeight(plates: lowerDual(target, d.findCombos(), d.bar, d.units))
-            case .single(let d):
+            case .single(_):
                 fatalError("not supported")
         }
     }
@@ -262,7 +262,7 @@ extension WeightSet {
                 return ActualWeight(discrete: upper, d.units)
             case .dual(let d):
                 return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
-            case .single(let d):
+            case .single(_):
                 fatalError("not supported")
         }
     }

@@ -66,7 +66,7 @@ fileprivate func addPreviewExercises(_ program: Program) {
     exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 145, rest: 12)
     program.exercises.append(exercise)
     
-    exercise = makeReps("OHP", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: 9)
+    exercise = makeReps("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: 9)
     program.exercises.append(exercise)
 
     exercise = makeReps("Squat", "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 140, rest: 8)
@@ -75,19 +75,19 @@ fileprivate func addPreviewExercises(_ program: Program) {
     exercise = makeReps("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual Plates", weight: 230, rest: 10)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Face Pulls", "Face Pulls", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 5)
+    exercise = makeReps("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 5)
     program.exercises.append(exercise)
 
-    exercise = makeDurations("Quad Stretch", "Quad Stretch", secs: [10, 20, 30])
+    exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [10, 20, 30])
     addCompleted(exercise, daysAgo: 5, sets: [.duration(10), .duration(10), .duration(10)])
     addCompleted(exercise, daysAgo: 3, sets: [.duration(20), .duration(20), .duration(20)])
     addCompleted(exercise, daysAgo: 1, sets: [.duration(20), .duration(20), .duration(20)])
     program.exercises.append(exercise)
 
-    exercise = makeDurations("Third World Squat", "Third World Squat2", secs: [20, 30, 40], weights: "Dumbbells", weight: 80.0)
+    exercise = makeDurations("Third World Squat", "Third World Squat", secs: [20, 30, 40], weights: "Dumbbells", weight: 80.0)
     program.exercises.append(exercise)
 
-    exercise = makeDurations("Cossack Squat", "Quad Stretch", secs: [30, 30, 30, 40])
+    exercise = makeDurations("Cossack Squat", "Cossack Squat", secs: [30, 30, 30, 40])
     program.exercises.append(exercise)
 }
 
@@ -136,6 +136,7 @@ func addPreviewProgram(_ model: Model) {
 func previewModel() -> Model {
     let model = Model()
     model.activeProgram = "Preview"
+    model.notes.addDefaults()
     addPreviewWeightSets(model)
     addPreviewProgram(model)
     return model

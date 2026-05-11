@@ -9,6 +9,7 @@ struct ExerciseView: View {
     @Environment(\.dismiss) var dismiss 
     @State private var resting = false
     @State private var targetDate: Date = Date.now
+    @State private var vibrate = 0
 
     private var expectedBinding: Binding<Int> {
         Binding(
@@ -63,7 +64,7 @@ struct ExerciseView: View {
             } else {
                 if resting {
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                        let remaining = Int(targetDate.timeIntervalSince(context.date))
+                        let remaining = remainingSecs(context.date)
                         if remaining > 0 {
                             Text(secsToStr(remaining))
                                 .font(.largeTitle)
@@ -79,6 +80,7 @@ struct ExerciseView: View {
                         }
                     }
                     .padding(.top, 5)
+                    .sensoryFeedback(.success, trigger: vibrate)
                     Button("Stop Resting") {
                         entry.completedSet()
                         resting = false
@@ -106,13 +108,6 @@ struct ExerciseView: View {
                     .padding(.top, 20)
                 }
             }
-            
-            // TODO add a ListView? for history
-            //      symbol, short date, worksets & weight
-            // TODO history should show in progress stats, no symbol? or a special one?
-            // TODO use a disclosure group (https://chriswu.com/posts/swiftui/disclosure1/)
-            //      or maybe a TabView to also show notes
-            // TODO use a nav link to allow worksets to be edited
         }
         .navigationTitle(entry.name)
         .padding(20)
@@ -129,12 +124,24 @@ struct ExerciseView: View {
             .listStyle(.plain)
             .tabItem {Label("History", systemImage: "figure.run")}
             
-            Text("Notes")
+            ScrollView {
+                Text(LocalizedStringKey(model.notes.find(exercise.formalName)))
+                    .padding(.leading, 5)
+            }
             .tabItem {Label("Notes",systemImage: "book.pages")}
         }
     }
+    
+    private func remainingSecs(_ date: Date) -> Int {
+        let remaining = Int(targetDate.timeIntervalSince(date))
+        if remaining == 0 { // can't just drop logic into a view so we'll use a lame side effect
+            vibrate = 1
+        }
+        return remaining
+    }
 }
 
+// View for a line in the history tab.
 @ViewBuilder
 private func completedView(_ snapshot: Snapshot) -> some View {
     HStack {

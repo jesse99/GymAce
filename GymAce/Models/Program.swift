@@ -38,12 +38,6 @@ final class Program: Codable, Identifiable {
         workouts.append(workout)
     }
         
-//    func deleteWorkout(_ workout: Workout) {
-//        if let index = self.workouts.firstIndex(of: workout) {
-//            self.workouts.remove(at: index)
-//        }   // TODO some sort of warning if it wasn't found?
-//    }
-    
     func deleteWorkouts(_ offsets: IndexSet) {
         self.workouts.remove(atOffsets: offsets)
     }

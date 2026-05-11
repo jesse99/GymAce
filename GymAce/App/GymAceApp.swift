@@ -8,6 +8,7 @@ struct GymAceApp: App {
     init() {
         model = Model.load()
         if model.programs.isEmpty { // TODO only do this if DEBUG?
+            model.notes.addDefaults()
             model = previewModel()
             addMyProgram(model)
         }
@@ -55,7 +56,7 @@ fileprivate func addMyExercises(_ program: Program) {
     let reps3 = [VariableReps(3, to: 5), VariableReps(3, to: 5), VariableReps(3, to: 5)]
     let reps12 = [VariableReps(8, to: 12), VariableReps(8, to: 12), VariableReps(8, to: 12)]
 
-    var exercise = makeDurations("Quad Stretch", "Quad Stretch", secs: [30])
+    var exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [30])
     program.exercises.append(exercise)
 
     exercise = makePercent("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual Plates", rest: Int(3.5*60))
@@ -64,10 +65,10 @@ fileprivate func addMyExercises(_ program: Program) {
     exercise = makeReps("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
     program.exercises.append(exercise)
 
-    exercise = makeReps("Face Pulls", "Face Pulls", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
+    exercise = makeReps("Face Pulls", "Face Pull", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
     program.exercises.append(exercise)
 
-    exercise = makeReps("Trap Deadlift", "Trap Deadlift", warmups: dwarmup, worksets: reps1, weights: "Dual Plates", weight: 235, rest: nil)
+    exercise = makeReps("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Dual Plates", weight: 235, rest: nil)
     program.exercises.append(exercise)
     
     exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual", rest: Int(3.0*60))
@@ -77,7 +78,7 @@ fileprivate func addMyExercises(_ program: Program) {
     program.exercises.append(exercise)
 
     let creps = [VariableReps(3, to: 8), VariableReps(3, to: 8)]
-    exercise = makeReps("Chin Ups", "Chin Ups", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+    exercise = makeReps("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
     program.exercises.append(exercise)
 
     exercise = makeReps("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))

@@ -5,6 +5,7 @@ fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce1").a
 
 @Observable
 final class Model: Codable {
+    var notes: Notes = Notes()
     var weightSets: [String: WeightSet] = [:]
     var programs: [Program] = []
     var activeProgram: String = ""
