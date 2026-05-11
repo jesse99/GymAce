@@ -4859,5 +4859,6 @@ extension Notes {
     }
 }
 
+// TODO need to support editing (and creating) notes
 // TODO add unit tests to spell check
 // TODO add unit tests to check links

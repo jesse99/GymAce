@@ -1,3 +1,4 @@
+import AudioToolbox
 import Foundation
 import SwiftUI
 
@@ -9,7 +10,6 @@ struct ExerciseView: View {
     @Environment(\.dismiss) var dismiss 
     @State private var resting = false
     @State private var targetDate: Date = Date.now
-    @State private var vibrate = 0
 
     private var expectedBinding: Binding<Int> {
         Binding(
@@ -80,7 +80,6 @@ struct ExerciseView: View {
                         }
                     }
                     .padding(.top, 5)
-                    .sensoryFeedback(.success, trigger: vibrate)
                     Button("Stop Resting") {
                         entry.completedSet()
                         resting = false
@@ -135,8 +134,9 @@ struct ExerciseView: View {
     private func remainingSecs(_ date: Date) -> Int {
         let remaining = Int(targetDate.timeIntervalSince(date))
         if remaining == 0 { // can't just drop logic into a view so we'll use a lame side effect
-            vibrate = 1
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)    // this version works in the background
         }
+        
         return remaining
     }
 }
