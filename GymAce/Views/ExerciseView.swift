@@ -49,7 +49,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             // If there are no more sets then the button changes to "Finished".
             
             // Next/Finished button
-            if entry.finished(exercise) {
+            if case .finished = entry.mode {
                 Button("Finished") {
                     // We won't call done if the user swipes back but it seems to make
                     // sense to call done only when the user presses Finished...
@@ -60,10 +60,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 .buttonStyle(.borderedProminent)
                 .padding(.top, 20)
             } else {
-                if entry.timer.resting {
+                if case .resting(let target) = entry.mode {
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
-                        let remaining = remainingSecs(context.date)
-                        if remaining >= 0 {             // = 0 for manual timer
+                        let remaining = remainingSecs(now: context.date, target: target)
+                        if remaining > 0 {
                             Text(secsToStr(remaining))
                                 .font(.largeTitle)
                                 .foregroundColor(.red)
@@ -79,12 +79,29 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     .padding(.top, 5)
                     Button("Stop Resting") {
-                        if entry.timer.manualDate != nil {
-                            entry.timer.manualDate = nil
+                        entry.completedSet()
+                        if entry.finished(exercise) {
+                            entry.mode = .finished
                         } else {
-                            entry.completedSet()
+                            entry.mode = .performing
                         }
-                        entry.timer.resting = false
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .padding(.top, 5)
+                } else if case .timing(let start, let oldMode) = entry.mode {
+                    TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                        let remaining = elapsedSecs(now: context.date, start: start)
+                        Text(secsToStr(remaining))
+                            .font(.largeTitle)
+                            .foregroundColor(.red)
+                    }
+                    .padding(.top, 5)
+                    Button("Stop Timer") {
+                        if oldMode == 2 {
+                            entry.mode = .finished
+                        } else {
+                            entry.mode = .performing
+                        }
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
@@ -99,11 +116,17 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     Button("Next") {
                         if let rest = entry.rest(exercise) {
-                            entry.timer.resting = true
-                            entry.timer.targetDate = Date().addingTimeInterval(TimeInterval(rest))
-                            entry.timer.manualDate = nil
+                            entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
                         } else {
                             entry.completedSet()
+                            
+                            // Note that we don't go to picking here because if there's no rest
+                            // we always show the picker.
+                            if entry.finished(exercise) {
+                                entry.mode = .finished
+                            } else {
+                                entry.mode = .performing
+                            }
                         }
                     }
                     .buttonStyle(.borderedProminent)
@@ -116,7 +139,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             ToolbarItem(placement: .navigationBarTrailing) {    // TODO add Edit Exercise? or minor edits?
                 Menu {
                     Button("Reset Exercise", action: resetExercise)
-                    Button("Start Timer", action: startTimer)
+                    if case .performing = entry.mode {
+                        Button("Start Timer") {startTimer(0)}
+                    } else if case .finished = entry.mode {
+                        Button("Start Timer") {startTimer(2)}
+                    }
                 } label: {
                     Image(systemName: "line.horizontal.3")
                         .foregroundColor(.blue)
@@ -146,25 +173,24 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
     
     private func resetExercise() {
-        entry.timer.resting = false
+        entry.mode = .performing
         entry.reset(model, program, exercise)
     }
 
-    private func startTimer() {
-        entry.timer.resting = true
-        entry.timer.manualDate = Date()
+    private func startTimer(_ oldMode: Int) {
+        entry.mode = .timing(Date(), oldMode)
     }
     
-    private func remainingSecs(_ date: Date) -> Int {
-        if let manual = entry.timer.manualDate {
-            return Int(Date().timeIntervalSince(manual))
-        } else {
-            let remaining = Int(entry.timer.targetDate.timeIntervalSince(date))
-            if remaining == 0 { // can't just drop logic into a view so we'll use a lame side effect
-                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)    // this version works in the background
-            }
-            return remaining
+    private func remainingSecs(now: Date, target: Date) -> Int {
+        let remaining = Int(target.timeIntervalSince(now))
+        if remaining == 0 { // can't just drop logic into a view so we'll use a lame side effect
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)    // this version works in the background
         }
+        return remaining
+    }
+
+    private func elapsedSecs(now: Date, start: Date) -> Int {
+        return Int(now.timeIntervalSince(start))
     }
 }
 

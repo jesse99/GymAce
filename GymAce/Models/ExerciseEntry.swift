@@ -1,15 +1,20 @@
 import Foundation
 
-struct Timer: Codable {
-    /// If true ExerciseView will show a timer.
-    var resting = false
+enum Mode: Codable {             // can't name this "State"
+    /// The user is currently executing the exercise.
+    case performing
     
-    /// The usual case: the timer counts now from now till targetDate.
-    var targetDate: Date = Date.now
-    
-    /// Used when the user manually starts a timer. Because we may not know
-    /// how long to rest we'll just count up from when the timer started to infinity.
-    var manualDate: Date? = nil
+    /// The timer is running because the exercise has rest. The date is the time rest should end.
+    case resting(Date)
+
+    /// The timer is running because the user has manually started a timer. The date is the
+    /// time the user started the timer (we may not know how long the timer should run so
+    /// we just let it run until the user stops it). The int is 0 if prior state was performing and
+    /// 2 for finished.
+    case timing(Date, Int)
+        
+    /// The user has finished all of the sets.
+    case finished
 }
 
 /// Used to maintain the transient state associated with an exercise in a workout.
@@ -30,9 +35,9 @@ final class ExerciseEntry: Codable {
 
     var enabled: Bool = true    // TODO support this
     
-    // This is here so that the user can do things like supersets without
-    // losing the timer position.
-    var timer: Timer = Timer()
+    // This is here instead of ExerciseView so that the user can back up to do things
+    // like supersets without losing stuff like timers.
+    var mode: Mode = .performing
     
     var version: Int = 1
 

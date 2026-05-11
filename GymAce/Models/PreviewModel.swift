@@ -75,7 +75,10 @@ fileprivate func addPreviewExercises(_ program: Program) {
     exercise = makeReps("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual Plates", weight: 230, rest: 10)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 5)
+    exercise = makeReps("Light Face Pulls", "Face Pull", worksets: reps5, weights: "Cable Machine", weight: 40.0, rest: nil)
+    program.exercises.append(exercise)
+
+    exercise = makeReps("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: nil)
     program.exercises.append(exercise)
 
     exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [10, 20, 30])
@@ -97,7 +100,9 @@ func addPreviewProgram(_ model: Model) {
         let workout = Workout("Upper", schedule)
         
         workout.addExercise(name: "Light Bench")
+        workout.addExercise(name: "Heavy Bench")
         workout.addExercise(name: "OHP")
+        workout.addExercise(name: "Light Face Pulls")
         workout.addExercise(name: "Face Pulls")
         
         program.addWorkout(workout)
