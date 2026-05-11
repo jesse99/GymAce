@@ -69,7 +69,7 @@ struct ExerciseView: View {
                                 .font(.largeTitle)
                                 .foregroundColor(.red)
                         } else if remaining > -5 {
-                            Text("done")
+                            Text("Done")
                                 .font(.largeTitle)
                                 .foregroundColor(.green)
                         } else {

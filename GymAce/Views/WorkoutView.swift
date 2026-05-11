@@ -30,7 +30,8 @@ struct WorkoutView: View {
                             Text(entry.name)
                         }
                         .navigationLinkIndicatorVisibility(.hidden)
-                        .gridColumnAlignment(.leading )
+                        .gridColumnAlignment(.leading)
+                        .foregroundColor(fgColor(entry, exercise))
                         
                         Text(exercise.details(model, program))
                             .gridColumnAlignment( .leading )
@@ -54,6 +55,14 @@ struct WorkoutView: View {
         .navigationTitle("\(workout.name) Exercises")
         .padding(10)
         Spacer()
+    }
+    
+    func fgColor(_ entry: ExerciseEntry, _ exercise: Exercise) -> Color {
+        if let latest = exercise.latestCompleted(), let completed = latest.completed, completed.daysBetween(Date()) == 0, entry.current == nil {
+            return .black
+        } else {
+            return .blue
+        }
     }
 }
 

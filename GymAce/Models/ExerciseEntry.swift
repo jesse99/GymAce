@@ -46,8 +46,8 @@ final class ExerciseEntry: Codable {
         if case let .reps(d) = exercise.data {
             var index = fixedIndex(exercise)
             index -= d.warmups.count
-            if index >= 0 && index < current!.sets.count {
-                switch current!.sets[index] {
+            if let current = self.current, index >= 0 && index < current.sets.count {
+                switch current.sets[index] {
                 case .reps(let n): return n
                 default: return 0
                 }
@@ -374,16 +374,21 @@ struct HistorySnapshot: RandomAccessCollection {
     let exercise: Exercise
     let maxItems = 20
     
-    var startIndex: Int { 0 }
-    var endIndex: Int { Swift.min(exercise.history.endIndex, maxItems) + (entry.current != nil ? 1 : 0) }
+    var startIndex: Int {0}
+    var endIndex: Int {Swift.min(exercise.history.endIndex, maxItems) + (entry.current != nil ? 1 : 0)}
     
     subscript(position: Int) -> Snapshot {
-        if let current = entry.current, position == 0 {
-            return Snapshot(current: current, prior: previous(position), finished: entry.finished(exercise), index: position)
+        var index = position
+        if let current = entry.current {
+            if index == 0 {
+                return Snapshot(current: current, prior: previous(index), finished: entry.finished(exercise), index: index)
+            }
+        } else {
+            index += 1
         }
         
-        let i = exercise.history.count - position
-        return Snapshot(current: exercise.history[i], prior: previous(position), finished: true, index: position)
+        let i = exercise.history.count - index
+        return Snapshot(current: exercise.history[i], prior: previous(index), finished: true, index: position)
     }
     
     private func previous(_ position: Int) -> Completed! {
