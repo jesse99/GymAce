@@ -83,6 +83,9 @@ fileprivate func addMyExercises(_ program: Program) {
 
     exercise = makeReps("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
     program.exercises.append(exercise)
+
+    exercise = makeReps("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+    program.exercises.append(exercise)
 }
 
 fileprivate func addMyProgram(_ model: Model) {
@@ -92,6 +95,7 @@ fileprivate func addMyProgram(_ model: Model) {
         
         workout.addExercise(name: "Heavy Bench")
         workout.addExercise(name: "OHP")
+        workout.addExercise(name: "DB OHP")
         workout.addExercise(name: "Chin Ups")
         
         program.addWorkout(workout)
