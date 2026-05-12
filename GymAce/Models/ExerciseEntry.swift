@@ -101,12 +101,14 @@ final class ExerciseEntry: Codable {
                 return d.secs[setIndex]
             }
         case .percent(let d):
+            // TODO don't have rest for the last set in the last exercise in a workout
             return d.rest
         case .reps(let d):
+            // TODO don't have rest for the last set in the last exercise in a workout
             var index = fixedIndex(exercise)
             index -= d.warmups.count
             if index >= 0 && index < d.worksets.count {
-                return d.rest    // TODO should return nil for the last set of the last exercise in a workout
+                return d.rest
             }
         }
         return nil

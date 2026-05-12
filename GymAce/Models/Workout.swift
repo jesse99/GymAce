@@ -14,6 +14,8 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     
     var version: Int = 1
 
+    var notes = ""      // TODO support this?
+
     var id = UUID()
 
     init(_ name: String, _ schedule: Schedule) {
