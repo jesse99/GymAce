@@ -203,6 +203,9 @@ final class ExerciseEntry: Codable {
     
     // Shown first in the exercise view, e.g. "Workset 1 of 3" or "Set 1 of 3".
     func headline(_ exercise: Exercise) -> String {
+        if finished(exercise) {
+            return "Done"
+        }
         var index = fixedIndex(exercise)
         switch exercise.data {
             case .durations(let d):
@@ -231,9 +234,14 @@ final class ExerciseEntry: Codable {
     func subhead(_ model: Model, _ program: Program, _ exercise: Exercise) -> String {
         var suffix = ""
         if let actual = actualWeight(model, program) {
-            suffix = " @ \(actual.text())"
+            suffix = "\(actual.text())"
         }
         
+        if finished(exercise) {
+            return "\(suffix) next"
+        }
+        suffix = " @ \(suffix)"
+
         let index = fixedIndex(exercise)
         switch exercise.data {
             case .durations(let d):
@@ -272,7 +280,10 @@ final class ExerciseEntry: Codable {
     }
     
     // Shown third in the exercise view, e.g. "45 + 2.5".
-    func footer(_ model: Model, _ program: Program) -> String? {
+    func footer(_ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
+        if finished(exercise) {
+            return ""
+        }
         if let actual = actualWeight(model, program) {
             return actual.details()
         }
@@ -281,6 +292,9 @@ final class ExerciseEntry: Codable {
     
     // Shown fourth in the exercise view, e.g. "90% of 225 lbs".
     func subfooter(_ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
+        if finished(exercise) {
+            return ""
+        }
         switch exercise.data {
         case .reps(let d):
             if let exercise = program.findExercise(name), let weight = exercise.findWeight(program) {

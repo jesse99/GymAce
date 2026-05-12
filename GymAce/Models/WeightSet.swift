@@ -216,7 +216,7 @@ extension WeightSet {
         }
     }
     
-    /// Return the next weight larger than target..
+    /// Return the next weight larger than target.
     func advance(target: Float) -> ActualWeight {
         switch self {
             case .discrete(let d):

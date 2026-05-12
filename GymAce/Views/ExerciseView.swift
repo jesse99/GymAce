@@ -28,7 +28,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 .font(Font.body)
             
             // 45x2
-            if let s = entry.footer(model, program) {
+            if let s = entry.footer(model, program, exercise) {
                 Text(s)
                     .font(Font.body)
                     .padding(.bottom, 2)
@@ -50,6 +50,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             
             // Next/Finished button
             if case .finished = entry.mode {
+                if canSetWeight() {
+                    Stepper("Weight", onIncrement: advanceWeight, onDecrement: dropWeight)
+                    .fixedSize()
+                }
                 Button("Finished") {
                     // We won't call done if the user swipes back but it seems to make
                     // sense to call done only when the user presses Finished...
@@ -172,6 +176,33 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
     }
     
+    private func canSetWeight() -> Bool {
+        if case .percent = exercise.data {
+            return false
+        }
+        return exercise.weight != nil && exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
+    }
+    
+    private func advanceWeight() {
+        if let w = exercise.weight {
+            if let wn = exercise.weightSet {
+                if let ws = model.weightSets[wn] {
+                    exercise.weight = ws.advance(target: w).value()
+                }
+            }
+        }
+    }
+
+    private func dropWeight() {
+        if let w = exercise.weight {
+            if let wn = exercise.weightSet {
+                if let ws = model.weightSets[wn] {
+                    exercise.weight = ws.lower(target: w - 0.001).value()
+                }
+            }
+        }
+    }
+    
     private func nextTitle() -> String {
         if case .durations = exercise.data {
             return "Start"
@@ -259,6 +290,17 @@ private func completedView(_ snapshot: Snapshot) -> some View {
 }
 
 #Preview("second") {
+    let model = previewModel()
+    let program = model.programs[0]
+    let workout = program.workouts[0]
+    let entry = workout.entries[1]
+    let exercise = program.findExercise(entry.name)!
+    NavigationStack {
+        ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
+    }
+}
+
+#Preview("third") {
     let model = previewModel()
     let program = model.programs[0]
     let workout = program.workouts[1]
