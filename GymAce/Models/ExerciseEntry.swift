@@ -94,20 +94,33 @@ final class ExerciseEntry: Codable {
         return 0
     }
     
-    func rest(_ exercise: Exercise) -> Int? {
+    func rest(_ workout: Workout, _ exercise: Exercise) -> Int? {
         switch exercise.data {
         case .durations(let d):
             if setIndex >= 0 && setIndex < d.secs.count {
                 return d.secs[setIndex]
             }
         case .percent(let d):
-            // TODO don't have rest for the last set in the last exercise in a workout
+            // Don't rest for the last set and last execise in a workout.
+            if let last = workout.entries.last, last.name == exercise.name, setIndex == d.warmups.count + d.worksets.count - 1 {
+                return nil
+            }
             return d.rest
         case .reps(let d):
-            // TODO don't have rest for the last set in the last exercise in a workout
             var index = fixedIndex(exercise)
             index -= d.warmups.count
             if index >= 0 && index < d.worksets.count {
+                if let last = workout.entries.last, last.name == exercise.name, index == d.worksets.count - 1 {
+                    return nil
+                }
+                return d.rest
+            }
+
+            index -= d.worksets.count
+            if index >= 0 && index < d.backoff.count {
+                if let last = workout.entries.last, last.name == exercise.name, index == d.backoff.count - 1 {
+                    return nil
+                }
                 return d.rest
             }
         }
@@ -224,8 +237,15 @@ final class ExerciseEntry: Codable {
                 if index < d.backoff.count {
                     return "Backoff \(index + 1) of \(d.backoff.count)"
                 }
-            case .percent(_):
-                return "Set \(index + 1)?"
+            case .percent(let d):
+                if index < d.warmups.count {
+                    return "Warmup \(index + 1) of \(d.warmups.count)"
+                }
+                
+                index -= d.warmups.count
+                if index < d.worksets.count {
+                    return "Workset \(index + 1) of \(d.worksets.count)"
+                }
         }
         return ""
     }
@@ -238,6 +258,9 @@ final class ExerciseEntry: Codable {
         }
         
         if finished(exercise) {
+            if suffix.isEmpty {
+                return ""
+            }
             return "\(suffix) next"
         }
         suffix = " @ \(suffix)"

@@ -78,7 +78,7 @@ fileprivate func addPreviewExercises(_ program: Program) {
     exercise = makeReps("Light Face Pulls", "Face Pull", worksets: reps5, weights: "Cable Machine", weight: 40.0, rest: nil)
     program.exercises.append(exercise)
 
-    exercise = makeReps("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: nil)
+    exercise = makeReps("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 10)
     program.exercises.append(exercise)
 
     exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [10, 20, 30])

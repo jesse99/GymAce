@@ -25,7 +25,7 @@ struct WorkoutView: View {
                 if let exercise = program.findExercise(entry.name) {
                     GridRow {
                         NavigationLink {
-                            ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
+                            ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
                         } label: {
                             Text(entry.name)
                         }

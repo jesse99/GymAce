@@ -5,6 +5,7 @@ import SwiftUI
 struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to scale font sizes
     var model: Model        // see https://www.swiftyplace.com/blog/swiftui-font-and-texts
     var program: Program
+    var workout: Workout
     var exercise: Exercise
     @Bindable var entry: ExerciseEntry
     @Environment(\.dismiss) var dismiss 
@@ -119,7 +120,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         .labelsHidden()
                     }
                     Button(nextTitle()) {
-                        if let rest = entry.rest(exercise) {
+                        if let rest = entry.rest(workout, exercise) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
                         } else {
                             entry.completedSet()
@@ -285,7 +286,7 @@ private func completedView(_ snapshot: Snapshot) -> some View {
     let entry = workout.entries[0]
     let exercise = program.findExercise(entry.name)!
     NavigationStack {
-        ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
+        ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
     }
 }
 
@@ -296,7 +297,7 @@ private func completedView(_ snapshot: Snapshot) -> some View {
     let entry = workout.entries[1]
     let exercise = program.findExercise(entry.name)!
     NavigationStack {
-        ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
+        ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
     }
 }
 
@@ -307,6 +308,6 @@ private func completedView(_ snapshot: Snapshot) -> some View {
     let entry = workout.entries[0]
     let exercise = program.findExercise(entry.name)!
     NavigationStack {
-        ExerciseView(model: model, program: program, exercise: exercise, entry: entry)
+        ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
     }
 }
