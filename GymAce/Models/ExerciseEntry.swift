@@ -62,7 +62,7 @@ final class ExerciseEntry: Codable {
         return false
     }
 
-    /// The reps that the user is expected to do. only used when the number of reps is variable.
+    /// The reps that the user is expected to do, only used when the number of reps is variable.
     func expectedReps(_ exercise: Exercise) -> Int {
         if case let .reps(d) = exercise.data {
             var index = fixedIndex(exercise)
@@ -140,29 +140,6 @@ final class ExerciseEntry: Codable {
 
     /// Start the exercise all over (or for the first time).
     func reset(_ model: Model, _ program: Program, _ exercise: Exercise) {
-        func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
-            // Usually we'll just return reps.min except for a few cases:
-            if let last = exercise.latestCompleted() {
-                if let new = exercise.weight, let old = last.weight {
-                    if new < old {
-                        // 1) the user has dropped the weight
-                        // Possible that they can't now do max, but they should be close to that...
-                        return reps.max
-                    } else if new == old {
-                        // 2) the user is doing the same weight so the expected is whatever
-                        // they last did clamped to what the current min/max is.
-                        if index < last.sets.count {
-                            switch last.sets[index] {
-                            case .reps(let n): return reps.clamp(n)
-                            default: return reps.min
-                            }
-                        }
-                    }
-                }
-            }
-            return reps.min
-        }
-        
         setIndex = 0
         if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
             current = Completed(weight: exercise.findWeight(program), units: ws.units)
@@ -277,10 +254,14 @@ final class ExerciseEntry: Codable {
                 
                 index -= d.warmups.count
                 if index < d.worksets.count {
-                    if d.worksets[index].min == d.worksets[index].max {
-                        return "\(d.worksets[index].min) reps" + suffix
+                    var minReps = self.expectedReps(exercise)
+                    if minReps == 0 {
+                        minReps = d.worksets[index].min
+                    }
+                    if minReps == d.worksets[index].max {
+                        return "\(minReps) reps" + suffix
                     } else {
-                        return "\(d.worksets[index].min)-\(d.worksets[index].max) reps" + suffix
+                        return "\(minReps)-\(d.worksets[index].max) reps" + suffix
                     }
                 }
                 
@@ -459,4 +440,27 @@ struct HistorySnapshot: RandomAccessCollection {
             return nil
         }
     }
+}
+
+func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
+    // Usually we'll just return reps.min except for a few cases:
+    if let last = exercise.latestCompleted() {
+        if let new = exercise.weight, let old = last.weight {
+            if new < old {
+                // 1) the user has dropped the weight
+                // Possible that they can't now do max, but they should be close to that...
+                return reps.max
+            } else if new == old {
+                // 2) the user is doing the same weight so the expected is whatever
+                // they last did clamped to what the current min/max is.
+                if index < last.sets.count {
+                    switch last.sets[index] {
+                    case .reps(let n): return reps.clamp(n)
+                    default: return reps.min
+                    }
+                }
+            }
+        }
+    }
+    return reps.min
 }

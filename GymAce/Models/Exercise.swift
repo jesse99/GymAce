@@ -291,18 +291,24 @@ final class Exercise: Codable {
         }
         switch data {
             case .reps(let r):
-                let a = r.worksets.map {
-                    if $0.min == $0.max {
-                        if $0.max == 1 {
+                var a: [(Int, Int)] = []
+                for i in 0..<r.worksets.count {
+                    let min = findExpected(self, r.worksets[i], i)
+                    let max = r.worksets[i].max
+                    a.append((min, max))
+                }
+                let b = a.map {
+                    if $0.0 == $0.1 {
+                        if $0.1 == 1 {
                             "1 rep"
                         } else {
-                            "\($0.min) reps"
+                            "\($0.0) reps"
                         }
                     } else {
-                        "\($0.min)-\($0.max) reps"
+                        "\($0.0)-\($0.1) reps"
                     }
                 }
-                return joinLabels(a) + suffix
+                return joinLabels(b) + suffix
             case .durations(let d):
                 let a = d.secs.map {"\($0)s"}
                 return joinLabels(a) + suffix
