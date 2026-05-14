@@ -4,7 +4,18 @@ extension Date {
     /// Returns the number of days from self to rhs. 0 got today, 1 for tomrrow, -1 for yesterday, etc.
     func daysBetween(_ rhs: Date) -> Int? {
         let calendar = Calendar.current
-        return calendar.dateComponents([.day], from: self, to: rhs).day
+        if calendar.component(.year, from: self) == calendar.component(.year, from: rhs) {
+            return rhs.julianDay() - self.julianDay()
+        } else {
+            return nil  // TODO use https://swiftpackageindex.com/sbooth/juliandaynumber/main/documentation/juliandaynumber/juliancalendar so that this works for year changes?
+        }
+    }
+    
+    func julianDay() -> Int {
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: self) % 100 // Last two digits of year
+        let day = calendar.ordinality(of: .day, in: .year, for: self) ?? 0
+        return year * 1000 + day
     }
 
     /// Returns a string representing the number of days between two dates, e.g. 0 => "Today",
