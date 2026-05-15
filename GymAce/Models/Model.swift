@@ -9,6 +9,12 @@ final class Model: Codable {
     var weightSets: [String: WeightSet] = [:]
     var programs: [Program] = []
     var activeProgram: String = ""
+    
+    func fixup() {
+        for p in programs {
+            p.fixup()
+        }
+    }
         
     func active() -> Program? {
         return programs.first(where: {$0.name == activeProgram})
@@ -33,6 +39,7 @@ final class Model: Codable {
         do {
             let data = try Data(contentsOf: url)
             let model = try JSONDecoder().decode(Model.self, from: data)
+            model.fixup()
             return model
         } catch {
             return Model()

@@ -252,6 +252,12 @@ final class Exercise: Codable {
         self.data = .percent(percent)
     }
     
+    func fixup() {
+//        if self.weightSet == "Dual" {
+//            self.weightSet = "Dual Plates"
+//        }
+    }
+        
     /// Find the weight the user should use for this exercise. Normally this is just self.weight but
     /// for percent exercises it'll be different.
     func findWeight(_ program: Program) -> Float? {

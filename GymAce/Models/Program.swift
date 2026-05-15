@@ -34,6 +34,15 @@ final class Program: Codable, Identifiable {
         self.name = name
     }
     
+    func fixup() {
+        for e in exercises {
+            e.fixup()
+        }
+        for w in workouts {
+            w.fixup()
+        }
+    }
+        
     func addWorkout(_ workout: Workout) {
         workouts.append(workout)
     }

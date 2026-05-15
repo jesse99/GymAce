@@ -23,6 +23,12 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         self.schedule = schedule
     }
 
+    func fixup() {
+        for e in entries {
+            e.fixup()
+        }
+    }
+        
     func addExercise(name: String) {
         let entry = ExerciseEntry(name: name)
         entries.append(entry)

@@ -11,6 +11,12 @@ struct WorkoutView: View {
     // TODO should Workout have info about the current workout?
     //      eg how long has been spent on an exercise
     //      would need some logic to invalidate this
+    // TODO when a workout starts may want to tell Apple watch
+    //      see https://developer.apple.com/documentation/HealthKit/running-workout-sessions
+    //      when last exercise in a workout is completed stop the workout
+    // TODO may also want to allow background processing via workout-processing
+    //      see https://developer.apple.com/documentation/xcode/configuring-background-execution-modes
+    //      normally apps are suspended when in the background so this might make vibrate more reliable
     var body: some View {
         Grid( horizontalSpacing: 20, verticalSpacing: 10 ) {
             GridRow {
@@ -22,33 +28,34 @@ struct WorkoutView: View {
                     .gridColumnAlignment( .leading )
             }
             ForEach($workout.entries, id: \.name) { $entry in
-                if let exercise = program.findExercise(entry.name) {
-                    GridRow {
-                        NavigationLink {
-                            ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
-                        } label: {
-                            Text(entry.name)
+                if entry.enabled {
+                    if let exercise = program.findExercise(entry.name) {
+                        GridRow {
+                            NavigationLink {
+                                ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
+                            } label: {
+                                Text(entry.name)
+                            }
+                            .navigationLinkIndicatorVisibility(.hidden)
+                            .gridColumnAlignment(.leading)
+                            .foregroundColor(fgColor(entry, exercise))
+                            
+                            Text(exercise.details(model, program))
+                                .gridColumnAlignment( .leading )
+                            
+                            Text("-")   // TODO implement this, will also need a footer with total duration
+                                .gridColumnAlignment( .leading )
                         }
-                        .navigationLinkIndicatorVisibility(.hidden)
-                        .gridColumnAlignment(.leading)
-                        .foregroundColor(fgColor(entry, exercise))
-                        
-                        Text(exercise.details(model, program))
-                            .gridColumnAlignment( .leading )
-                        
-                        Text("-")   // TODO implement this, will also need a footer with total duration
-                            .gridColumnAlignment( .leading )
+                    } else {
+                        GridRow {
+                            Text(entry.name)
+                                .gridColumnAlignment(.leading )
+                            Text("not found")
+                                .gridColumnAlignment( .leading )
+                            Text("-")
+                                .gridColumnAlignment( .leading )
+                        }
                     }
-                } else {
-                    GridRow {
-                        Text(entry.name)
-                            .gridColumnAlignment(.leading )
-                        Text("not found")
-                            .gridColumnAlignment( .leading )
-                        Text("-")
-                            .gridColumnAlignment( .leading )
-                    }
-
                 }
             }
         }
@@ -58,7 +65,7 @@ struct WorkoutView: View {
     }
     
     func fgColor(_ entry: ExerciseEntry, _ exercise: Exercise) -> Color {
-        if let latest = exercise.latestCompleted(), let completed = latest.completed, completed.daysBetween(Date()) == 0, entry.current == nil {
+        if let latest = exercise.latestCompleted(), let completed = latest.completed, completed.daysBetween(Date()) == 0 {
             return .black
         } else {
             return .blue

@@ -71,7 +71,7 @@ fileprivate func addMyExercises(_ program: Program) {
     exercise = makeReps("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Dual Plates", weight: 235, rest: nil)
     program.exercises.append(exercise)
     
-    exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual", rest: Int(3.0*60))
+    exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual Plates", rest: Int(3.0*60))
     program.exercises.append(exercise)
 
     exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))

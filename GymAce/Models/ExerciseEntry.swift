@@ -33,7 +33,7 @@ final class ExerciseEntry: Codable {
     /// Set if the user is currently performing the exercise. Added to Exercise.history if the user finishes the exercise.
     var current: Completed? = nil
 
-    var enabled: Bool = true    // TODO support this
+    var enabled: Bool = true
     
     // This is here instead of ExerciseView so that the user can back up to do things
     // like supersets without losing stuff like timers.
@@ -46,6 +46,12 @@ final class ExerciseEntry: Codable {
         self.setIndex = 0
     }
 
+    func fixup() {
+//        if name == "DB OHP" {
+//            enabled = false
+//        }
+    }
+        
     /// Returns true if the user is on a workset with an expected rep that may be changed to an actual rep.
     func hasExpected(_ exercise: Exercise) -> Bool {
         if case let .reps(d) = exercise.data {
@@ -240,7 +246,9 @@ final class ExerciseEntry: Codable {
             }
             return "\(suffix) next"
         }
-        suffix = " @ \(suffix)"
+        if !suffix.isEmpty {
+            suffix = " @ \(suffix)"
+        }
 
         let index = fixedIndex(exercise)
         switch exercise.data {
@@ -327,17 +335,23 @@ final class ExerciseEntry: Codable {
         case .durations(_):
             break
         case .percent(let d):
-            if let exercise = program.findExercise(name), let weight = exercise.findWeight(program) {
+            if let thisExercise = program.findExercise(name), let otherExercise = program.findExercise(d.other), let weight = otherExercise.weight {
                 var weightStr: String
-                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                if let wn = thisExercise.weightSet, let ws = model.weightSets[wn] {
                     weightStr = formatWeight(weight, ws.units)
                 } else {
                     weightStr = formatWeight(weight, .None)
                 }
                 
-                let index = fixedIndex(exercise)
+                var index = fixedIndex(exercise)
                 if index < d.warmups.count {
-                    return "\(d.warmups[index].percent)% of \(weightStr)"
+                    let p = Int(Float(d.percent) * Float(d.warmups[index].percent) / 100.0)
+                    return "\(p)% of \(weightStr)"
+                }
+
+                index -= d.warmups.count
+                if index < d.worksets.count {
+                    return "\(d.percent)% of \(weightStr)"
                 }
             }
         }
@@ -349,7 +363,7 @@ final class ExerciseEntry: Codable {
     }
 
     private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
-        if let exercise = program.findExercise(name), let weight = exercise.weight {
+        if let exercise = program.findExercise(name), let weight = findBaseWeight(program) {
             if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
                 switch exercise.data {
                     case .durations(_):
@@ -374,17 +388,33 @@ final class ExerciseEntry: Codable {
                     case .percent(let d):
                         var index = fixedIndex(exercise)
                         if index < d.warmups.count {
-                            let p = Float(d.warmups[index].percent) / 100.0
-                            return ws.closest(target: p*weight)
+                            let p = Float(d.percent) / 100.0
+                            let q = Float(d.warmups[index].percent) / 100.0
+                            return ws.closest(target: p*q*weight)
                         }
                         
                         index -= d.warmups.count
                         if index < d.worksets.count {
-                            return ws.lower(target: weight)
+                            let p = Float(d.percent) / 100.0
+                            return ws.lower(target: p*weight)
                         }
                 }
             }
             return ActualWeight(discrete: weight, .None)
+        }
+        return nil
+    }
+    
+    private func findBaseWeight(_ program: Program) -> Float? {
+        if let thisExercise = program.findExercise(name) {
+            switch thisExercise.data {
+            case .durations(_), .reps(_):
+                return thisExercise.weight
+            case .percent(let d):
+                if let otherExercise = program.findExercise(d.other) {
+                    return otherExercise.weight
+                }
+            }
         }
         return nil
     }
