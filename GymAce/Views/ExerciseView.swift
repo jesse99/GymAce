@@ -159,7 +159,6 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         .onAppear {
             entry.started(model, program, exercise)
         }
-//        Spacer()
         TabView {
             List {
                 ForEach(entry.history(exercise), id: \.index) {

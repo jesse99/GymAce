@@ -37,7 +37,7 @@ fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedR
 }
 
 fileprivate func makePercent(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [Int], weights: String, rest: Int) -> Exercise {
-    let percent = PercentData(other: other, percent: percent, warmups: warmups, worksets: worksets)
+    let percent = PercentData(other: other, percent: percent, warmups: warmups, worksets: worksets, rest: rest)
     return Exercise(name: name, formalName: formalName, percent: percent, weights: weights)
 }
 

@@ -256,6 +256,18 @@ final class Exercise: Codable {
 //        if self.weightSet == "Dual" {
 //            self.weightSet = "Dual Plates"
 //        }
+        if name == "Light Bench" {
+            if case .percent(var d) = data, d.rest == nil {
+                d.rest = Int(3.0*60)
+                self.data = .percent(d)
+            }
+        }
+        if name == "Light Squat" {
+            if case .percent(var d) = data, d.rest == nil {
+                d.rest = Int(3.5*60)
+                self.data = .percent(d)
+            }
+        }
     }
         
     /// Find the weight the user should use for this exercise. Normally this is just self.weight but

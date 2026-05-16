@@ -107,11 +107,16 @@ final class ExerciseEntry: Codable {
                 return d.secs[setIndex]
             }
         case .percent(let d):
-            // Don't rest for the last set and last execise in a workout.
-            if let last = workout.entries.last, last.name == exercise.name, setIndex == d.warmups.count + d.worksets.count - 1 {
-                return nil
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            if index >= 0 && index < d.worksets.count {
+                // Don't rest for the last set and last execise in a workout.
+                if let last = workout.entries.last, last.name == exercise.name, index == d.worksets.count - 1 {
+                    return nil
+                }
+                return d.rest
             }
-            return d.rest
+            return nil
         case .reps(let d):
             var index = fixedIndex(exercise)
             index -= d.warmups.count
@@ -147,10 +152,15 @@ final class ExerciseEntry: Codable {
     /// Start the exercise all over (or for the first time).
     func reset(_ model: Model, _ program: Program, _ exercise: Exercise) {
         setIndex = 0
-        if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-            current = Completed(weight: exercise.findWeight(program), units: ws.units)
+        if let w = exercise.findWeight(program) {
+            if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                let weight = ws.lower(target: w)
+                current = Completed(weight: weight.value(), units: ws.units)
+            } else {
+                current = Completed(weight: w, units: .None)
+            }
         } else {
-            current = Completed(weight: exercise.findWeight(program), units: .None)
+            current = Completed(weight: nil, units: .None)
         }
         
         // Pre-populate sets with whatever the user is expected to do. For reps, at
