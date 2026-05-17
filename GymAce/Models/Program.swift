@@ -56,6 +56,34 @@ final class Program: Codable, Identifiable {
         return nil
     }
     
+    func usesWeeks() -> Bool {
+        for w in workouts {
+            if w.weeks != nil {
+                return true
+            }
+        }
+        return false
+    }
+    
+    func setCurrentWeek(_ n: Int) {
+        // Initially set started to the start of this week.
+        let calendar = Calendar.current
+        if let interval = calendar.dateInterval(of: .weekOfYear, for: Date()) {
+            started = interval.start
+        } else {
+            started = Date()
+        }
+        
+        // Then advance backward by n - 1 weeks. This can set the current week to
+        // something larger than totalWeeks but that's OK.
+        if n > 1 {
+            if let nextWeek = calendar.date(byAdding: .weekOfYear, value: -(n - 1), to: started!) {
+                started = nextWeek
+            }
+        }
+//        print("started: \(started!)")
+    }
+
     private func totalWeeks() -> Int {
         var total = 1
         for w in workouts {

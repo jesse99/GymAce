@@ -4,7 +4,9 @@ struct EditProgram: View {
     @Bindable var model: Model
     @Bindable var program: Program
     @State private var showNameHelp = false
-    
+    @State private var showCurrentWeekHelp = false
+    @State private var malformedCurrentWeek: String? = nil
+
     // Note that here we are always editing the active program so we do know which name to use.
     private var nameBinding: Binding<String> {
         Binding(
@@ -17,6 +19,31 @@ struct EditProgram: View {
         !model.activeProgram.isEmpty
     }
 
+    private var currentWeekBinding: Binding<String> {
+        Binding(
+            get: {
+                if let w = program.currentWeek(on: Date()) {
+                    return "\(w)"
+                } else {
+                    return ""
+                }
+            },
+            set: {
+                if let n = Int($0) {
+                    if n > 0 {
+                        program.setCurrentWeek(n)
+                        malformedCurrentWeek = nil
+                    } else {
+                        malformedCurrentWeek = "Current weeks cannot be 0."
+                    }
+                } else {
+                    // Note that, if there are workouts with weeks, we need a current week.
+                    malformedCurrentWeek = "Current week should be a 1-based number."
+                }
+            }
+        )
+    }
+    
     var body: some View {
         VStack {
             Form {
@@ -46,10 +73,33 @@ struct EditProgram: View {
                         .foregroundColor(.red)
                         .font(.footnote)
                 }
+
+                if program.usesWeeks() {
+                    HStack {
+                        TextField("Current week, e.g. 1", text: currentWeekBinding)
+                            .keyboardType(.numberPad)
+                            .textFieldStyle(.roundedBorder)
+                        Spacer()
+                        Button("", systemImage: "info.circle") {
+                            showCurrentWeekHelp.toggle()
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.leading, 5)
+                    }
+                    if showCurrentWeekHelp {
+                        Text("The 1-based week number for the current week. Used when scheduling workouts that happen on specified weeks.")
+                            .foregroundColor(.blue)
+                            .font(.footnote)
+                    }
+                    if let m = malformedCurrentWeek {
+                        Text(m)
+                            .foregroundColor(.red)
+                            .font(.footnote)
+                    }
+                }
             }
             .formStyle(.columns)    // only decent way I can find to stop the form from taking way too much vertical space
             .padding(7)
-                        
             // Note that we don't allow these rows to be moved in edit mode
             // because in ContentView they're sorted by due date.
             List {

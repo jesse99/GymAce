@@ -27,9 +27,9 @@ extension Program {
 
         let calendar = Calendar.current
         let week = currentWeek(on: on)
-        print("week: \(week!)")
+//        print("week: \(week!)")
         for workout in self.workouts {
-            print("workout: \(workout.name) weeks: \(workout.weeks!)")
+//            print("workout: \(workout.name) weeks: \(workout.weeks!)")
             if let r = workout.weeks, let w = week, !r.contains(w) {
                 continue
             }

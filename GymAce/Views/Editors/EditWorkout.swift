@@ -195,28 +195,29 @@ struct EditWorkout: View {
                         malformedWeeks = "Weeks should be formated as '1-4' or '1'."
                     }
                 } else if parts.count == 1 {
-                    if let l = Int(parts[0]) {
-                        workout.weeks = l...l
-                        malformedWeeks = nil
-                    } else {
-                        malformedWeeks = "Weeks should be formated as '1-4' or '1'."
-                    }
+                    setWeeks(String(parts[0]), String(parts[0]))
                 } else if parts.count == 2 {
-                    if let l = Int(parts[0]), let r = Int(parts[1]) {
-                        if l <= r {
-                            workout.weeks = l...r
-                            malformedWeeks = nil
-                        } else {
-                            malformedWeeks = "First week should be less than or equal to second week."
-                        }
-                    } else {
-                        malformedWeeks = "Weeks should be formated as '1-4' or '1'."
-                    }
+                    setWeeks(String(parts[0]), String(parts[1]))
                 } else {
                     malformedWeeks = "Weeks should be formated as '1-4' or '1'."
                 }
             }
         )
+    }
+    
+    private func setWeeks(_ lower: String, _ upper: String) {
+        guard let l = Int(lower), let u = Int(upper) else {
+            malformedWeeks = "Weeks should be empty or a 1-based number or range."
+            return
+        }
+        if l < 1 || u < 1 {
+            malformedWeeks = "Weeks should be empty or a 1-based number or range."
+        } else if l > u {
+            malformedWeeks = "First week should be less than or equal to second week."
+        } else {
+            workout.weeks = l...u
+            malformedWeeks = nil
+        }
     }
 
     // TODO use onAppear to make the name textbox the focus?
