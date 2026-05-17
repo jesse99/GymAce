@@ -98,6 +98,7 @@ func addPreviewProgram(_ model: Model) {
     func addUpper(_ program: Program) {
         let schedule = Schedule.days(Weekdays(days: [2, 4]))    // mon and wed
         let workout = Workout("Upper", schedule)
+        workout.weeks = 1...3
         
         workout.addExercise(name: "Light Bench")
         workout.addExercise(name: "Heavy Bench")
@@ -111,6 +112,7 @@ func addPreviewProgram(_ model: Model) {
     func addLower(_ program: Program) {
         let schedule = Schedule.days(Weekdays(days: [6]))       // friday
         let workout = Workout("Lower", schedule)
+        workout.weeks = 1...3
 
         workout.addExercise(name: "Quad Stretch")
         workout.addExercise(name: "Squat")
@@ -120,8 +122,9 @@ func addPreviewProgram(_ model: Model) {
     }
 
     func addActiveRest(_ program: Program) {
-        let schedule = Schedule.every(2)
+        let schedule = Schedule.anyDay
         let workout = Workout("Active Rest", schedule)
+        workout.weeks = 4...4
 
         workout.addExercise(name: "Quad Stretch")
         workout.addExercise(name: "Third World Squat")

@@ -12,9 +12,14 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     
     var enabled: Bool = true    // TODO support this
     
-    var version: Int = 1
-
+    /// The week of the very first workout in a program is considered to be week 1. Workouts may be
+    /// optionally scheduled to happen only during a range of weeks, e.g. weeks 1-6 for regular
+    /// workouts and week 7 for a rest workout.
+    var weeks: ClosedRange<Int>? = nil
+    
     var notes = ""      // TODO support this?
+
+    var version: Int = 1
 
     var id = UUID()
 
@@ -23,7 +28,25 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         self.schedule = schedule
     }
 
-    func fixup() {
+    func fixup(_ program: Program) {
+        if program.name == "My" {
+            if weeks == nil {
+                if name != "Rest" {
+                    weeks = 1...7
+                } else {
+                    weeks = 8...8
+                }
+            }
+        } else if program.name == "Preview" {
+            if weeks == nil {
+                if name != "Active Rest" {
+                    weeks = 1...3
+                    schedule = Schedule.anyDay
+                } else {
+                    weeks = 4...4
+                }
+            }
+        }
         for e in entries {
             e.fixup()
         }

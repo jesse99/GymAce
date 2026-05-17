@@ -12,7 +12,7 @@ struct ProgramView: View {
     private var entries: [WorkoutEntry] {
         var e: [WorkoutEntry] = []
         let calendar = Calendar.current
-        for i in (0...20) {
+        for i in (0...30) {
             if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = model.active() {
                 e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
             }
@@ -41,7 +41,7 @@ struct ProgramView: View {
                                     NavigationLink {
                                         WorkoutView(model: model, program: program, workout: entry.workout)
                                     } label: {
-                                        Text(entry.workout.name)
+                                        Text(workoutName(entry.workout))
                                     }
                                     .navigationLinkIndicatorVisibility(.hidden)
                                     Spacer()
@@ -51,7 +51,7 @@ struct ProgramView: View {
                             }
                         }
                         .listStyle(.plain)
-                        .navigationTitle("\(model.activeProgram) Workouts")
+                        .navigationTitle(programTitle())
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Menu {
@@ -73,9 +73,30 @@ struct ProgramView: View {
                                 }
                             }
                         }
+                        
+                        // TODO get rid of this
+                        if let s = program.startWorkout() {
+                            Text("started on \(s.formatted(date: .abbreviated, time: .omitted))")
+                        }
                     }
                 }
             }
+        }
+    }
+    
+    func programTitle() -> String {
+        if let program = model.active(), let week = program.currentWeek(on: Date()) {
+            return "\(model.activeProgram) Workouts \(week)"    // TODO get rid of this
+        } else {
+            return "\(model.activeProgram) Workouts"
+        }
+    }
+
+    func workoutName(_ workout: Workout) -> String {
+        if let r = workout.weeks {
+            return "\(workout.name) \(r.lowerBound)-\(r.upperBound)"    // TODO get rid of this
+        } else {
+            return workout.name
         }
     }
 }

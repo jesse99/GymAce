@@ -11,36 +11,64 @@ final class Program: Codable, Identifiable {
 
     var workouts: [Workout] = []
     
+    /// Date the user started working out. This is used to compute the current week number.
+    var started: Date? = nil
+
     /// Shown in ProgramView. Typically has notes for things like how to handle progression.
     var note: String = ""   // TODO support this?
         
-    /// Number of weeks till the next rest days from the last rest.
-    var restWeek: Int? = nil    // TODO support this
-    
-    /// Number of days to rest.
-    var restDays: Int = 7
-    
-    /// Date the last rest started.
-    var lastRest: Date? = nil
-    
-    /// Shown in EditProgramsView when the program is selected.
-    var description = ""
+    var version: Int = 1
 
     var id = UUID()
-
-    var version: Int = 1
 
     init(_ name: String) {
         self.name = name
     }
     
     func fixup() {
+        if name == "My" && started == nil {
+            let calendar = Calendar.current
+            started = calendar.date(byAdding: .day, value: -7, to: Date())
+        }
         for e in exercises {
             e.fixup()
         }
         for w in workouts {
-            w.fixup()
+            w.fixup(self)
         }
+    }
+    
+    func didExercise() {
+        if started == nil {
+            started = Date()
+        }
+    }
+    
+    func currentWeek(on: Date) -> Int? {
+        let t = totalWeeks()
+        if t == 1 {
+            return 1
+        }
+        let s = started ?? oldestWorkout()
+        if let l = s.weekNumber(), let r = on.weekNumber() {
+            return (r - l) % t + 1
+        }
+        return nil
+    }
+    
+    private func totalWeeks() -> Int {
+        var total = 1
+        for w in workouts {
+            if let r = w.weeks, r.upperBound > total {
+                total = r.upperBound
+            }
+        }
+        return total
+    }
+        
+    // TODO get rid of this
+    func startWorkout() -> Date? {
+        return started ?? oldestWorkout()
     }
         
     func addWorkout(_ workout: Workout) {
@@ -53,5 +81,17 @@ final class Program: Codable, Identifiable {
     
     func findExercise(_ name: String) -> Exercise? {
         return exercises.first(where: {$0.name == name})
+    }
+    
+    private func oldestWorkout() -> Date {
+        var candidate = Date()  // we'll go ahead and use today if the user hasn't actually finished anything
+        for e in exercises {
+            if let o = e.history.first, let c = o.completed {
+                if c < candidate {
+                    candidate = c
+                }
+            }
+        }
+        return candidate
     }
 }

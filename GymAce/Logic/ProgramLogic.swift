@@ -26,15 +26,21 @@ extension Program {
         var candidates:[Workout] = []
 
         let calendar = Calendar.current
+        let week = currentWeek(on: on)
+        print("week: \(week!)")
         for workout in self.workouts {
+            print("workout: \(workout.name) weeks: \(workout.weeks!)")
+            if let r = workout.weeks, let w = week, !r.contains(w) {
+                continue
+            }
             switch workout.schedule {
             case .anyDay:
-                // We only schedule anyDay workouts for the current day to avoid clutter.
-                if calendar.isDate(on, inSameDayAs: today) {
+                // We only schedule anyDay workouts for the first available option to avoid clutter.
+                if workout.weeks != nil || calendar.isDate(on, inSameDayAs: today) {
                     candidates.append(workout)
                 }
             case .every(1): // like anyDay
-                if calendar.isDate(on, inSameDayAs: today) {
+                if workout.weeks != nil || calendar.isDate(on, inSameDayAs: today) {
                     candidates.append(workout)
                 }
             case .every(_):
@@ -50,8 +56,8 @@ extension Program {
             }
         }
         
-        let entries: [WorkoutEntry] = if let delta = today.daysBetween(on){
-            candidates.map { WorkoutEntry($0, delta: delta, today: today) }
+        let entries: [WorkoutEntry] = if let delta = today.daysBetween(on) {
+            candidates.map {WorkoutEntry($0, delta: delta, today: today)}
         } else {
             []
         }

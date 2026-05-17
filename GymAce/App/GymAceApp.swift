@@ -92,6 +92,7 @@ fileprivate func addMyProgram(_ model: Model) {
     func addBench(_ program: Program) {
         let schedule = Schedule.days(Weekdays(days: [3]))    // tues
         let workout = Workout("Bench", schedule)
+        workout.weeks = 1...6
         
         workout.addExercise(name: "Heavy Bench")
         workout.addExercise(name: "OHP")
@@ -104,7 +105,8 @@ fileprivate func addMyProgram(_ model: Model) {
     func addSquat(_ program: Program) {
         let schedule = Schedule.days(Weekdays(days: [5]))    // thurs
         let workout = Workout("Squat", schedule)
-        
+        workout.weeks = 1...7
+
         workout.addExercise(name: "Light Bench")
         workout.addExercise(name: "Quad Stretch")
         workout.addExercise(name: "Heavy Squat")
@@ -116,11 +118,20 @@ fileprivate func addMyProgram(_ model: Model) {
     func addDeadlift(_ program: Program) {
         let schedule = Schedule.days(Weekdays(days: [1]))    // sun
         let workout = Workout("Deadlift", schedule)
-        
+        workout.weeks = 1...7
+
         workout.addExercise(name: "Quad Stretch")
         workout.addExercise(name: "Light Squat")
         workout.addExercise(name: "Face Pulls")
         workout.addExercise(name: "Trap Deadlift")
+        
+        program.addWorkout(workout)
+    }
+
+    func addRest(_ program: Program) {
+        let schedule = Schedule.anyDay
+        let workout = Workout("Rest", schedule)
+        workout.weeks = 8...8
         
         program.addWorkout(workout)
     }
@@ -130,5 +141,6 @@ fileprivate func addMyProgram(_ model: Model) {
     addBench(program)
     addSquat(program)
     addDeadlift(program)
+    addRest(program)
     model.programs.append(program)
 }

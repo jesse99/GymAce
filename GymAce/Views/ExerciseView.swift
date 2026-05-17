@@ -59,6 +59,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     // We won't call done if the user swipes back but it seems to make
                     // sense to call done only when the user presses Finished...
                     entry.completedAll(exercise)
+                    program.didExercise()
                     model.save()
                     dismiss()
                 }
