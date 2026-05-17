@@ -6,6 +6,8 @@ struct EditWorkout: View {
     @Bindable var workout: Workout
     @State private var showNameHelp = false
     @State private var showScheduleHelp = false
+    @State private var showWeeksHelp = false
+    @State private var malformedWeeks: String? = nil
 
     @State private var anySchedule = Schedule.anyDay
     @State private var everySchedule = Schedule.anyDay
@@ -169,6 +171,54 @@ struct EditWorkout: View {
         }
     }
     
+    private var weeksBinding: Binding<String> {
+        Binding(
+            get: {
+                if let r = workout.weeks {
+                    if r.lowerBound == r.upperBound {
+                        return "\(r.lowerBound)"
+                    } else {
+                        return "\(r.lowerBound)-\(r.upperBound)"
+                    }
+                } else {
+                    return ""
+                }
+            },
+            set: {
+                let parts = $0.split(separator: "-")
+                if parts.count == 0 {
+                    let s = $0.trimmingCharacters(in: .whitespaces)
+                    if s.isEmpty {
+                        workout.weeks = nil
+                        malformedWeeks = nil
+                    } else {
+                        malformedWeeks = "Weeks should be formated as '1-4' or '1'."
+                    }
+                } else if parts.count == 1 {
+                    if let l = Int(parts[0]) {
+                        workout.weeks = l...l
+                        malformedWeeks = nil
+                    } else {
+                        malformedWeeks = "Weeks should be formated as '1-4' or '1'."
+                    }
+                } else if parts.count == 2 {
+                    if let l = Int(parts[0]), let r = Int(parts[1]) {
+                        if l <= r {
+                            workout.weeks = l...r
+                            malformedWeeks = nil
+                        } else {
+                            malformedWeeks = "First week should be less than or equal to second week."
+                        }
+                    } else {
+                        malformedWeeks = "Weeks should be formated as '1-4' or '1'."
+                    }
+                } else {
+                    malformedWeeks = "Weeks should be formated as '1-4' or '1'."
+                }
+            }
+        )
+    }
+
     // TODO use onAppear to make the name textbox the focus?
     var body: some View {
         Form {
@@ -195,6 +245,28 @@ struct EditWorkout: View {
                     .font(.footnote)
             } else if doesNameExist {
                 Text("There is already a workout with that name.")
+                    .foregroundColor(.red)
+                    .font(.footnote)
+            }
+
+            HStack {
+                TextField("Weeks, e.g. 1-4", text: weeksBinding)
+                    .keyboardType(.numbersAndPunctuation)
+                    .textFieldStyle(.roundedBorder)
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showWeeksHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showWeeksHelp {
+                Text("Schedule the workout only for this inclusive range of weeks, e.g. weeks 1-7 for most workouts, and week 8 for a deload or rest week.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+            if let m = malformedWeeks {
+                Text(m)
                     .foregroundColor(.red)
                     .font(.footnote)
             }
