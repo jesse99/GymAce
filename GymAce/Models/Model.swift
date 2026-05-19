@@ -9,7 +9,7 @@ final class Model: Codable {
     var weightSets: [String: WeightSet] = [:]
     var programs: [Program] = []
     var activeProgram: String = ""
-    
+        
     /// Set if the model (and child objects) may be dirty. Note that we don't track this exactly because it's cumbersome to
     /// track each bit of state (and doing something like a crc of the persisted model state is about as expensive as just
     /// doing a save and chews up CPU and battery if state didn't actually change).
@@ -55,7 +55,10 @@ final class Model: Codable {
             model.fixup()
             return model
         } catch {
-            return Model()
+            // Note that new fields are OK if they are optionals. Otherwise
+            // a cusom init(from decoder: Decoder) method is required to
+            // load old models.
+            fatalError("error loading model: \(error.localizedDescription)")
         }
     }
     
@@ -66,7 +69,7 @@ final class Model: Codable {
             try data.write(to: url)
         } catch {
             // TODO show an error to the user? tho dunno what they can do with it...
-            fatalError("error saving: \(error.localizedDescription)")
+            fatalError("error saving model: \(error.localizedDescription)")
         }
         dirty = false
     }
