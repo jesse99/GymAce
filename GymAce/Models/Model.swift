@@ -20,9 +20,9 @@ final class Model: Codable {
 //        let dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
 //        weightSets["Dual Plates"] = WeightSet.dual(dual)
 
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
-        weightSets["Trapbar"] = WeightSet.dual(dual)
+//        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+//        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
+//        weightSets["Trapbar"] = WeightSet.dual(dual)
 
         for p in programs {
             p.fixup()

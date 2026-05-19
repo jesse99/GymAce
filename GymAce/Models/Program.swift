@@ -30,12 +30,12 @@ final class Program: Codable, Identifiable {
 //            let calendar = Calendar.current
 //            started = calendar.date(byAdding: .day, value: -7, to: Date())
 //        }
-        if !workouts.contains(where: {$0.name == "Rest"}) {
-            let schedule = Schedule.anyDay
-            let workout = Workout("Rest", schedule)
-            workout.weeks = 8...8
-            addWorkout(workout)
-        }
+//        if !workouts.contains(where: {$0.name == "Rest"}) {
+//            let schedule = Schedule.anyDay
+//            let workout = Workout("Rest", schedule)
+//            workout.weeks = 8...8
+//            addWorkout(workout)
+//        }
 
         for e in exercises {
             e.fixup()
