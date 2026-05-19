@@ -24,6 +24,9 @@ struct EditPrograms: View {
                 }
             }
             .listStyle(.plain)
+            .onAppear {
+                model.dirty = true
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()

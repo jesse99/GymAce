@@ -268,6 +268,9 @@ final class Exercise: Codable {
 //                self.data = .percent(d)
 //            }
 //        }
+        if name == "Trap Deadlift" {
+            self.weightSet = "Trapbar"
+        }
     }
         
     /// Find the weight the user should use for this exercise. Normally this is just self.weight but

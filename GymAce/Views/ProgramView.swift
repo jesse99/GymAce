@@ -52,6 +52,11 @@ struct ProgramView: View {
                         }
                         .listStyle(.plain)
                         .navigationTitle(programTitle())
+                        .onAppear {
+                            if model.dirty {
+                                model.save()
+                            }
+                        }
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Menu {
@@ -62,9 +67,9 @@ struct ProgramView: View {
                                         Text("Edit Programs")
                                     }
 //                                    NavigationLink(destination: Text("Weight Sets")) {
-//                                        Text("Edit Weight Sets")  // TODO support these
+//                                        Text("Edit Weight Sets")  // TODO support these, make sure that this sets dirty
 //                                    }
-//                                    NavigationLink(destination: Text("Current Week")) {
+//                                    NavigationLink(destination: Text("Current Week")) { // TODO make sure that this sets dirty
 //                                        Text("Set Current Week")
 //                                    }
                                 } label: {
@@ -73,11 +78,6 @@ struct ProgramView: View {
                                 }
                             }
                         }
-                        
-                        // TODO get rid of this
-                        if let s = program.startWorkout() {
-                            Text("started on \(s.formatted(date: .abbreviated, time: .omitted))")
-                        }
                     }
                 }
             }
@@ -85,11 +85,7 @@ struct ProgramView: View {
     }
     
     func programTitle() -> String {
-        if let program = model.active(), let week = program.currentWeek(on: Date()) {
-            return "\(model.activeProgram) Workouts \(week)"    // TODO get rid of this
-        } else {
-            return "\(model.activeProgram) Workouts"
-        }
+        return "\(model.activeProgram) Workouts"
     }
 
     func workoutName(_ workout: Workout) -> String {

@@ -10,6 +10,11 @@ final class Model: Codable {
     var programs: [Program] = []
     var activeProgram: String = ""
     
+    /// Set if the model (and child objects) may be dirty. Note that we don't track this exactly because it's cumbersome to
+    /// track each bit of state (and doing something like a crc of the persisted model state is about as expensive as just
+    /// doing a save and chews up CPU and battery if state didn't actually change).
+    var dirty = false
+    
     func fixup() {
 //        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
 //        let dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
@@ -56,11 +61,13 @@ final class Model: Codable {
     
     func save() {
         do {
+            print("saving")
             let data = try JSONEncoder().encode(self)
             try data.write(to: url)
         } catch {
             // TODO show an error to the user? tho dunno what they can do with it...
             fatalError("error saving: \(error.localizedDescription)")
         }
+        dirty = false
     }
 }

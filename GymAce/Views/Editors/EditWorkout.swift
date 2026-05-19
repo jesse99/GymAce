@@ -2,6 +2,7 @@ import SwiftUI
 
 /// Used for both editing and adding new workouts.
 struct EditWorkout: View {
+    var model: Model
     @Bindable var program: Program
     @Bindable var workout: Workout
     @State private var showNameHelp = false
@@ -13,7 +14,8 @@ struct EditWorkout: View {
     @State private var everySchedule = Schedule.anyDay
     @State private var daysSchedule = Schedule.anyDay
 
-    init(program: Program, workout: Workout) {
+    init(model: Model, program: Program, workout: Workout) {
+        self.model = model
         self.program = program
         self.workout = workout
         
@@ -326,6 +328,9 @@ struct EditWorkout: View {
         .navigationTitle("Edit Workout")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(!isValid)
+        .onAppear {
+            model.dirty = true
+        }
     }
 }
 
@@ -334,7 +339,7 @@ struct EditWorkout: View {
     let program = model.programs[0]
     let workout = program.workouts[0]
     NavigationView {
-        EditWorkout(program: program, workout: workout)
+        EditWorkout(model: model, program: program, workout: workout)
     }
 }
 
@@ -343,7 +348,7 @@ struct EditWorkout: View {
     let program = model.programs[0]
     let workout = program.workouts[1]
     NavigationView {
-        EditWorkout(program: program, workout: workout)
+        EditWorkout(model: model, program: program, workout: workout)
     }
 }
 
@@ -352,6 +357,6 @@ struct EditWorkout: View {
     let program = model.programs[9]
     let workout = program.workouts[2]
     NavigationView {
-        EditWorkout(program: program, workout: workout)
+        EditWorkout(model: model, program: program, workout: workout)
     }
 }

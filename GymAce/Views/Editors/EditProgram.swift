@@ -106,7 +106,7 @@ struct EditProgram: View {
                 Section(header: Text("Workouts")) {
                     ForEach($program.workouts) { $workout in
                         NavigationLink {
-                            EditWorkout(program: program, workout: workout)
+                            EditWorkout(model: model, program: program, workout: workout)
                         } label: {
                             Text(workout.name)
                         }
@@ -115,6 +115,9 @@ struct EditProgram: View {
                 }
             }
             .listStyle(.plain)
+            .onAppear {
+                model.dirty = true
+            }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()

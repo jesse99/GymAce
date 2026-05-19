@@ -181,6 +181,8 @@ final class ExerciseEntry: Codable {
                 current!.sets.append(.reps(reps))
             }
         }
+        
+        mode = .performing
     }
     
     /// Called after each set is completed.
