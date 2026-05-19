@@ -345,7 +345,7 @@ final class ExerciseEntry: Codable {
         case .durations(_):
             break
         case .percent(let d):
-            if let thisExercise = program.findExercise(name), let otherExercise = program.findExercise(d.other), let weight = otherExercise.weight {
+            if let thisExercise = program.findExercise(name), let weight = findBaseWeight(program) {
                 var weightStr: String
                 if let wn = thisExercise.weightSet, let ws = model.weightSets[wn] {
                     weightStr = formatWeight(weight, ws.units)
@@ -422,6 +422,11 @@ final class ExerciseEntry: Codable {
                 return thisExercise.weight
             case .percent(let d):
                 if let otherExercise = program.findExercise(d.other) {
+                    if let last = otherExercise.history.last {
+                        if let weight = last.weight {
+                            return weight
+                        }
+                    }
                     return otherExercise.weight
                 }
             }

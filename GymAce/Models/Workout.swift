@@ -29,24 +29,24 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     }
 
     func fixup(_ program: Program) {
-        if program.name == "My" {
-            if weeks == nil {
-                if name != "Rest" {
-                    weeks = 1...7
-                } else {
-                    weeks = 8...8
-                }
-            }
-        } else if program.name == "Preview" {
-            if weeks == nil {
-                if name != "Active Rest" {
-                    weeks = 1...3
-                    schedule = Schedule.anyDay
-                } else {
-                    weeks = 4...4
-                }
-            }
-        }
+//        if program.name == "My" {
+//            if weeks == nil {
+//                if name != "Rest" {
+//                    weeks = 1...7
+//                } else {
+//                    weeks = 8...8
+//                }
+//            }
+//        } else if program.name == "Preview" {
+//            if weeks == nil {
+//                if name != "Active Rest" {
+//                    weeks = 1...3
+//                    schedule = Schedule.anyDay
+//                } else {
+//                    weeks = 4...4
+//                }
+//            }
+//        }
         for e in entries {
             e.fixup()
         }

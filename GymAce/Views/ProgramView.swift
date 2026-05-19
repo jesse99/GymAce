@@ -93,11 +93,7 @@ struct ProgramView: View {
     }
 
     func workoutName(_ workout: Workout) -> String {
-        if let r = workout.weeks {
-            return "\(workout.name) \(r.lowerBound)-\(r.upperBound)"    // TODO get rid of this
-        } else {
-            return workout.name
-        }
+        return workout.name
     }
 }
 
