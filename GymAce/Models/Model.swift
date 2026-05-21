@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce5").appendingPathExtension("json")
+fileprivate let url: URL = .documentsDirectory.appending(component: "GymAce7").appendingPathExtension("json")
 
 @Observable
 final class Model: Codable {
@@ -16,9 +16,9 @@ final class Model: Codable {
     var dirty = false
     
     func fixup() {
-//        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-//        let dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
-//        weightSets["Dual Plates"] = WeightSet.dual(dual)
+        var plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        var dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
+        self.weightSets["Dual Plates"] = WeightSet.dual(dual)
 
 //        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
 //        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
@@ -58,7 +58,8 @@ final class Model: Codable {
             // Note that new fields are OK if they are optionals. Otherwise
             // a cusom init(from decoder: Decoder) method is required to
             // load old models.
-            fatalError("error loading model: \(error.localizedDescription)")
+//            fatalError("error loading model: \(error.localizedDescription)")
+            return Model()
         }
     }
     

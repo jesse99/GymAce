@@ -85,7 +85,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     .padding(.top, 5)
                     Button(stopTitle()) {
-                        entry.completedSet()
+                        entry.completedSet(exercise)
                         if entry.finished(exercise) {
                             entry.mode = .finished
                         } else {
@@ -124,7 +124,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         if let rest = entry.rest(workout, exercise) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
                         } else {
-                            entry.completedSet()
+                            entry.completedSet(exercise)
                             
                             // Note that we don't go to picking here because if there's no rest
                             // we always show the picker.
@@ -245,7 +245,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
 private func completedView(_ snapshot: Snapshot) -> some View {
     HStack {
         // icon labeling how well the user did compared to prior workout
-        if snapshot.current.completed != nil || snapshot.finished {
+        if snapshot.finished {
             if let prior = snapshot.prior {
                 let better = snapshot.current.better(prior)
                 if better == 1 {
@@ -265,7 +265,7 @@ private func completedView(_ snapshot: Snapshot) -> some View {
         }
         
         // the date the workout happened
-        if let days = Date().daysBetween(snapshot.current.started) {
+        if let days = Date().daysBetween(snapshot.current.completed) {
             Text(Date().daysStr(days))
         } else {
             Text("?")
@@ -273,9 +273,7 @@ private func completedView(_ snapshot: Snapshot) -> some View {
         
         // details for the workout, TODO these need to be nav links so that the user can edit them
         // (but don't allow in progress to be edited)
-        if snapshot.current.completed != nil || snapshot.finished {
-            Text(snapshot.current.details())
-        }
+        Text(snapshot.current.details())
     }
 }
 

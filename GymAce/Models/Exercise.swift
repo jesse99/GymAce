@@ -11,50 +11,48 @@ enum CompletedSet: Codable {
     case percent(Int)
 }
 
+func completedDetails(_ sets: [CompletedSet], _ weight: Float?, _ units: Units) -> String {
+    if sets.isEmpty {
+        return ""
+    }
+    var trailer = ""
+    if let w = weight {
+        trailer = " @ " + formatWeight(w, units)
+    }
+
+    var labels: [String] = []
+    var suffix = ""
+    for s in sets {
+        switch s {
+        case .reps(let r):
+            labels.append("\(r)")
+            suffix = " reps"
+        case .percent(let r):
+            labels.append("\(r)")
+            suffix = " reps"
+        case .duration(let s):
+            labels.append(secsToStr(s))
+        }
+    }
+    return joinLabels(labels) + suffix + trailer
+}
+
 struct Completed: Codable, Comparable, Equatable {
     var sets: [CompletedSet]
     var weight: Float?
     var units: Units
-    var started: Date
-    var completed: Date?
+    var completed: Date
     
-    /// Returns true if the exercise was started long enough ago that it should be considered an exercise
-    /// that the user has abandoned.
-    var isStale: Bool {
-        let delta = started.distance(to: Date.now)
-        return delta/3600.0 > 4.0   // aka more than 4 hours
-    }
-    
-    init(weight: Float?, units: Units) {
-        self.sets = []
+    init(sets: [CompletedSet], weight: Float?, units: Units, completed: Date = Date()) {
+        self.sets = sets
         self.weight = weight
         self.units = units
-        self.started = Date()
-        self.completed = nil
+        self.completed = completed
     }
     
     /// Used to show the user what happened for that workout.
     func details() -> String {
-        var trailer = ""
-        if let weight = self.weight {
-            trailer = " @ " + formatWeight(weight, self.units)
-        }
-
-        var labels: [String] = []
-        var suffix = ""
-        for s in self.sets {
-            switch s {
-            case .reps(let r):
-                labels.append("\(r)")
-                suffix = " reps"
-            case .percent(let r):
-                labels.append("\(r)")
-                suffix = " reps"
-            case .duration(let s):
-                labels.append(secsToStr(s))
-            }
-        }
-        return joinLabels(labels) + suffix + trailer
+        return completedDetails(sets, weight, units)
     }
     
     // Returns +1 if self is better than rhs.
@@ -104,20 +102,11 @@ struct Completed: Codable, Comparable, Equatable {
     }
     
     static func ==(lhs: Completed, rhs: Completed) -> Bool {
-        if let l = lhs.completed, let r = rhs.completed {
-            return l == r
-        }
-        return rhs.completed == nil && rhs.completed == nil
+        return lhs.completed == rhs.completed
     }
 
     static func <(lhs: Completed, rhs: Completed) -> Bool {
-        if let l = lhs.completed, let r = rhs.completed {
-            return l < r
-        }
-        if rhs.completed == nil {
-            return true
-        }
-        return false
+        return lhs.completed < rhs.completed
     }
 }
 

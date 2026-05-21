@@ -65,7 +65,7 @@ struct WorkoutView: View {
     }
     
     func fgColor(_ entry: ExerciseEntry, _ exercise: Exercise) -> Color {
-        if let latest = exercise.latestCompleted(), let completed = latest.completed, completed.daysBetween(Date()) == 0 {
+        if let latest = exercise.latestCompleted(), latest.completed.daysBetween(Date()) == 0 {
             return .black
         } else {
             return .blue

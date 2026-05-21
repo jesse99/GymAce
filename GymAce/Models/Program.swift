@@ -121,9 +121,9 @@ final class Program: Codable, Identifiable {
     private func oldestWorkout() -> Date {
         var candidate = Date()  // we'll go ahead and use today if the user hasn't actually finished anything
         for e in exercises {
-            if let o = e.history.first, let c = o.completed {
-                if c < candidate {
-                    candidate = c
+            if let o = e.history.first {
+                if o.completed < candidate {
+                    candidate = o.completed
                 }
             }
         }

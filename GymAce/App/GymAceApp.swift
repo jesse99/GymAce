@@ -49,6 +49,7 @@ fileprivate func makePercent(_ name: String, _ formalName: String, _ other: Stri
 
 fileprivate func addMyExercises(_ program: Program) {
     let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+    let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
     let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
     
     let reps1 = [VariableReps(3, to: 5)]
@@ -81,10 +82,11 @@ fileprivate func addMyExercises(_ program: Program) {
     exercise = makeReps("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
     program.exercises.append(exercise)
 
-    exercise = makeReps("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
+    exercise = makeReps("OHP", "Overhead Press", warmups: owarmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
     program.exercises.append(exercise)
 
     exercise = makeReps("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+    exercise.enabled = false
     program.exercises.append(exercise)
 }
 
