@@ -354,7 +354,7 @@ struct EditWorkout: View {
 
 #Preview("Three") {
     let model = previewModel()
-    let program = model.programs[9]
+    let program = model.programs[0]
     let workout = program.workouts[2]
     NavigationView {
         EditWorkout(model: model, program: program, workout: workout)

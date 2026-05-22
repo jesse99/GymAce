@@ -16,10 +16,6 @@ final class Model: Codable {
     var dirty = false
     
     func fixup() {
-        var plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        var dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
-        self.weightSets["Dual Plates"] = WeightSet.dual(dual)
-
 //        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
 //        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
 //        weightSets["Trapbar"] = WeightSet.dual(dual)
@@ -58,8 +54,11 @@ final class Model: Codable {
             // Note that new fields are OK if they are optionals. Otherwise
             // a cusom init(from decoder: Decoder) method is required to
             // load old models.
-//            fatalError("error loading model: \(error.localizedDescription)")
-            return Model()
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+                return Model()
+            } else {
+                fatalError("error loading model: \(error.localizedDescription)")
+            }
         }
     }
     

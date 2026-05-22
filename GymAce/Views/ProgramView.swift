@@ -60,6 +60,9 @@ struct ProgramView: View {
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Menu {
+                                    NavigationLink(destination: EditExercises(model: model, program: program)) {
+                                        Text("Edit Exercises")
+                                    }
                                     NavigationLink(destination: EditProgram(model: model, program: program)) {
                                         Text("Edit Program")
                                     }
@@ -68,9 +71,6 @@ struct ProgramView: View {
                                     }
 //                                    NavigationLink(destination: Text("Weight Sets")) {
 //                                        Text("Edit Weight Sets")  // TODO support these, make sure that this sets dirty
-//                                    }
-//                                    NavigationLink(destination: Text("Current Week")) { // TODO make sure that this sets dirty
-//                                        Text("Set Current Week")
 //                                    }
                                 } label: {
                                     Image(systemName: "line.horizontal.3")

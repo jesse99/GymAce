@@ -255,7 +255,7 @@ extension WeightSet {
     }
     
     /// Returns the netxt weight larger than target.
-    func upper(target: Float) -> ActualWeight {
+    func upper(target: Float) -> ActualWeight { // TODO why do we also have advance?
         switch self {
             case .discrete(let d):
                 let (_, upper) = findDiscrete(target, d.weights);

@@ -214,8 +214,6 @@ final class Exercise: Codable {
     /// Exercise specific data.
     var data: ExerciseData
     
-    var enabled: Bool = true    // TODO support this
-
     var version: Int = 1
 
     init (name: String, formalName: String, durations: DurationsData, weights: String? = nil, weight: Float? = nil) {
@@ -259,6 +257,12 @@ final class Exercise: Codable {
 //        }
 //        if name == "Trap Deadlift" {
 //            self.weightSet = "Trapbar"
+//        }
+//        if name == "OHP" {
+//            let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+//            let reps3 = [VariableReps(3, to: 5), VariableReps(3, to: 5), VariableReps(3, to: 5)]
+//            let d = RepsData(warmups: owarmup, worksets: reps3, backoff: [], rest: Int(3.0*60))
+//            self.data = .reps(d)
 //        }
     }
         

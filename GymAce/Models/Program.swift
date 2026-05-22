@@ -109,13 +109,34 @@ final class Program: Codable, Identifiable {
     func addWorkout(_ workout: Workout) {
         workouts.append(workout)
     }
-        
+    
+    func deleteExercises(_ offsets: IndexSet) {
+        self.exercises.remove(atOffsets: offsets)
+    }
+
     func deleteWorkouts(_ offsets: IndexSet) {
         self.workouts.remove(atOffsets: offsets)
     }
     
     func findExercise(_ name: String) -> Exercise? {
         return exercises.first(where: {$0.name == name})
+    }
+    
+    func setExerciseName(_ exercise: Exercise, _ name: String) {
+        for w in workouts {
+            for e in w.entries {
+                if e.name == exercise.name {
+                    e.name = name
+                }
+            }
+        }
+        for e in exercises {
+            if case .percent(var d) = e.data, d.other == exercise.name {
+                d.other = name
+                e.data = .percent(d)
+            }
+        }
+        exercise.name = name
     }
     
     private func oldestWorkout() -> Date {

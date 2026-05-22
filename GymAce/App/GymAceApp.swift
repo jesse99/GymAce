@@ -86,7 +86,6 @@ fileprivate func addMyExercises(_ program: Program) {
     program.exercises.append(exercise)
 
     exercise = makeReps("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
-    exercise.enabled = false
     program.exercises.append(exercise)
 }
 

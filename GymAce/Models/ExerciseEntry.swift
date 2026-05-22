@@ -47,7 +47,8 @@ struct Working: Codable {
     }
 }
 
-/// Used to maintain the transient state associated with an exercise in a workout.
+/// Used to maintain the state associated with an exercise in a workout. Note that most of
+/// this is transient state that is maintained as the user performs the exercise.
 @Observable
 final class ExerciseEntry: Codable {
     /// The name of the actual exercise.
@@ -78,7 +79,7 @@ final class ExerciseEntry: Codable {
 
     func fixup() {
 //        if name == "DB OHP" {
-//            enabled = false
+//            self.enabled = false
 //        }
     }
         
