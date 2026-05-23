@@ -140,6 +140,7 @@ struct EditProgram: View {
         self.program.addWorkout(workout)
     }
     
+    // TODO confirm this, mention if program is using the workout (ie not disabled)
     private func deleteWorkouts(offsets: IndexSet) {
         withAnimation {
             self.program.deleteWorkouts(offsets)

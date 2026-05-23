@@ -1,5 +1,9 @@
 import Foundation
 
+struct MyError: Error {
+    let err: String
+}
+
 enum Mode: Codable {             // can't name this "State"
     /// The user is currently executing the exercise.
     case performing
@@ -398,23 +402,28 @@ final class ExerciseEntry: Codable {
         case .durations(_):
             break
         case .percent(let d):
-            if let thisExercise = program.findExercise(name), let weight = findBaseWeight(program) {
-                var weightStr: String
-                if let wn = thisExercise.weightSet, let ws = model.weightSets[wn] {
-                    weightStr = formatWeight(weight, ws.units)
-                } else {
-                    weightStr = formatWeight(weight, .None)
-                }
-                
-                var index = fixedIndex(exercise)
-                if index < d.warmups.count {
-                    let p = Int(Float(d.percent) * Float(d.warmups[index].percent) / 100.0)
-                    return "\(p)% of \(weightStr)"
-                }
+            if let thisExercise = program.findExercise(name), let bweight = findBaseWeight(program) {
+                switch bweight {
+                case .success(let weight):
+                    var weightStr: String
+                    if let wn = thisExercise.weightSet, let ws = model.weightSets[wn] {
+                        weightStr = formatWeight(weight, ws.units)
+                    } else {
+                        weightStr = formatWeight(weight, .None)
+                    }
+                    
+                    var index = fixedIndex(exercise)
+                    if index < d.warmups.count {
+                        let p = Int(Float(d.percent) * Float(d.warmups[index].percent) / 100.0)
+                        return "\(p)% of \(weightStr)"
+                    }
 
-                index -= d.warmups.count
-                if index < d.worksets.count {
-                    return "\(d.percent)% of \(weightStr)"
+                    index -= d.warmups.count
+                    if index < d.worksets.count {
+                        return "\(d.percent)% of \(weightStr)"
+                    }
+                case .failure(let mesg):
+                    return mesg.err
                 }
             }
         }
@@ -426,7 +435,7 @@ final class ExerciseEntry: Codable {
     }
 
     private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
-        if let exercise = program.findExercise(name), let weight = findBaseWeight(program) {
+        if let exercise = program.findExercise(name), let bweight = findBaseWeight(program), case .success(let weight) = bweight {
             if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
                 switch exercise.data {
                     case .durations(_):
@@ -468,19 +477,26 @@ final class ExerciseEntry: Codable {
         return nil
     }
     
-    private func findBaseWeight(_ program: Program) -> Float? {
+    private func findBaseWeight(_ program: Program) -> Result<Float, MyError>? {
         if let thisExercise = program.findExercise(name) {
             switch thisExercise.data {
             case .durations(_), .reps(_):
-                return thisExercise.weight
+                if let w = thisExercise.weight {
+                    return .success(w)
+                }
             case .percent(let d):
                 if let otherExercise = program.findExercise(d.other) {
                     if let last = otherExercise.history.last {
                         if let weight = last.weight {
-                            return weight
+                            return .success(weight)
                         }
                     }
-                    return otherExercise.weight
+                    if let w = otherExercise.weight {
+                        return .success(w)
+                    }
+                } else {
+                    let e = MyError(err: "Couldn't find \(d.other) exercise.")
+                    return .failure(e)
                 }
             }
         }

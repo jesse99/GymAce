@@ -9,7 +9,7 @@ struct EditPrograms: View {
         VStack {
             List {
                 Section(header: Text("Programs")) {
-                    ForEach($model.programs) { $program in
+                    ForEach($model.programs) { $program in  // TODO sort these? deletePrograms would need to be tweaked
                         Text(program.name)
                             .foregroundColor(labelColor(program))
                             .onTapGesture {

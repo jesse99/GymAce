@@ -110,8 +110,19 @@ final class Program: Codable, Identifiable {
         workouts.append(workout)
     }
     
-    func deleteExercises(_ offsets: IndexSet) {
-        self.exercises.remove(atOffsets: offsets)
+    func deleteExercises(_ names: [String]) {
+        for name in names {
+            for w in workouts {
+                for (i, e) in w.entries.enumerated() {   // note that we may need to remove multiple matches
+                    if e.name == name {
+                        w.entries.remove(at: i)
+                    }
+                }
+            }
+            if let index = self.exercises.firstIndex(where: {$0.name == name}) {
+                self.exercises.remove(at: index)
+            }
+        }
     }
 
     func deleteWorkouts(_ offsets: IndexSet) {
