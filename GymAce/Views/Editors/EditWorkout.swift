@@ -57,7 +57,7 @@ struct EditWorkout: View {
         return Weekdays(days: days)
     }
     
-    private var pickerBinding: Binding<Int> {
+    private var scheduleBinding: Binding<Int> {
         Binding(
             get: {
                 switch workout.schedule {
@@ -86,7 +86,7 @@ struct EditWorkout: View {
                 case 2:
                     self.workout.schedule = self.daysSchedule
                 default:
-                    fatalError("bad pickerBinding")
+                    fatalError("bad scheduleBinding")
                 }
             }
         )
@@ -275,11 +275,12 @@ struct EditWorkout: View {
             }
 
             HStack {
-                Picker("", selection: pickerBinding) {
+                Picker("", selection: scheduleBinding) {
                     Text("Any Day").tag(0)
                     Text("Every").tag(1)
                     Text("Week Days").tag(2)
                 }
+                .pickerStyle(.menu)
                 .labelsHidden()
                 Spacer()
                 Button("", systemImage: "info.circle") {

@@ -28,7 +28,7 @@ func formatWeight(_ weight: Float, _ units: Units) -> String {
     }
     
     switch units {
-    case .Imperial: return "\(s) lbs"
+    case .Imperial: return "\(s) lb"
     case .Metric: return "\(s) kg"
     case .None: return s
     }
@@ -100,6 +100,15 @@ struct Plate: CustomDebugStringConvertible, Codable, Comparable, Equatable {
         return "\(weight, default: "%.1f") x\(count)"
     }
 
+    func description(_ units: Units) -> String {
+        let w = formatWeight(weight, units)
+        if count == 1 {
+            return w
+        } else {
+            return "\(w) x\(count)"
+        }
+    }
+    
     // This is used with binarySearch to find a match for a target weight.
     static func <(lhs: Plate, rhs: Plate) -> Bool {
         return lhs.comparableWeight() < rhs.comparableWeight()
@@ -134,6 +143,16 @@ final class DualPlates: Codable {
         self.units = units
     }
     
+    func description() -> String {
+        let a = plates.reversed().map {$0.description(units)}
+        let b = a.joined(separator: ", ")
+        if let r = bar {
+            return "Dual plates with \(b) and a \(formatWeight(r, units)) bar."
+        } else {
+            return "Dual plates with \(b)."
+        }
+    }
+    
     func findCombos() -> [InternalPlates] {
 #if DEBUG
         for i in plates.indices {
@@ -166,6 +185,16 @@ final class SinglePlates: Codable {
     }
     
     
+    func description() -> String {
+        let a = plates.reversed().map {$0.description(units)}
+        let b = a.joined(separator: ", ")
+        if let r = bar {
+            return "Dual plates with \(b) and a \(formatWeight(r, units)) bar."
+        } else {
+            return "Dual plates with \(b)."
+        }
+    }
+    
     func findCombos() -> [InternalPlates] {
 #if DEBUG
         for i in plates.indices {
@@ -191,6 +220,12 @@ struct DiscreteWeights: Codable {
         self.weights = weights
         self.units = units
     }
+    
+    func description() -> String {
+        let a = weights.map {formatWeight($0, units)}
+        let b = a.joined(separator: ", ")
+        return "Discrete weights with \(b)."
+    }
 }
 
 /// Collections of weights that are shared across programs, e.g. there could be sets
@@ -213,6 +248,18 @@ extension WeightSet {
             case .discrete(let d): return d.units
             case .dual(let d): return d.units
             case .single(let d): return d.units
+        }
+    }
+    
+    /// Used to show the user what the weight set contains.
+    func description() -> String {
+        switch self {
+            case .discrete(let d):
+            return d.description()
+            case .dual(let d):
+            return d.description()
+            case .single(let d):
+            return d.description()
         }
     }
     

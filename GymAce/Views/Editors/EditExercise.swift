@@ -1,23 +1,34 @@
 import SwiftUI
 
+struct MenuItem: Identifiable, Hashable {
+    let id = UUID() // Identifiable requirement
+    var name: String
+}
+
 struct EditExercise: View {
     var model: Model
     var program: Program
     @Bindable var exercise: Exercise
     @State private var showNameHelp = false
+    @State private var showFormalHelp = false
     @State private var showWeightPickerHelp = false
     @State private var showWeightHelp = false
+    @State private var showWeightSetHelp = false
+    @State private var formalNames: [MenuItem] = []
     private let weightDelta = 10
+    private let weightSets: [String]
 
     init(model: Model, program: Program, exercise: Exercise) {
         self.model = model
         self.program = program
         self.exercise = exercise
+        self.weightSets = model.weightSets.keys.sorted()
     }
     
     // TODO use onAppear to make the name textbox the focus?
     var body: some View {
         Form {
+            // Name
             HStack {
                 TextField("Name", text: nameBinding)
                     .textContentType(.name)
@@ -44,13 +55,80 @@ struct EditExercise: View {
                     .foregroundColor(.red)
                     .font(.footnote)
             }
+            
+            // Formal name
+            HStack {
+                TextField("Formal Name", text: formalBinding)
+                    .textContentType(.name)
+                    .textInputAutocapitalization(.words)
+                    .textFieldStyle(.roundedBorder)
+                    .foregroundStyle(formalColor(formalBinding.wrappedValue))   // TODO not 100% reliable when editing
+//                    .id(exercise.formalName.hashValue) // think this causes the text field to lose focus when typing
+                Menu("", systemImage: "chevron.up.chevron.down") {
+                    ForEach($formalNames) {$item in
+                        Button(action: {setFormalName(item.name)}, label: {
+                            Text(item.name)
+                        })
+                    }
+                }
+                .id(formalNames.hashValue) // force redraw if the list changes
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showFormalHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showFormalHelp {
+                Text("The name used to lookup notes for the exercise.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+            
+            // Weight set
+            HStack {
+                Picker("Weight Set", selection: weightSetBinding) {
+                    Text("None").tag(-1)
+                    ForEach(Array(weightSets.enumerated()), id: \.element) {tuple in
+                        Text(tuple.1).tag(tuple.0)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showWeightSetHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showWeightSetHelp {
+                if let n = exercise.weightSet {
+                    if let ws = model.weightSets[n] {
+                        Text(ws.description())
+                            .foregroundColor(.blue)
+                            .font(.footnote)
+                    } else {
+                        Text("\(n) has no associated weight set.")
+                            .foregroundColor(.blue)
+                            .font(.footnote)
+                    }
+                } else {
+                    Text("This exercise has no weights associated with it.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+            }
+
+            // Weight
             if let n = exercise.weightSet, let ws = model.weightSets[n] {
                 HStack {
                     Picker("", selection: weightsBinding) {
                         ForEach(getWeightLabels(ws), id: \.0) {tuple in
-                            Text(tuple.0).tag(tuple.1)
+                            Text(tuple.0).tag(tuple.1)  // TODO why is the selection dimmed?
                         }
                     }
+                    .pickerStyle(.menu)
                     .labelsHidden()
                     Spacer()
                     Button("", systemImage: "info.circle") {
@@ -91,6 +169,66 @@ struct EditExercise: View {
         }
     }
         
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {return exercise.name},
+            set: {program.setExerciseName(exercise, $0)}
+        )
+    }
+
+    private var formalBinding: Binding<String> {
+        Binding(
+            get: {return exercise.formalName},
+            set: {
+                exercise.formalName = $0
+                formalNames = []
+                for n in model.notes.defaults.keys {    // TODO can custom notes be brand new?
+                    if n.lowercased().contains($0.lowercased()) {
+                        let item = MenuItem(name: n)
+                        formalNames.append(item)
+                        if formalNames.count > 30 {
+                            formalNames.append(MenuItem(name: "…"))
+                            break
+                        }
+                    }
+                }
+                formalNames.sort() {$0.name < $1.name}
+            }
+        )
+    }
+    
+    private var weightSetBinding: Binding<Int> {
+        Binding(
+            get: {
+                if let n = exercise.weightSet {
+                    return weightSets.firstIndex(of: n) ?? 0
+                } else {
+                    return -1
+                }
+            },
+            set: {
+                if $0 == -1 {
+                    exercise.weightSet = nil
+                } else {
+                    exercise.weightSet = weightSets[$0]
+                }
+            }
+        )
+    }
+
+    private func formalColor(_ name: String) -> Color {
+        if model.notes.defaults[name] != nil {
+            return .black
+        } else {
+            return .red
+        }
+    }
+
+    private func setFormalName(_ name: String) {
+        exercise.formalName = name
+        formalNames = []
+    }
+
     private func getWeightLabels(_ ws: WeightSet) -> [(String, Int)] {
         var labels: [(String, Int)] = []
         
@@ -122,13 +260,6 @@ struct EditExercise: View {
         return labels
     }
     
-    private var nameBinding: Binding<String> {
-        Binding(
-            get: {return exercise.name},
-            set: {program.setExerciseName(exercise, $0)}
-        )
-    }
-
     private var weightBinding: Binding<String> {
         Binding(
             get: {

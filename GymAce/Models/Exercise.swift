@@ -174,7 +174,7 @@ struct PercentData: Codable {
     /// The name of another exercise.
     var other: String
     
-    /// The weight for this exercise will be the last completed weight for the above names
+    /// The weight for this exercise will be the last completed weight for the above named
     /// exercise multipled by this percent.
     var percent: Int
     
@@ -208,7 +208,7 @@ final class Exercise: Codable {
     /// onto those weights (possibly modified by a per-set percentage).
     var weight: Float?
     
-    /// Record of when and how well the user last did the exercise.
+    /// Record of when and what the user did for a workout.
     var history: [Completed] = []
     
     /// Exercise specific data.
