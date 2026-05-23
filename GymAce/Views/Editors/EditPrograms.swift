@@ -1,5 +1,15 @@
 import SwiftUI
 
+func findName(_ has: (String) -> Bool) -> String {
+    var candidate = "Untitled"
+    var n = 2
+    while has(candidate) {
+        candidate = "Untitled \(n)"
+        n += 1
+    }
+    return candidate
+}
+
 // TODO might want some canned programs here (instead of a wizard)
 // TODO possibly add a way to filter shown programs based on stuff like equipment, days/week, etc
 struct EditPrograms: View {
@@ -9,7 +19,7 @@ struct EditPrograms: View {
         VStack {
             List {
                 Section(header: Text("Programs")) {
-                    ForEach($model.programs) { $program in  // TODO sort these? deletePrograms would need to be tweaked
+                    ForEach(model.programs.sorted() {$0.name < $1.name}) { program in
                         Text(program.name)
                             .foregroundColor(labelColor(program))
                             .onTapGesture {
@@ -53,29 +63,20 @@ struct EditPrograms: View {
     }
     
     private func addProgram() {
-        let name = findName()
+        let name = findName(hasName)
         let program = Program(name)
         self.model.addProgram(program)
     }
     
     // TODO need to confirm this (maybe in EditProgram too)
     private func deletePrograms(offsets: IndexSet) {
+        let programs = model.programs.sorted() {$0.name < $1.name}
+        let names = offsets.map {programs[$0].name}
         withAnimation {
-            self.model.deletePrograms(offsets)
+            self.model.deletePrograms(names)
         }
     }
     
-    // TODO do this when adding workouts too
-    private func findName() -> String {
-        var candidate = "Untitled"
-        var n = 2
-        while hasName(candidate) {
-            candidate = "Untitled \(n)"
-            n += 1
-        }
-        return candidate
-    }
-
     private func hasName(_ name: String) -> Bool {
         return model.programs.contains(where: { $0.name == name })
     }

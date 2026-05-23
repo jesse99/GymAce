@@ -50,20 +50,11 @@ struct EditExercises: View {
     // save them much time because they'll have to heavily edit the exercise anyway.
     private func addExercise() {
         let d = DurationsData(secs: [30], targetSecs: nil)
-        let exercise = Exercise(name: findName(), formalName: "", durations: d)
+        let name = findName(hasName)
+        let exercise = Exercise(name: name, formalName: "", durations: d)
         program.exercises.append(exercise)
     }
     
-    private func findName() -> String {
-        var candidate = "Untitled"
-        var n = 2
-        while hasName(candidate) {
-            candidate = "Untitled \(n)"
-            n += 1
-        }
-        return candidate
-    }
-
     private func hasName(_ name: String) -> Bool {
         return program.exercises.contains(where: {$0.name == name})
     }

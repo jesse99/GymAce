@@ -125,8 +125,12 @@ final class Program: Codable, Identifiable {
         }
     }
 
-    func deleteWorkouts(_ offsets: IndexSet) {
-        self.workouts.remove(atOffsets: offsets)
+    func deleteWorkouts(_ names: [String]) {
+        for name in names {
+            if let index = self.workouts.firstIndex(where: {$0.name == name}) {
+                self.workouts.remove(at: index)
+            }
+        }
     }
     
     func findExercise(_ name: String) -> Exercise? {

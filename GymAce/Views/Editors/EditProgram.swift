@@ -104,7 +104,7 @@ struct EditProgram: View {
             // because in ContentView they're sorted by due date.
             List {
                 Section(header: Text("Workouts")) {
-                    ForEach($program.workouts) { $workout in
+                    ForEach(program.workouts.sorted(by: {$0.name < $1.name})) { workout in
                         NavigationLink {
                             EditWorkout(model: model, program: program, workout: workout)
                         } label: {
@@ -136,14 +136,21 @@ struct EditProgram: View {
     }
     
     private func addWorkout() {
-        let workout = Workout("Untitled", .anyDay)
+        let name = findName(hasName)
+        let workout = Workout(name, .anyDay)
         self.program.addWorkout(workout)
     }
     
+    private func hasName(_ name: String) -> Bool {
+        return program.workouts.contains(where: { $0.name == name })
+    }
+
     // TODO confirm this, mention if program is using the workout (ie not disabled)
     private func deleteWorkouts(offsets: IndexSet) {
+        let workouts = program.workouts.sorted(by: {$0.name < $1.name})
+        let names = offsets.map {workouts[$0].name}
         withAnimation {
-            self.program.deleteWorkouts(offsets)
+            self.program.deleteWorkouts(names)
         }
     }
 }

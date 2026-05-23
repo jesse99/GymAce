@@ -33,8 +33,14 @@ final class Model: Codable {
         self.programs.append(program)
     }
     
-    func deletePrograms(_ offsets: IndexSet) {
-        self.programs.remove(atOffsets: offsets)
+    func deletePrograms(_ names: [String]) {
+        for name in names {
+            if name != activeProgram {      // TODO little weird, but w/o this wind up with a blank screen (because parent view is now whacked?)
+                if let index = self.programs.firstIndex(where: {$0.name == name}) {
+                    self.programs.remove(at: index)
+                }
+            }
+        }
     }
     
     func renameProgram(_ program: Program, _ newName: String) {
