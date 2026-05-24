@@ -62,11 +62,22 @@ struct PercentData: Codable {
     var percent: Int
     
     var warmups: [FixedReps]
-    var worksets: [Int]
-
+    var workset: [VariableRep]
+    
     /// Seconds to rest for worksets.
     var rest: Int?
     var version: Int = 1
+    
+    var isVariable: Bool {
+        for s in workset {
+            switch s {
+            case .amrap(_): return true
+            case .fixed: break
+            case .variable(_, _): return true
+            }
+        }
+        return false
+    }
 }
 
 enum ExerciseData: Codable {
@@ -212,11 +223,18 @@ final class Exercise: Codable {
                 let a = d.secs.map {"\($0)s"}
                 return joinLabels(a) + suffix
             case .percent(let d):
-                let a = d.worksets.map {
-                    if $0 == 1 {
-                        "1 rep"
-                    } else {
-                        "\($0) reps"
+                let a = d.workset.map {
+                    switch $0 {
+                    case .amrap(let r):
+                        "\(r)+"
+                    case .fixed(let r):
+                        if r == 1 {
+                            "1 rep"
+                        } else {
+                            "\(r) reps"
+                        }
+                    case .variable(let min, let max):
+                        "\(min)-\(max) reps"
                     }
                 }
                 return joinLabels(a) + suffix

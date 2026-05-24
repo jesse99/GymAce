@@ -36,8 +36,8 @@ fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedR
     return Exercise(name: name, formalName: formalName, reps: reps, weights: weights, weight: weight)
 }
 
-fileprivate func makePercent(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [Int], weights: String, rest: Int) -> Exercise {
-    let percent = PercentData(other: other, percent: percent, warmups: warmups, worksets: worksets, rest: rest)
+fileprivate func makePercent(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [VariableRep], weights: String, rest: Int) -> Exercise {
+    let percent = PercentData(other: other, percent: percent, warmups: warmups, workset: worksets, rest: rest)
     return Exercise(name: name, formalName: formalName, percent: percent, weights: weights)
 }
 
@@ -60,7 +60,7 @@ fileprivate func addMyExercises(_ program: Program) {
     var exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [30])
     program.exercises.append(exercise)
 
-    exercise = makePercent("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual Plates", rest: Int(3.5*60))
+    exercise = makePercent("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.5*60))
     program.exercises.append(exercise)
 
     exercise = makeReps("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
@@ -72,7 +72,7 @@ fileprivate func addMyExercises(_ program: Program) {
     exercise = makeReps("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Trapbar", weight: 235, rest: nil)
     program.exercises.append(exercise)
     
-    exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [5, 5, 5], weights: "Dual Plates", rest: Int(3.0*60))
+    exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.0*60))
     program.exercises.append(exercise)
 
     exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
