@@ -14,6 +14,9 @@ struct EditExercise: View {
     @State private var showWeightPickerHelp = false
     @State private var showWeightHelp = false
     @State private var showWeightSetHelp = false
+    @State private var showTypePickerHelp = false
+    @State private var type: Int
+    @State private var showDurationsHelp = false
     @State private var formalNames: [MenuItem] = []
     private let weightDelta = 10
     private let weightSets: [String]
@@ -23,6 +26,11 @@ struct EditExercise: View {
         self.program = program
         self.exercise = exercise
         self.weightSets = model.weightSets.keys.sorted()
+        switch exercise.data {
+        case .durations(_): type = 0
+        case .percent(_): type = 1
+        case .reps(_): type = 2
+        }
     }
     
     // TODO use onAppear to make the name textbox the focus?
@@ -63,7 +71,7 @@ struct EditExercise: View {
                     .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
                     .foregroundStyle(formalColor(formalBinding.wrappedValue))   // TODO not 100% reliable when editing
-//                    .id(exercise.formalName.hashValue) // think this causes the text field to lose focus when typing
+                //                    .id(exercise.formalName.hashValue) // think this causes the text field to lose focus when typing
                 Menu("", systemImage: "chevron.up.chevron.down") {
                     ForEach($formalNames) {$item in
                         Button(action: {setFormalName(item.name)}, label: {
@@ -119,7 +127,7 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
             }
-
+            
             // Weight
             if let n = exercise.weightSet, let ws = model.weightSets[n] {
                 HStack {
@@ -160,6 +168,72 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
             }
+            
+            // Type picker
+            HStack {
+                Picker("", selection: $type) {  // TODO need a custom binding so we can switch state
+                    Text("Durations").tag(0)
+                    Text("Percent").tag(1)
+                    Text("Reps").tag(2)
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showTypePickerHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showTypePickerHelp {
+                if type == 0 {
+                    Text("Each set is done for a specified amount of time.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                } else if type == 1 {
+                    Text("Each set is done using weights that are a percentage of another exercise.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                } else {
+                    Text("Each work set is done using minimum and maximum reps.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+            }
+
+            // Durations type
+            if type == 0 {
+                HStack {
+                    TextField("Durations", text: durationsBinding)
+                        .textFieldStyle(.roundedBorder)     // TODO make sure empty is sensible
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showDurationsHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showDurationsHelp {
+                    Text("The amount of time to do each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                //                if isNameEmpty {
+                //                    Text("Exercise name cannot be empty.")
+                //                        .foregroundColor(.red)
+                //                        .font(.footnote)
+                //                } else if doesNameExist {
+                //                    Text("There is already a exercise with that name.")
+                //                        .foregroundColor(.red)
+                //                        .font(.footnote)
+                //                }
+            }
+            // Percent type
+            // TODO make sure empty sets is sensible
+            
+            // Reps type
+            // TODO make sure empty sets is sensible
+            //        }
         }
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
@@ -169,6 +243,15 @@ struct EditExercise: View {
         }
     }
         
+    // TODO need to update internal state as well as the exercise state
+    // TODO need to allow suffixes
+    private var durationsBinding: Binding<String> {
+        Binding(
+            get: {return "30s 30s 30s"},
+            set: {_ = $0}
+        )
+    }
+
     private var nameBinding: Binding<String> {
         Binding(
             get: {return exercise.name},
