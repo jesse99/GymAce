@@ -5,10 +5,33 @@ struct EditCompleted: View {
     @Bindable var exercise: Exercise
     let snapshot: Snapshot
     @State private var showWeightHelp = false
-    @State private var repsError: String = ""
+    @State private var showRepsHelp = false
+    @State private var repsError: String? = nil
     
     var body: some View {
         Form {
+            // Reps
+            HStack {
+                TextField(repsTitle().capitalized, text: repsBinding)
+                    .textFieldStyle(.roundedBorder)
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showRepsHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showRepsHelp {
+                Text("The \(repsTitle()) the user did for each set.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+            if let e = repsError {
+                Text(e)
+                    .foregroundColor(.red)
+                    .font(.footnote)
+            }
+
             // Weight
             HStack {
                 TextField("Weight", text: weightBinding)
@@ -26,18 +49,25 @@ struct EditCompleted: View {
                     .foregroundColor(.blue)
                     .font(.footnote)
             }
+            
+            // TODO allow completed to be edited? would require re-sorting history
         }
         .navigationTitle("Edit Completed")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(repsError != nil)
         .onAppear {
-            // TODO ExerciseView isn't getting redrawn, maybe change dirty to an editCount
-            // then List could use tag with that
             model.dirty = true
         }
     }
+    
+    private func repsTitle() -> String {
+        switch exercise.data {
+        case .durations(_): return "seconds"
+        case .percent(_): return "reps"
+        case .reps(_): return "reps"
+        }
+    }
         
-    // TODO need an error label
-    // disable back button if error
     private var repsBinding: Binding<String> {
         Binding(
             get: {
@@ -49,16 +79,20 @@ struct EditCompleted: View {
             set: {
                 let i = exercise.history.count - snapshot.index
                 var values: [Int] = []
-                repsError = ""
+                repsError = nil
                 for part in $0.split(separator: " ") {
                     if let r = Int(part) {
-                        values.append(r)
+                        if r >= 0 {
+                            values.append(r)
+                        } else {
+                            repsError = "The number can't be negative."
+                            break
+                        }
                     } else {
-                        repsError = "xxx"   // TODO mo better
+                        repsError = "Expected an integer number, but found '\(part)'."
                         break
                     }
                 }
-                // TODO should there be an error if there are no values?
                 exercise.history[i].values = values
             }
         )
@@ -83,18 +117,6 @@ struct EditCompleted: View {
 }
 
 #Preview {
-    let model = previewModel()
-    let program = model.programs[0]
-    let workout = program.workouts[0]
-    let entry = workout.entries[0]
-    let exercise = program.findExercise(entry.name)!
-    let snapshot = entry.history(exercise)[0]
-    NavigationView {
-        EditCompleted(model: model, exercise: exercise, snapshot: snapshot)
-    }
-}
-
-#Preview("Two") {
     let model = previewModel()
     let program = model.programs[0]
     let workout = program.workouts[0]
