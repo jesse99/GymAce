@@ -31,7 +31,7 @@ fileprivate func makeDurations(_ name: String, _ formalName: String, secs: [Int]
     }
 }
 
-fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps] = [], weights: String, weight: Float, rest: Int?) -> Exercise {
+fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedReps], worksets: [VariableRep], backoff: [FixedReps] = [], weights: String, weight: Float, rest: Int?) -> Exercise {
     let reps = RepsData(warmups: warmups, worksets: worksets, backoff: backoff, rest: rest)
     return Exercise(name: name, formalName: formalName, reps: reps, weights: weights, weight: weight)
 }
@@ -52,10 +52,10 @@ fileprivate func addMyExercises(_ program: Program) {
     let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
     let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
     
-    let reps1 = [VariableReps(3, to: 5)]
-    let reps2 = [VariableReps(3, to: 5), VariableReps(3, to: 5)]
-    let reps3 = [VariableReps(3, to: 5), VariableReps(3, to: 5), VariableReps(3, to: 5)]
-    let reps12 = [VariableReps(8, to: 12), VariableReps(8, to: 12), VariableReps(8, to: 12)]
+    let reps1: [VariableRep] = [.variable(3, 5)]
+    let reps2: [VariableRep] = [.variable(3, 5), .variable(3, 5)]
+    let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
+    let reps12: [VariableRep] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)]
 
     var exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [30])
     program.exercises.append(exercise)
@@ -78,7 +78,7 @@ fileprivate func addMyExercises(_ program: Program) {
     exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
     program.exercises.append(exercise)
 
-    let creps = [VariableReps(3, to: 8), VariableReps(3, to: 8)]
+    let creps: [VariableRep] = [.variable(3, 8), .variable(3, 8)]
     exercise = makeReps("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
     program.exercises.append(exercise)
 

@@ -9,7 +9,7 @@ fileprivate func makeDurations(_ name: String, _ formalName: String, secs: [Int]
     }
 }
 
-fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedReps] = [], worksets: [VariableReps], backoff: [FixedReps] = [], weights: String? = nil, weight: Float? = nil, rest: Int? = nil) -> Exercise {
+fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedReps] = [], worksets: [VariableRep], backoff: [FixedReps] = [], weights: String? = nil, weight: Float? = nil, rest: Int? = nil) -> Exercise {
     let reps = RepsData(warmups: warmups, worksets: worksets, backoff: backoff, rest: rest)
     if let n = weights {
         return Exercise(name: name, formalName: formalName, reps: reps, weights: n, weight: weight)
@@ -52,13 +52,14 @@ fileprivate func addPreviewExercises(_ program: Program) {
     let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
     let dwarmup = [FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 75), FixedReps(reps: 1, percent: 90)]
     
-    let reps3 = [VariableReps(3, to: 5), VariableReps(3, to: 5), VariableReps(3, to: 5)]
-    let reps5 = [VariableReps(5), VariableReps(5), VariableReps(5)]
-    let reps12 = [VariableReps(8, to: 12), VariableReps(8, to: 12), VariableReps(8, to: 12)]
+    let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
+    let reps5: [VariableRep] = [.fixed(5), .fixed(5), .fixed(5)]
+    let areps5: [VariableRep] = [.fixed(5), .fixed(5), .amrap(5)]
+    let reps12: [VariableRep] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)]
 
     let backoff = [FixedReps(reps: 5, percent: 80)]
 
-    var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: reps5, weights: "Dual Plates", weight: 130, rest: 10)
+    var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: areps5, weights: "Dual Plates", weight: 130, rest: 10)
     addCompletedReps(exercise, daysAgo: 5, sets: [5, 5, 5], weight: 130)
     addCompletedReps(exercise, daysAgo: 3, sets: [5, 5, 5], weight: 135)
     addCompletedReps(exercise, daysAgo: 1, sets: [5, 5, 5], weight: 135)

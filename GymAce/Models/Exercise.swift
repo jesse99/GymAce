@@ -15,33 +15,15 @@ struct FixedReps: Codable {
     var percent: Int
 }
 
-struct VariableReps: Codable {
-    var min: Int
-    var max: Int
-    
-    init(_ reps: Int) {
-        self.min = reps
-        self.max = reps
-    }
-
-    init(_ min: Int, to: Int) {
-        self.min = min
-        self.max = to
-    }
-    
-    func clamp(_ n: Int) -> Int {
-        if n < min {
-            return min
-        } else if n > max {
-            return max
-        }
-        return n
-    }
+enum VariableRep: Codable {
+    case amrap(Int)
+    case fixed(Int)
+    case variable(Int, Int)
 }
 
 struct RepsData: Codable {
     var warmups: [FixedReps]
-    var worksets: [VariableReps]
+    var workset: [VariableRep]
     var backoff: [FixedReps]
     var version: Int = 1
     
@@ -49,12 +31,23 @@ struct RepsData: Codable {
     var rest: Int?
 
     var isVariable: Bool {
-        worksets.contains(where: { $0.min < $0.max })
+        for s in workset {
+            switch s {
+            case .amrap(_): return true
+            case .fixed: break
+            case .variable(_, _): return true
+            }
+        }
+        return false
     }
         
-    init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps], rest: Int? = nil) {
+    enum CodingKeys: String, CodingKey {
+        case warmups, workset, backoff, version, rest
+    }
+
+    init(warmups: [FixedReps], worksets: [VariableRep], backoff: [FixedReps], rest: Int? = nil) {
         self.warmups = warmups
-        self.worksets = worksets
+        self.workset = worksets
         self.backoff = backoff
         self.rest = rest
     }
@@ -195,21 +188,23 @@ final class Exercise: Codable {
         }
         switch data {
             case .reps(let r):
-                var a: [(Int, Int)] = []
-                for i in 0..<r.worksets.count {
-                    let min = findExpected(self, r.worksets[i], i)
-                    let max = r.worksets[i].max
-                    a.append((min, max))
+                var a: [VariableRep] = []
+                for i in 0..<r.workset.count {
+                    let r = findExpected(self, r.workset[i], i)
+                    a.append(r)
                 }
                 let b = a.map {
-                    if $0.0 == $0.1 {
-                        if $0.1 == 1 {
+                    switch $0 {
+                    case .amrap(let r): 
+                        "\(r)+"
+                    case .fixed(let r):
+                        if r == 1 {
                             "1 rep"
                         } else {
-                            "\($0.0) reps"
+                            "\(r) reps"
                         }
-                    } else {
-                        "\($0.0)-\($0.1) reps"
+                    case .variable(let min, let max):
+                        "\(min)-\(max) reps"
                     }
                 }
                 return joinLabels(b) + suffix

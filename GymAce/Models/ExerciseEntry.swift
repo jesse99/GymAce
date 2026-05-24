@@ -95,10 +95,12 @@ final class ExerciseEntry: Codable {
             if d.isVariable, !finished(exercise) {
                 var index = fixedIndex(exercise)
                 index -= d.warmups.count
-                if index >= 0 && index < d.worksets.count {
-                    let min = d.worksets[index].min
-                    let max = d.worksets[index].max
-                    return min < max
+                if index >= 0 && index < d.workset.count {
+                    switch d.workset[index] {
+                    case .amrap: return true
+                    case .fixed: return false
+                    case .variable: return true
+                    }
                 }
             }
         }
@@ -125,11 +127,15 @@ final class ExerciseEntry: Codable {
         }
     }
     
-    func maxEpectedReps(_ exercise: Exercise) -> Int {
+    func maxEpectedHint(_ exercise: Exercise) -> Int {
         if case let .reps(d) = exercise.data {
             var index = fixedIndex(exercise)
             index -= d.warmups.count
-            return d.worksets[index].max
+            switch d.workset[index] {
+            case .amrap(let r): return r+10
+            case .fixed: return 0
+            case .variable(_, let max): return max
+            }
         }
         return 0
     }
@@ -154,14 +160,14 @@ final class ExerciseEntry: Codable {
         case .reps(let d):
             var index = fixedIndex(exercise)
             index -= d.warmups.count
-            if index >= 0 && index < d.worksets.count {
-                if let last = workout.entries.last, last.name == exercise.name, index == d.worksets.count - 1 {
+            if index >= 0 && index < d.workset.count {
+                if let last = workout.entries.last, last.name == exercise.name, index == d.workset.count - 1 {
                     return nil
                 }
                 return d.rest
             }
 
-            index -= d.worksets.count
+            index -= d.workset.count
             if index >= 0 && index < d.backoff.count {
                 if let last = workout.entries.last, last.name == exercise.name, index == d.backoff.count - 1 {
                     return nil
@@ -200,14 +206,12 @@ final class ExerciseEntry: Codable {
         switch exercise.data {
         case .reps(let d):
             working = Working(type: .reps, weight: weight, units: units)
-            if d.isVariable {
-                for (index, reps) in d.worksets.enumerated() {
-                    let r = findExpected(exercise, reps, index)
-                    working!.expected.append(r)
-                }
-            } else {
-                for reps in d.worksets {
-                    working!.expected.append(reps.min)
+            for (index, reps) in d.workset.enumerated() {
+                let r = findExpected(exercise, reps, index)
+                switch r {
+                case .amrap(let r): working!.expected.append(r)
+                case .fixed(let r): working!.expected.append(r)
+                case .variable(let min, _): working!.expected.append(min)
                 }
             }
         case .durations(let d):
@@ -264,7 +268,7 @@ final class ExerciseEntry: Codable {
     func finished(_ exercise: Exercise) -> Bool {
         switch exercise.data {
             case .durations(let d): return setIndex >= d.secs.count
-            case .reps(let d): return setIndex >= d.warmups.count + d.worksets.count + d.backoff.count
+            case .reps(let d): return setIndex >= d.warmups.count + d.workset.count + d.backoff.count
             case .percent(let d): return setIndex >= d.warmups.count + d.worksets.count
         }
     }
@@ -284,11 +288,11 @@ final class ExerciseEntry: Codable {
                 }
                 
                 index -= d.warmups.count
-                if index < d.worksets.count {
-                    return "Workset \(index + 1) of \(d.worksets.count)"
+                if index < d.workset.count {
+                    return "Workset \(index + 1) of \(d.workset.count)"
                 }
                 
-                index -= d.worksets.count
+                index -= d.workset.count
                 if index < d.backoff.count {
                     return "Backoff \(index + 1) of \(d.backoff.count)"
                 }
@@ -333,19 +337,34 @@ final class ExerciseEntry: Codable {
                 }
                 
                 index -= d.warmups.count
-                if index < d.worksets.count {
-                    var minReps = self.expectedReps(exercise)
-                    if minReps == 0 {
-                        minReps = d.worksets[index].min
-                    }
-                    if minReps == d.worksets[index].max {
-                        return "\(minReps) reps" + suffix
-                    } else {
-                        return "\(minReps)-\(d.worksets[index].max) reps" + suffix
+                if index < d.workset.count {
+                    switch d.workset[index] {
+                    case .amrap(let r):
+                        return "\(r)+ reps" + suffix
+                    case .fixed(let r):
+                        if r == 1 {
+                            return "1 rep" + suffix
+                        } else {
+                            return "\(r) reps" + suffix
+                        }
+                    case .variable(let min, let max):
+                        var minReps = self.expectedReps(exercise)
+                        if minReps == 0 {
+                            minReps = min
+                        }
+                        if minReps == max {
+                            if minReps == 1 {
+                                return "1 rep" + suffix
+                            } else {
+                                return "\(minReps) reps" + suffix
+                            }
+                        } else {
+                            return "\(minReps)-\(max) reps" + suffix
+                        }
                     }
                 }
                 
-                index -= d.worksets.count
+                index -= d.workset.count
                 if index < d.backoff.count {
                     return "\(d.backoff[index].reps) reps" + suffix
                 }
@@ -395,11 +414,11 @@ final class ExerciseEntry: Codable {
                 }
                 
                 index -= d.warmups.count
-                if index < d.worksets.count {
+                if index < d.workset.count {
                     return nil
                 }
                 
-                index -= d.worksets.count
+                index -= d.workset.count
                 if index < d.backoff.count {
                     return "\(d.backoff[index].percent)% of \(weightStr)"
                 }
@@ -453,11 +472,11 @@ final class ExerciseEntry: Codable {
                         }
                         
                         index -= d.warmups.count
-                        if index < d.worksets.count {
+                        if index < d.workset.count {
                             return ws.lower(target: weight)
                         }
                         
-                        index -= d.worksets.count
+                        index -= d.workset.count
                         if index < d.backoff.count {
                             let p = Float(d.backoff[index].percent) / 100.0
                             return ws.closest(target: p*weight)
@@ -513,7 +532,7 @@ final class ExerciseEntry: Codable {
             case .durations(let d):
                 return setIndex >= d.secs.count ? d.secs.count - 1 : setIndex
             case .reps(let d):
-                let count = d.warmups.count + d.worksets.count + d.backoff.count
+                let count = d.warmups.count + d.workset.count + d.backoff.count
                 return setIndex >= count ? count - 1 : setIndex
             case .percent(let d):
                 let count = d.warmups.count + d.worksets.count
@@ -562,22 +581,36 @@ struct HistorySnapshot: RandomAccessCollection {
     }
 }
 
-func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
-    // Usually we'll just return reps.min except for a few cases:
-    if let last = exercise.latestCompleted() {
-        if let new = exercise.weight, let old = last.weight {
-            if new < old {
-                // 1) the user has dropped the weight
-                // Possible that they can't now do max, but they should be close to that...
-                return reps.max
-            } else if new == old {
-                // 2) the user is doing the same weight so the expected is whatever
-                // they last did clamped to what the current min/max is.
-                if index < last.values.count {
-                    return reps.clamp(last.values[index])
+func findExpected(_ exercise: Exercise, _ reps: VariableRep, _ index: Int) -> VariableRep {
+    switch reps {
+    case .amrap(_):
+        return reps
+    case .fixed(_):
+        return reps
+    case .variable(let min, let max):
+        // Usually we'll just return reps except for a few cases:
+        if let last = exercise.latestCompleted() {
+            if let new = exercise.weight, let old = last.weight {
+                if new < old {
+                    // 1) the user has dropped the weight
+                    // Possible that they can't now do max, but they should be close to that...
+                    return .fixed(max)
+                } else if new == old {
+                    // 2) the user is doing the same weight so the expected is whatever
+                    // they last did clamped to what the current min/max is.
+                    if index < last.values.count {
+                        let r = last.values[index]
+                        if r >= min && r < max {
+                            return .variable(r, max)
+                        } else if r < min {
+                            return reps
+                        } else {
+                            return .fixed(r)    // r >= max
+                        }
+                    }
                 }
             }
         }
+        return reps
     }
-    return reps.min
 }

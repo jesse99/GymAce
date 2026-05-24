@@ -114,7 +114,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 } else {
                     if entry.hasExpected(exercise) {
                         Picker("", selection: expectedBinding) {
-                            ForEach(0...entry.maxEpectedReps(exercise), id: \.self) {n in
+                            ForEach(0...entry.maxEpectedHint(exercise), id: \.self) {n in
                                 Text("\(n) reps").tag(n)
                             }
                         }
