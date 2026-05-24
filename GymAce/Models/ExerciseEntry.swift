@@ -24,7 +24,8 @@ enum Mode: Codable {             // can't name this "State"
 /// Results of a in progress exercise. Once the exercise is completed this will be converted to
 /// a Completed value and appended onto the exercise history.
 struct Working: Codable {
-    var sets: [CompletedSet]
+    var values: [Int]
+    var type: ValueType
     var expected: [Int]     // only used for variable reps
     var weight: Float?
     var units: Units
@@ -37,8 +38,9 @@ struct Working: Codable {
         return delta/3600.0 > 4.0   // aka more than 4 hours
     }
     
-    init(weight: Float?, units: Units) {
-        self.sets = []
+    init(type: ValueType, weight: Float?, units: Units) {
+        self.values = []
+        self.type = type
         self.expected = []
         self.weight = weight
         self.units = units
@@ -47,7 +49,7 @@ struct Working: Codable {
     
     /// Used to show the user what happened for that workout.
     func details() -> String {
-        return completedDetails(sets, weight, units)
+        return completedDetails(values, type, weight, units)
     }
 }
 
@@ -184,19 +186,20 @@ final class ExerciseEntry: Codable {
     /// Start the exercise all over (or for the first time).
     func reset(_ model: Model, _ program: Program, _ exercise: Exercise) {
         setIndex = 0
+        var weight: Float? = nil
+        var units: Units = .None
         if let w = exercise.findWeight(program) {
             if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                let weight = ws.lower(target: w)
-                working = Working(weight: weight.value(), units: ws.units)
+                weight = ws.lower(target: w).value()
+                units = ws.units
             } else {
-                working = Working(weight: w, units: .None)
+                weight = w
             }
-        } else {
-            working = Working(weight: nil, units: .None)
         }
         
         switch exercise.data {
         case .reps(let d):
+            working = Working(type: .reps, weight: weight, units: units)
             if d.isVariable {
                 for (index, reps) in d.worksets.enumerated() {
                     let r = findExpected(exercise, reps, index)
@@ -208,10 +211,12 @@ final class ExerciseEntry: Codable {
                 }
             }
         case .durations(let d):
+            working = Working(type: .secs, weight: weight, units: units)
             for s in d.secs {
                 working!.expected.append(s)
             }
         case .percent(let d):
+            working = Working(type: .reps, weight: weight, units: units)
             for reps in d.worksets {
                 working!.expected.append(reps)
             }
@@ -228,18 +233,18 @@ final class ExerciseEntry: Codable {
             index -= d.warmups.count
             if index >= 0 && index < working!.expected.count {
                 let actual = working!.expected[index]
-                working!.sets.append(.reps(actual))
+                working!.values.append(actual)
             }
         case .durations(let d):
             if setIndex >= 0 && setIndex < d.secs.count {
-                working!.sets.append(.duration(d.secs[setIndex]))
+                working!.values.append(d.secs[setIndex])
             }
         case .percent(let d):
             var index = fixedIndex(exercise)
             index -= d.warmups.count
             if index >= 0 && index < working!.expected.count {
                 let actual = working!.expected[index]
-                working!.sets.append(.reps(actual))
+                working!.values.append(actual)
             }
         }
         setIndex += 1
@@ -249,7 +254,7 @@ final class ExerciseEntry: Codable {
     /// current.
     func completedAll(_ exercise: Exercise) {
         if let w = self.working {
-            let c = Completed(sets: w.sets, weight: w.weight, units: w.units)
+            let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
             exercise.history.append(c)
         }
         setIndex = 0
@@ -521,7 +526,7 @@ struct Snapshot {
     let current: Completed
     let prior: Completed?
     let finished: Bool
-    let index: Int          // for ForEach
+    let index: Int          // 0 == current
 }
 
 struct HistorySnapshot: RandomAccessCollection {
@@ -536,7 +541,7 @@ struct HistorySnapshot: RandomAccessCollection {
         var index = position
         if let w = entry.working {
             if index == 0 {
-                let c = Completed(sets: w.sets, weight: w.weight, units: w.units)
+                let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
                 return Snapshot(current: c, prior: nil, finished: false, index: index)  // nil prior since we can't compare the two yet
             }
         } else {
@@ -568,11 +573,8 @@ func findExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> I
             } else if new == old {
                 // 2) the user is doing the same weight so the expected is whatever
                 // they last did clamped to what the current min/max is.
-                if index < last.sets.count {
-                    switch last.sets[index] {
-                    case .reps(let n): return reps.clamp(n)
-                    default: return reps.min
-                    }
+                if index < last.values.count {
+                    return reps.clamp(last.values[index])
                 }
             }
         }

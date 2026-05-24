@@ -14,7 +14,7 @@ final class Model: Codable {
     /// track each bit of state (and doing something like a crc of the persisted model state is about as expensive as just
     /// doing a save and chews up CPU and battery if state didn't actually change).
     var dirty = false
-    
+        
     func fixup() {
 //        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
 //        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)

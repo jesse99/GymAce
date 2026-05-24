@@ -163,9 +163,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         TabView {
             List {
                 ForEach(entry.history(exercise), id: \.index) {
-                    completedView($0)
+                    completedView(model, exercise, $0)
                 }
             }
+//            .tag(model.editCount)
             .listStyle(.plain)
             .tabItem {Label("History", systemImage: "figure.run")}
             
@@ -242,7 +243,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
 
 // View for a line in the history tab.
 @ViewBuilder
-private func completedView(_ snapshot: Snapshot) -> some View {
+private func completedView(_ model: Model, _ exercise: Exercise,_ snapshot: Snapshot) -> some View {
     HStack {
         // icon labeling how well the user did compared to prior workout
         if snapshot.finished {
@@ -271,9 +272,19 @@ private func completedView(_ snapshot: Snapshot) -> some View {
             Text("?")
         }
         
-        // details for the workout, TODO these need to be nav links so that the user can edit them
-        // (but don't allow in progress to be edited)
-        Text(snapshot.current.details())
+        // details for the workout
+        if snapshot.finished {
+            NavigationLink {
+                EditCompleted(model: model, exercise: exercise, snapshot: snapshot)
+            } label: {
+                Text(snapshot.current.details())
+            }
+            .navigationLinkIndicatorVisibility(.hidden)
+            .gridColumnAlignment(.leading)
+            .foregroundColor(.blue)
+        } else {
+            Text(snapshot.current.details())
+        }
     }
 }
 
