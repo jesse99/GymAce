@@ -18,6 +18,7 @@ struct EditExercise: View {
     @State private var formalNames: [MenuItem] = []
     private let weightDelta = 10
     private let weightSets: [String]
+    private var workoutsLabel: String = ""
 
     @State private var durationsData: DurationsData
     @State private var durationsText = ""
@@ -60,6 +61,20 @@ struct EditExercise: View {
         self.program = program
         self.exercise = exercise
         self.weightSets = model.weightSets.keys.sorted()
+        
+        var workouts: [String] = []
+        for w in program.workouts {
+            if w.entries.contains(where: { $0.name == exercise.name }) {
+                workouts.append(w.name)
+            }
+        }
+        if workouts.isEmpty {
+            self.workoutsLabel = "This exercise is not part of any workout."
+        } else if workouts.count == 1{
+            self.workoutsLabel = "Part of the \(workouts[0]) workout."
+        } else {
+            self.workoutsLabel = "Part of \(workouts.sorted().joined(separator: " and ")) workouts."
+        }
 
         let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
         let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
@@ -505,6 +520,9 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
             }
+            Text(workoutsLabel)
+                .font(.footnote)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
