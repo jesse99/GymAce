@@ -103,8 +103,7 @@ final class ExerciseEntry: Codable {
                     }
                 }
             }
-        }
-        if case let .percent(d) = exercise.data {   // TODO should clean some of this up: quite a bit of duplication
+        } else if case let .percent(d) = exercise.data {   // TODO should clean some of this up: quite a bit of duplication
             if d.isVariable, !finished(exercise) {
                 var index = fixedIndex(exercise)
                 index -= d.warmups.count
@@ -128,12 +127,22 @@ final class ExerciseEntry: Codable {
             if let w = self.working, index >= 0 && index < w.expected.count {
                 return w.expected[index]
             }
+        } else if case let .percent(d) = exercise.data {
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            if let w = self.working, index >= 0 && index < w.expected.count {
+                return w.expected[index]
+            }
         }
         return 0
     }
     
     func setActualReps(_ exercise: Exercise, _ actual: Int) {
         if case let .reps(d) = exercise.data {
+            var index = fixedIndex(exercise)
+            index -= d.warmups.count
+            working!.expected[index] = actual
+        } else if case let .percent(d) = exercise.data {
             var index = fixedIndex(exercise)
             index -= d.warmups.count
             working!.expected[index] = actual
@@ -149,8 +158,7 @@ final class ExerciseEntry: Codable {
             case .fixed: return 0
             case .variable(_, let max): return max
             }
-        }
-        if case let .percent(d) = exercise.data {
+        } else if case let .percent(d) = exercise.data {
             var index = fixedIndex(exercise)
             index -= d.warmups.count
             switch d.workset[index] {
