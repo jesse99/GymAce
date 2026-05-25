@@ -136,7 +136,7 @@ func completedDetails(_ values: [Int], _ type: ValueType, _ weight: Float?, _ un
         let labels = values.map {"\($0)"}
         return joinLabels(labels) + " reps" + trailer
     case .secs:
-        let labels = values.map {secsToStr($0)}
+        let labels = values.map {secsToLongStr($0)}
         return joinLabels(labels) + trailer
     }
 }

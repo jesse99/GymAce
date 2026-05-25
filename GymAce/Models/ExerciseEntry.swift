@@ -356,7 +356,7 @@ final class ExerciseEntry: Codable {
         let index = fixedIndex(exercise)
         switch exercise.data {
             case .durations(let d):
-                return secsToStr(d.secs[index]) + suffix
+                return secsToLongStr(d.secs[index]) + suffix
             case .reps(let d):
                 var index = index
                 if index < d.warmups.count {

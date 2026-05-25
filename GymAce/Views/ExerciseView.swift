@@ -70,7 +70,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = remainingSecs(now: context.date, target: target)
                         if remaining > 0 {
-                            Text(secsToStr(remaining))
+                            Text(secsToLongStr(remaining))
                                 .font(.largeTitle)
                                 .foregroundColor(.red)
                         } else if remaining > -5 {
@@ -78,7 +78,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                                 .font(.largeTitle)
                                 .foregroundColor(.green)
                         } else {
-                            Text(secsToStr(-remaining) + " over")
+                            Text(secsToLongStr(-remaining) + " over")
                                 .font(.largeTitle)
                                 .foregroundColor(.green)
                         }
@@ -97,7 +97,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 } else if case .timing(let start, let oldMode) = entry.mode {
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = elapsedSecs(now: context.date, start: start)
-                        Text(secsToStr(remaining))
+                        Text(secsToLongStr(remaining))
                             .font(.largeTitle)
                             .foregroundColor(.red)
                     }

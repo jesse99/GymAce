@@ -15,15 +15,30 @@ struct EditExercise: View {
     @State private var showWeightHelp = false
     @State private var showWeightSetHelp = false
     @State private var showTypePickerHelp = false
-    @State private var durationsData: DurationsData
-    @State private var percentData: PercentData
-    @State private var repsData: RepsData
-    @State private var durationsText = ""
-    @State private var showDurationsHelp = false
-    @State private var durationsErr: String? = nil
     @State private var formalNames: [MenuItem] = []
     private let weightDelta = 10
     private let weightSets: [String]
+
+    @State private var durationsData: DurationsData
+    @State private var durationsText = ""
+    @State private var showDurationsHelp = false
+    @State private var durationsErr: String? = nil
+
+    @State private var percentData: PercentData
+
+    @State private var repsData: RepsData
+    @State private var repsWarmupText = ""
+    @State private var repsWorksetsText = ""
+    @State private var repsBackoffText = ""
+    @State private var repsRestText = ""
+    @State private var repsWarmupErr: String? = nil
+    @State private var repsWorksetsErr: String? = nil
+    @State private var repsBackoffErr: String? = nil
+    @State private var repsRestErr: String? = nil
+    @State private var showRepsWarmupHelp = false
+    @State private var showRepsWorksetsHelp = false
+    @State private var showRepsBackoffHelp = false
+    @State private var showRepsRestHelp = false
 
     init(model: Model, program: Program, exercise: Exercise) {
         self.model = model
@@ -49,6 +64,14 @@ struct EditExercise: View {
         }
 
         _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
+        _repsWarmupText = State(initialValue: repsData.warmups.map {$0.asString()}.joined(separator: " "))
+        _repsWorksetsText = State(initialValue: repsData.workset.map {$0.asString()}.joined(separator: " "))
+        _repsBackoffText = State(initialValue: repsData.backoff.map {$0.asString()}.joined(separator: " "))
+        if let s = repsData.rest {
+            _repsRestText = State(initialValue: secsToShortStr(s))
+        } else {
+            _repsRestText = State(initialValue: "")
+        }
     }
     
     // TODO use onAppear to make the name textbox the focus?
@@ -76,7 +99,7 @@ struct EditExercise: View {
                 Text("Exercise name cannot be empty.")
                     .foregroundColor(.red)
                     .font(.footnote)
-            } else if doesNameExist {
+            } else if dupeName {
                 Text("There is already a exercise with that name.")
                     .foregroundColor(.red)
                     .font(.footnote)
@@ -219,8 +242,8 @@ struct EditExercise: View {
                 }
             }
 
-            // Durations type
             if typeBinding.wrappedValue == 0 {
+                // Durations type
                 HStack {
                     TextField("Durations", text: durationsBinding)
                         .textFieldStyle(.roundedBorder)
@@ -241,11 +264,96 @@ struct EditExercise: View {
                         .foregroundColor(.red)
                         .font(.footnote)
                 }
+                
+            } else if typeBinding.wrappedValue == 1 {
+                // Percent type
+                
+            } else if typeBinding.wrappedValue == 2 {
+                // Reps type
+                HStack {
+                    TextField("Warmups", text: repsWarmupBinding)
+                        .textFieldStyle(.roundedBorder)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showRepsWarmupHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showRepsWarmupHelp {
+                    Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = repsWarmupErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
+
+                HStack {
+                    TextField("Worksets", text: repsWorksetsBinding)
+                        .textFieldStyle(.roundedBorder)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showRepsWorksetsHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showRepsWorksetsHelp {
+                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = repsWorksetsErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
+
+                HStack {
+                    TextField("Backoff", text: repsBackoffBinding)
+                        .textFieldStyle(.roundedBorder)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showRepsBackoffHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showRepsBackoffHelp {
+                    Text("Sets to do after the work sets.  Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = repsBackoffErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
+                
+                HStack {
+                    TextField("Rest", text: repsRestBinding)
+                        .textFieldStyle(.roundedBorder)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showRepsRestHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showRepsRestHelp {
+                    Text("The amount of time to do rest after each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = repsRestErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
             }
-            
-            // Percent type
-            
-            // Reps type
         }
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
@@ -285,7 +393,7 @@ struct EditExercise: View {
                 var a: [Int] = []
                 durationsText = $0
                 for s in $0.split(separator: " ") {
-                    if let s = parseShortStr(String(s)) {
+                    if let s = parseShortSecs(String(s)) {
                         a.append(s)
                     } else {
                         durationsErr = "Expected a number with an optional time suffix, not '\(s)'."
@@ -298,6 +406,101 @@ struct EditExercise: View {
                     durationsErr = nil
                     durationsData.secs = a
                     exercise.data = .durations(durationsData)
+                }
+            }
+        )
+    }
+
+    private var repsWarmupBinding: Binding<String> {
+        Binding(
+            get: {
+                return repsWarmupText
+            },
+            set: {
+                var a: [FixedReps] = []
+                repsWarmupText = $0
+                for s in $0.split(separator: " ") {
+                    if let r = FixedReps(String(s)) {
+                        a.append(r)
+                    } else {
+                        repsWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+                        return
+                    }
+                }
+                repsWarmupErr = nil
+                repsData.warmups = a
+                exercise.data = .reps(repsData)
+            }
+        )
+    }
+
+    private var repsWorksetsBinding: Binding<String> {
+        Binding(
+            get: {
+                return repsWorksetsText
+            },
+            set: {
+                var a: [VariableRep] = []
+                repsWorksetsText = $0
+                for s in $0.split(separator: " ") {
+                    if let r = VariableRep(String(s)) {
+                        a.append(r)
+                    } else {
+                        repsWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."
+                        return
+                    }
+                }
+                if a.isEmpty {
+                    repsWorksetsErr = "Need at least one set."
+                } else {
+                    repsWorksetsErr = nil
+                    repsData.workset = a
+                    exercise.data = .reps(repsData)
+                }
+            }
+        )
+    }
+    
+    private var repsBackoffBinding: Binding<String> {
+        Binding(
+            get: {
+                return repsBackoffText
+            },
+            set: {
+                var a: [FixedReps] = []
+                repsBackoffText = $0
+                for s in $0.split(separator: " ") {
+                    if let r = FixedReps(String(s)) {
+                        a.append(r)
+                    } else {
+                        repsBackoffErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+                        return
+                    }
+                }
+                repsBackoffErr = nil
+                repsData.backoff = a
+                exercise.data = .reps(repsData)
+            }
+        )
+    }
+
+    private var repsRestBinding: Binding<String> {
+        Binding(
+            get: {
+                return repsRestText
+            },
+            set: {
+                repsRestText = $0
+                if let s = parseShortSecs($0) {
+                    repsRestErr = nil
+                    repsData.rest = s
+                    exercise.data = .reps(repsData)
+                } else if $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    repsRestErr = nil
+                    repsData.rest = nil
+                    exercise.data = .reps(repsData)
+                } else {
+                    repsRestErr = "Expected nothing or a number with an optional time suffix, not '\($0)'."
                 }
             }
         )
@@ -419,14 +622,25 @@ struct EditExercise: View {
         self.exercise.name.isEmpty
     }
 
-    private var doesNameExist: Bool {
+    private var dupeName: Bool {
         self.program.exercises.count(where: {
             $0 !== self.exercise && $0.name == self.exercise.name
         }) > 0
     }
 
     private var isValid: Bool {
-        !isNameEmpty && !doesNameExist && durationsErr == nil
+        guard !isNameEmpty && !dupeName else {
+            return false
+        }
+        switch exercise.data {
+        case .durations(_):
+            return durationsErr == nil
+        case .percent(_):
+            return true   // TODO update this
+        case .reps(_):
+            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil && repsRestErr == nil
+        }
+
     }
 }
 

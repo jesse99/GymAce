@@ -13,12 +13,58 @@ struct DurationsData: Codable {
 struct FixedReps: Codable {
     var reps: Int
     var percent: Int
+    
+    init(reps: Int, percent: Int) {
+        self.reps = reps
+        self.percent = percent
+    }
+
+    /// Parse a string formatted as "5/80".
+    init?(_ str: String) {
+        let parts = str.split(separator: "/")
+        guard parts.count == 2 else {return nil}
+        guard let reps = Int(parts[0]) else {return nil}
+        guard let percent = Int(parts[1]) else {return nil}
+        
+        self.reps = reps
+        self.percent = percent
+    }
+    
+    func asString() -> String {
+        return "\(reps)/\(percent)"
+    }
 }
 
 enum VariableRep: Codable {
     case amrap(Int)
     case fixed(Int)
     case variable(Int, Int)
+    
+    /// Parse a string formatted as "5", "8-12", or "3+".
+    init?(_ str: String) {
+        if str.contains("-") {
+            let parts = str.split(separator: "-")
+            guard parts.count == 2 else {return nil}
+            guard let min = Int(parts[0]) else {return nil}
+            guard let max = Int(parts[1]) else {return nil}
+            self = .variable(min, max)
+        } else if str.last == "+" {
+            let s = str.dropLast(1)
+            guard let reps = Int(s) else {return nil}
+            self = .amrap(reps)
+        } else {
+            guard let reps = Int(str) else {return nil}
+            self = .fixed(reps)
+        }
+    }
+    
+    func asString() -> String {
+        switch self {
+        case .amrap(let r): return "\(r)+"
+        case .fixed(let r): return "\(r)"
+        case .variable(let min, let max): return "\(min)-\(max)"
+        }
+    }
 }
 
 struct RepsData: Codable {
@@ -263,10 +309,10 @@ func joinLabels(_ labels: [String]) -> String {
     }.joined(separator: ", ")
 }
 
-func secsToStr(_ secs: Int) -> String {
+func secsToLongStr(_ secs: Int) -> String {
     if secs > 60*60 {
         let n = Float(secs)/(60.0*60.0)
-        return String(format: "%.1f hours", n)
+        return String(format: "%.2f hours", n)
     } else if secs > 60 {
         let n = Float(secs)/60.0
         return String(format: "%.1f mins", n)
@@ -290,7 +336,7 @@ func secsToShortStr(_ secs: Int) -> String {
 }
 
 /// Parses strings formatted as 30, 30s, 3.1m, or 10h and returns seconds.
-func parseShortStr(_ str: String) -> Int? {
+func parseShortSecs(_ str: String) -> Int? {
     var result: Int? = nil
     if str.last == "h" {
         let s = str.dropLast(1)
