@@ -24,7 +24,7 @@ enum VariableRep: Codable {
 struct RepsData: Codable {
     var warmups: [FixedReps]
     var workset: [VariableRep]
-    var backoff: [FixedReps]
+    var backoff: [FixedReps]        // TODO might be nice to make this variable tho it would need min, max, and percent. expected might be weird too
     var version: Int = 1
     
     /// Seconds to rest for worksets.
@@ -41,10 +41,6 @@ struct RepsData: Codable {
         return false
     }
         
-    enum CodingKeys: String, CodingKey {
-        case warmups, workset, backoff, version, rest
-    }
-
     init(warmups: [FixedReps], worksets: [VariableRep], backoff: [FixedReps], rest: Int? = nil) {
         self.warmups = warmups
         self.workset = worksets
@@ -220,7 +216,7 @@ final class Exercise: Codable {
                 }
                 return joinLabels(b) + suffix
             case .durations(let d):
-                let a = d.secs.map {"\($0)s"}
+                let a = d.secs.map {secsToShortStr($0)}
                 return joinLabels(a) + suffix
             case .percent(let d):
                 let a = d.workset.map {
@@ -279,4 +275,42 @@ func secsToStr(_ secs: Int) -> String {
     } else {
         return "\(secs) secs"
     }
+}
+
+func secsToShortStr(_ secs: Int) -> String {
+    if secs > 60*60 {
+        let n = Float(secs)/(60.0*60.0)
+        return String(format: "%.1fh", n)
+    } else if secs > 60 {
+        let n = Float(secs)/60.0
+        return String(format: "%.1fm", n)
+    } else {
+        return "\(secs)s"
+    }
+}
+
+/// Parses strings formatted as 30, 30s, 3.1m, or 10h and returns seconds.
+func parseShortStr(_ str: String) -> Int? {
+    var result: Int? = nil
+    if str.last == "h" {
+        let s = str.dropLast(1)
+        if let n = Float(s) {
+            result = Int(60.0*60.0*n)
+        }
+    } else if str.last == "m" {
+        let s = str.dropLast(1)
+        if let n = Float(s) {
+            result = Int(60.0*n)
+        }
+    } else if str.last == "s" {
+        let s = str.dropLast(1)
+        if let n = Float(s) {
+            result = Int(n)
+        }
+    } else {
+        if let n = Float(str) {
+            result = Int(n)
+        }
+    }
+    return result
 }

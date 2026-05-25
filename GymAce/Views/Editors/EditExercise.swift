@@ -15,8 +15,12 @@ struct EditExercise: View {
     @State private var showWeightHelp = false
     @State private var showWeightSetHelp = false
     @State private var showTypePickerHelp = false
-    @State private var type: Int
+    @State private var durationsData: DurationsData
+    @State private var percentData: PercentData
+    @State private var repsData: RepsData
+    @State private var durationsText = ""
     @State private var showDurationsHelp = false
+    @State private var durationsErr: String? = nil
     @State private var formalNames: [MenuItem] = []
     private let weightDelta = 10
     private let weightSets: [String]
@@ -26,11 +30,25 @@ struct EditExercise: View {
         self.program = program
         self.exercise = exercise
         self.weightSets = model.weightSets.keys.sorted()
+
+        let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
         switch exercise.data {
-        case .durations(_): type = 0
-        case .percent(_): type = 1
-        case .reps(_): type = 2
+        case .durations(let d):
+            _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
+            _percentData = State(initialValue: PercentData(other: "None", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+        case .percent(let d):
+            _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _percentData = State(initialValue: d)
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+        case .reps(let d):
+            _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _percentData = State(initialValue: PercentData(other: "None", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _repsData = State(initialValue: d)
         }
+
+        _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
     }
     
     // TODO use onAppear to make the name textbox the focus?
@@ -171,7 +189,7 @@ struct EditExercise: View {
             
             // Type picker
             HStack {
-                Picker("", selection: $type) {  // TODO need a custom binding so we can switch state
+                Picker("", selection: typeBinding) {
                     Text("Durations").tag(0)
                     Text("Percent").tag(1)
                     Text("Reps").tag(2)
@@ -186,26 +204,26 @@ struct EditExercise: View {
                 .padding(.leading, 5)
             }
             if showTypePickerHelp {
-                if type == 0 {
+                if typeBinding.wrappedValue == 0 {
                     Text("Each set is done for a specified amount of time.")
                         .foregroundColor(.blue)
                         .font(.footnote)
-                } else if type == 1 {
+                } else if typeBinding.wrappedValue == 1 {
                     Text("Each set is done using weights that are a percentage of another exercise.")
                         .foregroundColor(.blue)
                         .font(.footnote)
                 } else {
-                    Text("Each work set is done using minimum and maximum reps.")
+                    Text("Each work set is done using fixed reps, min-max reps, or As Many Reps As Possible (AMRAP).")
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
             }
 
             // Durations type
-            if type == 0 {
+            if typeBinding.wrappedValue == 0 {
                 HStack {
                     TextField("Durations", text: durationsBinding)
-                        .textFieldStyle(.roundedBorder)     // TODO make sure empty is sensible
+                        .textFieldStyle(.roundedBorder)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showDurationsHelp.toggle()
@@ -218,22 +236,16 @@ struct EditExercise: View {
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
-                //                if isNameEmpty {
-                //                    Text("Exercise name cannot be empty.")
-                //                        .foregroundColor(.red)
-                //                        .font(.footnote)
-                //                } else if doesNameExist {
-                //                    Text("There is already a exercise with that name.")
-                //                        .foregroundColor(.red)
-                //                        .font(.footnote)
-                //                }
+                if let e = durationsErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
             }
+            
             // Percent type
-            // TODO make sure empty sets is sensible
             
             // Reps type
-            // TODO make sure empty sets is sensible
-            //        }
         }
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
@@ -242,13 +254,52 @@ struct EditExercise: View {
             model.dirty = true
         }
     }
-        
-    // TODO need to update internal state as well as the exercise state
-    // TODO need to allow suffixes
+    
+    private var typeBinding: Binding<Int> {
+        Binding(
+            get: {
+                switch exercise.data {
+                case .durations(_): return 0
+                case .percent(_): return 1
+                case .reps(_): return 2
+                }
+            },
+            set: {
+                if $0 == 0 {
+                    exercise.data = .durations(durationsData)
+                } else if $0 == 1 {
+                    exercise.data = .percent(percentData)
+                } else {
+                    exercise.data = .reps(repsData)
+                }
+            }
+        )
+    }
+
     private var durationsBinding: Binding<String> {
         Binding(
-            get: {return "30s 30s 30s"},
-            set: {_ = $0}
+            get: {
+                return durationsText
+            },
+            set: {
+                var a: [Int] = []
+                durationsText = $0
+                for s in $0.split(separator: " ") {
+                    if let s = parseShortStr(String(s)) {
+                        a.append(s)
+                    } else {
+                        durationsErr = "Expected a number with an optional time suffix, not '\(s)'."
+                        return
+                    }
+                }
+                if a.isEmpty {
+                    durationsErr = "Need at least one set."
+                } else {
+                    durationsErr = nil
+                    durationsData.secs = a
+                    exercise.data = .durations(durationsData)
+                }
+            }
         )
     }
 
@@ -375,7 +426,7 @@ struct EditExercise: View {
     }
 
     private var isValid: Bool {
-        !isNameEmpty && !doesNameExist
+        !isNameEmpty && !doesNameExist && durationsErr == nil
     }
 }
 
