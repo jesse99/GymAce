@@ -1,133 +1,5 @@
 import Foundation
 
-struct DurationsData: Codable {
-    var secs: [Int]
-    var targetSecs: Int?    // TODO support this? support progression somehow?
-    
-    init(secs: [Int], targetSecs: Int? = nil) {
-        self.secs = secs
-        self.targetSecs = targetSecs
-    }
-}
-
-struct FixedReps: Codable {
-    var reps: Int
-    var percent: Int
-    
-    init(reps: Int, percent: Int) {
-        self.reps = reps
-        self.percent = percent
-    }
-
-    /// Parse a string formatted as "5/80".
-    init?(_ str: String) {
-        let parts = str.split(separator: "/")
-        guard parts.count == 2 else {return nil}
-        guard let reps = Int(parts[0]) else {return nil}
-        guard let percent = Int(parts[1]) else {return nil}
-        
-        self.reps = reps
-        self.percent = percent
-    }
-    
-    func asString() -> String {
-        return "\(reps)/\(percent)"
-    }
-}
-
-enum VariableRep: Codable {
-    case amrap(Int)
-    case fixed(Int)
-    case variable(Int, Int)
-    
-    /// Parse a string formatted as "5", "8-12", or "3+".
-    init?(_ str: String) {
-        if str.contains("-") {
-            let parts = str.split(separator: "-")
-            guard parts.count == 2 else {return nil}
-            guard let min = Int(parts[0]) else {return nil}
-            guard let max = Int(parts[1]) else {return nil}
-            self = .variable(min, max)
-        } else if str.last == "+" {
-            let s = str.dropLast(1)
-            guard let reps = Int(s) else {return nil}
-            self = .amrap(reps)
-        } else {
-            guard let reps = Int(str) else {return nil}
-            self = .fixed(reps)
-        }
-    }
-    
-    func asString() -> String {
-        switch self {
-        case .amrap(let r): return "\(r)+"
-        case .fixed(let r): return "\(r)"
-        case .variable(let min, let max): return "\(min)-\(max)"
-        }
-    }
-}
-
-struct RepsData: Codable {
-    var warmups: [FixedReps]
-    var workset: [VariableRep]
-    var backoff: [FixedReps]        // TODO might be nice to make this variable tho it would need min, max, and percent. expected might be weird too
-    var version: Int = 1
-    
-    /// Seconds to rest for worksets.
-    var rest: Int?
-
-    var isVariable: Bool {
-        for s in workset {
-            switch s {
-            case .amrap(_): return true
-            case .fixed: break
-            case .variable(_, _): return true
-            }
-        }
-        return false
-    }
-        
-    init(warmups: [FixedReps], worksets: [VariableRep], backoff: [FixedReps], rest: Int? = nil) {
-        self.warmups = warmups
-        self.workset = worksets
-        self.backoff = backoff
-        self.rest = rest
-    }
-}
-
-struct PercentData: Codable {
-    /// The name of another exercise.
-    var other: String
-    
-    /// The weight for this exercise will be the last completed weight for the above named
-    /// exercise multipled by this percent.
-    var percent: Int
-    
-    var warmups: [FixedReps]
-    var workset: [VariableRep]
-    
-    /// Seconds to rest for worksets.
-    var rest: Int?
-    var version: Int = 1
-    
-    var isVariable: Bool {
-        for s in workset {
-            switch s {
-            case .amrap(_): return true
-            case .fixed: break
-            case .variable(_, _): return true
-            }
-        }
-        return false
-    }
-}
-
-enum ExerciseData: Codable {
-    case durations(DurationsData)
-    case reps(RepsData)
-    case percent(PercentData)
-}
-
 /// How to perform an exercise. These are added to workouts using ExerciseEntry.
 @Observable
 final class Exercise: Codable {
@@ -176,15 +48,6 @@ final class Exercise: Codable {
     }
     
     func fixup() {
-//        if self.weightSet == "Dual" {
-//            self.weightSet = "Dual Plates"
-//        }
-//        if name == "Light Bench" {
-//            if case .percent(var d) = data, d.rest == nil {
-//                d.rest = Int(3.0*60)
-//                self.data = .percent(d)
-//            }
-//        }
 //        if name == "Light Squat" {
 //            if case .percent(var d) = data, d.rest == nil {
 //                d.rest = Int(3.5*60)
@@ -193,12 +56,6 @@ final class Exercise: Codable {
 //        }
 //        if name == "Trap Deadlift" {
 //            self.weightSet = "Trapbar"
-//        }
-//        if name == "OHP" {
-//            let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-//            let reps3 = [VariableReps(3, to: 5), VariableReps(3, to: 5), VariableReps(3, to: 5)]
-//            let d = RepsData(warmups: owarmup, worksets: reps3, backoff: [], rest: Int(3.0*60))
-//            self.data = .reps(d)
 //        }
     }
         
