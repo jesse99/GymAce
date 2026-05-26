@@ -58,7 +58,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 Button("Finished") {
                     // We won't call done if the user swipes back but it seems to make
                     // sense to call done only when the user presses Finished...
-                    entry.completedAll(exercise)
+                    entry.completedAll(workout, exercise)
                     program.didExercise()
                     model.save()
                     dismiss()
@@ -158,7 +158,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
         .padding(20)
         .onAppear {
-            entry.started(model, program, exercise)
+            entry.started(model, program, workout, exercise)
         }
         TabView {
             List {

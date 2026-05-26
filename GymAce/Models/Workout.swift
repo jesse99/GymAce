@@ -18,6 +18,12 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     var weeks: ClosedRange<Int>? = nil
     
     var notes = ""      // TODO support this?
+    
+    /// Set when the first exercise in the workout starts.
+    var started: Date? = nil
+    
+    /// Amount of time the user spent doing the exercises in the workout.
+    var elapsed: TimeInterval? = nil
 
     var version: Int = 1
 
@@ -52,6 +58,15 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         }
     }
         
+    var isStale: Bool {
+        if let s = started {
+            let delta = s.distance(to: Date.now)
+            return delta/3600.0 > 12.0   // aka more than 12 hours
+        } else {
+            return true
+        }
+    }
+
     func addExercise(name: String) {
         let entry = ExerciseEntry(name: name)
         entries.append(entry)

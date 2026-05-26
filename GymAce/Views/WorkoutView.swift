@@ -56,6 +56,10 @@ struct WorkoutView: View {
         .navigationTitle("\(workout.name) Exercises")
         .padding(10)
         Spacer()
+        if let e = workout.elapsed {
+            Text("Worked out for \(secsToLongStr(Int(e))).")
+                .font(.footnote)
+        }
     }
     
     func fgColor(_ entry: ExerciseEntry, _ exercise: Exercise) -> Color {

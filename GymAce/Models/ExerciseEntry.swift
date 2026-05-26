@@ -209,13 +209,21 @@ final class ExerciseEntry: Codable {
     }
     
     /// Called when the user starts an exercise. Resets setIndex and working if needed.
-    func started(_ model: Model, _ program: Program, _ exercise: Exercise) {
+    func started(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) {
         if let w = self.working {
             if w.isStale {
                 reset(model, program, exercise)
+                if workout.isStale {
+                    workout.started = Date()
+                    workout.elapsed = 0.0
+                }
             }
         } else {
             reset(model, program, exercise)
+            if workout.isStale {
+                workout.started = Date()
+                workout.elapsed = 0.0
+            }
         }
     }
 
@@ -291,8 +299,13 @@ final class ExerciseEntry: Codable {
     
     /// Called when the user completes an exercise. Adds current to Exercise.history and then resets
     /// current.
-    func completedAll(_ exercise: Exercise) {
+    func completedAll(_ workout: Workout, _ exercise: Exercise) {
         if let w = self.working {
+            if let e = workout.elapsed {
+                let elapsed = Date().timeIntervalSince(w.started)
+                workout.elapsed = e + elapsed
+            }
+            
             let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
             exercise.history.append(c)
         }
