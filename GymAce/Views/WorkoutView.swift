@@ -18,14 +18,12 @@ struct WorkoutView: View {
     //      see https://developer.apple.com/documentation/xcode/configuring-background-execution-modes
     //      normally apps are suspended when in the background so this might make vibrate more reliable
     var body: some View {
-        Grid( horizontalSpacing: 20, verticalSpacing: 10 ) {
+        Grid(horizontalSpacing: 20, verticalSpacing: 10) {
             GridRow {
                 Text("Exercise").bold()
-                    .gridColumnAlignment( .leading )
+                    .gridColumnAlignment(.leading)
                 Text("Details").bold()
-                    .gridColumnAlignment( .leading )
-                Text("Duration").bold()
-                    .gridColumnAlignment( .leading )
+                    .gridColumnAlignment(.leading)
             }
             ForEach($workout.entries, id: \.name) { $entry in
                 if entry.enabled {
@@ -41,24 +39,20 @@ struct WorkoutView: View {
                             .foregroundColor(fgColor(entry, exercise))
                             
                             Text(exercise.details(model, program))
-                                .gridColumnAlignment( .leading )
-                            
-                            Text("-")   // TODO implement this, will also need a footer with total duration
-                                .gridColumnAlignment( .leading )
+                                .gridColumnAlignment(.leading)
                         }
                     } else {
                         GridRow {
                             Text(entry.name)
                                 .gridColumnAlignment(.leading )
                             Text("not found")
-                                .gridColumnAlignment( .leading )
-                            Text("-")
-                                .gridColumnAlignment( .leading )
+                                .gridColumnAlignment(.leading)
                         }
                     }
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .navigationTitle("\(workout.name) Exercises")
         .padding(10)
         Spacer()
