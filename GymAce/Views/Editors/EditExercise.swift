@@ -81,7 +81,7 @@ struct EditExercise: View {
         switch exercise.data {
         case .durations(let d):
             _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
-            _percentData = State(initialValue: PercentData(other: "None", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
             _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
         case .percent(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
@@ -89,7 +89,7 @@ struct EditExercise: View {
             _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
         case .reps(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
-            _percentData = State(initialValue: PercentData(other: "None", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
             _repsData = State(initialValue: d)
         }
         
@@ -99,11 +99,11 @@ struct EditExercise: View {
         for e in program.exercises where e.name != exercise.name {
             names.append(e.name)
         }
-        if percentData.other != "None" && !names.contains(percentData.other) {
+        if percentData.other != "Missing Exercise" && !names.contains(percentData.other) {
             names.append(percentData.other)
         }
         names.sort()
-        names.append("None")    // TODO don't allow an exercise to be named None
+        names.append("Missing Exercise")    // TODO don't allow an exercise to be named "Missing Exercise"
         _percentOthers = State(initialValue: names)
         _percent = State(initialValue: "\(percentData.percent)")
         if let index = names.firstIndex(of: percentData.other) {
@@ -192,7 +192,7 @@ struct EditExercise: View {
             // Weight set
             HStack {
                 Picker("Weight Set", selection: weightSetBinding) {
-                    Text("None").tag(-1)
+                    Text("No Weight Set").tag(-1)
                     ForEach(Array(weightSets.enumerated()), id: \.element) {tuple in
                         Text(tuple.1).tag(tuple.0)
                     }
@@ -872,10 +872,13 @@ struct EditExercise: View {
     private var weightBinding: Binding<String> {
         Binding(
             get: {
-                let w = exercise.weight ?? 0.0
-                return formatWeight(w, .None)
+                if let w = exercise.weight, w > 0.0 {
+                    return formatWeight(w, .None)
+                } else {
+                    return ""   // this will show the placeholder text
+                }
             },
-            set: {exercise.weight = Float($0) ?? 0.0}
+            set: {exercise.weight = Float($0)}
         )
     }
 

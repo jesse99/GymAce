@@ -647,7 +647,7 @@ func findExpected(_ exercise: Exercise, _ reps: VariableRep, _ index: Int) -> Va
         return reps
     case .variable(let min, let max):
         // Usually we'll just return reps except for a few cases:
-        if let last = exercise.latestCompleted() {
+        if let last = exercise.latestCompleted(), typeMatches(last, exercise) {
             if let new = exercise.weight, let old = last.weight {
                 if new < old {
                     // 1) the user has dropped the weight
@@ -670,5 +670,23 @@ func findExpected(_ exercise: Exercise, _ reps: VariableRep, _ index: Int) -> Va
             }
         }
         return reps
+    }
+}
+
+func typeMatches(_ completed: Completed, _ exercise: Exercise) -> Bool {
+    switch completed.type {
+    case .reps:
+        switch exercise.data {
+        case .percent(_): return true
+        case .durations(_): return false
+        case .reps(_): return true
+        }
+    case .secs:
+        switch exercise.data {
+        case .percent(_): return false
+        case .durations(_): return true
+        case .reps(_): return false
+        }
+
     }
 }
