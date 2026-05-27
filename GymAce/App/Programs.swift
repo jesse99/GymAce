@@ -1,5 +1,115 @@
 import Foundation
 
+// TODO Get rid of this at some point
+func myProgram() -> Program {
+    func addMyExercises(_ program: Program) {
+        let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        
+        let reps1: [VariableRep] = [.variable(3, 5)]
+        let reps2: [VariableRep] = [.variable(3, 5), .variable(3, 5)]
+        let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
+        let reps12: [VariableRep] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)]
+
+        var exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [30])
+        program.exercises.append(exercise)
+
+        exercise = makePercent("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.5*60))
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Face Pulls", "Face Pull", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Trapbar", weight: 235, rest: nil)
+        program.exercises.append(exercise)
+        
+        exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.0*60))
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+        program.exercises.append(exercise)
+
+        let creps: [VariableRep] = [.variable(3, 8), .variable(3, 8)]
+        exercise = makeReps("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+        program.exercises.append(exercise)
+
+        exercise = makeReps("OHP", "Overhead Press", warmups: owarmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
+        program.exercises.append(exercise)
+
+        exercise = makeReps("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+        program.exercises.append(exercise)
+    }
+
+    func addBench(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.tuesday]))
+        let workout = Workout("Bench", schedule)
+        workout.weeks = 1...6
+        
+        workout.addExercise(name: "Heavy Bench")
+        workout.addExercise(name: "OHP")
+        workout.addExercise(name: "DB OHP")
+        workout.addExercise(name: "Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+
+    func addSquat(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.thursday]))
+        let workout = Workout("Squat", schedule)
+        workout.weeks = 1...7
+
+        workout.addExercise(name: "Light Bench")
+        workout.addExercise(name: "Quad Stretch")
+        workout.addExercise(name: "Heavy Squat")
+        workout.addExercise(name: "Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+
+    func addDeadlift(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.sunday]))
+        let workout = Workout("Deadlift", schedule)
+        workout.weeks = 1...7
+
+        workout.addExercise(name: "Quad Stretch")
+        workout.addExercise(name: "Light Squat")
+        workout.addExercise(name: "Face Pulls")
+        workout.addExercise(name: "Trap Deadlift")
+        
+        program.addWorkout(workout)
+    }
+
+    func addRest(_ program: Program) {
+        let schedule = Schedule.anyDay
+        let workout = Workout("Rest", schedule)
+        workout.weeks = 8...8
+        
+        program.addWorkout(workout)
+    }
+
+    let program = Program("My")
+    addMyExercises(program)
+    addBench(program)
+    addSquat(program)
+    addDeadlift(program)
+    addRest(program)
+    return program
+}
+
+/// For previews
+func previewModel() -> Model {
+    let model = Model()
+    model.activeProgram = "Preview"
+    model.notes.addDefaults()
+    addPreviewWeightSets(model)
+    model.programs.append(previewProgram())
+    return model
+}
+
 /// Simulator only program used for testing.
 func previewProgram() -> Program {   // TODO get rid of this?
     func addExercises(_ program: Program) {
@@ -118,6 +228,11 @@ fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedR
     }
 }
 
+fileprivate func makePercent(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [VariableRep], weights: String, rest: Int) -> Exercise {
+    let percent = PercentData(other: other, percent: percent, warmups: warmups, workset: worksets, rest: rest)
+    return Exercise(name: name, formalName: formalName, percent: percent, weights: weights)
+}
+
 fileprivate func addCompletedReps(_ exercise: Exercise, daysAgo: Int, sets: [Int], weight: Float? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
@@ -131,3 +246,20 @@ fileprivate func addCompletedSecs(_ exercise: Exercise, daysAgo: Int, sets: [Int
     let c = Completed(secs: sets, weight: weight, units: .Imperial, completed: d!)
     exercise.history.append(c)
 }
+
+func addPreviewWeightSets(_ model: Model) {
+    let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
+    model.weightSets["Cable Machine"] = WeightSet.discrete(cable)
+
+    let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
+    model.weightSets["Dumbbells"] = WeightSet.discrete(dumbbells)
+
+    var plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    var dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
+    model.weightSets["Dual Plates"] = WeightSet.dual(dual)
+
+    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
+    model.weightSets["Trapbar"] = WeightSet.dual(dual)
+}
+
