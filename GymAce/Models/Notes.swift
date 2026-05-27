@@ -1180,54 +1180,34 @@ extension Notes {
         )
         
         add("Diamond Pushup",
-            [
-                "Move your hands together so that the thumbs and index fingers touch (forming a triangle).",
+            ["Move your hands together so that the thumbs and index fingers touch (forming a triangle).",
                 "Place your hands directly under your shoulders.",
                 "Keep your legs together.",
                 "Don't leg your hips sag.",
                 "Push off with your feet to lean forward.",
                 "Keep your forearms straight up and down the whole time.",
                 "Go down until your arms form a ninety degree angle."],
-            [("Link", "https://www.youtube.com/watch?v=_4EGPVJuqfA"), ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"), ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"), ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")],
+            [("Link", "https://www.youtube.com/watch?v=_4EGPVJuqfA"),
+             ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
+             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"),
+             ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")],
         )
         
-        add(
-            "Dips",
-            [
-                "Start in the raised position with elbows nearly locked.",
+        add("Dips",
+            ["Start in the raised position with elbows nearly locked.",
                 "Inhale and slowly lower yourself downward.",
                 "Lower until elbow hits ninety degrees.",
                 "Exhale and push back up.",
                 "To work the chest more than triceps lean forward thirty degrees and go a bit deeper.",
             ],
-            [
-                (
-                    "Triceps",
-                    "https://www.bodybuilding.com/exercises/detail/view/name/dips-triceps-version",
-                ),
-                (
-                    "Chest",
-                    "https://www.bodybuilding.com/exercises/detail/view/name/dips-chest-version",
-                ),
-                (
-                    "Dips",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip",
-                ),
-            ],
-        )
+            [("Dips", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip")])
         
-        add(
-            "Donkey Calf Raises",
-            [
-                "Either use a donkey calf machine or have someone sit low on your back.",
+        add("Donkey Calf Raises",
+            ["Either use a donkey calf machine or have someone sit low on your back.",
                 "Knees should remain straight but not locked.",
                 "Raise heels as high as possible.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/donkey-calf-raises",
-            )],
-        )
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/donkey-calf-raises")])
         
         add(
             "Doorway Chest Stretch",
@@ -1366,46 +1346,29 @@ extension Notes {
             )],
         )
         
-        add(
-            "Dumbbell Incline Row",
-            [
-                "Lie on your front on a bench so that your head is higher than your hips.",
+        add("Dumbbell Incline Row",
+            ["Lie on your front on a bench so that your head is higher than your hips.",
                 "Hold dumbbells in both hands with your palms facing your torso.",
                 "Start with your arms extended and pull the weights to your sides.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/dumbbell-incline-row",
-            )],
-        )
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/dumbbell-incline-row")])
         
-        add(
-            "Dumbbell Lunge",
-            [
-                "Grasp dumbbells so that palms are facing body.",
+        add("Dumbbell Lunge",
+            ["Grasp dumbbells so that palms are facing body.",
                 "Alternately step forward with each leg.",
                 "Lower body until rear knee is almost in contact with the floor.",
                 "Longer steps work the glutes more, short lunges work quads more.",
             ],
-            [(
-                "Link",
-                "https://www.verywellfit.com/how-to-do-dumbbell-lunges-3498297",
-            )],
-        )
+            [("Link", "https://www.verywellfit.com/how-to-do-dumbbell-lunges-3498297")])
         
-        add(
-            "Dumbbell One Arm Bench Press",
+        add("Dumbbell One Arm Bench Press",
             [
                 "Lie on your back on a flat bench.",
                 "Use your though to help position the dumbbell in front of you at shoulder width.",
                 "Rotate the weight so that your palm is facing your feet.",
                 "Lift the weight up and then back down.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/one-arm-dumbbell-bench-press",
-            )],
-        )
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/one-arm-dumbbell-bench-press")])
         
         add("Dumbbell One Arm Row",
             [
@@ -2963,32 +2926,27 @@ extension Notes {
                 ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
                 ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")])
         
-        add(
-            "Pull Through",
-            [
-                "Attach a rope handle to a low pulley.",
+        add("Pull Through",
+            ["Attach a rope handle to a low pulley.",
                 "Face away from the pulley straddling the cable.",
                 "Bend at the hips so that the handle moves behind your butt.",
                 "Using mostly your hips bring the handle in front of your hips.",
                 "Keep your arms straight.",
                 "Bend your knees slightly.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/pull-through",
-            )],
-        )
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/pull-through")])
         
         add("Pull-up",
-            [
-                "Hands can be wider, the same, or narrower than shoulder width.",
+            ["Hands can be wider, the same, or narrower than shoulder width.",
                 "Palms face out.",
                 "Bring torso back about thirty degrees and push chest out.",
                 "Pull until chest touches the bar.",
                 "Slowly lower back down.",
                 "Difficulty can be lessened by doing negatives: jump to raised position and very slowly lower yourself.",
                 "Difficulty can be increased by attaching plates to a belt."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/pullups"), ("Pullups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup"), ("Weighted", "http://relativestrengthadvantage.com/7-ways-to-add-resistance-to-pull-ups-chin-ups-and-dips/"), ("Elbow Pain", "https://breakingmuscle.com/fitness/5-ways-to-end-elbow-pain-during-chin-ups"), ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup")],
+            [("Pullups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup"),
+             ("Elbow Pain", "https://breakingmuscle.com/fitness/5-ways-to-end-elbow-pain-during-chin-ups"),
+             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup")],
         )
         
         add(

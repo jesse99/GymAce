@@ -237,6 +237,7 @@ fileprivate func previewProgram() -> Program {   // TODO get rid of this?
 fileprivate func stopgapProgram() -> Program {
     func addExercises(_ program: Program) {
         let reps: [VariableRep] = [.variable(3, 10), .variable(3, 10), .variable(3, 10)]
+        let areps: [VariableRep] = [.amrap(3), .amrap(3), .amrap(3)]
 
         var exercise = makeReps("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
@@ -250,25 +251,39 @@ fileprivate func stopgapProgram() -> Program {
         exercise = makeReps("Deadlift", "Dumbbell Deadlift", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeDurations("Plank", "Plank", secs: [30])
+        exercise = makeDurations("Plank", "Plank", secs: [30, 30, 30])
         program.exercises.append(exercise)
 
         exercise = makeReps("Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
+        
+        // optional
+        exercise = makeReps("Lunge", "Dumbbell Lunge", warmups: [], worksets: areps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Dips", "Dips", warmups: [], worksets: areps, rest: 60)
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Pull-ups", "Pull-up", warmups: [], worksets: areps, rest: 60)
+        program.exercises.append(exercise)
     }
 
     func addA(_ program: Program, _ workout: Workout) {
-        workout.addExercise(name: "Split Squat")    // tougher didn't work
+        workout.addExercise(name: "Split Squat")
+        workout.addExercise(name: "Lunge", enabled: false)
         workout.addExercise(name: "Floor Press")
         workout.addExercise(name: "Deadlift")
-        workout.addExercise(name: "Plank")          // didn't work
+        workout.addExercise(name: "Pull-ups", enabled: false)
+        workout.addExercise(name: "Plank")
         program.addWorkout(workout)
     }
 
     func addB(_ program: Program, _ workout: Workout) {
         workout.addExercise(name: "Split Squat")
+        workout.addExercise(name: "Lunge", enabled: false)
         workout.addExercise(name: "Shoulder Press")
-        workout.addExercise(name: "Row") // didn't work
+        workout.addExercise(name: "Row")
+        workout.addExercise(name: "Dips", enabled: false)
         workout.addExercise(name: "Plank")
         program.addWorkout(workout)
     }

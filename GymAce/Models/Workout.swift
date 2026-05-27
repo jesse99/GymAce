@@ -67,8 +67,9 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         }
     }
 
-    func addExercise(name: String) {
+    func addExercise(name: String, enabled: Bool = true) {
         let entry = ExerciseEntry(name: name)
+        entry.enabled = enabled
         entries.append(entry)
     }
 
