@@ -23,10 +23,6 @@ struct EditPrograms: View {
                         Text(program.name)
                             .foregroundColor(labelColor(program))
                             .onTapGesture {
-                                // TODO really should save after edits
-                                // not totally sure how to do that in general
-                                // maybe maintain an editCount and use something like a timer
-                                // to save if it's changed? or onAppear in ProgramView?
                                 model.activeProgram = program.name
                             }
                     }

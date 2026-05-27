@@ -98,7 +98,7 @@ fileprivate func addPreviewExercises(_ program: Program) {
 
 func addPreviewProgram(_ model: Model) {
     func addUpper(_ program: Program) {
-        let schedule = Schedule.days(Weekdays(days: [2, 4]))    // mon and wed
+        let schedule = Schedule.days(Weekdays([.monday, .wednesday]))
         let workout = Workout("Upper", schedule)
         workout.weeks = 1...3
         
@@ -112,7 +112,7 @@ func addPreviewProgram(_ model: Model) {
     }
 
     func addLower(_ program: Program) {
-        let schedule = Schedule.days(Weekdays(days: [6]))       // friday
+        let schedule = Schedule.days(Weekdays([.friday]))
         let workout = Workout("Lower", schedule)
         workout.weeks = 1...3
 

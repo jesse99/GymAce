@@ -7,6 +7,17 @@ struct GymAceApp: App {
     
     init() {
         model = Model.load()
+        
+        // TODO for now add Preview and My programs if they are not present
+        //      don't include My program?
+        //      Programs will need a defaultPrograms list
+        //      also add program if debug?
+        // TODO if a program is added grovel thru it and add any weight sets that are missing
+        // TODO how do we handle program updates? add something like v2 to the name?
+        //      or hijack version and install newer versions? can include a top of what changed
+        //      or silently update if not active?
+        
+        
         if model.programs.isEmpty { // TODO only do this if DEBUG?
             model.notes.addDefaults()
             model = previewModel()
@@ -91,7 +102,7 @@ fileprivate func addMyExercises(_ program: Program) {
 
 fileprivate func addMyProgram(_ model: Model) {
     func addBench(_ program: Program) {
-        let schedule = Schedule.days(Weekdays(days: [3]))    // tues
+        let schedule = Schedule.days(Weekdays([.tuesday]))
         let workout = Workout("Bench", schedule)
         workout.weeks = 1...6
         
@@ -104,7 +115,7 @@ fileprivate func addMyProgram(_ model: Model) {
     }
 
     func addSquat(_ program: Program) {
-        let schedule = Schedule.days(Weekdays(days: [5]))    // thurs
+        let schedule = Schedule.days(Weekdays([.thursday]))
         let workout = Workout("Squat", schedule)
         workout.weeks = 1...7
 
@@ -117,7 +128,7 @@ fileprivate func addMyProgram(_ model: Model) {
     }
 
     func addDeadlift(_ program: Program) {
-        let schedule = Schedule.days(Weekdays(days: [1]))    // sun
+        let schedule = Schedule.days(Weekdays([.sunday])) 
         let workout = Workout("Deadlift", schedule)
         workout.weeks = 1...7
 

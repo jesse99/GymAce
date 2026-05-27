@@ -71,4 +71,10 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         let entry = ExerciseEntry(name: name)
         entries.append(entry)
     }
+
+    func removeExercise(name: String) {
+        if let index = entries.firstIndex(where: {name == $0.name}) {
+            entries.remove(at: index)
+        }
+    }
 }

@@ -8,6 +8,7 @@ struct EditWorkout: View {
     @State private var showNameHelp = false
     @State private var showScheduleHelp = false
     @State private var showWeeksHelp = false
+    @State private var showEntriesHelp = false
     @State private var malformedWeeks: String? = nil
 
     @State private var anySchedule = Schedule.anyDay
@@ -25,10 +26,10 @@ struct EditWorkout: View {
         switch workout.schedule {
         case .anyDay:
             _everySchedule = State(initialValue: .every(2))
-            _daysSchedule = State(initialValue: .days(Weekdays(days: [])))
+            _daysSchedule = State(initialValue: .days(Weekdays([])))
         case .every(let n):
             _everySchedule = State(initialValue: .every(n))
-            _daysSchedule = State(initialValue: .days(Weekdays(days: [])))
+            _daysSchedule = State(initialValue: .days(Weekdays([])))
         case .days(let days):
             _everySchedule = State(initialValue: .every(2))
             _daysSchedule = State(initialValue: .days(days))
@@ -54,7 +55,7 @@ struct EditWorkout: View {
         for i in bools.indices {
             if bools[i] { days.append(i) }
         }
-        return Weekdays(days: days)
+        return Weekdays(raw: days)
     }
     
     private var scheduleBinding: Binding<Int> {
@@ -162,12 +163,12 @@ struct EditWorkout: View {
                 if enable {
                     if !days.contains(i+1) {
                         days.append(i+1)
-                        self.workout.schedule = .days(Weekdays(days: days))
+                        self.workout.schedule = .days(Weekdays(raw: days))
                     }
                 } else {
                     if let index = days.firstIndex(of: i+1) {
                         days.remove(at: index)
-                        self.workout.schedule = .days(Weekdays(days: days))
+                        self.workout.schedule = .days(Weekdays(raw: days))
                     }
                 }
         }
@@ -225,6 +226,7 @@ struct EditWorkout: View {
     // TODO use onAppear to make the name textbox the focus?
     var body: some View {
         Form {
+            // Name
             HStack {
                 TextField("Name", text: $workout.name)
                     .textContentType(.name)
@@ -252,6 +254,7 @@ struct EditWorkout: View {
                     .font(.footnote)
             }
 
+            // Weeks
             HStack {
                 TextField("Weeks, e.g. 1-4", text: weeksBinding)
                     .keyboardType(.numbersAndPunctuation)
@@ -274,6 +277,27 @@ struct EditWorkout: View {
                     .font(.footnote)
             }
 
+            // Entries
+            HStack {
+                NavigationLink {
+                    EditEntries(model: model, program: program, workout: workout)
+                } label: {
+                    Text("Exercises")
+                        .foregroundColor(.blue)
+                }
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showEntriesHelp.toggle()
+                }
+                .buttonStyle(.plain)
+            }
+            if showEntriesHelp {
+                Text("Add, remove, or re-order the exercises in this workout.")
+                    .foregroundColor(.blue) // TODO do we want this as blue? should we do this else where?
+                    .font(.footnote)
+            }
+
+            // Schedule
             HStack {
                 Picker("", selection: scheduleBinding) {
                     Text("Any Day").tag(0)
@@ -281,13 +305,13 @@ struct EditWorkout: View {
                     Text("Week Days").tag(2)
                 }
                 .pickerStyle(.menu)
+                .padding(.leading, -10)
                 .labelsHidden()
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showScheduleHelp.toggle()
                 }
                 .buttonStyle(.plain)
-                .padding(.leading, 5)
             }
             if showScheduleHelp {
                 switch workout.schedule {
