@@ -8,7 +8,8 @@ struct ProgramView: View {
     var today: Date        // used for custom previews
     @Bindable var model: Model
     @State private var newWorkout: Workout? = nil
-    
+    @Environment(\.openURL) private var openUrl
+
     private var entries: [WorkoutEntry] {
         var e: [WorkoutEntry] = []
         let calendar = Calendar.current
@@ -24,11 +25,6 @@ struct ProgramView: View {
     // need a way to disable/enable a workout (do this in workouts?)
     //    EditProgram should draw disabled workouts in gray
     //    don't show disabled workouts in ProgramView
-    // need a toolbar at the bottom
-    //    programs view
-    //    settings view (for now just imperial or metric)
-    //       or should units be part of a weight set?
-    //    also need this in NoContentView
     var body: some View {
         Group {
             if let program = model.active() {
@@ -72,6 +68,7 @@ struct ProgramView: View {
 //                                    NavigationLink(destination: Text("Weight Sets")) {
 //                                        Text("Edit Weight Sets")  // TODO support these, make sure that this sets dirty
 //                                    }
+                                    Button("Email Program", action: sendEmail)
                                 } label: {
                                     Image(systemName: "line.horizontal.3")
                                         .foregroundColor(.blue)
@@ -84,12 +81,39 @@ struct ProgramView: View {
         }
     }
     
-    func programTitle() -> String {
+    private func programTitle() -> String {
         return "\(model.activeProgram) Workouts"
     }
 
-    func workoutName(_ workout: Workout) -> String {
+    private func workoutName(_ workout: Workout) -> String {
         return workout.name
+    }
+    
+    private func sendEmail() {
+        if let program = model.active() {
+            do {
+                // TODO might want to use yaml, or even a custom human readable format
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+                encoder.dateEncodingStrategy = .iso8601
+
+                let data = try encoder.encode(program)
+                if let str = String(data: data, encoding: .utf8) {
+                    if let body = str.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                        let urlString = "mailto:?subject=\(program.name)%20Program&body=\(body)"
+                        guard let url = URL(string: urlString) else { return }
+                        
+                        openUrl(url) { accepted in
+                            if !accepted {
+                                // TODO Handle the error, e.g., show an alert
+                            }
+                        }
+                    }
+                }
+            } catch {
+                print("Encoding failed")    // TODO do a better job with this
+            }
+        }
     }
 }
 
