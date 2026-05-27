@@ -48,35 +48,35 @@ fileprivate func myProgram() -> Program {
         let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
         let reps12: [VariableRep] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)]
 
-        var exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [30])
+        var exercise = make("Quad Stretch", "Standing Quad Stretch", secs: [30])
         program.exercises.append(exercise)
 
-        exercise = makePercent("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.5*60))
+        exercise = make("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.5*60))
         program.exercises.append(exercise)
 
-        exercise = makeReps("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+        exercise = make("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
         program.exercises.append(exercise)
 
-        exercise = makeReps("Face Pulls", "Face Pull", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
+        exercise = make("Face Pulls", "Face Pull", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
         program.exercises.append(exercise)
 
-        exercise = makeReps("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Trapbar", weight: 235, rest: nil)
+        exercise = make("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Trapbar", weight: 235, rest: nil)
         program.exercises.append(exercise)
         
-        exercise = makePercent("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.0*60))
+        exercise = make("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.0*60))
         program.exercises.append(exercise)
 
-        exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+        exercise = make("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
         program.exercises.append(exercise)
 
         let creps: [VariableRep] = [.variable(3, 8), .variable(3, 8)]
-        exercise = makeReps("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+        exercise = make("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
         program.exercises.append(exercise)
 
-        exercise = makeReps("OHP", "Overhead Press", warmups: owarmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
+        exercise = make("OHP", "Overhead Press", warmups: owarmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
         program.exercises.append(exercise)
 
-        exercise = makeReps("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+        exercise = make("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
         program.exercises.append(exercise)
     }
 
@@ -150,40 +150,40 @@ fileprivate func previewProgram() -> Program {   // TODO get rid of this?
 
         let backoff = [FixedReps(reps: 5, percent: 80)]
 
-        var exercise = makeReps("Light Bench", "Bench Press", warmups: warmup, worksets: areps5, weights: "Dual Plates", weight: 130, rest: 10)
-        addCompletedReps(exercise, daysAgo: 5, sets: [5, 5, 5], weight: 130)
-        addCompletedReps(exercise, daysAgo: 3, sets: [5, 5, 5], weight: 135)
-        addCompletedReps(exercise, daysAgo: 1, sets: [5, 5, 5], weight: 135)
+        var exercise = make("Light Bench", "Bench Press", warmups: warmup, worksets: areps5, weights: "Dual Plates", weight: 130, rest: 10)
+        addCompleted(exercise, daysAgo: 5, reps: [5, 5, 5], weight: 130)
+        addCompleted(exercise, daysAgo: 3, reps: [5, 5, 5], weight: 135)
+        addCompleted(exercise, daysAgo: 1, reps: [5, 5, 5], weight: 135)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 145, rest: 12)
+        exercise = make("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 145, rest: 12)
         program.exercises.append(exercise)
         
-        exercise = makeReps("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: 9)
+        exercise = make("OHP", "Overhead Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: 9)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Squat", "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 140, rest: 8)
+        exercise = make("Squat", "High bar Squat", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 140, rest: 8)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual Plates", weight: 230, rest: 10)
+        exercise = make("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps3, backoff: backoff, weights: "Dual Plates", weight: 230, rest: 10)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Light Face Pulls", "Face Pull", worksets: reps5, weights: "Cable Machine", weight: 40.0, rest: nil)
+        exercise = make("Light Face Pulls", "Face Pull", worksets: reps5, weights: "Cable Machine", weight: 40.0, rest: nil)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 10)
+        exercise = make("Face Pulls", "Face Pull", worksets: reps12, weights: "Cable Machine", weight: 40.0, rest: 10)
         program.exercises.append(exercise)
 
-        exercise = makeDurations("Quad Stretch", "Standing Quad Stretch", secs: [10, 20, 30])
-        addCompletedSecs(exercise, daysAgo: 5, sets: [10, 10, 10])
-        addCompletedSecs(exercise, daysAgo: 3, sets: [20, 20, 20])
-        addCompletedSecs(exercise, daysAgo: 1, sets: [20, 20, 20])
+        exercise = make("Quad Stretch", "Standing Quad Stretch", secs: [10, 20, 30])
+        addCompleted(exercise, daysAgo: 5, secs: [10, 10, 10])
+        addCompleted(exercise, daysAgo: 3, secs: [20, 20, 20])
+        addCompleted(exercise, daysAgo: 1, secs: [20, 20, 20])
         program.exercises.append(exercise)
 
-        exercise = makeDurations("Third World Squat", "Third World Squat", secs: [20, 30, 40], weights: "Dumbbells", weight: 80.0)
+        exercise = make("Third World Squat", "Third World Squat", secs: [20, 30, 40], weights: "Dumbbells", weight: 80.0)
         program.exercises.append(exercise)
 
-        exercise = makeDurations("Cossack Squat", "Cossack Squat", secs: [30, 30, 30, 40])
+        exercise = make("Cossack Squat", "Cossack Squat", secs: [30, 30, 30, 40])
         program.exercises.append(exercise)
     }
 
@@ -239,32 +239,32 @@ fileprivate func stopgapProgram() -> Program {
         let reps: [VariableRep] = [.variable(3, 10), .variable(3, 10), .variable(3, 10)]
         let areps: [VariableRep] = [.amrap(3), .amrap(3), .amrap(3)]
 
-        var exercise = makeReps("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        var exercise = make("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Floor Press", "Dumbbell Floor Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        exercise = make("Floor Press", "Dumbbell Floor Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Shoulder Press", "Dumbbell Seated Shoulder Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        exercise = make("Shoulder Press", "Dumbbell Seated Shoulder Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Deadlift", "Dumbbell Deadlift", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        exercise = make("Deadlift", "Dumbbell Deadlift", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeDurations("Plank", "Plank", secs: [30, 30, 30])
+        exercise = make("Plank", "Plank", secs: [30, 30, 30])
         program.exercises.append(exercise)
 
-        exercise = makeReps("Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        exercise = make("Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
         
         // optional
-        exercise = makeReps("Lunge", "Dumbbell Lunge", warmups: [], worksets: areps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        exercise = make("Lunge", "Dumbbell Lunge", warmups: [], worksets: areps, weights: "Home Dumbbells", weight: 5, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Dips", "Dips", warmups: [], worksets: areps, rest: 60)
+        exercise = make("Dips", "Dips", warmups: [], worksets: areps, rest: 60)
         program.exercises.append(exercise)
 
-        exercise = makeReps("Pull-ups", "Pull-up", warmups: [], worksets: areps, rest: 60)
+        exercise = make("Pull-ups", "Pull-up", warmups: [], worksets: areps, rest: 60)
         program.exercises.append(exercise)
     }
 
@@ -331,7 +331,7 @@ fileprivate func stopgapProgram() -> Program {
     return program
 }
 
-fileprivate func makeDurations(_ name: String, _ formalName: String, secs: [Int], weights: String? = nil, weight: Float? = nil) -> Exercise {
+fileprivate func make(_ name: String, _ formalName: String, secs: [Int], weights: String? = nil, weight: Float? = nil) -> Exercise {
     let durations = DurationsData(secs: secs, targetSecs: nil)
     if let n = weights {
         return Exercise(name: name, formalName: formalName, durations: durations, weights: n, weight: weight)
@@ -340,7 +340,7 @@ fileprivate func makeDurations(_ name: String, _ formalName: String, secs: [Int]
     }
 }
 
-fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedReps] = [], worksets: [VariableRep], backoff: [FixedReps] = [], weights: String? = nil, weight: Float? = nil, rest: Int? = nil) -> Exercise {
+fileprivate func make(_ name: String, _ formalName: String, warmups: [FixedReps] = [], worksets: [VariableRep], backoff: [FixedReps] = [], weights: String? = nil, weight: Float? = nil, rest: Int? = nil) -> Exercise {
     let reps = RepsData(warmups: warmups, worksets: worksets, backoff: backoff, rest: rest)
     if let n = weights {
         return Exercise(name: name, formalName: formalName, reps: reps, weights: n, weight: weight)
@@ -349,22 +349,22 @@ fileprivate func makeReps(_ name: String, _ formalName: String, warmups: [FixedR
     }
 }
 
-fileprivate func makePercent(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [VariableRep], weights: String, rest: Int) -> Exercise {
+fileprivate func make(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [VariableRep], weights: String, rest: Int) -> Exercise {
     let percent = PercentData(other: other, percent: percent, warmups: warmups, workset: worksets, rest: rest)
     return Exercise(name: name, formalName: formalName, percent: percent, weights: weights)
 }
 
-fileprivate func addCompletedReps(_ exercise: Exercise, daysAgo: Int, sets: [Int], weight: Float? = nil) {
+fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weight: Float? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(reps: sets, weight: weight, units: .Imperial, completed: d!)
+    let c = Completed(reps: reps, weight: weight, units: .Imperial, completed: d!)
     exercise.history.append(c)
 }
 
-fileprivate func addCompletedSecs(_ exercise: Exercise, daysAgo: Int, sets: [Int], weight: Float? = nil) {
+fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weight: Float? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(secs: sets, weight: weight, units: .Imperial, completed: d!)
+    let c = Completed(secs: secs, weight: weight, units: .Imperial, completed: d!)
     exercise.history.append(c)
 }
 
