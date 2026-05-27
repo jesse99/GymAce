@@ -14,8 +14,8 @@ final class Program: Codable, Identifiable {
     /// Date the user started working out. This is used to compute the current week number.
     var started: Date? = nil
 
-    /// Shown in ProgramView. Typically has notes for things like how to handle progression.
-    var note: String = ""   // TODO support this?
+    /// Shown in EditPrograms view to briefly describe the program.
+    var summary: String? = nil
         
     var version: Int = 1
 

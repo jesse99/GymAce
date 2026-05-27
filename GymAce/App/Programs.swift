@@ -1,7 +1,43 @@
 import Foundation
 
+// TODO when adding a new program verify that the links the exercises use all work
+let defaultPrograms: [Program] = [myProgram(), previewProgram(), stopgapProgram()]
+
+func findDefaultWeightSet(_ name: String) -> WeightSet? {
+    if name == "Cable Machine" {
+        let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
+        return WeightSet.discrete(cable)
+    } else if name == "Dumbbells" {
+        let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
+        return WeightSet.discrete(dumbbells)
+    } else if name == "Dual Plates" {
+        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
+        return WeightSet.dual(dual)
+    } else if name == "Trapbar" {
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
+        return WeightSet.dual(dual)
+    } else if name == "Home Dumbbells" {
+        let dumbbells = DiscreteWeights(weights: [5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 30.0, 40.0, 45.0, 52.5], units: .Imperial)
+        return WeightSet.discrete(dumbbells)
+    } else {
+        return nil
+    }
+}
+
+/// For previews
+func previewModel() -> Model {
+    let model = Model()
+    model.activeProgram = "Preview"
+    model.notes.addDefaults()
+    model.programs.append(previewProgram())
+    model.updateWeightsets()
+    return model
+}
+
 // TODO Get rid of this at some point
-func myProgram() -> Program {
+fileprivate func myProgram() -> Program {
     func addMyExercises(_ program: Program) {
         let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
         let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
@@ -92,6 +128,7 @@ func myProgram() -> Program {
     }
 
     let program = Program("My")
+    program.summary = "The program GH is currently using. Requires a gym and is designed for an older lifter."
     addMyExercises(program)
     addBench(program)
     addSquat(program)
@@ -100,18 +137,8 @@ func myProgram() -> Program {
     return program
 }
 
-/// For previews
-func previewModel() -> Model {
-    let model = Model()
-    model.activeProgram = "Preview"
-    model.notes.addDefaults()
-    addPreviewWeightSets(model)
-    model.programs.append(previewProgram())
-    return model
-}
-
 /// Simulator only program used for testing.
-func previewProgram() -> Program {   // TODO get rid of this?
+fileprivate func previewProgram() -> Program {   // TODO get rid of this?
     func addExercises(_ program: Program) {
         let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
         let dwarmup = [FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 75), FixedReps(reps: 1, percent: 90)]
@@ -199,6 +226,7 @@ func previewProgram() -> Program {   // TODO get rid of this?
     }
 
     let program = Program("Preview")
+    program.summary = "A program for testing the app."
     addExercises(program)
     addUpper(program)
     addLower(program)
@@ -206,9 +234,87 @@ func previewProgram() -> Program {   // TODO get rid of this?
     return program
 }
 
-// TODO add My program
+fileprivate func stopgapProgram() -> Program {
+    func addExercises(_ program: Program) {
+        let reps: [VariableRep] = [.variable(3, 10), .variable(3, 10), .variable(3, 10)]
 
-// TODO add Dumbell Stopgap program
+        var exercise = makeReps("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Floor Press", "Dumbbell Floor Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Shoulder Press", "Dumbbell Seated Shoulder Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Deadlift", "Dumbbell Deadlift", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        program.exercises.append(exercise)
+
+        exercise = makeDurations("Plank", "Plank", secs: [30])
+        program.exercises.append(exercise)
+
+        exercise = makeReps("Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+        program.exercises.append(exercise)
+    }
+
+    func addA(_ program: Program, _ workout: Workout) {
+        workout.addExercise(name: "Split Squat")    // tougher didn't work
+        workout.addExercise(name: "Floor Press")
+        workout.addExercise(name: "Deadlift")
+        workout.addExercise(name: "Plank")          // didn't work
+        program.addWorkout(workout)
+    }
+
+    func addB(_ program: Program, _ workout: Workout) {
+        workout.addExercise(name: "Split Squat")
+        workout.addExercise(name: "Shoulder Press")
+        workout.addExercise(name: "Row") // didn't work
+        workout.addExercise(name: "Plank")
+        program.addWorkout(workout)
+    }
+
+    // First week is A B A
+    func addA1(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday, .friday]))
+        let workout = Workout("A1", schedule)
+        workout.weeks = 1...1
+        addA(program, workout)
+    }
+
+    func addB1(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.wednesday]))
+        let workout = Workout("B1", schedule)
+        workout.weeks = 1...1
+        addB(program, workout)
+    }
+
+    // Second week is B A B
+    func addA2(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.wednesday]))
+        let workout = Workout("A2", schedule)
+        workout.weeks = 2...2
+        addA(program, workout)
+    }
+
+    func addB2(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday, .friday]))
+        let workout = Workout("B2", schedule)
+        workout.weeks = 2...2
+        addB(program, workout)
+    }
+
+    let program = Program("Dumbbell Stopgap")
+    program.summary = "[Designed](https://thefitness.wiki/reddit-archive/dumbbell-stopgap/) for home workouts with a small set of dummbells (or adjustable dumbbells) though it can also be used at a gym. Note that there are some optional exercises that you can enable using Edit Program on the top right of the main screen."
+    addExercises(program)
+    addA1(program)
+    addB1(program)
+    addA2(program)
+    addB2(program)
+    for w in program.workouts {
+        w.notes = "Start with easy weights. Increase the weight once you can do all three sets of ten. If you get stuck at the same number of reps and weight three times, then drop the weight by two increments and continue. For planks hold them as long as you can."
+    }
+    return program
+}
 
 fileprivate func makeDurations(_ name: String, _ formalName: String, secs: [Int], weights: String? = nil, weight: Float? = nil) -> Exercise {
     let durations = DurationsData(secs: secs, targetSecs: nil)
@@ -245,21 +351,5 @@ fileprivate func addCompletedSecs(_ exercise: Exercise, daysAgo: Int, sets: [Int
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
     let c = Completed(secs: sets, weight: weight, units: .Imperial, completed: d!)
     exercise.history.append(c)
-}
-
-func addPreviewWeightSets(_ model: Model) {
-    let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
-    model.weightSets["Cable Machine"] = WeightSet.discrete(cable)
-
-    let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
-    model.weightSets["Dumbbells"] = WeightSet.discrete(dumbbells)
-
-    var plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    var dual = DualPlates(plates: plates, bar: 45.0, units: .Imperial)
-    model.weightSets["Dual Plates"] = WeightSet.dual(dual)
-
-    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)
-    model.weightSets["Trapbar"] = WeightSet.dual(dual)
 }
 

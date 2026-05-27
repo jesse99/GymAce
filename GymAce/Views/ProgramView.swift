@@ -50,6 +50,7 @@ struct ProgramView: View {
                         .navigationTitle(programTitle())
                         .onAppear {
                             if model.dirty {
+                                model.updateWeightsets()
                                 model.save()
                             }
                         }

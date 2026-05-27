@@ -159,6 +159,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         .padding(20)
         .onAppear {
             entry.started(model, program, workout, exercise)
+            print(model.notes.find(exercise.formalName))
         }
         TabView {
             List {
@@ -171,10 +172,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             .tabItem {Label("History", systemImage: "figure.run")}
             
             ScrollView {
-                Text(LocalizedStringKey(model.notes.find(exercise.formalName)))
+                Text(LocalizedStringKey(model.notes.find(exercise.formalName))) // localized so that markdown works
                     .padding(.leading, 5)
             }
-            .tabItem {Label("Notes",systemImage: "book.pages")}
+            .tabItem {Label("Notes", systemImage: "book.pages")}
         }
     }
     

@@ -44,6 +44,12 @@ struct EditPrograms: View {
                 }
             }
             Spacer()
+            if let p = model.active(), let s = p.summary {
+                Text(LocalizedStringKey(s)) // localized so that markdown works
+                    .font(.footnote)
+                    .padding(.leading, 20)
+                    .padding(.trailing, 20)
+            }
         }
         .navigationTitle("Edit Programs")
         .navigationBarTitleDisplayMode(.inline)

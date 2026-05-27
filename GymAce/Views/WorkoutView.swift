@@ -59,6 +59,9 @@ struct WorkoutView: View {
         if let e = workout.elapsed {
             Text("Worked out for \(secsToLongStr(Int(e))).")
                 .font(.footnote)
+        } else if !workout.notes.isEmpty {
+            Text(workout.notes)
+                .font(.footnote)
         }
     }
     

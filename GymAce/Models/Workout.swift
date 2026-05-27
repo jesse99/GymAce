@@ -17,7 +17,7 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     /// workouts and week 7 for a rest workout.
     var weeks: ClosedRange<Int>? = nil
     
-    var notes = ""      // TODO support this?
+    var notes = ""
     
     /// Set when the first exercise in the workout starts.
     var started: Date? = nil

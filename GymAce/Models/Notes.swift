@@ -434,47 +434,29 @@ extension Notes {
             [("Link", "https://www.fourmilab.ch/hackdiet/e4/")],
         )
         
-        add(
-            "Bent-knee Iron Cross",
-            [
-                "Lie on your back with your legs tucked into your chest and your arms spread outwards.",
+        add("Bent-knee Iron Cross",
+            ["Lie on your back with your legs tucked into your chest and your arms spread outwards.",
                 "Tuck your knees so that your upper legs are at a ninety angle to the floor.",
                 "Keeping legs tucked and shoulders on the floor slowly rotate your legs from side to side.",
                 "Turn your head in the opposite direction as your legs.",
                 "Hold the down position for a two count."],
-            [
-                ("Video", "https://www.youtube.com/watch?v=2HYWl009bq0"),
-                ("Gallery", "https://imgur.com/gallery/iEsaS"),
-            ],
-        )
+            [("Video", "https://www.youtube.com/watch?v=2HYWl009bq0"), ("Gallery", "https://imgur.com/gallery/iEsaS")])
         
-        add(
-            "Bent Over Dumbbell Row",
-            [
-                "Grasp dumbbells so that palms are facing inward.",
+        add("Bent Over Dumbbell Row",
+            ["Grasp dumbbells so that palms are facing inward.",
                 "Bend knees slightly and bend forward until torso is almost parallel with the floor.",
                 "Keep back straight and head up.",
                 "Bring dumbbells to your sides while keeping torso stationary.",
             ],
-            [(
-                "Link",
-                "https://www.muscleandstrength.com/exercises/bent-over-dumbbell-row.html",
-            )],
-        )
+            [("Link", "https://www.puregym.com/exercises/back/rows/dumbbell-bent-over-row/#how-to")])
         
-        add(
-            "Bike Sprints",
-            [
-                "Use as much resistance as possible.",
+        add("Bike Sprints",
+            ["Use as much resistance as possible.",
                 "Sprint for 15-30 seconds.",
                 "Rest for 30-45 seconds.",
                 "Do 5-8 sets.",
             ],
-            [(
-                "Link",
-                "https://www.t-nation.com/training/4-dumbest-forms-of-cardio",
-            )],
-        )
+            [("Link", "https://www.t-nation.com/training/4-dumbest-forms-of-cardio")])
         
         add("Bird-dog",
             [
@@ -1525,8 +1507,7 @@ extension Notes {
                 "Squat down until rear knee is almost in contact with the floor.",
                 "Return to original standing position.",
                 "Difficulty can be increased by using a box or plates to prop up your front foot 2-4 inches."],
-            [("Link", "https://weighttraining.guide/exercises/dumbbell-one-leg-split-squat/"),
-             ("Tougher", "https://www.t-nation.com/training/tip-make-the-bulgarian-split-squat-even-tougher")],
+            [("Link", "https://weighttraining.guide/exercises/dumbbell-one-leg-split-squat/")],
         )
         
         add(
@@ -2932,77 +2913,55 @@ extension Notes {
         )
         
         add("Plank",
-            [
-                "Lie prone on a mat keeping elbows below shoulders.",
-                "Raise body upwards to create a straight line.",
-                "Use your toes to support yourself.",
-                "Difficulty can be lessened by keeping your knees on the ground.",
-                "Difficulty can be increased by raising a foot and/or hand off the ground or by elevating feet."],
-            [("Link", "http://www.exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank.html"), ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1"), ("Antranik", "https://www.youtube.com/watch?v=44ScXWFaVBs"), ("Alternative", "http://i.imgur.com/2D4Nd1R.jpg"), ("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
+            ["Lie prone on a mat keeping elbows below shoulders.",
+             "Raise body upwards to create a straight line.",
+             "Use your toes to support yourself.",
+             "Difficulty can be lessened by keeping your knees on the ground.",
+             "Difficulty can be increased by raising a foot and/or hand off the ground or by elevating feet."],
+            [("Link", "http://www.exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank.html"),
+             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1"),
+             ("Antranik", "https://www.youtube.com/watch?v=44ScXWFaVBs"),
+             ("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
         )
         
-        add(
-            "Plank Shoulder Taps",
+        add("Plank Shoulder Taps",
             [
                 "Get into a plank position with your hands directly under your shoulders.",
                 "Spread your legs wide.",
                 "Keep your head in a neutral position: don't look up.",
                 "Raise one hand and touch it to your opposite shoulder.",
                 "Keep your body as still as possible.",
-                "Difficulty can be increased by bringing your legs closer together.",
-            ],
-            [("Video", "https://www.youtube.com/watch?v=LEZq7QZ8ySQ")],
-        )
+                "Difficulty can be increased by bringing your legs closer together."],
+            [("Video", "https://www.youtube.com/watch?v=LEZq7QZ8ySQ")])
         
         add("Power Clean",
-            [
-                "This is a complex technical lift that is difficult to summarize in a short list.",
+            ["This is a complex technical lift that is difficult to summarize in a short list.",
                 "It's best to learn the lift from a coach or a good guide and then add a note here for those bits that give you trouble."],
-            [("Link", "https://experiencelife.com/article/learn-to-power-clean/"), ("Video", "https://www.youtube.com/watch?v=_LpPUmrKEg8")],
-        )
+            [("Link", "https://experiencelife.com/article/learn-to-power-clean/"), ("Video", "https://www.youtube.com/watch?v=_LpPUmrKEg8")])
         
         add("Power Snatch",
-            [
-                "This is a complex technical lift that is difficult to summarize in a short list.",
+            ["This is a complex technical lift that is difficult to summarize in a short list.",
                 "It's best to learn the lift from a coach or a good guide and then add a note here for those bits that give you trouble."],
-            [("Link", "http://www.exrx.net/WeightExercises/OlympicLifts/PowerSnatch.html")],
-        )
+            [("Link", "http://www.exrx.net/WeightExercises/OlympicLifts/PowerSnatch.html")])
         
-        add(
-            "Preacher Curl",
-            [
-                "Sit at the preacher bench and grab an EZ bar along the inner camber.",
+        add("Preacher Curl",
+            ["Sit at the preacher bench and grab an EZ bar along the inner camber.",
                 "Rest elbows on the bench.",
-                "Curl the bar.",
-            ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/preacher-curl",
-            )],
-        )
+                "Curl the bar."],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/preacher-curl")])
         
-        add(
-            "Prone Lift",
-            [
-                "Lie down with legs slightly apart and palms under your thighs.",
+        add("Prone Lift",
+            ["Lie down with legs slightly apart and palms under your thighs.",
                 "Lift both legs, bending at the hip, high enough that your thighs leave your hands.",
                 "At the same time lift your head and shoulders from the floor.",
             ],
-            [("Link", "https://www.fourmilab.ch/hackdiet/e4/")],
-        )
+            [("Link", "https://www.fourmilab.ch/hackdiet/e4/")])
         
-        add(
-            "Pseudo Planche Pushups",
+        add("Pseudo Planche Pushups",
             ["Pushup but with your body scooted forward."],
-            [
-                ("Video", "https://www.youtube.com/watch?v=Cdmg0CfMZeo"),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup",
-                ),
-                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression"),
-            ],
-        )
+            [("Video", "https://www.youtube.com/watch?v=Cdmg0CfMZeo"),
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
+                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")])
         
         add(
             "Pull Through",
@@ -3252,21 +3211,13 @@ extension Notes {
             )],
         )
         
-        add(
-            "Reverse Hyperextension",
-            [
-                "Lie on on your stomach on a high bench.",
+        add("Reverse Hyperextension",
+            ["Lie on on your stomach on a high bench.",
                 "Grab either handles or the sides of the bench.",
                 "Keeping your legs straight raise them to parallel or a bit higher.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.thefittingrooms.london/2015/01/reverse-hypers/",
-                ),
-                ("Video", "https://www.youtube.com/watch?v=ZeRsNzFcQLQ&"),
-            ],
-        )
+            [("Link", "https://www.thefittingrooms.london/2015/01/reverse-hypers/"),
+                ("Video", "https://www.youtube.com/watch?v=ZeRsNzFcQLQ&")])
         
         add("Reverse Plank",
             [
@@ -3279,43 +3230,28 @@ extension Notes {
         )
         
         add("Reverse Wrist Curl",
-            [
-                "Using a light dumbbell sit on a bench with your elbow on your leg so that your arm is bent at ninety degrees.",
+            ["Using a light dumbbell sit on a bench with your elbow on your leg so that your arm is bent at ninety degrees.",
                 "With your palm facing the floor slowly lower and raise the weight.",
                 "For Tennis Elbow (pain outside the elbow) it's recommended to repeat this with the arm held straight out."],
-            [("Link", "http://www.exrx.net/WeightExercises/WristExtensors/DBReverseWristCurl.html"), ("Tennis Elbow", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2515258/table/t1-0541115/")],
-        )
+            [("Link", "http://www.exrx.net/WeightExercises/WristExtensors/DBReverseWristCurl.html"),
+             ("Tennis Elbow", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2515258/table/t1-0541115/")])
         
-        add(
-            "Ring Ab Rollouts",
-            [
-                "Keep your elbows straight.",
+        add("Ring Ab Rollouts",
+            ["Keep your elbows straight.",
                 "Keep your hands as close together as you can.",
                 "Remain in hollow body position.",
                 "Moving the rings higher will make this easier.",
                 "Elevating your feet will make this harder.",
             ],
-            [
-                ("Link", "https://bit.ly/3k9saY5"),
-                ("Video", "https://www.youtube.com/watch?v=LBUfnmugKLw"),
-            ],
-        )
+            [("Link", "https://bit.ly/3k9saY5"), ("Video", "https://www.youtube.com/watch?v=LBUfnmugKLw")])
         
-        add(
-            "Ring Dips",
-            [
-                "Hold the rings with your palms (mostly) facing forward.",
+        add("Ring Dips",
+            ["Hold the rings with your palms (mostly) facing forward.",
                 "Go as far down as you can.",
                 "Keep elbows in, don't bend at the hips.",
             ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=2Vymm8nH4wM"),
-                (
-                    "Dips",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip",
-                ),
-            ],
-        )
+            [("Link", "https://www.youtube.com/watch?v=2Vymm8nH4wM"),
+                ("Dips", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip")])
         
         add(
             "Ring Support Hold",
@@ -4113,49 +4049,31 @@ extension Notes {
             )],
         )
         
-        add(
-            "Standing Quad Stretch",
-            [
-                "Stand at a right angle to a wall.",
+        add("Standing Quad Stretch",
+            ["Stand at a right angle to a wall.",
                 "Extend your arm straight out and use the wall for support.",
                 "With the other hand grab your ankle and pull your foot back to your butt.",
                 "Don't arch or twist your back.",
                 "Keep your knees together.",
             ],
-            [(
-                "Link",
-                "https://www.verywellfit.com/standing-quadriceps-stretch-3120301",
-            )],
-        )
+            [("Link", "https://www.verywellfit.com/standing-quadriceps-stretch-3120301")])
         
-        add(
-            "Standing Triceps Press",
-            [
-                "Stand with feet about shoulder width apart.",
+        add("Standing Triceps Press",
+            ["Stand with feet about shoulder width apart.",
                 "Start with the dumbbells behind your head.",
                 "Raise the weights until your arms point straight upwards.",
                 "Minimize the motion in your upper arms.",
             ],
-            [(
-                "Link",
-                "https://www.anabolicaliens.com/blog/overhead-triceps-extension-exercise",
-            )],
-        )
+            [("Link", "https://www.anabolicaliens.com/blog/overhead-triceps-extension-exercise")])
         
-        add(
-            "Standing Wide Leg Straddle",
-            [
-                "Stand with your legs spread wide apart and feet pointer straight out.",
+        add("Standing Wide Leg Straddle",
+            ["Stand with your legs spread wide apart and feet pointer straight out.",
                 "Straighten your legs.",
                 "Place your fingertips (or palms) on the ground below your shoulders.",
                 "You may also grab your big toes.",
                 "Keep your eyes forward and your back concave.",
             ],
-            [(
-                "Link",
-                "http://yahwehyoga.com/pose-descriptions/cool-down/standing-wide-leg-straddle/",
-            )],
-        )
+            [("Link", "http://yahwehyoga.com/pose-descriptions/cool-down/standing-wide-leg-straddle/")])
         
         add("Static Hold",
             [
@@ -4686,29 +4604,19 @@ extension Notes {
             )],
         )
         
-        add(
-            "Wall Scissors",
+        add("Wall Scissors",
             [
                 "Get into a full hand stand next to a wall.",
                 "Scissor one leg out and one leg in so that a toe touches the wall.",
             ],
-            [
-                ("Video", "https://www.youtube.com/watch?v=wspEkEzsZyQ"),
-                (
-                    "Handstand Progression",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand",
-                ),
-            ],
-        )
+            [("Video", "https://www.youtube.com/watch?v=wspEkEzsZyQ"),
+             ("Handstand Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand")])
         
-        add(
-            "Weighted Inverted Row",
+        add("Weighted Inverted Row",
             ["Can use a belt with attached weigh a weight ves or a plate on your chest/belly."],
-            [("Link", "https://bit.ly/37B9D1Q")],
-        )
+            [("Link", "https://bit.ly/37B9D1Q")])
         
-        add(
-            "Wide Rows",
+        add("Wide Rows",
             [
                 "Setup a pull-up bar, a barbell, or rings. Use a grip at 1.5x shoulder width.",
                 "Pull your body into the bar and then allow it to move back down.",
@@ -4716,21 +4624,11 @@ extension Notes {
                 "Arms should be straight at the bottom.",
                 "Don't let your shoulders shrug up.",
             ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=1yMRvsuk9Xg"),
-                (
-                    "Body Weight Rows",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row",
-                ),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row",
-                ),
-            ],
-        )
+            [("Link", "https://www.youtube.com/watch?v=1yMRvsuk9Xg"),
+             ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"),
+             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")])
         
-        add(
-            "Wrist Curls",
+        add("Wrist Curls",
             [
                 "Sit down on the end of a bench and grab a dumbbell with your palm facing up.",
                 "Rest your forearm on your thigh so that the dumbbell is just off the end of your leg.",
@@ -4738,11 +4636,7 @@ extension Notes {
                 "Slowly raise the dumbbell up as far as it will go.",
                 "Bend only at the wrist.",
             ],
-            [(
-                "Link",
-                "https://www.muscleandstrength.com/exercises/one-arm-seated-dumbbell-wrist-curl.html",
-            )],
-        )
+            [("Link", "https://www.muscleandstrength.com/exercises/one-arm-seated-dumbbell-wrist-curl.html")])
         
         add("Wrist Extension",
             [
@@ -4753,8 +4647,8 @@ extension Notes {
                 "Keep your forearm in place the entire time.",
                 "Do 30 reps. After you can do 30 reps over two days with no increase in pain increase the weight.",
                 "Once three pounds is OK gradually start straightening your arm out."],
-            [("Link", "https://www.saintlukeskc.org/health-library/wrist-extension-strength"), ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")],
-        )
+            [("Link", "https://www.saintlukeskc.org/health-library/wrist-extension-strength"),
+             ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Extension Stretch",
             [
@@ -4763,8 +4657,8 @@ extension Notes {
                 "Don't lock your elbow.",
                 "Hold the stretch for 15s. Repeat 5x.",
                 "Do this up to 4x a day, especially before activities that involve gripping."],
-            [("Link", "https://www.topendsports.com/medicine/stretches/wrist-extension.htm"), ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")],
-        )
+            [("Link", "https://www.topendsports.com/medicine/stretches/wrist-extension.htm"),
+             ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Flexion",
             [
@@ -4775,8 +4669,8 @@ extension Notes {
                 "Keep your forearm in place the entire time.",
                 "Do 30 reps. After you can do 30 reps over two days with no increase in pain increase the weight.",
                 "Once three pounds is OK gradually start straightening your arm out."],
-            [("Link", "https://www.saintlukeskc.org/health-library/wrist-flexion-strength"), ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")],
-        )
+            [("Link", "https://www.saintlukeskc.org/health-library/wrist-flexion-strength"),
+             ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Flexion Stretch",
             [
@@ -4785,8 +4679,8 @@ extension Notes {
                 "Don't lock your elbow.",
                 "Hold the stretch for 15s. Repeat 5x.",
                 "Do this up to 4x a day, especially before activities that involve gripping."],
-            [("Link", "https://www.topendsports.com/medicine/stretches/wrist-flexion.htm"), ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")],
-        )
+            [("Link", "https://www.topendsports.com/medicine/stretches/wrist-flexion.htm"),
+             ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Mobility",
             [
@@ -4800,8 +4694,7 @@ extension Notes {
                 "7 Place your hands backwards with the palms down, bring knees forward, and sit back on your heels and come back up.",
                 "8 Place your hands with palms down and facing forward. Lean forward and then back.",
                 "Difficulty can be increased by doing these in a plank position."],
-            [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")],
-        )
+            [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")])
         
         add("Yuri's Shoulder Band",
             [
@@ -4812,19 +4705,16 @@ extension Notes {
                 "Bring your forearm to the back of your head and then circle it around your far shoulder and then to your far elbow.",
                 "Reverse the movement so that your arm is again straight behind you.",
                 "Repeat."],
-            [("Video", "https://www.youtube.com/watch?v=Vwn5hSf3WEg")],
-        )
+            [("Video", "https://www.youtube.com/watch?v=Vwn5hSf3WEg")])
         
         add("X-Band Walk",
             [
                 "Put a resistance band beneath your fee twist it so that it forms an X, and raise it to your chest.",
                 "Walk sideways several steps.",
                 "Walk back to your starting position."],
-            [("Link", "https://www.exercise.com/exercises/x-resistance-band-walk")],
-        )
+            [("Link", "https://www.exercise.com/exercises/x-resistance-band-walk")])
         
-        add(
-            "Z Press",
+        add("Z Press",
             [
                 "Sit inside a power rack.",
                 "Adjust the pins so that the bar is a couple of inches below your shoulders.",
@@ -4833,11 +4723,7 @@ extension Notes {
                 "Keep the bar over your center of mass.",
                 "Try not to move your feet or legs.",
             ],
-            [(
-                "Link",
-                "https://www.t-nation.com/training/z-press-advanced-overhead-pressing",
-            )],
-        )
+            [("Link", "https://www.t-nation.com/training/z-press-advanced-overhead-pressing")])
         
         add("Zercher Squat",
             [
@@ -4848,8 +4734,8 @@ extension Notes {
                 "Squat down until your thighs just break parallel with the ground.",
                 "At the bottom your knees should be over your toes.",
                 "Keep your head up at all times."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/zercher-squats"), ("Details", "https://www.t-nation.com/training/complete-guide-to-zerchers")],
-            )
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/zercher-squats"),
+             ("Details", "https://www.t-nation.com/training/complete-guide-to-zerchers")])
     }
     
     private func add(_ name: String, _ lines: [String], _ links: [(String, String)]) {

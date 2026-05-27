@@ -18,13 +18,26 @@ struct GymAceApp: App {
         //      or silently update if not active?
         
         
-        if model.programs.isEmpty { // TODO only do this if DEBUG?
-            model.activeProgram = "Preview"
+        if model.programs.isEmpty {
             model.notes.addDefaults()
-            addPreviewWeightSets(model) // TODO get rid of this: instead on activate insert weight sets if they are missing
-            model.programs.append(previewProgram())
-            model.programs.append(myProgram())
         }
+        
+        for p in defaultPrograms {
+            if !model.programs.contains(where: {$0.name == p.name}) {
+                print("adding \(p.name) program")
+                model.programs.append(p)
+            }
+        }
+        
+        if model.activeProgram.isEmpty {
+            model.activeProgram = "Preview" // TODO pick something else, or even better go directly to EditPrograms
+        }
+        model.updateWeightsets()
+
+        // TODO install missing weight sets for the active program
+        //      also need to do this when changing the active program
+        //      don't install weight sets elsewhere
+        // TODO may want a warning somewhere if weight set is missing
     }
 
     var body: some Scene {

@@ -29,6 +29,25 @@ final class Model: Codable {
         return programs.first(where: {$0.name == activeProgram})
     }
     
+    func updateWeightsets() {
+        if let p = active() {
+            for w in p.workouts {
+                for entry in w.entries {
+                    if let e = p.findExercise(entry.name), let n = e.weightSet {
+                        if weightSets[n] == nil {
+                            if let ws = findDefaultWeightSet(n) {
+                                weightSets[n] = ws
+                                print("added weight set \(n)")
+                            } else {
+                                print("couldn't find weight set \(n)")  // TODO probably should have a warning somewhere for this
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func addProgram(_ program: Program) {
         self.programs.append(program)
     }
