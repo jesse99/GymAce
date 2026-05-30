@@ -32,9 +32,6 @@ struct EditDiscrete: View {
     
     var body: some View {
         VStack {
-            // TODO should be able to add using from, to, by (last two can be empty)
-            // TODO use a form for to allow editing for
-            //    up to two extra weights
             // Units picker
             HStack {                // TODO probably should be in a Form but the spacing is really annoying
                 Picker("", selection: unitsBinding) {

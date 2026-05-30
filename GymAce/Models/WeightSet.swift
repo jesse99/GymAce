@@ -187,7 +187,6 @@ final class SinglePlates: Codable {
         self.units = units
     }
     
-    
     func description() -> String {
         let b = if plates.isEmpty {
             "no plates"
@@ -195,9 +194,9 @@ final class SinglePlates: Codable {
             plates.reversed().map {$0.description(units)}.joined(separator: ", ")
         }
         if let r = bar {
-            return "Dual plates with \(b) and a \(formatWeight(r, units)) bar."
+            return "Single plates with \(b) and a \(formatWeight(r, units)) bar."
         } else {
-            return "Dual plates with \(b)."
+            return "Single plates with \(b)."
         }
     }
     
