@@ -66,9 +66,9 @@ struct ProgramView: View {
                                     NavigationLink(destination: EditPrograms(model: model)) {
                                         Text("Edit Programs")
                                     }
-//                                    NavigationLink(destination: Text("Weight Sets")) {
-//                                        Text("Edit Weight Sets")  // TODO support these, make sure that this sets dirty
-//                                    }
+                                    NavigationLink(destination: EditWeightSets(model: model)) {
+                                        Text("Edit Weight Sets") 
+                                    }
                                     Button("Email Program", action: sendEmail)
                                 } label: {
                                     Image(systemName: "line.horizontal.3")

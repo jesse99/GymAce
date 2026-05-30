@@ -29,11 +29,22 @@ final class Model: Codable {
         return programs.first(where: {$0.name == activeProgram})
     }
     
+    func addWeightSet(_ name: String, _ ws: WeightSet) {
+        self.weightSets[name] = ws
+    }
+    
+    func deleteWeightSets(_ names: [String]) {
+        for name in names {
+            self.weightSets[name] = nil
+        }
+    }
+    
     func updateWeightsets() {
         if let p = active() {
             for w in p.workouts {
                 for entry in w.entries {
                     if let e = p.findExercise(entry.name), let n = e.weightSet {
+//                        print("\(weightSets[n])")
                         if weightSets[n] == nil {
                             if let ws = findDefaultWeightSet(n) {
                                 weightSets[n] = ws

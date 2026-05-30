@@ -144,8 +144,11 @@ final class DualPlates: Codable {
     }
     
     func description() -> String {
-        let a = plates.reversed().map {$0.description(units)}
-        let b = a.joined(separator: ", ")
+        let b = if plates.isEmpty {
+            "no plates"
+        } else {
+            plates.reversed().map {$0.description(units)}.joined(separator: ", ")
+        }
         if let r = bar {
             return "Dual plates with \(b) and a \(formatWeight(r, units)) bar."
         } else {
@@ -186,8 +189,11 @@ final class SinglePlates: Codable {
     
     
     func description() -> String {
-        let a = plates.reversed().map {$0.description(units)}
-        let b = a.joined(separator: ", ")
+        let b = if plates.isEmpty {
+            "no plates"
+        } else {
+            plates.reversed().map {$0.description(units)}.joined(separator: ", ")
+        }
         if let r = bar {
             return "Dual plates with \(b) and a \(formatWeight(r, units)) bar."
         } else {
@@ -214,7 +220,8 @@ final class SinglePlates: Codable {
 struct DiscreteWeights: Codable {
     var weights: [Float]
     var units: Units
-    var magnets: [Float] = []    // TODO support this?
+    var extra1: Float? = nil    // TODO support these
+    var extra2: Float? = nil
     
     init(weights: [Float], units: Units) {
         self.weights = weights
@@ -222,8 +229,11 @@ struct DiscreteWeights: Codable {
     }
     
     func description() -> String {
-        let a = weights.map {formatWeight($0, units)}
-        let b = a.joined(separator: ", ")
+        let b = if weights.isEmpty {
+            "no weights"
+        } else {
+            weights.map {formatWeight($0, units)}.joined(separator: ", ")
+        }
         return "Discrete weights with \(b)."
     }
 }

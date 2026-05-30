@@ -167,7 +167,6 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     completedView(model, exercise, $0)
                 }
             }
-//            .tag(model.editCount)
             .listStyle(.plain)
             .tabItem {Label("History", systemImage: "figure.run")}
             

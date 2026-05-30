@@ -672,7 +672,7 @@ struct EditExercise: View {
                     percentRestErr = nil
                     percentData.rest = s
                     exercise.data = .percent(percentData)
-                } else if $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                } else if $0.isBlankEmpty {
                     percentRestErr = nil
                     percentData.rest = nil
                     exercise.data = .percent(percentData)
@@ -767,7 +767,7 @@ struct EditExercise: View {
                     repsRestErr = nil
                     repsData.rest = s
                     exercise.data = .reps(repsData)
-                } else if $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                } else if $0.isBlankEmpty {
                     repsRestErr = nil
                     repsData.rest = nil
                     exercise.data = .reps(repsData)
