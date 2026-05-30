@@ -17,10 +17,8 @@ struct GymAceApp: App {
         //      or hijack version and install newer versions? can include a top of what changed
         //      or silently update if not active?
         
-        
-        if model.programs.isEmpty {
-            model.notes.addDefaults()
-        }
+        // Defaults always get added because we always want the most up to date version.
+        model.notes.addDefaults()
         
         for p in defaultPrograms {
             if !model.programs.contains(where: {$0.name == p.name}) {
@@ -33,10 +31,6 @@ struct GymAceApp: App {
             model.activeProgram = "Preview" // TODO pick something else, or even better go directly to EditPrograms
         }
         model.updateWeightsets()
-
-        // TODO install missing weight sets for the active program
-        //      also need to do this when changing the active program
-        //      don't install weight sets elsewhere
         // TODO may want a warning somewhere if weight set is missing
     }
 

@@ -91,7 +91,7 @@ final class ExerciseEntry: Codable {
         
     /// Returns true if the user is on a workset with an expected rep that may be changed to an actual rep.
     func hasExpected(_ exercise: Exercise) -> Bool {
-        if case let .reps(d) = exercise.data {
+        if case let .reps(d) = exercise.data {      // there's an annoying amount of duplication here but I'm not sure how we'd fix that unless we do something like fold RepsData into PercentData
             if d.isVariable, !finished(exercise) {
                 var index = fixedIndex(exercise)
                 index -= d.warmups.count
@@ -103,7 +103,7 @@ final class ExerciseEntry: Codable {
                     }
                 }
             }
-        } else if case let .percent(d) = exercise.data {   // TODO should clean some of this up: quite a bit of duplication
+        } else if case let .percent(d) = exercise.data {
             if d.isVariable, !finished(exercise) {
                 var index = fixedIndex(exercise)
                 index -= d.warmups.count
@@ -246,11 +246,7 @@ final class ExerciseEntry: Codable {
             working = Working(type: .reps, weight: weight, units: units)
             for (index, reps) in d.workset.enumerated() {
                 let r = findExpected(exercise, reps, index)
-                switch r {
-                case .amrap(let r): working!.expected.append(r)
-                case .fixed(let r): working!.expected.append(r)
-                case .variable(let min, _): working!.expected.append(min)
-                }
+                working!.expected.append(r)
             }
         case .durations(let d):
             working = Working(type: .secs, weight: weight, units: units)
@@ -261,11 +257,7 @@ final class ExerciseEntry: Codable {
             working = Working(type: .reps, weight: weight, units: units)
             for (index, reps) in d.workset.enumerated() {
                 let r = findExpected(exercise, reps, index)
-                switch r {
-                case .amrap(let r): working!.expected.append(r)
-                case .fixed(let r): working!.expected.append(r)
-                case .variable(let min, _): working!.expected.append(min)
-                }
+                working!.expected.append(r)
             }
         }
                 
@@ -652,40 +644,48 @@ struct HistorySnapshot: RandomAccessCollection {
     }
 }
 
-func findExpected(_ exercise: Exercise, _ reps: VariableRep, _ index: Int) -> VariableRep {
+func findExpected(_ exercise: Exercise, _ reps: VariableRep, _ index: Int) -> Int {
     switch reps {
-    case .amrap(_):
-        return reps
-    case .fixed(_):
-        return reps
+    case .amrap(let min):
+        // For AMRAP we'll just do the default unless the user did better last time at
+        // the current weight.
+        if let last = exercise.latestCompleted(), typeMatches(last, exercise), index < last.values.count {
+            if let new = exercise.weight, let old = last.weight, new == old {
+                let r = last.values[index]
+                if r > min {
+                    return r
+                }
+            }
+        }
+        return min
+    case .fixed(let r):
+        return r
     case .variable(let min, let max):
-        // Usually we'll just return reps except for a few cases:
+        // Usually we'll just return min except for a few cases:
         if let last = exercise.latestCompleted(), typeMatches(last, exercise) {
             if let new = exercise.weight, let old = last.weight {
                 if new < old {
                     // 1) the user has dropped the weight
                     // Possible that they can't now do max, but they should be close to that...
-                    return .fixed(max)
-                } else if new == old {
+                    return max
+                } else if new == old && index < last.values.count {
                     // 2) the user is doing the same weight so the expected is whatever
                     // they last did clamped to what the current min/max is.
-                    if index < last.values.count {
-                        let r = last.values[index]
-                        if r >= min && r < max {
-                            return .variable(r, max)
-                        } else if r < min {
-                            return reps
-                        } else {
-                            return .fixed(r)    // r >= max
-                        }
+                    let r = last.values[index]
+                    if r >= min && r < max {
+                        return r
+                    } else if r >= max {
+                        return max
                     }
                 }
             }
         }
-        return reps
+        return min
     }
 }
 
+// If the exercise type changes then it doesn't make sense to use the last completed to figure
+// out expected...
 func typeMatches(_ completed: Completed, _ exercise: Exercise) -> Bool {
     switch completed.type {
     case .reps:

@@ -97,43 +97,50 @@ final class Exercise: Codable {
             }
         }
         switch data {
-            case .reps(let r):
-                var a: [VariableRep] = []
-                for i in 0..<r.workset.count {
-                    let r = findExpected(self, r.workset[i], i)
-                    a.append(r)
-                }
-                let b = a.map {
-                    switch $0 {
-                    case .amrap(let r): 
-                        "\(r)+"
-                    case .fixed(let r):
-                        if r == 1 {
-                            "1 rep"
+            case .reps(let d):
+                var a: [String] = []
+                for i in 0..<d.workset.count {
+                    let n = findExpected(self, d.workset[i], i)
+                    switch d.workset[i] {
+                    case .amrap(_):
+                        a.append("\(n)+")
+                    case .fixed(_):
+                        if n == 1 {
+                            a.append("1 rep")
                         } else {
-                            "\(r) reps"
+                            a.append("\(n) reps")
                         }
-                    case .variable(let min, let max):
-                        "\(min)-\(max) reps"
+                    case .variable(_, let max):
+                        if n == max {
+                            a.append("\(max) reps")
+                        } else {
+                            a.append("\(n)-\(max) reps")
+                        }
                     }
                 }
-                return joinLabels(b) + suffix
+                return joinLabels(a) + suffix
             case .durations(let d):
                 let a = d.secs.map {secsToShortStr($0)}
                 return joinLabels(a) + suffix
             case .percent(let d):
-                let a = d.workset.map {
-                    switch $0 {
-                    case .amrap(let r):
-                        "\(r)+"
-                    case .fixed(let r):
-                        if r == 1 {
-                            "1 rep"
+                var a: [String] = []
+                for i in 0..<d.workset.count {
+                    let n = findExpected(self, d.workset[i], i)
+                    switch d.workset[i] {
+                    case .amrap(_):
+                        a.append("\(n)+")
+                    case .fixed(_):
+                        if n == 1 {
+                            a.append("1 rep")
                         } else {
-                            "\(r) reps"
+                            a.append("\(n) reps")
                         }
-                    case .variable(let min, let max):
-                        "\(min)-\(max) reps"
+                    case .variable(_, let max):
+                        if n == max {
+                            a.append("\(max) reps")
+                        } else {
+                            a.append("\(n)-\(max) reps")
+                        }
                     }
                 }
                 return joinLabels(a) + suffix
