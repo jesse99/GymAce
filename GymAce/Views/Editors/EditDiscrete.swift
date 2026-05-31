@@ -168,7 +168,7 @@ struct EditDiscrete: View {
             Button("Save", action: addWeights)
             Button("Cancel", role: .cancel) {}
         }
-        .navigationTitle("Edit Discrete Weights")
+        .navigationTitle("Edit Discrete")
         .navigationBarBackButtonHidden(!isValid)
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -242,11 +242,11 @@ struct EditDiscrete: View {
     
     private func addWeight(_ weight: Float) {
         if let ws = model.weightSets[name] {
-            if case .discrete(var w) = ws {
+            if case .discrete(let w) = ws {
                 if !w.weights.contains(where: {$0.sameWeight(weight)}) {
                     w.weights.append(weight)
                     w.weights.sort(by: <)
-                    model.weightSets[name] = .discrete(w)
+                    w.combos = nil
                     
                     items.append(DiscreteItem(weight))
                     items.sort {$0.weight < $1.weight}
@@ -271,13 +271,12 @@ struct EditDiscrete: View {
             },
             set: {
                 if let ws = model.weightSets[name] {
-                    if case .discrete(var w) = ws {
+                    if case .discrete(let w) = ws {
                         if $0 == 0 {
                             w.units = .Imperial
                         } else {
                             w.units = .Metric
                         }
-                        model.weightSets[name] = .discrete(w)
                     }
                 }
                 addErr = nil
@@ -299,9 +298,9 @@ struct EditDiscrete: View {
             },
             set: {
                 if let ws = model.weightSets[name] {
-                    if case .discrete(var w) = ws {
+                    if case .discrete(let w) = ws {
                         w.extra1 = Float($0)
-                        model.weightSets[name] = .discrete(w)
+                        w.combos = nil
                     }
                 }
                 addErr = nil
@@ -323,9 +322,9 @@ struct EditDiscrete: View {
             },
             set: {
                 if let ws = model.weightSets[name] {
-                    if case .discrete(var w) = ws {
+                    if case .discrete(let w) = ws {
                         w.extra2 = Float($0)
-                        model.weightSets[name] = .discrete(w)
+                        w.combos = nil
                     }
                 }
                 addErr = nil
@@ -346,13 +345,13 @@ struct EditDiscrete: View {
     // TODO need to confirm this
     private func deleteWeights(offsets: IndexSet) {
         if let ws = model.weightSets[name] {
-            if case .discrete(var w) = ws {
+            if case .discrete(let w) = ws {
                 for itemIndex in offsets {
                     if let weightIndex = w.weights.firstIndex(where: {$0.sameWeight(items[itemIndex].weight)}) {
                         w.weights.remove(at: weightIndex)
+                        w.combos = nil
                     }
                 }
-                model.weightSets[name] = .discrete(w)
             }
         }
         withAnimation {

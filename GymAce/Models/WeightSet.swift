@@ -160,6 +160,7 @@ final class PlateWeights: Codable {
         }
     }
     
+    /// Smallest total weight to largest. Typically this should be used instead of the plates field.
     func findCombos() -> [InternalPlates] {
 #if DEBUG
         for i in plates.indices {
@@ -176,11 +177,12 @@ final class PlateWeights: Codable {
 }
 
 /// Used for stuff like dumbbells and cable machines.
-struct DiscreteWeights: Codable {
+class DiscreteWeights: Codable {
     var weights: [Float]
     var units: Units
     var extra1: Float? = nil
     var extra2: Float? = nil
+    var combos: [Float]? = nil
     
     init(weights: [Float], units: Units) {
         self.weights = weights
@@ -198,28 +200,28 @@ struct DiscreteWeights: Codable {
         
     /// Smallest to largest. Typically this should be used instead of the weights field.
     func findCombos() -> [Float] {
-        // This is pretty quick and avoids ickiness with mutating functions
-        // on a struct.
-        var combos: [Float] = []
-        for weight in weights {
-            addWeight(&combos, weight)
-            if let e = extra1 {
-                addWeight(&combos, weight + e)
+        if combos == nil {
+            var comb: [Float] = []
+            for weight in weights {
+                addWeight(&comb, weight)
+                if let e = extra1 {
+                    addWeight(&comb, weight + e)
+                }
+                if let e = extra2 {
+                    addWeight(&comb, weight + e)
+                }
+                if let e1 = extra1, let e2 = extra2 {
+                    addWeight(&comb, weight + e1 + e2)
+                }
             }
-            if let e = extra2 {
-                addWeight(&combos, weight + e)
-            }
-            if let e1 = extra1, let e2 = extra2 {
-                addWeight(&combos, weight + e1 + e2)
-            }
+            combos = comb.sorted {$0 < $1}
         }
-        combos.sort {$0 < $1}
-        return combos
+        return combos!
     }
     
-    private func addWeight(_ combos: inout [Float], _ weight: Float) {
-        if !combos.contains(where: {$0.sameWeight(weight)}) {
-            combos.append(weight)
+    private func addWeight(_ comb: inout [Float], _ weight: Float) {
+        if !comb.contains(where: {$0.sameWeight(weight)}) {
+            comb.append(weight)
         }
     }
 }
@@ -255,7 +257,7 @@ extension WeightSet {
     /// Return the next weight larger than target.
     func advance(target: Float) -> ActualWeight {
         switch self {
-            case .discrete(var d):
+            case .discrete(let d):
                 let (_, upper) = findDiscrete(target, d.findCombos());
                 return ActualWeight(discrete: upper, d.units)
             case .plates(let d):
@@ -270,7 +272,7 @@ extension WeightSet {
     /// Used for warmups and backoff sets. May return a weight larger than target.
     func closest(target: Float) -> ActualWeight {
         switch self {
-            case .discrete(var d):
+            case .discrete(let d):
                 return ActualWeight(discrete: closestDiscrete(target, d.findCombos()), d.units)
             case .plates(let d):
                 if d.dual {
@@ -284,7 +286,7 @@ extension WeightSet {
     /// Used for worksets. Will not return a weight larger than target.
     func lower(target: Float) -> ActualWeight {
         switch self {
-            case .discrete(var d):
+            case .discrete(let d):
                 let (lower, _) = findDiscrete(target, d.findCombos());
                 return ActualWeight(discrete: lower, d.units)
             case .plates(let d):
@@ -299,7 +301,7 @@ extension WeightSet {
     /// Returns the netxt weight larger than target.
     func upper(target: Float) -> ActualWeight { // TODO why do we also have advance?
         switch self {
-            case .discrete(var d):
+            case .discrete(let d):
                 let (_, upper) = findDiscrete(target, d.findCombos());
                 return ActualWeight(discrete: upper, d.units)
             case .plates(let d):
