@@ -23,7 +23,7 @@ struct AdvanceTests {
     @Test("Some plates but no bar")
     func advance1() {
         let plates = [Plate(5.0, 6), Plate(10.0, 6), Plate(25.0, 4), Plate(45.0, 4)]
-        let dual = DualPlates(plates: plates, units: .Metric)
+        let dual = PlateWeights(plates: plates, units: .Metric)
         let ws = WeightSet(name: "OHP", dual: dual)
         
         var v = ws.advance(target: 0.0)
@@ -48,7 +48,7 @@ struct AdvanceTests {
     @Test("Some plates with bar")
     func advance2() {
         let plates = [Plate(5.0, 6), Plate(10.0, 6), Plate(25.0, 4), Plate(45.0, 4)]
-        let dual = DualPlates(plates: plates, bar: 45.0, units: .Metric)
+        let dual = PlateWeights(plates: plates, bar: 45.0, units: .Metric)
         let ws = WeightSet(name: "OHP", dual: dual)
         
         var v = ws.advance(target: 0.0)

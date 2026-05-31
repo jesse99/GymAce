@@ -184,7 +184,7 @@ struct EditDiscrete: View {
     private func addWeight(_ weight: Float) {
         if let ws = model.weightSets[name] {
             if case .discrete(var w) = ws {
-                if !w.weights.contains(where: {Int(1000*$0) == Int(1000*weight)}) {
+                if !w.weights.contains(where: {$0.sameWeight(weight)}) {
                     w.weights.append(weight)
                     w.weights.sort(by: <)
                     model.weightSets[name] = .discrete(w)
@@ -289,7 +289,7 @@ struct EditDiscrete: View {
         if let ws = model.weightSets[name] {
             if case .discrete(var w) = ws {
                 for itemIndex in offsets {
-                    if let weightIndex = w.weights.firstIndex(of: items[itemIndex].weight) {
+                    if let weightIndex = w.weights.firstIndex(where: {$0.sameWeight(items[itemIndex].weight)}) {
                         w.weights.remove(at: weightIndex)
                     }
                 }

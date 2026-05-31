@@ -9,16 +9,13 @@ struct EditWeightSets: View {
                 Section(header: Text("Weight Sets")) {
                     ForEach(model.weightSets.keys.sorted(), id: \.self) { name in
                         NavigationLink {
-                            // TODO switch off ws type and create one of two editors, maybe add isPlates(name), tho we also need dual flag
-                            // 1) plates (model, name, dual flag)
-                            // 2) discrete (model, name)
                             let tag = self.tag(name)
                             if tag == 0 {
                                 EditDiscrete(model: model, name: name)
                             } else if tag == 1 {
-                                Text("edit dual")
+                                EditPlates(model: model, name: name)
                             } else if tag == 2 {
-                                Text("edit single")
+                                EditPlates(model: model, name: name)
                             }
                         } label: {
                             Text(name)
@@ -39,8 +36,8 @@ struct EditWeightSets: View {
                     Menu {
                         // TODO use current region to figure out default units
                         Button("Add Discrete", action: {addWeightSet(.discrete(DiscreteWeights(weights: [], units: .Imperial)))})
-                        Button("Add Dual Plates", action: {addWeightSet(.dual(DualPlates(plates: [], units: .Imperial)))})
-                        Button("Add Single Plates", action: {addWeightSet(.single(SinglePlates(plates: [], units: .Imperial)))})
+                        Button("Add Dual Plates", action: {addWeightSet(.plates(PlateWeights(dual: true, plates: [], units: .Imperial)))})
+                        Button("Add Single Plates", action: {addWeightSet(.plates(PlateWeights(dual: false, plates: [], units: .Imperial)))})
                     } label: {
                         Image(systemName: "plus")
                     }
@@ -60,8 +57,7 @@ struct EditWeightSets: View {
         if let ws = model.weightSets[name] {
             switch ws {
             case .discrete(_): return 0
-            case .dual(_): return 1
-            case .single(_): return 2
+            case .plates(let d): return d.dual ? 1 : 2
             }
         } else {
             return -1

@@ -15,6 +15,28 @@ final class Model: Codable {
     /// doing a save and chews up CPU and battery if state didn't actually change).
     var dirty = false
         
+    enum CodingKeys: String, CodingKey {
+        case programs, activeProgram, dirty
+    }
+    
+    init() {
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        programs = try container.decode(Array<Program>.self, forKey: .programs)
+        activeProgram = try container.decode(String.self, forKey: .activeProgram)
+        dirty = try container.decode(Bool.self, forKey: .dirty)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(programs, forKey: .programs)
+        try container.encode(activeProgram, forKey: .activeProgram)
+        try container.encode(dirty, forKey: .dirty)
+    }
+
     func fixup() {
 //        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
 //        let dual = DualPlates(plates: plates, bar: 60.0, units: .Imperial)

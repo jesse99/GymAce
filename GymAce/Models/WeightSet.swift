@@ -126,18 +126,21 @@ struct Plate: CustomDebugStringConvertible, Codable, Comparable, Equatable {
     }
 }
 
-/// Used for equipment like barbells where plates are added to both sides. When
-/// displaying plate counts to the user only the plates for one side are listed.
-final class DualPlates: Codable {
+/// Dual is used for equipment like barbells where plates are added to both sides. When
+/// displaying plate counts to the user only the plates for one side are listed. Single is
+/// used for things like T-bar rows.
+final class PlateWeights: Codable {
     var plates: [Plate] // sorted by largest to smallest using just weight (so enumeratePlates prefers larger weights)
     var bar: Float?
     var units: Units
+    let dual: Bool
     
     // All non-duplicate combinations of plates for every weight sorted by smallest
     // weight to largest. Note that these are the plates added to one side of the bar.
-    private var combos: [InternalPlates] = []
+    var combos: [InternalPlates] = []
     
-    init(plates: [Plate], bar: Float? = nil, units: Units) {
+    init(dual: Bool, plates: [Plate], bar: Float? = nil, units: Units) {
+        self.dual = dual
         self.plates = plates.sorted(by: {$1.weight < $0.weight})
         self.bar = bar
         self.units = units
@@ -149,10 +152,11 @@ final class DualPlates: Codable {
         } else {
             plates.reversed().map {$0.description(units)}.joined(separator: ", ")
         }
+        let prefix = dual ? "Dual " : "Single"
         if let r = bar {
-            return "Dual plates with \(b) and a \(formatWeight(r, units)) bar."
+            return "\(prefix) plates with \(b) and a \(formatWeight(r, units)) bar."
         } else {
-            return "Dual plates with \(b)."
+            return "\(prefix) plates with \(b)."
         }
     }
     
@@ -166,50 +170,6 @@ final class DualPlates: Codable {
 #endif
         if combos.isEmpty {
             combos = enumeratePlates(plates, bar: bar, units: units)
-        }
-        return combos
-    }
-}
-
-/// Used for equipment like T bar rows where plates are added to one sides.
-final class SinglePlates: Codable {
-    var plates: [Plate] // sorted by largest to smallest using just weight (so enumeratePlates prefers larger weights)
-    var bar: Float?
-    var units: Units
-    
-    // All non-duplicate combinations of plates for every weight sorted by smallest
-    // weight to largest. Note that these are the plates added to one side of the bar.
-    private var combos: [InternalPlates] = []
-    
-    init(plates: [Plate], bar: Float? = nil, units: Units) {
-        self.plates = plates.sorted(by: {$1.weight < $0.weight})
-        self.bar = bar
-        self.units = units
-    }
-    
-    func description() -> String {
-        let b = if plates.isEmpty {
-            "no plates"
-        } else {
-            plates.reversed().map {$0.description(units)}.joined(separator: ", ")
-        }
-        if let r = bar {
-            return "Single plates with \(b) and a \(formatWeight(r, units)) bar."
-        } else {
-            return "Single plates with \(b)."
-        }
-    }
-    
-    func findCombos() -> [InternalPlates] {
-#if DEBUG
-        for i in plates.indices {
-            if i > 0 {
-                assert(plates[i-1].weight > plates[i].weight)
-            }
-        }
-#endif
-        if combos.isEmpty {
-//            combos = enumeratePlates(plates, bar: bar, units: units)  // TODO need a flag for single or dual
         }
         return combos
     }
@@ -243,20 +203,15 @@ enum WeightSet: Codable {
     /// Used for stuff like dumbbells and cable machines.
     case discrete(DiscreteWeights)
     
-    /// Used for stuff like barbell exercises and leg presses. Plates are added in pairs.
-    /// Includes an optional bar weight.
-    case dual(DualPlates)
-
-    /// Used for stuff like T bar rows and landmines. Includes an optional bar weight.
-    case single(SinglePlates)
+    /// Used for stuff like barbell exercises and leg presses. Includes an optional bar weight.
+    case plates(PlateWeights)
 }
 
 extension WeightSet {    
     var units: Units {
         switch self {
             case .discrete(let d): return d.units
-            case .dual(let d): return d.units
-            case .single(let d): return d.units
+            case .plates(let d): return d.units
         }
     }
     
@@ -265,9 +220,7 @@ extension WeightSet {
         switch self {
             case .discrete(let d):
             return d.description()
-            case .dual(let d):
-            return d.description()
-            case .single(let d):
+            case .plates(let d):
             return d.description()
         }
     }
@@ -278,10 +231,12 @@ extension WeightSet {
             case .discrete(let d):
                 let (_, upper) = findDiscrete(target, d.weights);
                 return ActualWeight(discrete: upper, d.units)
-            case .dual(let d):
-                return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
-            case .single(_):
-                fatalError("not supported")
+            case .plates(let d):
+                if d.dual {
+                    return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
+                } else {
+                    fatalError("not supported")
+                }
         }
     }
     
@@ -290,10 +245,12 @@ extension WeightSet {
         switch self {
             case .discrete(let d):
                 return ActualWeight(discrete: closestDiscrete(target, d.weights), d.units)
-            case .dual(let d):
-                return ActualWeight(plates: closestDual(target, d.findCombos(), d.bar, d.units))
-            case .single(_):
-                fatalError("not supported")
+            case .plates(let d):
+                if d.dual {
+                    return ActualWeight(plates: closestDual(target, d.findCombos(), d.bar, d.units))
+                } else {
+                    fatalError("not supported")
+                }
         }
     }
     
@@ -303,10 +260,12 @@ extension WeightSet {
             case .discrete(let d):
                 let (lower, _) = findDiscrete(target, d.weights);
                 return ActualWeight(discrete: lower, d.units)
-            case .dual(let d):
-                return ActualWeight(plates: lowerDual(target, d.findCombos(), d.bar, d.units))
-            case .single(_):
-                fatalError("not supported")
+            case .plates(let d):
+                if d.dual {
+                    return ActualWeight(plates: lowerDual(target, d.findCombos(), d.bar, d.units))
+                } else {
+                    fatalError("not supported")
+                }
         }
     }
     
@@ -316,10 +275,12 @@ extension WeightSet {
             case .discrete(let d):
                 let (_, upper) = findDiscrete(target, d.weights);
                 return ActualWeight(discrete: upper, d.units)
-            case .dual(let d):
-                return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
-            case .single(_):
-                fatalError("not supported")
+            case .plates(let d):
+                if d.dual {
+                    return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
+                } else {
+                    fatalError("not supported")
+                }
         }
     }
             
