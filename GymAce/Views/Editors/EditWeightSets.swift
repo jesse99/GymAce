@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EditWeightSets: View {
     @Bindable var model: Model
+    @State var err: String? = nil
     
     var body: some View {
         VStack {
@@ -44,10 +45,19 @@ struct EditWeightSets: View {
                 }
             }
             Spacer()
-            Text("Discrete weights are for dumbbells, cable machines, etc. Dual Plates are plates that are added in pairs, as in a barbell squat. Single plates are plates that are added one at a time, as in a T-bar row machine.")
-                .font(.footnote)
-                .padding(.leading, 20)
-                .padding(.trailing, 20)
+            if let s = err {
+                Text(s)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .padding(.leading, 20)
+                    .padding(.trailing, 20)
+
+            } else {
+                Text("Discrete weights are for dumbbells, cable machines, etc. Dual Plates are plates that are added in pairs, as in a barbell squat. Single plates are plates that are added one at a time, as in a T-bar row machine.")
+                    .font(.footnote)
+                    .padding(.leading, 20)
+                    .padding(.trailing, 20)
+            }
         }
         .navigationTitle("Edit Weight Sets")
         .navigationBarTitleDisplayMode(.inline)
@@ -81,8 +91,25 @@ struct EditWeightSets: View {
     private func deleteWeightSets(offsets: IndexSet) {
         let keys = model.weightSets.keys.sorted()
         let names = offsets.map {keys[$0]}
-        withAnimation {
-            self.model.deleteWeightSets(names)
+        let (good, bad) = names.split {!model.weightSetsInUse($0)}
+        if bad.isEmpty {
+            err = nil
+        } else {
+            // Allowing this is problematic because we add default weight sets
+            // that are missing from the current program (that makes life
+            // easier for the user while avoiding having a lot of weight sets
+            // hanging around that aren't actually used). But even without
+            // that it seems iffy to allow in use weight sets to be deleted...
+            err = ""
+            for n in bad {
+                let e = model.weightSetsUsedBy(n)
+                err = err! + "Can't delete \(n): it's used by \(e). "
+            }
+        }
+        if !good.isEmpty {
+            withAnimation {
+                self.model.deleteWeightSets(good)
+            }
         }
     }
     

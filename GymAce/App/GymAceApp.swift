@@ -30,7 +30,7 @@ struct GymAceApp: App {
         if model.activeProgram.isEmpty {
             model.activeProgram = "Preview" // TODO pick something else, or even better go directly to EditPrograms
         }
-        model.updateWeightsets()
+        model.addMissingWeightsets()
         // TODO may want a warning somewhere if weight set is missing
     }
 

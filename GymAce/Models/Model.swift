@@ -52,12 +52,38 @@ final class Model: Codable {
         }
     }
     
-    func updateWeightsets() {
+    func weightSetsInUse(_ name: String) -> Bool {
+        if let p = active() {
+            for w in p.workouts {
+                for entry in w.entries {
+                    if let e = p.findExercise(entry.name), let n = e.weightSet, n == name, weightSets[n] != nil {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+    
+    func weightSetsUsedBy(_ name: String) -> String {
+        var exercises: [String] = []
+        if let p = active() {
+            for w in p.workouts {
+                for entry in w.entries {
+                    if let e = p.findExercise(entry.name), let n = e.weightSet, n == name, weightSets[n] != nil {
+                        exercises.append(e.name)
+                    }
+                }
+            }
+        }
+        return exercises.joined(separator: ", ")
+    }
+    
+    func addMissingWeightsets() {
         if let p = active() {
             for w in p.workouts {
                 for entry in w.entries {
                     if let e = p.findExercise(entry.name), let n = e.weightSet {
-//                        print("\(weightSets[n])")
                         if weightSets[n] == nil {
                             if let ws = findDefaultWeightSet(n) {
                                 weightSets[n] = ws

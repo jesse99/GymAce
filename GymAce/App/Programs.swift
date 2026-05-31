@@ -32,7 +32,7 @@ func previewModel() -> Model {
     model.activeProgram = "Preview"
     model.notes.addDefaults()
     model.programs.append(previewProgram())
-    model.updateWeightsets()
+    model.addMissingWeightsets()
     return model
 }
 
