@@ -6,13 +6,9 @@ struct WorkoutView: View {
     var program: Program
     @Bindable var workout: Workout
     
-    // TODO will have nav links so need to use a list?
-    //      or will grid work if we disable the chevron?
-    // TODO should Workout have info about the current workout?
-    //      eg how long has been spent on an exercise
-    //      would need some logic to invalidate this
     // TODO when a workout starts may want to tell Apple watch
     //      see https://developer.apple.com/documentation/HealthKit/running-workout-sessions
+    //      https://www.createwithswift.com/tracking-workouts-with-healthkit-in-ios-apps/
     //      when last exercise in a workout is completed stop the workout
     // TODO may also want to allow background processing via workout-processing
     //      see https://developer.apple.com/documentation/xcode/configuring-background-execution-modes

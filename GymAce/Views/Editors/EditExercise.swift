@@ -836,6 +836,7 @@ struct EditExercise: View {
         formalNames = []
     }
 
+    // Return a friendly label for the weight along with an arbitrary tag.
     private func getWeightLabels(_ ws: WeightSet) -> [(String, Int)] {
         var labels: [(String, Int)] = []
         
