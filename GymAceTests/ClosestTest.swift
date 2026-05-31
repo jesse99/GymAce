@@ -36,6 +36,80 @@ struct ClosestTests {
         v = ws.closest(target: 30.0)
         #expect(v.text() == "20 lbs")
     }
+
+    @Test("Dumbbells with extra 1")
+    func extra1() {
+        var weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
+        weights.extra1 = 2.5
+        let ws = WeightSet.discrete(weights)
+
+        var v = ws.closest(target: 0.0)
+        #expect(v.text() == "5 lbs")
+        
+        v = ws.closest(target: 4.0)
+        #expect(v.text() == "5 lbs")
+        
+        v = ws.closest(target: 5.0)
+        #expect(v.text() == "5 lbs")
+        
+        v = ws.closest(target: 7.0)
+        #expect(v.text() == "7.5 lbs")
+        
+        v = ws.closest(target: 8.0)
+        #expect(v.text() == "7.5 lbs")
+
+        v = ws.closest(target: 10.0)
+        #expect(v.text() == "10 lbs")
+    }
+
+    @Test("Dumbbells with extra 2")
+    func extra2() {
+        var weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
+        weights.extra2 = 2.5
+        let ws = WeightSet.discrete(weights)
+
+        var v = ws.closest(target: 0.0)
+        #expect(v.text() == "5 lbs")
+        
+        v = ws.closest(target: 4.0)
+        #expect(v.text() == "5 lbs")
+        
+        v = ws.closest(target: 5.0)
+        #expect(v.text() == "5 lbs")
+        
+        v = ws.closest(target: 7.0)
+        #expect(v.text() == "7.5 lbs")
+        
+        v = ws.closest(target: 8.0)
+        #expect(v.text() == "7.5 lbs")
+
+        v = ws.closest(target: 10.0)
+        #expect(v.text() == "10 lbs")
+    }
+
+    @Test("Dumbbells with extra 1 and 2")
+    func extra3() {
+        var weights = DiscreteWeights(weights: [10.0, 20.0, 30.0], units: .Imperial)
+        weights.extra1 = 2.5
+        weights.extra2 = 2.5
+        let ws = WeightSet.discrete(weights)
+
+        var v = ws.closest(target: 10.0)
+        #expect(v.text() == "10 lbs")
+        
+        v = ws.closest(target: 12.0)
+        #expect(v.text() == "12.5 lbs")
+        
+        v = ws.closest(target: 14.0)
+        #expect(v.text() == "15 lbs")
+        
+        v = ws.closest(target: 16.0)
+        #expect(v.text() == "15 lbs")
+
+        v = ws.closest(target: 20.0)
+        #expect(v.text() == "20 lbs")
+
+    }
     
     @Test("Some plates but no bar")
     func closest2() {
