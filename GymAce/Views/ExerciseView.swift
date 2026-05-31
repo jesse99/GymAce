@@ -139,6 +139,12 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 20)
                 }
             }
+            if let s = findIssues() {
+                Text(s)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .padding(.top, 10)
+            }
         }
         .navigationTitle(entry.name)
         .toolbar {
@@ -175,6 +181,26 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
             .tabItem {Label("Notes", systemImage: "book.pages")}
         }
+    }
+    
+    private func findIssues() -> String? {
+        var issues = ""
+        
+        if let wn = exercise.weightSet {
+            if model.weightSets[wn] == nil {
+                issues += "There is no weight set named '\(wn)'. "
+            }
+        }
+        if case .percent(let d) = exercise.data {
+            if program.findExercise(d.other) == nil {
+                issues += "Couldn't find a base exercise named '\(d.other)'. "
+            }
+        }
+        if exercise.name != entry.name {
+            issues += "The exercise is named \(exercise.name) but the entry is named \(entry.name). "  // shouldn't happen
+        }
+
+        return issues.isEmpty ? nil : issues
     }
     
     private func canSetWeight() -> Bool {
