@@ -159,7 +159,6 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         .padding(20)
         .onAppear {
             entry.started(model, program, workout, exercise)
-            print(model.notes.find(exercise.formalName))
         }
         TabView {
             List {

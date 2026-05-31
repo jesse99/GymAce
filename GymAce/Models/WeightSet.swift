@@ -28,7 +28,7 @@ func formatWeight(_ weight: Float, _ units: Units) -> String {
     }
     
     switch units {
-    case .Imperial: return "\(s) lb"
+    case .Imperial: return "\(s) lbs"
     case .Metric: return "\(s) kg"
     case .None: return s
     }

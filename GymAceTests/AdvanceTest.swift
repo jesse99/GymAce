@@ -5,7 +5,7 @@ struct AdvanceTests {
     @Test("Some dumbbells")
     func advance0() {
         let weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
-        let ws = WeightSet(name: "dumbbells", discrete: weights)
+        let ws = WeightSet.discrete(weights)
         
         var v = ws.advance(target: 0.0)
         #expect(v.text() == "5 lbs")
@@ -23,8 +23,8 @@ struct AdvanceTests {
     @Test("Some plates but no bar")
     func advance1() {
         let plates = [Plate(5.0, 6), Plate(10.0, 6), Plate(25.0, 4), Plate(45.0, 4)]
-        let dual = PlateWeights(plates: plates, units: .Metric)
-        let ws = WeightSet(name: "OHP", dual: dual)
+        let dual = PlateWeights(dual: true, plates: plates, units: .Metric)
+        let ws = WeightSet.plates(dual)
         
         var v = ws.advance(target: 0.0)
         #expect(v.details() == "5")
@@ -48,9 +48,9 @@ struct AdvanceTests {
     @Test("Some plates with bar")
     func advance2() {
         let plates = [Plate(5.0, 6), Plate(10.0, 6), Plate(25.0, 4), Plate(45.0, 4)]
-        let dual = PlateWeights(plates: plates, bar: 45.0, units: .Metric)
-        let ws = WeightSet(name: "OHP", dual: dual)
-        
+        let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Metric)
+        let ws = WeightSet.plates(dual)
+
         var v = ws.advance(target: 0.0)
         #expect(v.details() == "")
         

@@ -77,7 +77,7 @@ extension Date {
                     return "?"
                 }
             } else {
-                return "\(-days) ago"
+                return "\(-days) days ago"
             }
         }
     }
