@@ -14,39 +14,48 @@ struct PlateItem: Identifiable, Hashable {
 struct EditPlates: View {
     @Bindable var model: Model
     @State var items: [PlateItem] = []
+    @State private var showNameHelp = false
     @State private var showUnitsHelp = false
     @State private var showBarHelp = false
     @State private var showAlert = false
     @State private var pweight = ""
     @State private var pcount = ""
+    @State private var nameErr: String? = ""
     @State private var addErr: String? = nil
-    let name: String
-    
+    @State var name: String
+
     init(model: Model, name: String) {
         self.model = model
-        self.name = name
+        _name = State(initialValue: name)
         _items = State(initialValue: getItems())
     }
     
     var body: some View {
         VStack {
-            // Units picker
-            HStack {                // TODO probably should be in a Form but the spacing is really annoying
-                Picker("", selection: unitsBinding) {
-                    Text("Imperial").tag(0)
-                    Text("Metric").tag(1)
-                }
-                .labelsHidden()
+            // Name
+            HStack {
+                TextField("Name", text: nameBinding)
+                    .textInputAutocapitalization(.words)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.leading, 10)
                 Spacer()
                 Button("", systemImage: "info.circle") {
-                    showUnitsHelp.toggle()
+                    showNameHelp.toggle()
                 }
                 .buttonStyle(.plain)
+                .padding(.leading, 5)
             }
             .padding(5)
-            if showUnitsHelp {
-                Text("Imperial will use pounds. Metric will use kilograms.")
+            if showNameHelp {
+                Text("The name of the weight set.")
                     .foregroundColor(.blue)
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 15)
+            }
+            if let s = nameErr {
+                Text(s)
+                    .foregroundColor(.red)
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -82,10 +91,34 @@ struct EditPlates: View {
 
             }
 
+            // Units picker
+            HStack {                // TODO probably should be in a Form but the spacing is really annoying
+                Picker("", selection: unitsBinding) {
+                    Text("Imperial").tag(0)
+                    Text("Metric").tag(1)
+                }
+                .labelsHidden()
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showUnitsHelp.toggle()
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.top, 5)
+            .padding(.leading, 5)
+            .padding(.trailing, 5)
+            if showUnitsHelp {
+                Text("Imperial will use pounds. Metric will use kilograms.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 15)
+            }
+
             // Weights
             List {
                 Section(header: Text("Weights")) {
-                    ForEach($items) { $item in
+                    ForEach(items) {item in
                         Text(item.label)
                     }
                     .onDelete(perform: deleteWeights)
@@ -110,10 +143,39 @@ struct EditPlates: View {
             Button("Save", action: addWeights)
             Button("Cancel", role: .cancel) {}
         }
-        .navigationTitle("Edit \(name)")
+        .navigationTitle("Edit Plates")
+        .navigationBarBackButtonHidden(!isValid)
         .navigationBarTitleDisplayMode(.inline)
     }
     
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {return name},
+            set: {
+                if $0.isBlankOrEmpty {
+                    nameErr = "The name cannot be empty."
+                    return
+                }
+                if $0 == name {
+                    self.nameErr = nil
+                    return
+                }
+                if model.weightSets[$0] != nil {
+                    nameErr = "There is already a weight set named \($0)."
+                    return
+                }
+                let oldName = self.name
+                self.name = $0
+                self.nameErr = nil
+                model.renameWeightSet(oldName: oldName, newName: $0)
+            }
+        )
+    }
+
+    private var isValid: Bool {
+        nameErr == nil      // note that addErr isn't a blocker
+    }
+
     private func addWeights() {
         guard let weight = Float(self.pweight) else {
             addErr = "Expected a number for Weight, but found '\(self.pweight)'."

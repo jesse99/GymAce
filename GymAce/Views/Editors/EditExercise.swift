@@ -135,7 +135,6 @@ struct EditExercise: View {
             // Name
             HStack {
                 TextField("Name", text: nameBinding)
-                    .textContentType(.name)
                     .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
                 Spacer()
@@ -163,7 +162,6 @@ struct EditExercise: View {
             // Formal name
             HStack {
                 TextField("Formal Name", text: formalBinding)
-                    .textContentType(.name)
                     .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
                     .foregroundStyle(formalColor(formalBinding.wrappedValue))   // TODO not 100% reliable when editing
@@ -672,7 +670,7 @@ struct EditExercise: View {
                     percentRestErr = nil
                     percentData.rest = s
                     exercise.data = .percent(percentData)
-                } else if $0.isBlankEmpty {
+                } else if $0.isBlankOrEmpty {
                     percentRestErr = nil
                     percentData.rest = nil
                     exercise.data = .percent(percentData)
@@ -767,7 +765,7 @@ struct EditExercise: View {
                     repsRestErr = nil
                     repsData.rest = s
                     exercise.data = .reps(repsData)
-                } else if $0.isBlankEmpty {
+                } else if $0.isBlankOrEmpty {
                     repsRestErr = nil
                     repsData.rest = nil
                     exercise.data = .reps(repsData)

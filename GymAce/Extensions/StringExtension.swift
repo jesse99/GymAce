@@ -1,7 +1,7 @@
 import Foundation
 
 extension String {
-    var isBlankEmpty: Bool {
+    var isBlankOrEmpty: Bool {
         return self.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }

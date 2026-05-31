@@ -229,7 +229,6 @@ struct EditWorkout: View {
             // Name
             HStack {
                 TextField("Name", text: $workout.name)
-                    .textContentType(.name)
                     .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
                 Spacer()

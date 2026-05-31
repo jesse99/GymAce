@@ -50,7 +50,6 @@ struct EditProgram: View {
                 HStack {
                     TextField("Name", text: nameBinding)
                         .textFieldStyle(.roundedBorder)
-                        .textContentType(.name)
                         .textInputAutocapitalization(.words)
                     Spacer()
                     

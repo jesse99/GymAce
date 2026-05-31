@@ -51,6 +51,19 @@ final class Model: Codable {
         return programs.first(where: {$0.name == activeProgram})
     }
     
+    func renameWeightSet(oldName: String, newName: String) {
+        if let ws = self.weightSets[oldName] {
+            self.weightSets[oldName] = nil
+            self.weightSets[newName] = ws
+            
+            for p in self.programs {
+                for e in p.exercises where e.weightSet == oldName {
+                    e.weightSet = newName
+                }
+            }
+        }
+    }
+    
     func addWeightSet(_ name: String, _ ws: WeightSet) {
         self.weightSets[name] = ws
     }
