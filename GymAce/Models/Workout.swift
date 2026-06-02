@@ -24,7 +24,7 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     
     /// Amount of time the user spent doing the exercises in the workout.
     var elapsed: TimeInterval? = nil
-
+    
     var version: Int = 1
 
     var id = UUID()
@@ -35,24 +35,6 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     }
 
     func fixup(_ program: Program) {
-//        if program.name == "My" {
-//            if weeks == nil {
-//                if name != "Rest" {
-//                    weeks = 1...7
-//                } else {
-//                    weeks = 8...8
-//                }
-//            }
-//        } else if program.name == "Preview" {
-//            if weeks == nil {
-//                if name != "Active Rest" {
-//                    weeks = 1...3
-//                    schedule = Schedule.anyDay
-//                } else {
-//                    weeks = 4...4
-//                }
-//            }
-//        }
         for e in entries {
             e.fixup()
         }
@@ -65,6 +47,15 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         } else {
             return true
         }
+    }
+    
+    func allFinished(_ program: Program) -> Bool {
+        for entry in entries where entry.enabled {
+            if let exercise = program.findExercise(entry.name), !entry.finished(exercise) {
+                return false
+            }
+        }
+        return true
     }
 
     func addExercise(name: String, enabled: Bool = true) {

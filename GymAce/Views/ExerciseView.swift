@@ -60,6 +60,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     // sense to call done only when the user presses Finished...
                     entry.completedAll(workout, exercise)
                     program.didExercise()
+                    if healthKit.enabled && healthKit.inProgress && workout.allFinished(program) {
+                        healthKit.stop()
+                    }
                     model.save()
                     dismiss()
                 }

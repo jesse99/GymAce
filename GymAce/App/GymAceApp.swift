@@ -4,7 +4,7 @@ import SwiftUI
 @main
 struct GymAceApp: App {
     var model: Model
-    
+
     init() {
         model = Model.load()
         
@@ -32,8 +32,10 @@ struct GymAceApp: App {
         }
         model.addMissingWeightsets()
         // TODO may want a warning somewhere if weight set is missing
+        
+        healthKit.requestPerms()
     }
-
+    
     var body: some Scene {
         WindowGroup {
             ContentView(model: model)
