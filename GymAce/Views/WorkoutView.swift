@@ -44,17 +44,27 @@ struct WorkoutView: View {
                     }
                 }
             }
-            if healthKit.enabled && !workout.allFinished(program) {
+            if let wt = workout.type, healthKit.enabled && !workout.allFinished(program) {
                 if !healthKit.inProgress {
                     // We require the user to manually start this so that a workout isn't started when
                     // the user is just poking around.
-                    Button("Start Health App Workout", action: {Task {await healthKit.start()}})
+                    Button("Record Workout", action: {Task {await healthKit.start(wt)}})
                         .padding(.top, 25)
                 } else {
                     // We do automatically stop the workout once the user finishes all the exercises
                     // but, if they're only doing some of the exercises, we also allow them to stop
                     // recording early.
-                    Button("Stop Health App Workout", action: {healthKit.stop()})
+                    //
+                    // TODO it'd be nice if there was a way to end the workout if the
+                    // user forgot to hit stop. A timer is a possibility but it's not
+                    // clear that will run when the app is in the background (they
+                    // normally won't but I think when a HeathKit workout is running
+                    // they might). Or if the user goes back to the ProgramView we
+                    // could stop the workout? Note that if we use a timer we'll
+                    // probably want to reset it as the user does stuff. And it'd
+                    // have to have a pretty long duration in case the workout is
+                    // something like walking or a long run.
+                    Button("Stop Recording", action: {healthKit.stop(workout.name)})
                         .padding(.top, 25)
                 }
             }
@@ -75,10 +85,12 @@ struct WorkoutView: View {
     private func footer() -> String? {
         var s: String? = nil
         
-        if let e = workout.elapsed {
-            s = "Worked out for \(secsToLongStr(Int(e))). "
+        if let elapsed = workout.elapsed {
+            if elapsed > 2*60 {
+                s = "Worked out for \(secsToLongStr(Int(elapsed))). "
+            }
         }
-        if let h = healthKit.status {
+        if let status = healthKit.status, let h = status.text(workout.name) {
             if let t = s {
                 s = t + h
             } else {

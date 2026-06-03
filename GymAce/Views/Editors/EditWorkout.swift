@@ -6,6 +6,7 @@ struct EditWorkout: View {
     @Bindable var program: Program
     @Bindable var workout: Workout
     @State private var showNameHelp = false
+    @State private var showTypeHelp = false
     @State private var showScheduleHelp = false
     @State private var showWeeksHelp = false
     @State private var showEntriesHelp = false
@@ -58,6 +59,25 @@ struct EditWorkout: View {
         return Weekdays(raw: days)
     }
     
+    private var typeBinding: Binding<Int> {
+        Binding(
+            get: {
+                if let t = workout.type {
+                    return Int(t)
+                } else {
+                    return -1
+                }
+            },
+            set: {
+                if $0 >= 0 {
+                    workout.type = UInt($0)
+                } else {
+                    workout.type = nil
+                }
+            }
+        )
+    }
+
     private var scheduleBinding: Binding<Int> {
         Binding(
             get: {
@@ -296,6 +316,57 @@ struct EditWorkout: View {
                     .font(.footnote)
             }
 
+            // Workout Type, TODO could also do location but does anyone really care?
+            HStack {
+                Picker("", selection: typeBinding) {
+                    Text("none").tag(-1)
+                    Text("boxing").tag(8)
+                    Text("climbing").tag(9)
+                    Text("cooldown").tag(80)
+                    Text("core training").tag(59)
+                    Text("cross training").tag(11)
+                    Text("cycling").tag(13)
+                    Text("elliptical").tag(16)
+                    Text("fitness gaming").tag(76)
+                    Text("flexibility").tag(62)
+                    Text("functional strength training").tag(20)
+                    Text("gymnastics").tag(22)
+                    Text("high intensity interval training").tag(63)
+                    Text("hiking").tag(24)
+                    Text("jump rope").tag(64)
+                    Text("kickboxing").tag(65)
+                    Text("martial arts").tag(28)
+                    Text("mixed cardio").tag(73)
+                    Text("other").tag(3000)
+                    Text("pilates").tag(66)
+                    Text("preparation and recovery").tag(33)
+                    Text("rowing").tag(35)
+                    Text("running").tag(37)
+                    Text("stair climbing").tag(44)
+                    Text("stairs").tag(68)
+                    Text("step training").tag(69)
+                    Text("swimming").tag(46)
+                    Text("track and field").tag(49)
+                    Text("traditional strength training").tag(50)
+                    Text("walking").tag(52)
+                    Text("wrestling").tag(56)
+                    Text("yoga").tag(57)
+                }
+                .pickerStyle(.menu)
+                .padding(.leading, -10)
+                .labelsHidden()
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showTypeHelp.toggle()
+                }
+                .buttonStyle(.plain)
+            }
+            if showTypeHelp {
+                Text("The workout type listed in the Health app when you use Start Recording in the workout view.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+            
             // Schedule
             HStack {
                 Picker("", selection: scheduleBinding) {

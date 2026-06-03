@@ -25,6 +25,10 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     /// Amount of time the user spent doing the exercises in the workout.
     var elapsed: TimeInterval? = nil
     
+    /// This is actually a HealthKit HKWorkoutActivityType (but that doesn't support Codable so we use UInt).
+    /// If it's nil then HealthKit recording is disabled.
+    var type: UInt? = nil
+    
     var version: Int = 1
 
     var id = UUID()
@@ -32,6 +36,7 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     init(_ name: String, _ schedule: Schedule) {
         self.name = name
         self.schedule = schedule
+        self.type = 50              // traditionalStrengthTraining
     }
 
     func fixup(_ program: Program) {

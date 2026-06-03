@@ -61,7 +61,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     entry.completedAll(workout, exercise)
                     program.didExercise()
                     if healthKit.enabled && healthKit.inProgress && workout.allFinished(program) {
-                        healthKit.stop()
+                        healthKit.stop(workout.name)
                     }
                     model.save()
                     dismiss()

@@ -3,6 +3,37 @@ import HealthKit
 
 let healthKit: HealthKit = HealthKit()
 
+@Observable
+class WorkoutStatus {
+    private let workout: String?
+    private var message: String?
+    private let date: Date
+    
+    init(_ message: String) {
+        self.workout = nil
+        self.message = message
+        self.date = Date()
+    }
+
+    init(_ workout: String, _ message: String) {
+        self.workout = workout
+        self.message = message
+        self.date = Date()
+    }
+    
+    func text(_ workout: String) -> String? {
+        let secs = Date().timeIntervalSince(date)
+        if secs > 60 {
+            self.message = nil   // so SwiftUI picks up on the change, TODO even with this the message isn't timing out
+        }
+        if let w = self.workout {
+            return w == workout ? self.message : nil
+        } else {
+            return self.message
+        }
+    }
+}
+
 // TODO should we show heart rate? maybe just for durations? maybe opt in?
 // this code does seem to work: https://www.createwithswift.com/reading-data-from-healthkit-in-a-swiftui-app/
 @Observable
@@ -10,7 +41,8 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
     private(set) var enabled = false
     private(set) var inProgress: Bool = false
     private(set) var heartRate: Double? = nil   // bpm
-    private(set) var status: String? = nil
+    private(set) var status: WorkoutStatus? = nil
+    private var workout: String? = nil
     private let store = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
@@ -34,14 +66,17 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         }
     }
 
-    func start() async {
+    func start(_ type: UInt) async {
         guard !inProgress && enabled else {
+            return
+        }
+        guard let wt = HKWorkoutActivityType(rawValue: type) else {
             return
         }
         do {
             let config = HKWorkoutConfiguration()
-            config.activityType = .traditionalStrengthTraining // TODO or cycling, elliptical, rowing, running, stairClimbing, walking, flexibility, fitnessGaming, functionalStrengthTraining, maybe workout editor could have an option for this (including None)
-            config.locationType = .indoor    // TODO make this an option too
+            config.activityType = wt
+            config.locationType = .indoor 
             
             let session = try HKWorkoutSession(healthStore: store, configuration: config)
             session.delegate = self
@@ -57,21 +92,23 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
             try await builder.beginCollection(at: now)
             
             inProgress = true
+            workout = nil
             self.session = session  // the fields are optional so it's easier to use local variables above
             self.builder = builder
             print("Workout started successfully")
         } catch {
-            status = "Failed connecting to HealthKit: \(error.localizedDescription)"
+            status = WorkoutStatus("Failed connecting to HealthKit: \(error.localizedDescription).")
         }
     }
 
-    func stop() {
+    func stop(_ workout: String) {
         guard inProgress && enabled else {
             return
         }
         guard let session = session else {return}
         session.stopActivity(with: Date())
         inProgress = false
+        self.workout = workout
         print("Ending workout...")
     }
 
@@ -114,10 +151,15 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
                     _ = try await builder.finishWorkout()
                     workoutSession.end()
                     await MainActor.run {
-                        status = "Saved workout to HealthKit"
+                        if let w = workout {
+                            status = WorkoutStatus(w, "Saved workout to HealthKit.")
+                        } else {
+                            status = WorkoutStatus("Saved workout to HealthKit.")
+
+                        }
                     }
                 } catch {
-                    status = "Failed saving workout to HealthKit: \(error.localizedDescription)"
+                    status = WorkoutStatus("Failed saving workout to HealthKit: \(error.localizedDescription).")
                 }
             }
         }
