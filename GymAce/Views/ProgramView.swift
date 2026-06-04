@@ -8,7 +8,9 @@ struct ProgramView: View {
     var today: Date        // used for custom previews
     @Bindable var model: Model
     @State private var newWorkout: Workout? = nil
+    @State private var viewID = UUID()
     @Environment(\.openURL) private var openUrl
+    @Environment(\.scenePhase) private var scenePhase
 
     private var entries: [WorkoutEntry] {
         var e: [WorkoutEntry] = []
@@ -48,10 +50,20 @@ struct ProgramView: View {
                         }
                         .listStyle(.plain)
                         .navigationTitle(programTitle())
+                        .id(viewID)
                         .onAppear {
                             if model.dirty {
                                 model.addMissingWeightsets()
                                 model.save()
+                            }
+                        }
+                        .onChange(of: scenePhase) {(_, newPhase) in
+                            if newPhase == .active {
+                                // WorkoutEntry labels change as time passes. This is awkward to handle; a timer
+                                // is the obvious solution but we'd have to use a fairly fast timer because timers
+                                // are completely suspended when the app is in the background. So instead, we'll
+                                // just force the view to rebuild whenever the app becomes active.
+                                viewID = UUID()
                             }
                         }
                         .toolbar {
