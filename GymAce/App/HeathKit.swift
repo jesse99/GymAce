@@ -40,8 +40,13 @@ class WorkoutStatus {
 final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
     private(set) var enabled = false
     private(set) var inProgress: Bool = false
-    private(set) var heartRate: Double? = nil   // bpm
     private(set) var status: WorkoutStatus? = nil
+
+    private(set) var heartRate: Double? = nil   // bpm
+    private(set) var appleExerciseTime: Double? = nil   // minutes
+    private(set) var appleMoveTime: Double? = nil   // minutes
+    private(set) var distance: Double? = nil   // feet or meters
+
     private var workout: String? = nil
     private let store = HKHealthStore()
     private var session: HKWorkoutSession?
@@ -52,8 +57,20 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         else {
             return
         }
+        guard let et = HKObjectType.quantityType(forIdentifier: .appleExerciseTime)
+        else {
+            return
+        }
+        guard let mt = HKObjectType.quantityType(forIdentifier: .appleMoveTime)
+        else {
+            return
+        }
+        guard let d = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
+        else {
+            return
+        }
 
-        let read: Set = [hr, HKObjectType.workoutType()]
+        let read: Set = [hr, et, mt, d, HKObjectType.workoutType()]
         let write: Set = [HKObjectType.workoutType()]
         store.requestAuthorization(toShare: write, read: read) {success, error in
             if let error {
@@ -128,8 +145,9 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         }
     }
 
-    // This doesn't seem to work (the Apple code it's based on didn't work either). But the code link above
-    // did seem to return heart rate...
+    // Only thing that works on a phone here is distance. Also tried the WWDC apple code which
+    // tracked heart rate and that didn't work either. But the code link above did seem to return
+    // heart rate...
     private func updateMetrics(for statistics: HKStatistics) {
         switch statistics.quantityType {
         case HKQuantityType.quantityType(forIdentifier: .heartRate):
@@ -137,8 +155,36 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
                 heartRate = value
                 print("heart rate: \(value) bpm")
             }
+        case HKQuantityType.quantityType(forIdentifier: .appleExerciseTime):
+            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.second()) {
+                self.appleExerciseTime = value/60
+                print("appleExerciseTime: \(value) secs")
+            }
+        case HKQuantityType.quantityType(forIdentifier: .appleMoveTime):
+            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.second()) {
+                self.appleMoveTime = value/60
+                print("appleMoveTime: \(value) secs")
+            }
+        case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning):
+            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.meter()) { // TODO there's no feet option
+                self.distance = value
+                print("distance: \(value) meters")
+            }
         default:
             break
+        }
+    }
+
+    private func distanceQuantityType(for activityType: HKWorkoutActivityType) -> HKQuantityType? {
+        switch activityType {
+        case .walking, .running:
+            return HKQuantityType(.distanceWalkingRunning)
+        case .rowing:
+            return HKQuantityType(.distanceRowing)
+        case .cycling:
+            return HKQuantityType(.distanceCycling)
+        default:
+            return nil
         }
     }
 

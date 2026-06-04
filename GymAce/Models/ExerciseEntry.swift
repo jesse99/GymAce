@@ -15,7 +15,10 @@ enum Mode: Codable {             // can't name this "State"
     /// time the user started the timer (we may not know how long the timer should run so
     /// we just let it run until the user stops it). The int is 0 if prior state was performing and
     /// 2 for finished.
-    case timing(Date, Int)
+    case manualTimer(Date, Int)
+    
+    /// The timer is running because this is a timed exercise.
+    case timing
         
     /// The user has finished all of the sets.
     case finished
@@ -204,6 +207,8 @@ final class ExerciseEntry: Codable {
                 }
                 return d.rest
             }
+        case .timed:
+            return nil
         }
         return nil
     }
@@ -259,6 +264,8 @@ final class ExerciseEntry: Codable {
                 let r = findExpected(exercise, reps, index)
                 working!.expected.append(r)
             }
+        case .timed:
+            working = Working(type: .secs, weight: weight, units: units)
         }
                 
         mode = .performing
@@ -285,6 +292,8 @@ final class ExerciseEntry: Codable {
                 let actual = working!.expected[index]
                 working!.values.append(actual)
             }
+        case .timed:
+            break
         }
         setIndex += 1
     }
@@ -298,7 +307,11 @@ final class ExerciseEntry: Codable {
                 workout.elapsed = e + elapsed
             }
             
-            let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
+            let c = if case .timed = exercise.data {
+                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weight: w.weight, units: w.units)
+            } else {
+                Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
+            }
             exercise.history.append(c)
         }
         setIndex = 0
@@ -310,6 +323,7 @@ final class ExerciseEntry: Codable {
             case .durations(let d): return setIndex >= d.secs.count
             case .reps(let d): return setIndex >= d.warmups.count + d.workset.count + d.backoff.count
             case .percent(let d): return setIndex >= d.warmups.count + d.workset.count
+            case .timed: return setIndex > 0
         }
     }
     
@@ -345,6 +359,8 @@ final class ExerciseEntry: Codable {
                 if index < d.workset.count {
                     return "Workset \(index + 1) of \(d.workset.count)"
                 }
+            case .timed:
+                return "Set 1 of 1"
         }
         return ""
     }
@@ -368,79 +384,81 @@ final class ExerciseEntry: Codable {
 
         let index = fixedIndex(exercise)
         switch exercise.data {
-            case .durations(let d):
-                return secsToLongStr(d.secs[index]) + suffix
-            case .reps(let d):
-                var index = index
-                if index < d.warmups.count {
-                    return "\(d.warmups[index].reps) reps" + suffix
-                }
-                
-                index -= d.warmups.count
-                if index < d.workset.count {
-                    switch d.workset[index] {
-                    case .amrap(let r):
-                        return "\(r)+ reps" + suffix
-                    case .fixed(let r):
-                        if r == 1 {
+        case .durations(let d):
+            return secsToLongStr(d.secs[index]) + suffix
+        case .reps(let d):
+            var index = index
+            if index < d.warmups.count {
+                return "\(d.warmups[index].reps) reps" + suffix
+            }
+            
+            index -= d.warmups.count
+            if index < d.workset.count {
+                switch d.workset[index] {
+                case .amrap(let r):
+                    return "\(r)+ reps" + suffix
+                case .fixed(let r):
+                    if r == 1 {
+                        return "1 rep" + suffix
+                    } else {
+                        return "\(r) reps" + suffix
+                    }
+                case .variable(let min, let max):
+                    var minReps = self.expectedReps(exercise)
+                    if minReps == 0 {
+                        minReps = min
+                    }
+                    if minReps == max {
+                        if minReps == 1 {
                             return "1 rep" + suffix
                         } else {
-                            return "\(r) reps" + suffix
+                            return "\(minReps) reps" + suffix
                         }
-                    case .variable(let min, let max):
-                        var minReps = self.expectedReps(exercise)
-                        if minReps == 0 {
-                            minReps = min
-                        }
-                        if minReps == max {
-                            if minReps == 1 {
-                                return "1 rep" + suffix
-                            } else {
-                                return "\(minReps) reps" + suffix
-                            }
-                        } else {
-                            return "\(minReps)-\(max) reps" + suffix
-                        }
+                    } else {
+                        return "\(minReps)-\(max) reps" + suffix
                     }
                 }
-                
-                index -= d.workset.count
-                if index < d.backoff.count {
-                    return "\(d.backoff[index].reps) reps" + suffix
-                }
-            case .percent(let d):
-                var index = index
-                if index < d.warmups.count {
-                    return "\(d.warmups[index].reps) reps" + suffix
-                }
-                
-                index -= d.warmups.count
-                if index < d.workset.count {
-                    switch d.workset[index] {
-                    case .amrap(let r):
-                        return "\(r)+ reps" + suffix
-                    case .fixed(let r):
-                        if r == 1 {
+            }
+            
+            index -= d.workset.count
+            if index < d.backoff.count {
+                return "\(d.backoff[index].reps) reps" + suffix
+            }
+        case .percent(let d):
+            var index = index
+            if index < d.warmups.count {
+                return "\(d.warmups[index].reps) reps" + suffix
+            }
+            
+            index -= d.warmups.count
+            if index < d.workset.count {
+                switch d.workset[index] {
+                case .amrap(let r):
+                    return "\(r)+ reps" + suffix
+                case .fixed(let r):
+                    if r == 1 {
+                        return "1 rep" + suffix
+                    } else {
+                        return "\(r) reps" + suffix
+                    }
+                case .variable(let min, let max):
+                    var minReps = self.expectedReps(exercise)
+                    if minReps == 0 {
+                        minReps = min
+                    }
+                    if minReps == max {
+                        if minReps == 1 {
                             return "1 rep" + suffix
                         } else {
-                            return "\(r) reps" + suffix
+                            return "\(minReps) reps" + suffix
                         }
-                    case .variable(let min, let max):
-                        var minReps = self.expectedReps(exercise)
-                        if minReps == 0 {
-                            minReps = min
-                        }
-                        if minReps == max {
-                            if minReps == 1 {
-                                return "1 rep" + suffix
-                            } else {
-                                return "\(minReps) reps" + suffix
-                            }
-                        } else {
-                            return "\(minReps)-\(max) reps" + suffix
-                        }
+                    } else {
+                        return "\(minReps)-\(max) reps" + suffix
                     }
                 }
+            }
+        case .timed:
+            return suffix
         }
         return ""
     }
@@ -513,6 +531,8 @@ final class ExerciseEntry: Codable {
                     return mesg.err
                 }
             }
+        case .timed:
+            break
         }
         return nil
     }
@@ -557,6 +577,8 @@ final class ExerciseEntry: Codable {
                             let p = Float(d.percent) / 100.0
                             return ws.lower(target: p*weight)
                         }
+                    case .timed:
+                        return ws.lower(target: weight)
                 }
             }
             return ActualWeight(discrete: weight, .None)
@@ -567,7 +589,7 @@ final class ExerciseEntry: Codable {
     private func findBaseWeight(_ program: Program) -> Result<Float, MyError>? {
         if let thisExercise = program.findExercise(name) {
             switch thisExercise.data {
-            case .durations(_), .reps(_):
+            case .durations(_), .reps(_), .timed:
                 if let w = thisExercise.weight {
                     return .success(w)
                 }
@@ -600,6 +622,8 @@ final class ExerciseEntry: Codable {
             case .percent(let d):
                 let count = d.warmups.count + d.workset.count
                 return setIndex >= count ? count - 1 : setIndex
+            case .timed:
+                return setIndex
         }
     }
 }
@@ -693,13 +717,14 @@ func typeMatches(_ completed: Completed, _ exercise: Exercise) -> Bool {
         case .percent(_): return true
         case .durations(_): return false
         case .reps(_): return true
+        case .timed: return false
         }
     case .secs:
         switch exercise.data {
         case .percent(_): return false
         case .durations(_): return true
         case .reps(_): return false
+        case .timed: return true
         }
-
     }
 }

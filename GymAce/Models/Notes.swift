@@ -4548,23 +4548,24 @@ extension Notes {
             ],
         )
         
-        add(
-            "Wall March Plank",
-            [
-                "Put your feet up against a wall and do a plank hold.",
+        add("Wall March Plank",
+            ["Put your feet up against a wall and do a plank hold.",
                 "Don't allow your hips to sag: dig your soles hard into the wall.",
                 "Work on getting your feet higher and higher.",
-                "Alternate between bringing each knee forward.",
-            ],
-            [(
-                "Progression",
-                "http://www.startbodyweight.com/p/plank-progression.html",
-            )],
+                "Alternate between bringing each knee forward."],
+            [("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
         )
         
+        add("Walking",
+            ["Keep your head up: focus about 10-20 feet in front of you.",
+             "Straighten Your Back.",
+             "Keep your shoulders down and back.",
+             "Swing your arms.",
+             "Step from heel to toe."],
+            [("Link", "https://www.uchicagomedicineadventhealth.org/blog/ways-improve-your-walking-technique")])
+        
         add("Wall Scissors",
-            [
-                "Get into a full hand stand next to a wall.",
+            ["Get into a full hand stand next to a wall.",
                 "Scissor one leg out and one leg in so that a toe touches the wall.",
             ],
             [("Video", "https://www.youtube.com/watch?v=wspEkEzsZyQ"),
@@ -4575,8 +4576,7 @@ extension Notes {
             [("Link", "https://bit.ly/37B9D1Q")])
         
         add("Wide Rows",
-            [
-                "Setup a pull-up bar, a barbell, or rings. Use a grip at 1.5x shoulder width.",
+            ["Setup a pull-up bar, a barbell, or rings. Use a grip at 1.5x shoulder width.",
                 "Pull your body into the bar and then allow it to move back down.",
                 "Keep your body straight and elbows in.",
                 "Arms should be straight at the bottom.",
@@ -4587,8 +4587,7 @@ extension Notes {
              ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")])
         
         add("Wrist Curls",
-            [
-                "Sit down on the end of a bench and grab a dumbbell with your palm facing up.",
+            ["Sit down on the end of a bench and grab a dumbbell with your palm facing up.",
                 "Rest your forearm on your thigh so that the dumbbell is just off the end of your leg.",
                 "Drop the dumbbell as far as it will go.",
                 "Slowly raise the dumbbell up as far as it will go.",

@@ -65,6 +65,7 @@ struct EditCompleted: View {
         case .durations(_): return "seconds"
         case .percent(_): return "reps"
         case .reps(_): return "reps"
+        case .timed: return "seconds"
         }
     }
         

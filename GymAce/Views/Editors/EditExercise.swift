@@ -91,6 +91,10 @@ struct EditExercise: View {
             _durationsData = State(initialValue: DurationsData(secs: [30]))
             _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
             _repsData = State(initialValue: d)
+        case .timed:
+            _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
         }
         
         _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
@@ -269,6 +273,7 @@ struct EditExercise: View {
                     Text("Durations").tag(0)
                     Text("Percent").tag(1)
                     Text("Reps").tag(2)
+                    Text("Timed").tag(3)
                 }
                 .pickerStyle(.menu)
                 .labelsHidden()
@@ -288,8 +293,12 @@ struct EditExercise: View {
                     Text("Each set is done using weights that are a percentage of another exercise.")
                         .foregroundColor(.blue)
                         .font(.footnote)
-                } else {
+                } else if typeBinding.wrappedValue == 1 {
                     Text("Each work set is done using fixed reps, min-max reps, or As Many Reps As Possible (AMRAP).")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                } else {
+                    Text("The exercise is done for an indefinite amount of time, e.g. jogging.")
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
@@ -537,6 +546,7 @@ struct EditExercise: View {
                 case .durations(_): return 0
                 case .percent(_): return 1
                 case .reps(_): return 2
+                case .timed: return 3
                 }
             },
             set: {
@@ -544,8 +554,10 @@ struct EditExercise: View {
                     exercise.data = .durations(durationsData)
                 } else if $0 == 1 {
                     exercise.data = .percent(percentData)
-                } else {
+                } else if $0 == 2 {
                     exercise.data = .reps(repsData)
+                } else {
+                    exercise.data = .timed
                 }
             }
         )
@@ -913,6 +925,8 @@ struct EditExercise: View {
             return percentErr == nil // TODO make sure this is up to date
         case .reps(_):
             return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil && repsRestErr == nil
+        case .timed:
+            return true
         }
 
     }

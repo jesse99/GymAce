@@ -1,8 +1,17 @@
 /// Type specific data associated with an Exercise.
 enum ExerciseData: Codable {
+    /// An exercise that is performed for a fixed number of seconds, e.g. a plank.
     case durations(DurationsData)
+    
+    /// An exercise that uses weights that are a percentage of a base exercise, e.g. a light squat.
     case percent(PercentData)
+    
+    /// An exercise that is done for either a fixed amount of reos, a variable amount of reps,
+    /// or As Many Reps As Possible, e.g. a heavy squat.
     case reps(RepsData)
+    
+    /// An exercise that is performed for an indefinite amount of time, e.g. jogging.
+    case timed
 }
 
 struct DurationsData: Codable {

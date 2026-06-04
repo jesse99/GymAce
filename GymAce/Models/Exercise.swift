@@ -46,6 +46,13 @@ final class Exercise: Codable {
         self.weightSet = weights
         self.data = .percent(percent)
     }
+
+    init (name: String, formalName: String, weights: String? = nil, weight: Float? = nil) {
+        self.name = name
+        self.formalName = formalName
+        self.weightSet = weights
+        self.data = .timed
+    }
     
     func fixup() {
 //        if name == "Light Squat" {
@@ -63,7 +70,7 @@ final class Exercise: Codable {
     /// for percent exercises it'll be different.
     func findWeight(_ program: Program) -> Float? {
         switch self.data {
-        case .reps(_), .durations(_):
+        case .reps(_), .durations(_), .timed:
             if let weight = self.weight {
                 return weight
             }
@@ -144,6 +151,8 @@ final class Exercise: Codable {
                     }
                 }
                 return joinLabels(a) + suffix
+            case .timed:
+                return ""
         }
     }
     

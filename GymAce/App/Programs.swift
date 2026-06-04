@@ -185,6 +185,9 @@ fileprivate func previewProgram() -> Program {   // TODO get rid of this?
 
         exercise = make("Cossack Squat", "Cossack Squat", secs: [30, 30, 30, 40])
         program.exercises.append(exercise)
+
+        exercise = make("Walk", "Walking")
+        program.exercises.append(exercise)
     }
 
     func addUpper(_ program: Program) {
@@ -221,6 +224,7 @@ fileprivate func previewProgram() -> Program {   // TODO get rid of this?
         workout.addExercise(name: "Quad Stretch")
         workout.addExercise(name: "Third World Squat")
         workout.addExercise(name: "Cossack Squat")
+        workout.addExercise(name: "Walk")
 
         program.addWorkout(workout)
     }
@@ -352,6 +356,11 @@ fileprivate func make(_ name: String, _ formalName: String, warmups: [FixedReps]
 fileprivate func make(_ name: String, _ formalName: String, _ other: String, percent: Int, warmups: [FixedReps], worksets: [VariableRep], weights: String, rest: Int) -> Exercise {
     let percent = PercentData(other: other, percent: percent, warmups: warmups, workset: worksets, rest: rest)
     return Exercise(name: name, formalName: formalName, percent: percent, weights: weights)
+}
+
+/// timed
+fileprivate func make(_ name: String, _ formalName: String) -> Exercise {
+    return Exercise(name: name, formalName: formalName, weights: nil)
 }
 
 fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weight: Float? = nil) {

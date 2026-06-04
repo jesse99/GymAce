@@ -51,7 +51,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             
             // Next/Finished button
             if case .finished = entry.mode {
-                if canSetWeight() {
+                if canSetWeight() {             // user has done all sets
                     Stepper("Weight", onIncrement: advanceWeight, onDecrement: dropWeight)
                     .fixedSize()
                 }
@@ -69,7 +69,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 .buttonStyle(.borderedProminent)
                 .padding(.top, 20)
             } else {
-                if case .resting(let target) = entry.mode {
+                if case .resting(let target) = entry.mode { // user has finished a set and is now resting
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = remainingSecs(now: context.date, target: target)
                         if remaining > 0 {
@@ -97,7 +97,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
-                } else if case .timing(let start, let oldMode) = entry.mode {
+                } else if case .manualTimer(let start, let oldMode) = entry.mode {   // user has explicitly started a timer
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = elapsedSecs(now: context.date, start: start)
                         Text(secsToLongStr(remaining))
@@ -115,7 +115,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
                 } else {
-                    if entry.hasExpected(exercise) {
+                    if entry.hasExpected(exercise) {    // user is in the middle of a set
                         Picker("", selection: expectedBinding) {
                             ForEach(0...entry.maxEpectedHint(exercise), id: \.self) {n in
                                 Text("\(n) reps").tag(n)
@@ -123,9 +123,24 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         }
                         .labelsHidden()
                     }
+                    if case .timing = entry.mode, let working = entry.working {
+                        TimelineView(.periodic(from: .now, by: 1.0)) { context in
+                            let elapsed = Int(context.date.timeIntervalSince(working.started))
+                            Text(secsToLongStr(elapsed))
+                                .font(.largeTitle)
+                                .foregroundColor(.green)
+                        }
+                        .padding(.top, 5)
+                    }
                     Button(nextTitle()) {
                         if let rest = entry.rest(workout, exercise) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
+                        } else if case .timed = exercise.data {
+                            if case .timing = entry.mode {
+                                entry.mode = .finished
+                            } else {
+                                entry.mode = .timing
+                            }
                         } else {
                             entry.completedSet(exercise)
                             
@@ -141,6 +156,30 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 20)
                 }
+            }
+            if let value = healthKit.heartRate {
+                let s = String(format: "%.1f", value)
+                Text("heart rate: \(s) bpm")
+                    .font(.footnote)
+                    .padding(.top, 10)
+            }
+            if let value = healthKit.appleExerciseTime {
+                let s = String(format: "%.1f", value)
+                Text("appleExerciseTime: \(s) mins")
+                    .font(.footnote)
+                    .padding(.top, 10)
+            }
+            if let value = healthKit.appleMoveTime {
+                let s = String(format: "%.1f", value)
+                Text("appleMoveTime: \(s) mins")
+                    .font(.footnote)
+                    .padding(.top, 10)
+            }
+            if let value = healthKit.distance {
+                let s = String(format: "%.2f", value*0.000621371)
+                Text("distance: \(s) miles")    // TODO should have a distance to str function
+                    .font(.footnote)
+                    .padding(.top, 10)
             }
             if let s = findIssues() {
                 Text(s)
@@ -237,11 +276,21 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         if case .durations = exercise.data {
             return "Start"
         }
+        if case .timed = exercise.data {
+            if case .timing = entry.mode {
+                return "Stop"
+            } else {
+                return "Start"
+            }
+        }
         return "Next"
     }
     
     private func stopTitle() -> String {
         if case .durations = exercise.data {
+            return "Stop"
+        }
+        if case .timed = exercise.data {
             return "Stop"
         }
         return "Stop Resting"
@@ -253,7 +302,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
 
     private func startTimer(_ oldMode: Int) {
-        entry.mode = .timing(Date(), oldMode)
+        entry.mode = .manualTimer(Date(), oldMode)
     }
     
     private func remainingSecs(now: Date, target: Date) -> Int {
