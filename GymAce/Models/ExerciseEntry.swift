@@ -641,11 +641,11 @@ struct HistorySnapshot: RandomAccessCollection {
     let maxItems = 20
     
     var startIndex: Int {0}
-    var endIndex: Int {Swift.min(exercise.history.endIndex, maxItems) + (entry.working != nil ? 1 : 0)}
+    var endIndex: Int {Swift.min(exercise.history.endIndex, maxItems) + (entry.working != nil && !entry.working!.values.isEmpty ? 1 : 0)}
     
     subscript(position: Int) -> Snapshot {
         var index = position
-        if let w = entry.working {
+        if let w = entry.working, !w.values.isEmpty {
             if index == 0 {
                 let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
                 return Snapshot(current: c, prior: nil, finished: false, index: index)  // nil prior since we can't compare the two yet
