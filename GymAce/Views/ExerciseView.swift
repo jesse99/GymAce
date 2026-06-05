@@ -157,29 +157,13 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 20)
                 }
             }
-            if let value = healthKit.heartRate {
-                let s = String(format: "%.1f", value)
-                Text("heart rate: \(s) bpm")
-                    .font(.footnote)
-                    .padding(.top, 10)
-            }
-            if let value = healthKit.appleExerciseTime {
-                let s = String(format: "%.1f", value)
-                Text("appleExerciseTime: \(s) mins")
-                    .font(.footnote)
-                    .padding(.top, 10)
-            }
-            if let value = healthKit.appleMoveTime {
-                let s = String(format: "%.1f", value)
-                Text("appleMoveTime: \(s) mins")
-                    .font(.footnote)
-                    .padding(.top, 10)
-            }
-            if let value = healthKit.distance {
-                let s = String(format: "%.2f", value*0.000621371)
-                Text("distance: \(s) miles")    // TODO should have a distance to str function
-                    .font(.footnote)
-                    .padding(.top, 10)
+            if let t = workout.type, t == 24 || t == 37 || t == 46 || t == 52 { // hiking, running, swimming, or walking
+                if let value = healthKit.distance {
+                    let s = String(format: "%.2f", value*0.000621371)
+                    Text("distance: \(s) miles")    // TODO should have a distance to str function? do need to use km if metric tho
+                        .font(.footnote)
+                        .padding(.top, 10)
+                }
             }
             if let s = findIssues() {
                 Text(s)
