@@ -52,7 +52,7 @@ struct Working: Codable {
     
     /// Used to show the user what happened for that workout.
     func details() -> String {
-        return completedDetails(values, type, weight, units)
+        return completedDetails(values, type, weight, units, nil)
     }
 }
 
@@ -308,7 +308,7 @@ final class ExerciseEntry: Codable {
             }
             
             let c = if case .timed = exercise.data {
-                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weight: w.weight, units: w.units)
+                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weight: w.weight, units: w.units, distance: healthKit.enabled ? healthKit.distance : nil)
             } else {
                 Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
             }

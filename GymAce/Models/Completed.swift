@@ -12,6 +12,7 @@ struct Completed: Codable, Comparable, Equatable {
     var weight: Float?
     var units: Units
     var completed: Date
+    var distance: Double?   // meters
     
 //    enum CodingKeys: String, CodingKey {
 //        case values, type, weight, units, completed
@@ -65,17 +66,18 @@ struct Completed: Codable, Comparable, Equatable {
         self.completed = completed
     }
     
-    init(values: [Int], type: ValueType, weight: Float?, units: Units, completed: Date = Date()) {
+    init(values: [Int], type: ValueType, weight: Float?, units: Units, completed: Date = Date(), distance: Double? = nil) {
         self.values = values
         self.type = type
         self.weight = weight
         self.units = units
         self.completed = completed
+        self.distance = distance
     }
     
     /// Used to show the user what happened for that workout.
     func details() -> String {
-        return completedDetails(values, type, weight, units)
+        return completedDetails(values, type, weight, units, distance)
     }
     
     // Returns +1 if self is better than rhs.
@@ -96,6 +98,16 @@ struct Completed: Codable, Comparable, Equatable {
             }
         } else if rhs.weight != nil {
             return -1       // only right has weight
+        }
+        
+        if let ld = self.distance, let rd = rhs.distance {
+            if ld > rd {
+                return 1     
+            } else if ld < rd {
+                return -1
+            } else {
+                return 0
+            }
         }
         
         let lc = self.completedReps()
@@ -122,13 +134,18 @@ struct Completed: Codable, Comparable, Equatable {
     }
 }
 
-func completedDetails(_ values: [Int], _ type: ValueType, _ weight: Float?, _ units: Units) -> String {
+func completedDetails(_ values: [Int], _ type: ValueType, _ weight: Float?, _ units: Units, _ distance: Double?) -> String {
     if values.isEmpty {
         return ""
     }
     var trailer = ""
     if let w = weight {
         trailer = " @ " + formatWeight(w, units)
+    }
+    
+    if let distance = distance {
+        let s = String(format: "%.2f", distance*0.000621371)   // TODO use meters if metric
+        trailer += " \(s) miles"
     }
 
     switch type {
