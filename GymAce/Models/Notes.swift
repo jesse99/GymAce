@@ -31,8 +31,7 @@ final class Notes: Codable {
 extension Notes {
     func addDefaults() {
         add("A8",
-            [
-                "[Row](http://stronglifts.com/barbell-row)",
+            ["[Row](http://stronglifts.com/barbell-row)",
                 "[Power Clean](https://experiencelife.com/article/learn-to-power-clean)",
                 "[Front Squat](https://www.verywellfit.com/how-to-do-a-barbell-front-squat-4842368)",
                 "[Military Press](https://www.muscleandstrength.com/exercises/military-press.html)",
@@ -41,70 +40,44 @@ extension Notes {
             [("Link", "https://www.t-nation.com/training/rebuild-yourself-with-complexes")])
         
         add("Ab Wheel Rollout",
-            [
-                "Hold the ab wheel with both hands and kneel on the floor.",
+            ["Hold the ab wheel with both hands and kneel on the floor.",
                 "Roll the wheel straight forward as far as you can without touching the floor with your body.",
                 "Pause and slowly roll back."],
-            [("Link", "https://www.muscleandfitness.com/workouts/full-body-exercises/the-ab-wheel-rollout-how-to-benefits-variations/"), ("Video", "https://www.youtube.com/watch?v=uYBOBBv9GzY")])
+            [("Link", "https://www.muscleandfitness.com/workouts/full-body-exercises/the-ab-wheel-rollout-how-to-benefits-variations/"),
+             ("Video", "https://www.youtube.com/watch?v=uYBOBBv9GzY")])
         
         add("Adductor Foam Roll",
-            [
-                "Lay face down on the floor using upper hands to support your upper body.",
+            ["Lay face down on the floor using upper hands to support your upper body.",
                 "Place the inside of your thigh on the foam roller.",
                 "Slowly roll up and down and side to side.",
-                "Pause on areas that are especially tender until they feel better.",
-            ],
-            [(
-                "Link",
-                "https://www.nasm.org/exercise-library/foam-roll-adductors",
-            )],
+                "Pause on areas that are especially tender until they feel better."],
+            [("Link", "https://www.nasm.org/exercise-library/foam-roll-adductors")],
         )
         
         add("Advanced Shrimp Squat",
-            [
-                "Stand straight up with your hands stretched out in front of you.",
+            ["Stand straight up with your hands stretched out in front of you.",
                 "Raise one leg so that your shin is above parallel to the floor.",
                 "Squat down until your elevated leg touches down at the knee, but not at the toes.",
-                "Hold onto your elevated knee as you descend.",
-            ],
-            [
-                (
-                    "Video",
-                    "https://www.youtube.com/watch?v=TKt0-c83GSc&feature=youtu.be&t=3m9s",
-                ),
-                (
-                    "Progression",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat/#wiki_squat",
-                ),
-            ],
+                "Hold onto your elevated knee as you descend."],
+            [("Video", "https://www.youtube.com/watch?v=TKt0-c83GSc&feature=youtu.be&t=3m9s"),
+             ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat/#wiki_squat")],
         )
         
-        add(
-            "Advanced Tuck Front Lever Row",
-            [
-                "Get into a loosely tucked front level position.",
-                "Pull your body up as high as possible while remaining horizontal.",
-            ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=cVdb8oUGKAw"),
-                (
-                    "Body Weight Rows",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row",
-                ),
-            ],
+        add("Advanced Tuck Front Lever Row",
+            ["Get into a loosely tucked front level position.",
+                "Pull your body up as high as possible while remaining horizontal."],
+            [("Link", "https://www.youtube.com/watch?v=cVdb8oUGKAw"),
+             ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
-        add(
-            "Ant. Scalenes Stretch",
-            [
-                "This can be done either seated or standing.",
+        add("Ant. Scalenes Stretch",
+            ["This can be done either seated or standing.",
                 "Keep back straight and neck inline with spine.",
                 "Depress chest with one hand.",
                 "Tilt head so ear fingers point to leans to shoulder.",
                 "Then point chin upwards..",
                 "Hold for 30-60s and then switch sides.",
-                "Ideally do these 2-3x a day.",
-            ],
+                "Ideally do these 2-3x a day."],
             [("Link", "https://www.youtube.com/watch?v=wQylqaCl8Zo")],
         )
         

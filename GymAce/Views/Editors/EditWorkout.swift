@@ -362,7 +362,7 @@ struct EditWorkout: View {
                 .buttonStyle(.plain)
             }
             if showTypeHelp {
-                Text("The workout type listed in the Health app when you use Start Recording in the workout view.")
+                Text("The workout type listed in the Health app when you use Start Recording in the workout view. Use none if you don't want to record the workout in the Health app.")
                     .foregroundColor(.blue)
                     .font(.footnote)
             }

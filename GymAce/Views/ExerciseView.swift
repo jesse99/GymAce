@@ -152,6 +152,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                                 entry.mode = .performing
                             }
                         }
+                        recordWorkout()
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 20)
@@ -299,6 +300,14 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
 
     private func elapsedSecs(now: Date, start: Date) -> Int {
         return Int(now.timeIntervalSince(start))
+    }
+    
+    private func recordWorkout() {
+        if let wt = workout.type, healthKit.enabled && !workout.allFinished(program) && !healthKit.inProgress {
+            Task {
+                await healthKit.start(wt)
+            }
+        }
     }
 }
 
