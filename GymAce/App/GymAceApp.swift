@@ -16,10 +16,6 @@ struct GymAceApp: App {
         // TODO how do we handle program updates? add something like v2 to the name?
         //      or hijack version and install newer versions? can include a top of what changed
         //      or silently update if not active?
-        
-        // Defaults always get added because we always want the most up to date version.
-        model.notes.addDefaults()
-        
         for p in defaultPrograms {
             if !model.programs.contains(where: {$0.name == p.name}) {
                 print("adding \(p.name) program")

@@ -16,7 +16,29 @@ final class Notes: Codable {
     /// Either brand new help test added by the user or an edited version of defaults.
     /// This will override defaults if both have the same key.
     var custom: [String: String] = [:]
+        
+    enum CodingKeys: String, CodingKey {
+        case custom
+    }
     
+    init() {
+        self.addDefaults()
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        custom = try container.decode([String: String].self, forKey: .custom)
+
+        // We don't bother saving defaults because we always want the most up to date version
+        // (and because defaults is rather large).
+        self.addDefaults()
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(custom, forKey: .custom)
+    }
+
     func find(_ name: String) -> String {
         if let n = custom[name] {
             return n
@@ -29,7 +51,7 @@ final class Notes: Codable {
 }
 
 extension Notes {
-    func addDefaults() {
+    private func addDefaults() {
         add("A8",
             ["[Row](http://stronglifts.com/barbell-row)",
                 "[Power Clean](https://experiencelife.com/article/learn-to-power-clean)",
@@ -4675,6 +4697,5 @@ extension Notes {
     }
 }
 
-// TODO need to support editing (and creating) notes
 // TODO add unit tests to spell check
 // TODO add unit tests to check links

@@ -30,7 +30,6 @@ func findDefaultWeightSet(_ name: String) -> WeightSet? {
 func previewModel() -> Model {
     let model = Model()
     model.activeProgram = "Preview"
-    model.notes.addDefaults()
     model.programs.append(previewProgram())
     model.addMissingWeightsets()
     return model
