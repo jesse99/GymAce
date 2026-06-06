@@ -27,9 +27,7 @@ extension Program {
 
         let calendar = Calendar.current
         let week = currentWeek(on: on)
-//        print("week: \(week!)")
         for workout in self.workouts {
-//            print("workout: \(workout.name) weeks: \(workout.weeks!)")
             if let r = workout.weeks, let w = week, !r.contains(w) {
                 continue
             }
@@ -37,7 +35,7 @@ extension Program {
             case .anyDay:
                 // We only schedule anyDay workouts for the first available option to avoid clutter.
                 if workout.weeks != nil || calendar.isDate(on, inSameDayAs: today) {
-                    candidates.append(workout)
+                    candidates.append(workout)  // show these after the others
                 }
             case .every(1): // like anyDay
                 if workout.weeks != nil || calendar.isDate(on, inSameDayAs: today) {
@@ -46,12 +44,12 @@ extension Program {
             case .every(_):
                 let days = calendar.dateComponents([.day], from: on, to: today).day
                 if days == 0 {  // TODO need to use something like workout.days_since_last_completed
-                    candidates.append(workout)
+                    candidates.insert(workout, at: 0)
                 }
             case .days(let days):
                 let day: Int = calendar.component(.weekday, from: on)
                 if days.includes(day) {
-                    candidates.append(workout)
+                    candidates.insert(workout, at: 0)
                 }
             }
         }
