@@ -330,7 +330,100 @@ final class ExerciseEntry: Codable {
             case .timed: return setIndex > 0
         }
     }
+        
+    func history(_ exercise: Exercise) -> HistorySnapshot {
+        return HistorySnapshot(entry: self, exercise: exercise)
+    }
+
+    private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
+        if let exercise = program.findExercise(name), let bweight = findBaseWeight(program), case .success(let weight) = bweight {
+            if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                switch exercise.data {
+                    case .durations(_):
+                        return ws.lower(target: weight)
+                    case .reps(let d):
+                        var index = fixedIndex(exercise)
+                        if index < d.warmups.count {
+                            let p = Float(d.warmups[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                        
+                        index -= d.warmups.count
+                        if index < d.workset.count {
+                            return ws.lower(target: weight)
+                        }
+                        
+                        index -= d.workset.count
+                        if index < d.backoff.count {
+                            let p = Float(d.backoff[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                    case .percent(let d):
+                        var index = fixedIndex(exercise)
+                        if index < d.warmups.count {
+                            let p = Float(d.percent) / 100.0
+                            let q = Float(d.warmups[index].percent) / 100.0
+                            return ws.closest(target: p*q*weight)
+                        }
+                        
+                        index -= d.warmups.count
+                        if index < d.workset.count {
+                            let p = Float(d.percent) / 100.0
+                            return ws.lower(target: p*weight)
+                        }
+                    case .timed:
+                        return ws.lower(target: weight)
+                }
+            }
+            return ActualWeight(discrete: weight, .None)
+        }
+        return nil
+    }
     
+    private func findBaseWeight(_ program: Program) -> Result<Float, MyError>? {
+        if let thisExercise = program.findExercise(name) {
+            switch thisExercise.data {
+            case .durations(_), .reps(_), .timed:
+                if let w = thisExercise.weight {
+                    return .success(w)
+                }
+            case .percent(let d):
+                if let otherExercise = program.findExercise(d.other) {
+                    if let last = otherExercise.history.last {
+                        if let weight = last.weight {
+                            return .success(weight)
+                        }
+                    }
+                    if let w = otherExercise.weight {
+                        return .success(w)
+                    }
+                } else {
+                    let e = MyError(err: "Couldn't find \(d.other) exercise.")
+                    return .failure(e)
+                }
+            }
+        }
+        return nil
+    }
+    
+    private func fixedIndex(_ exercise: Exercise) -> Int {
+        switch exercise.data {
+            case .durations(let d):
+                return setIndex >= d.secs.count ? d.secs.count - 1 : setIndex
+            case .reps(let d):
+                let count = d.warmups.count + d.workset.count + d.backoff.count
+                return setIndex >= count ? count - 1 : setIndex
+            case .percent(let d):
+                let count = d.warmups.count + d.workset.count
+                return setIndex >= count ? count - 1 : setIndex
+            case .timed:
+                return setIndex
+        }
+    }
+}
+
+// Headers
+extension ExerciseEntry {
     // Shown first in the exercise view, e.g. "Workset 1 of 3" or "Set 1 of 3".
     func headline(_ exercise: Exercise) -> String {
         if isFinished(exercise) {
@@ -539,96 +632,6 @@ final class ExerciseEntry: Codable {
             break
         }
         return nil
-    }
-    
-    func history(_ exercise: Exercise) -> HistorySnapshot {
-        return HistorySnapshot(entry: self, exercise: exercise)
-    }
-
-    private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
-        if let exercise = program.findExercise(name), let bweight = findBaseWeight(program), case .success(let weight) = bweight {
-            if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                switch exercise.data {
-                    case .durations(_):
-                        return ws.lower(target: weight)
-                    case .reps(let d):
-                        var index = fixedIndex(exercise)
-                        if index < d.warmups.count {
-                            let p = Float(d.warmups[index].percent) / 100.0
-                            return ws.closest(target: p*weight)
-                        }
-                        
-                        index -= d.warmups.count
-                        if index < d.workset.count {
-                            return ws.lower(target: weight)
-                        }
-                        
-                        index -= d.workset.count
-                        if index < d.backoff.count {
-                            let p = Float(d.backoff[index].percent) / 100.0
-                            return ws.closest(target: p*weight)
-                        }
-                    case .percent(let d):
-                        var index = fixedIndex(exercise)
-                        if index < d.warmups.count {
-                            let p = Float(d.percent) / 100.0
-                            let q = Float(d.warmups[index].percent) / 100.0
-                            return ws.closest(target: p*q*weight)
-                        }
-                        
-                        index -= d.warmups.count
-                        if index < d.workset.count {
-                            let p = Float(d.percent) / 100.0
-                            return ws.lower(target: p*weight)
-                        }
-                    case .timed:
-                        return ws.lower(target: weight)
-                }
-            }
-            return ActualWeight(discrete: weight, .None)
-        }
-        return nil
-    }
-    
-    private func findBaseWeight(_ program: Program) -> Result<Float, MyError>? {
-        if let thisExercise = program.findExercise(name) {
-            switch thisExercise.data {
-            case .durations(_), .reps(_), .timed:
-                if let w = thisExercise.weight {
-                    return .success(w)
-                }
-            case .percent(let d):
-                if let otherExercise = program.findExercise(d.other) {
-                    if let last = otherExercise.history.last {
-                        if let weight = last.weight {
-                            return .success(weight)
-                        }
-                    }
-                    if let w = otherExercise.weight {
-                        return .success(w)
-                    }
-                } else {
-                    let e = MyError(err: "Couldn't find \(d.other) exercise.")
-                    return .failure(e)
-                }
-            }
-        }
-        return nil
-    }
-    
-    private func fixedIndex(_ exercise: Exercise) -> Int {
-        switch exercise.data {
-            case .durations(let d):
-                return setIndex >= d.secs.count ? d.secs.count - 1 : setIndex
-            case .reps(let d):
-                let count = d.warmups.count + d.workset.count + d.backoff.count
-                return setIndex >= count ? count - 1 : setIndex
-            case .percent(let d):
-                let count = d.warmups.count + d.workset.count
-                return setIndex >= count ? count - 1 : setIndex
-            case .timed:
-                return setIndex
-        }
     }
 }
 
