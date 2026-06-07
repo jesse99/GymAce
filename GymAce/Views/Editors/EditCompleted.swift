@@ -3,11 +3,12 @@ import SwiftUI
 struct EditCompleted: View {
     var model: Model
     @Bindable var exercise: Exercise
-    let snapshot: Snapshot
+    @State var snapshot: Snapshot
     @State private var showWeightHelp = false
     @State private var showRepsHelp = false
     @State private var repsError: String? = nil
-    
+    @State private var showNoteHelp = false
+
     var body: some View {
         Form {
             // Reps
@@ -50,6 +51,23 @@ struct EditCompleted: View {
                     .font(.footnote)
             }
             
+            // Note
+            HStack {
+                TextField("note", text: noteBinding)
+                    .textFieldStyle(.roundedBorder)
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showNoteHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showNoteHelp {
+                Text("Arbitrary message shown together with what the user did for this exercise.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+
             // TODO allow completed to be edited? would require re-sorting history
         }
         .navigationTitle("Edit Completed")
@@ -72,13 +90,11 @@ struct EditCompleted: View {
     private var repsBinding: Binding<String> {
         Binding(
             get: {
-                let i = exercise.history.count - snapshot.index
-                let completed = exercise.history[i]
+                let completed = exercise.history[snapshot.index]
                 let a = completed.values.map {"\($0)"}
                 return a.joined(separator: " ")
             },
             set: {
-                let i = exercise.history.count - snapshot.index
                 var values: [Int] = []
                 repsError = nil
                 for part in $0.split(separator: " ") {
@@ -94,7 +110,22 @@ struct EditCompleted: View {
                         break
                     }
                 }
-                exercise.history[i].values = values
+                exercise.history[snapshot.index].values = values
+            }
+        )
+    }
+
+    private var noteBinding: Binding<String> {
+        Binding(
+            get: {
+                return snapshot.current.note ?? ""
+            },
+            set: {
+                if $0.isBlankOrEmpty {
+                    snapshot.current.note = nil
+                } else {
+                    snapshot.current.note = $0
+                }
             }
         )
     }
@@ -102,16 +133,14 @@ struct EditCompleted: View {
     private var weightBinding: Binding<String> {
         Binding(
             get: {
-                let i = exercise.history.count - snapshot.index
-                if let w = exercise.history[i].weight {
+                if let w = exercise.history[snapshot.index].weight {
                     return formatWeight(w, .None)
                 } else {
                     return ""
                 }
             },
             set: {
-                let i = exercise.history.count - snapshot.index
-                exercise.history[i].weight = Float($0)
+                exercise.history[snapshot.index].weight = Float($0)
             }
         )
     }

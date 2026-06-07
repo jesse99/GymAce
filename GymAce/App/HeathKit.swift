@@ -153,7 +153,7 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         case HKQuantityType.quantityType(forIdentifier: .heartRate):
             if let value = statistics.mostRecentQuantity()?.doubleValue(for: .count().unitDivided(by: .minute())) {
                 heartRate = value
-                print("heart rate: \(value) bpm")
+//                print("heart rate: \(value) bpm")
             }
         case HKQuantityType.quantityType(forIdentifier: .appleExerciseTime):
             if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.second()) {

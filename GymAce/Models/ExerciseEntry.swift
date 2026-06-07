@@ -95,7 +95,7 @@ final class ExerciseEntry: Codable {
     /// Returns true if the user is on a workset with an expected rep that may be changed to an actual rep.
     func hasExpected(_ exercise: Exercise) -> Bool {
         if case let .reps(d) = exercise.data {      // there's an annoying amount of duplication here but I'm not sure how we'd fix that unless we do something like fold RepsData into PercentData
-            if d.isVariable, !finished(exercise) {
+            if d.isVariable, !isFinished(exercise) {
                 var index = fixedIndex(exercise)
                 index -= d.warmups.count
                 if index >= 0 && index < d.workset.count {
@@ -107,7 +107,7 @@ final class ExerciseEntry: Codable {
                 }
             }
         } else if case let .percent(d) = exercise.data {
-            if d.isVariable, !finished(exercise) {
+            if d.isVariable, !isFinished(exercise) {
                 var index = fixedIndex(exercise)
                 index -= d.warmups.count
                 if index >= 0 && index < d.workset.count {
@@ -298,10 +298,9 @@ final class ExerciseEntry: Codable {
         setIndex += 1
     }
     
-    /// Called when the user completes an exercise. Adds current to Exercise.history and then resets
-    /// current.
-    func completedAll(_ workout: Workout, _ exercise: Exercise) {
-        if let w = self.working {
+    /// Called when the user completes an exercise. Adds current to Exercise.history.
+    func completedLast(_ workout: Workout, _ exercise: Exercise) {
+        if var w = self.working {
             if let e = workout.elapsed {
                 let elapsed = Date().timeIntervalSince(w.started)
                 workout.elapsed = e + elapsed
@@ -313,12 +312,17 @@ final class ExerciseEntry: Codable {
                 Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
             }
             exercise.history.append(c)
+            w.values = []
+            self.working = w
         }
+    }
+    
+    func finishedExercise() {
         setIndex = 0
         working = nil
     }
     
-    func finished(_ exercise: Exercise) -> Bool {
+    func isFinished(_ exercise: Exercise) -> Bool {
         switch exercise.data {
             case .durations(let d): return setIndex >= d.secs.count
             case .reps(let d): return setIndex >= d.warmups.count + d.workset.count + d.backoff.count
@@ -329,7 +333,7 @@ final class ExerciseEntry: Codable {
     
     // Shown first in the exercise view, e.g. "Workset 1 of 3" or "Set 1 of 3".
     func headline(_ exercise: Exercise) -> String {
-        if finished(exercise) {
+        if isFinished(exercise) {
             return "Done"
         }
         var index = fixedIndex(exercise)
@@ -372,7 +376,7 @@ final class ExerciseEntry: Codable {
             suffix = "\(actual.text())"
         }
         
-        if finished(exercise) {
+        if isFinished(exercise) {
             if suffix.isEmpty {
                 return ""
             }
@@ -465,7 +469,7 @@ final class ExerciseEntry: Codable {
     
     // Shown third in the exercise view, e.g. "45 + 2.5".
     func footer(_ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
-        if finished(exercise) {
+        if isFinished(exercise) {
             return ""
         }
         if let actual = actualWeight(model, program) {
@@ -476,7 +480,7 @@ final class ExerciseEntry: Codable {
     
     // Shown fourth in the exercise view, e.g. "90% of 225 lbs".
     func subfooter(_ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
-        if finished(exercise) {
+        if isFinished(exercise) {
             return ""
         }
         switch exercise.data {
@@ -628,11 +632,18 @@ final class ExerciseEntry: Codable {
     }
 }
 
-struct Snapshot {
-    let current: Completed
+class Snapshot {
+    var current: Completed
     let prior: Completed?
     let finished: Bool
-    let index: Int          // 0 == current
+    let index: Int          // index into exercise.history
+    
+    init(current: Completed, prior: Completed?, finished: Bool, index: Int) {
+        self.current = current
+        self.prior = prior
+        self.finished = finished
+        self.index = index
+    }
 }
 
 struct HistorySnapshot: RandomAccessCollection {
@@ -641,21 +652,22 @@ struct HistorySnapshot: RandomAccessCollection {
     let maxItems = 20
     
     var startIndex: Int {0}
-    var endIndex: Int {Swift.min(exercise.history.endIndex, maxItems) + (entry.working != nil && !entry.working!.values.isEmpty ? 1 : 0)}
+    var endIndex: Int {Swift.min(exercise.history.endIndex, maxItems) + (hasWorking ? 1 : 0)}
+    var hasWorking: Bool {entry.working != nil && !entry.working!.values.isEmpty}
     
     subscript(position: Int) -> Snapshot {
         var index = position
         if let w = entry.working, !w.values.isEmpty {
             if index == 0 {
                 let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
-                return Snapshot(current: c, prior: nil, finished: false, index: index)  // nil prior since we can't compare the two yet
+                return Snapshot(current: c, prior: nil, finished: false, index: -1)  // nil prior since we can't compare the two yet
             }
         } else {
             index += 1
         }
         
         let i = exercise.history.count - index
-        return Snapshot(current: exercise.history[i], prior: previous(index), finished: true, index: position)
+        return Snapshot(current: exercise.history[i], prior: previous(index), finished: true, index: i)
     }
     
     private func previous(_ position: Int) -> Completed! {

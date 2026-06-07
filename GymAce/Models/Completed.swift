@@ -6,13 +6,14 @@ enum ValueType: Codable {
 }
 
 /// Saved in Exercise.history to record what the user actually did after performing an exercise.
-struct Completed: Codable, Comparable, Equatable {
+class Completed: Codable, Comparable, Equatable {
     var values: [Int]
     var type: ValueType
     var weight: Float?
     var units: Units
     var completed: Date
     var distance: Double?   // meters
+    var note: String? = nil
     
 //    enum CodingKeys: String, CodingKey {
 //        case values, type, weight, units, completed

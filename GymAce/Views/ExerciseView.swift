@@ -56,10 +56,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .fixedSize()
                 }
                 Button("Finished") {
-                    // We won't call done if the user swipes back but it seems to make
-                    // sense to call done only when the user presses Finished...
-                    entry.completedAll(workout, exercise)
-                    program.didExercise()
+                    entry.finishedExercise()
                     if healthKit.enabled && healthKit.inProgress && workout.allFinished(program) {
                         healthKit.stop(workout.name)
                     }
@@ -89,8 +86,8 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 5)
                     Button(stopTitle()) {
                         entry.completedSet(exercise)
-                        if entry.finished(exercise) {
-                            entry.mode = .finished
+                        if entry.isFinished(exercise) {
+                            gotoFinished()
                         } else {
                             entry.mode = .performing
                         }
@@ -137,7 +134,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
                         } else if case .timed = exercise.data {
                             if case .timing = entry.mode {
-                                entry.mode = .finished
+                                gotoFinished()
                             } else {
                                 entry.mode = .timing
                             }
@@ -146,8 +143,8 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                             
                             // Note that we don't go to picking here because if there's no rest
                             // we always show the picker.
-                            if entry.finished(exercise) {
-                                entry.mode = .finished
+                            if entry.isFinished(exercise) {
+                                gotoFinished()
                             } else {
                                 entry.mode = .performing
                             }
@@ -309,51 +306,66 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
         }
     }
+    
+    private func gotoFinished() {
+        // We want to do this before the user presses the Finished button so that the user can
+        // edit the Completed he just did.
+        entry.completedLast(workout, exercise)
+        program.didExercise()
+        entry.mode = .finished
+    }
 }
 
 // View for a line in the history tab.
 @ViewBuilder
 private func completedView(_ model: Model, _ exercise: Exercise,_ snapshot: Snapshot) -> some View {
-    HStack {
-        // icon labeling how well the user did compared to prior workout
-        if snapshot.finished {
-            if let prior = snapshot.prior {
-                let better = snapshot.current.better(prior)
-                if better == 1 {
-                    Image(systemName: "hand.thumbsup.fill")   // current is better
-                        .foregroundColor(.green)
-                } else if better == 0 {
-                    Image(systemName: "staroflife.fill")   // current is same as prior
+    VStack {
+        HStack {
+            // icon labeling how well the user did compared to prior workout
+            if snapshot.finished {
+                if let prior = snapshot.prior {
+                    let better = snapshot.current.better(prior)
+                    if better == 1 {
+                        Image(systemName: "hand.thumbsup.fill")   // current is better
+                            .foregroundColor(.green)
+                    } else if better == 0 {
+                        Image(systemName: "staroflife.fill")   // current is same as prior
+                    } else {
+                        Image(systemName: "hand.thumbsdown.fill")   // current is worse
+                            .foregroundColor(.red)
+                    }
                 } else {
-                    Image(systemName: "hand.thumbsdown.fill")   // current is worse
-                        .foregroundColor(.red)
+                    Image(systemName: "staroflife.fill")
                 }
             } else {
-                Image(systemName: "staroflife.fill")
+                Image(systemName: "questionmark.square.dashed")   // in progress
             }
-        } else {
-            Image(systemName: "questionmark.square.dashed")   // in progress
-        }
-        
-        // the date the workout happened
-        if let days = Date().daysBetween(snapshot.current.completed) {
-            Text(Date().daysStr(days))
-        } else {
-            Text("?")
-        }
-        
-        // details for the workout
-        if snapshot.finished {
-            NavigationLink {
-                EditCompleted(model: model, exercise: exercise, snapshot: snapshot)
-            } label: {
+            
+            // the date the workout happened
+            if let days = Date().daysBetween(snapshot.current.completed) {
+                Text(Date().daysStr(days))
+            } else {
+                Text("?")
+            }
+            
+            // details for the workout
+            if snapshot.finished {
+                NavigationLink {
+                    EditCompleted(model: model, exercise: exercise, snapshot: snapshot)
+                } label: {
+                    Text(snapshot.current.details())
+                }
+                .navigationLinkIndicatorVisibility(.hidden)
+                .gridColumnAlignment(.leading)
+                .foregroundColor(.blue)
+            } else {
                 Text(snapshot.current.details())
             }
-            .navigationLinkIndicatorVisibility(.hidden)
-            .gridColumnAlignment(.leading)
-            .foregroundColor(.blue)
-        } else {
-            Text(snapshot.current.details())
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        if let n = snapshot.current.note {
+            Text(n)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

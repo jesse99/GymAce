@@ -56,7 +56,7 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     
     func allFinished(_ program: Program) -> Bool {
         for entry in entries where entry.enabled {
-            if let exercise = program.findExercise(entry.name), !entry.finished(exercise) {
+            if let exercise = program.findExercise(entry.name), !entry.isFinished(exercise) {
                 return false
             }
         }
