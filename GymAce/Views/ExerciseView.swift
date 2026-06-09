@@ -2,6 +2,63 @@ import AudioToolbox
 import Foundation
 import SwiftUI
 
+func getHeartRate(_ secs: Int) -> Double? {
+    if healthKit.enabled && healthKit.inProgress {
+        if abs(secs) % 5 == 0 {
+            healthKit.fetchHeartRate()
+        }
+        return healthKit.heartRate
+    }
+    return nil
+}
+
+@ViewBuilder
+func createRestingTimerView(_ remaining: Int) -> some View {
+    let title: String = if remaining > 0 {  // was getting compiler errors trying to destructure a tuple of (title, color)
+        secsToLongStr(remaining)
+    } else if remaining > -5 {
+        "Done"
+    } else {
+        secsToLongStr(-remaining) + " over"
+    }
+    let color: Color = if remaining > 0 {
+        .red
+    } else if remaining > -5 {
+        .green
+    } else {
+         .green
+    }
+
+    if let hr = getHeartRate(remaining) {
+        VStack {
+            Text(title)
+                .font(.largeTitle)
+                .foregroundColor(color)
+            Text(String(format: "%.1f bpm", hr))
+        }
+    } else {
+        Text(title)
+            .font(.largeTitle)
+            .foregroundColor(color)
+    }
+}
+
+@ViewBuilder
+func createTimedView(_ elapsed: Int) -> some View {
+    if let hr = getHeartRate(elapsed) {
+        VStack {
+            Text(secsToLongStr(elapsed))
+                .font(.largeTitle)
+                .foregroundColor(.green)
+            Text(String(format: "%.1f bpm", hr))
+        }
+    } else {
+        Text(secsToLongStr(elapsed))
+            .font(.largeTitle)
+            .foregroundColor(.green)
+    }
+}
+
 struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to scale font sizes
     var model: Model        // see https://www.swiftyplace.com/blog/swiftui-font-and-texts
     var program: Program
@@ -69,19 +126,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 if case .resting(let target) = entry.mode { // user has finished a set and is now resting
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = remainingSecs(now: context.date, target: target)
-                        if remaining > 0 {
-                            Text(secsToLongStr(remaining))
-                                .font(.largeTitle)
-                                .foregroundColor(.red)
-                        } else if remaining > -5 {
-                            Text("Done")
-                                .font(.largeTitle)
-                                .foregroundColor(.green)
-                        } else {
-                            Text(secsToLongStr(-remaining) + " over")
-                                .font(.largeTitle)
-                                .foregroundColor(.green)
-                        }
+                        createRestingTimerView(remaining)
                     }
                     .padding(.top, 5)
                     Button(stopTitle()) {
@@ -123,9 +168,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     if case .timing = entry.mode, let working = entry.working {
                         TimelineView(.periodic(from: .now, by: 1.0)) { context in
                             let elapsed = Int(context.date.timeIntervalSince(working.started))
-                            Text(secsToLongStr(elapsed))
-                                .font(.largeTitle)
-                                .foregroundColor(.green)
+                            createTimedView(elapsed)
                         }
                         .padding(.top, 5)
                     }

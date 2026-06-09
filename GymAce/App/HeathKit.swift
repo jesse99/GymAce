@@ -34,8 +34,6 @@ class WorkoutStatus {
     }
 }
 
-// TODO should we show heart rate? maybe just for durations? maybe opt in?
-// this code does seem to work: https://www.createwithswift.com/reading-data-from-healthkit-in-a-swiftui-app/
 @Observable
 final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderDelegate {
     private(set) var enabled = false
@@ -43,8 +41,6 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
     private(set) var status: WorkoutStatus? = nil
 
     private(set) var heartRate: Double? = nil   // bpm
-    private(set) var appleExerciseTime: Double? = nil   // minutes
-    private(set) var appleMoveTime: Double? = nil   // minutes
     private(set) var distance: Double? = nil   // feet or meters
 
     private var workout: String? = nil
@@ -57,20 +53,12 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         else {
             return
         }
-        guard let et = HKObjectType.quantityType(forIdentifier: .appleExerciseTime)
-        else {
-            return
-        }
-        guard let mt = HKObjectType.quantityType(forIdentifier: .appleMoveTime)
-        else {
-            return
-        }
         guard let d = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
         else {
             return
         }
 
-        let read: Set = [hr, et, mt, d, HKObjectType.workoutType()]
+        let read: Set = [hr, d, HKObjectType.workoutType()]
         let write: Set = [HKObjectType.workoutType()]
         store.requestAuthorization(toShare: write, read: read) {success, error in
             if let error {
@@ -129,6 +117,54 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         print("Ending workout...")
     }
 
+    func fetchHeartRate() {
+        Task {
+            if let sample = try? await fetchMostRecentSample(for: .heartRate) {
+                let value = sample.quantity
+                    .doubleValue(for: HKUnit.count().unitDivided(by: HKUnit.minute()))
+                heartRate = value
+            }
+        }
+    }
+
+    private func fetchMostRecentSample(for identifier: HKQuantityTypeIdentifier) async throws -> HKQuantitySample? {
+        // Get the quantity type for the identifier
+        guard let quantityType = HKObjectType.quantityType(forIdentifier: identifier) else {
+            return nil
+        }
+
+        // Query for samples from start of today until now, sorted by end date descending
+        let predicate = HKQuery.predicateForSamples(
+            withStart: Calendar.current.startOfDay(for: Date()),
+            end: Date(),
+            options: .strictStartDate
+        )
+        let sortDescriptor = NSSortDescriptor(
+            key: HKSampleSortIdentifierEndDate,
+            ascending: false
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: quantityType,
+                predicate: predicate,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { _, samples, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    if let sample = samples?.first {
+                        continuation.resume(returning: sample as? HKQuantitySample)
+                    } else {
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+            store.execute(query)
+        }
+    }
+    
     // HKLiveWorkoutBuilderDelegate callback
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
     }
@@ -145,30 +181,12 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         }
     }
 
-    // Only thing that works on a phone here is distance. Also tried the WWDC apple code which
-    // tracked heart rate and that didn't work either. But the code link above did seem to return
-    // heart rate...
+    // Note that this didn't work for heart rate (neither did the apple sample code that used this method).
     private func updateMetrics(for statistics: HKStatistics) {
         switch statistics.quantityType {
-        case HKQuantityType.quantityType(forIdentifier: .heartRate):
-            if let value = statistics.mostRecentQuantity()?.doubleValue(for: .count().unitDivided(by: .minute())) {
-                heartRate = value
-//                print("heart rate: \(value) bpm")
-            }
-        case HKQuantityType.quantityType(forIdentifier: .appleExerciseTime):
-            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.second()) {
-                self.appleExerciseTime = value/60
-                print("appleExerciseTime: \(value) secs")
-            }
-        case HKQuantityType.quantityType(forIdentifier: .appleMoveTime):
-            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.second()) {
-                self.appleMoveTime = value/60
-                print("appleMoveTime: \(value) secs")
-            }
         case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning):
             if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.meter()) { // TODO there's no feet option
                 self.distance = value
-                print("distance: \(value) meters")
             }
         default:
             break
