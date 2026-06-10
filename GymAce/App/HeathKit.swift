@@ -47,7 +47,7 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
     private let store = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
-
+    
     func requestPerms() {
         guard let hr = HKObjectType.quantityType(forIdentifier: .heartRate)
         else {
@@ -125,6 +125,11 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
                 heartRate = value
             }
         }
+    }
+
+    func popHeartRate() -> Double? {
+        defer {self.heartRate = nil}
+        return self.heartRate
     }
 
     private func fetchMostRecentSample(for identifier: HKQuantityTypeIdentifier) async throws -> HKQuantitySample? {

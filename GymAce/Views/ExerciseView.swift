@@ -2,12 +2,34 @@ import AudioToolbox
 import Foundation
 import SwiftUI
 
-func getHeartRate(_ secs: Int) -> Double? {
+fileprivate var heartRates: [String] = []
+fileprivate var lastSecs = -1
+
+func getHeartRate(_ secs: Int) -> String? {
     if healthKit.enabled && healthKit.inProgress {
-        if abs(secs) % 5 == 0 {
-            healthKit.fetchHeartRate()
+        if secs != lastSecs {
+            if abs(secs) % 5 == 0 {         // fetch more often so we should always have a sample
+                healthKit.fetchHeartRate()
+            }
+            if abs(secs) % 10 == 0 {
+                if let hr = healthKit.popHeartRate() {
+                    heartRates.append("\(Int(hr))")
+                } else {
+                    heartRates.append("--")
+                }
+                if heartRates.count > 6 || (heartRates.count > 1 && heartRates[0] == "--") {
+                    heartRates.removeFirst(1)
+                }
+            }
+            lastSecs = secs
         }
-        return healthKit.heartRate
+        if !heartRates.isEmpty {
+            if heartRates.count <= 3 {
+                return heartRates.joined(separator: " ") + " bpm"
+            } else {
+                return heartRates.joined(separator: " ")
+            }
+        }
     }
     return nil
 }
@@ -34,7 +56,7 @@ func createRestingTimerView(_ remaining: Int) -> some View {
             Text(title)
                 .font(.largeTitle)
                 .foregroundColor(color)
-            Text(String(format: "%.1f bpm", hr))
+            Text(hr)
         }
     } else {
         Text(title)
@@ -50,7 +72,7 @@ func createTimedView(_ elapsed: Int) -> some View {
             Text(secsToLongStr(elapsed))
                 .font(.largeTitle)
                 .foregroundColor(.green)
-            Text(String(format: "%.1f bpm", hr))
+            Text(hr)
         }
     } else {
         Text(secsToLongStr(elapsed))
@@ -175,11 +197,13 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     Button(nextTitle()) {
                         if let rest = entry.rest(workout, exercise) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
+                            heartRates = []
                         } else if case .timed = exercise.data {
                             if case .timing = entry.mode {
                                 gotoFinished()
                             } else {
                                 entry.mode = .timing
+                                heartRates = []
                             }
                         } else {
                             entry.completedSet(exercise)
