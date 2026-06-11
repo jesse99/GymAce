@@ -14,21 +14,12 @@ func getHeartRate(_ secs: Int) -> String? {
             if abs(secs) % 10 == 0 {
                 if let hr = healthKit.popHeartRate() {
                     heartRates.append("\(Int(hr))")
-                } else {
-                    heartRates.append("--")
-                }
-                if heartRates.count > 6 || (heartRates.count > 1 && heartRates[0] == "--") {
-                    heartRates.removeFirst(1)
                 }
             }
             lastSecs = secs
         }
         if !heartRates.isEmpty {
-            if heartRates.count <= 3 {
-                return heartRates.joined(separator: " ") + " bpm"
-            } else {
-                return heartRates.joined(separator: " ")
-            }
+            return joinLabels(heartRates) + " bpm"
         }
     }
     return nil
@@ -57,6 +48,8 @@ func createRestingTimerView(_ remaining: Int) -> some View {
                 .font(.largeTitle)
                 .foregroundColor(color)
             Text(hr)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
         }
     } else {
         Text(title)
@@ -73,6 +66,8 @@ func createTimedView(_ elapsed: Int) -> some View {
                 .font(.largeTitle)
                 .foregroundColor(.green)
             Text(hr)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
         }
     } else {
         Text(secsToLongStr(elapsed))
