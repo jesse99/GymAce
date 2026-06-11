@@ -16,7 +16,7 @@ final class Exercise: Codable {
     /// onto those weights (possibly modified by a per-set percentage).
     var weight: Float?
     
-    /// Record of when and what the user did for a workout.
+    /// Record of when and what the user did for a workout. Last is the most recent.
     var history: [Completed] = []
     
     /// Exercise specific data.
@@ -55,14 +55,10 @@ final class Exercise: Codable {
     }
     
     func fixup() {
-//        if name == "Light Squat" {
-//            if case .percent(var d) = data, d.rest == nil {
-//                d.rest = Int(3.5*60)
-//                self.data = .percent(d)
+//        if name == "Chin Ups" {
+//            if var c = history.last {
+//                c.weight = 0.0
 //            }
-//        }
-//        if name == "Trap Deadlift" {
-//            self.weightSet = "Trapbar"
 //        }
     }
         

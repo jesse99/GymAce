@@ -401,6 +401,14 @@ extension WeightSet {
             }
         }
         
+        // We need to allow for zero weight for stuff like dumbbells, e.g. a user
+        // may start with bodyweight squats and then progress to a goblet squat
+        // with a dumbbell. Of course, this makes less sense with something like
+        // a cable machine but even there zero weight might sometimes make sense.
+        if target < lower {
+            lower = 0.0
+        }
+        
         return (lower, upper)
     }
 }
