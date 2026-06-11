@@ -148,7 +148,11 @@ final class Exercise: Codable {
                 }
                 return joinLabels(a) + suffix
             case .timed:
+            if let c = history.last {
+                return c.details()
+            } else {
                 return ""
+            }
         }
     }
     
