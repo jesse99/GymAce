@@ -53,8 +53,9 @@ struct EditEntries: View {
                 }
             }
             Spacer()
+            Text("Tap to enable or disable an exercise from this workout. To edit the exercise go back to the main view and select \"Edit Exercises\".")
         }
-        .navigationTitle("Edit Exercises")
+        .navigationTitle("Edit Workout Exercises")
         .navigationBarTitleDisplayMode(.inline)
     }
     
