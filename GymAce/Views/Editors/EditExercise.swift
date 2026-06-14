@@ -801,8 +801,18 @@ struct EditExercise: View {
             set: {
                 exercise.formalName = $0
                 formalNames = []
-                for n in model.notes.defaults.keys {    // TODO can custom notes be brand new?
-                    if n.lowercased().contains($0.lowercased()) {
+                for n in model.notes.defaults.keys {
+                    if n.lowercased().contains($0.lowercased()) {   // only show formal names that match current formal name
+                        let item = MenuItem(name: n)
+                        formalNames.append(item)
+                        if formalNames.count > 30 {
+                            formalNames.append(MenuItem(name: "…"))
+                            break
+                        }
+                    }
+                }
+                for n in model.notes.custom.keys {
+                    if n.lowercased().contains($0.lowercased()) && model.notes.defaults[n] == nil {
                         let item = MenuItem(name: n)
                         formalNames.append(item)
                         if formalNames.count > 30 {
@@ -836,7 +846,7 @@ struct EditExercise: View {
     }
 
     private func formalColor(_ name: String) -> Color {
-        if model.notes.defaults[name] != nil {
+        if model.notes.defaults[name] != nil || model.notes.custom[name] != nil {
             return .black
         } else {
             return .red

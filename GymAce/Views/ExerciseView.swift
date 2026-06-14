@@ -263,7 +263,8 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             
             ScrollView {
                 Text(LocalizedStringKey(model.notes.find(exercise.formalName))) // localized so that markdown works
-                    .padding(.leading, 5)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 10)
             }
             .tabItem {Label("Notes", systemImage: "book.pages")}
         }

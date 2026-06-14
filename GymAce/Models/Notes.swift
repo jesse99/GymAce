@@ -5,7 +5,7 @@ import Foundation
 /// inline markdown is supported:
 ///    Bold (**text**)
 ///    Italic (*text*)
-///    Strikethrough (~~text~~)
+///    Strikethrough (~~text~~) 
 ///    Monospaced (`text`)
 ///    Links ([link](url))
 @Observable
@@ -103,50 +103,27 @@ extension Notes {
             [("Link", "https://www.youtube.com/watch?v=wQylqaCl8Zo")],
         )
         
-        add(
-            "Arch Hangs",
-            [
-                "Hang off a pull-up bar.",
+        add("Arch Hangs",
+            ["Hang off a pull-up bar.",
                 "Bring your head and shoulders back and arch your entire body.",
-                "Try to pinch your shoulder blades together and keep your elbows straight.",
-            ],
-            [(
-                "Link",
-                "https://www.youtube.com/watch?v=C995b3KLXS4&feature=youtu.be&t=7s",
-            )],
+                "Try to pinch your shoulder blades together and keep your elbows straight."],
+            [("Link", "https://www.youtube.com/watch?v=C995b3KLXS4&feature=youtu.be&t=7s")],
         )
         
-        add(
-            "Arch Hold",
-            [
-                "Lay face down.",
+        add("Arch Hold",
+            ["Lay face down.",
                 "Place hands behind you off the floor, lift chest up, raise legs off the floor.",
                 "Remember to breathe.",
-                "Difficulty can be increased by moving hands out in front of you.",
-            ],
-            [
-                (
-                    "Video",
-                    "https://www.youtube.com/watch?v=44ScXWFaVBs&feature=youtu.be&t=7m51s",
-                ),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup",
-                ),
-            ],
+                "Difficulty can be increased by moving hands out in front of you."],
+            [("Video", "https://www.youtube.com/watch?v=44ScXWFaVBs&feature=youtu.be&t=7m51s"),
+             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup")],
         )
         
-        add(
-            "Arm & Leg Lift Front Plank",
-            [
-                "Adopt the normal front plank position.",
+        add("Arm & Leg Lift Front Plank",
+            ["Adopt the normal front plank position.",
                 "Raise one leg and the opposite arm so that they are parallel to the floor.",
-                "Halfway through switch up your limbs.",
-            ],
-            [(
-                "Progression",
-                "http://www.startbodyweight.com/p/plank-progression.html",
-            )],
+                "Halfway through switch up your limbs."],
+            [("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
         )
         
         add(
@@ -4603,8 +4580,7 @@ extension Notes {
              ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Extension Stretch",
-            [
-                "Extend your arm out with the palm facing down.",
+            ["Extend your arm out with the palm facing down.",
                 "Use your other hand to pull your fingers and palm up and towards your body.",
                 "Don't lock your elbow.",
                 "Hold the stretch for 15s. Repeat 5x.",
@@ -4613,8 +4589,7 @@ extension Notes {
              ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Flexion",
-            [
-                "Sit in a chair with your arm resting on a table or your thigh with your palm facing up.",
+            ["Sit in a chair with your arm resting on a table or your thigh with your palm facing up.",
                 "To start with use no weight and bend your elbow so that your arm forms a 90 degree angle.",
                 "Bend your wrist upwards as far as you can.",
                 "Hold for a one count and then use a three count to slowly lower the weight back down.",
@@ -4625,8 +4600,7 @@ extension Notes {
              ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Flexion Stretch",
-            [
-                "Extend your arm out with the palm facing down.",
+            ["Extend your arm out with the palm facing down.",
                 "Use your other hand to pull your fingers and palm down and towards your body.",
                 "Don't lock your elbow.",
                 "Hold the stretch for 15s. Repeat 5x.",
@@ -4635,8 +4609,7 @@ extension Notes {
              ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")])
         
         add("Wrist Mobility",
-            [
-                "Crouch on your hands and knees with arms straight.",
+            ["Crouch on your hands and knees with arms straight.",
                 "1 Keep your fingers on the ground while raising and lowering your palms.",
                 "2 Rotate palm left and right.",
                 "3 Place hands sideways and rock side to side.",
@@ -4649,8 +4622,7 @@ extension Notes {
             [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")])
         
         add("Yuri's Shoulder Band",
-            [
-                "Attach a band to a support at about shoulder height.",
+            ["Attach a band to a support at about shoulder height.",
                 "Extend an arm straight backwards and move forward until there is tension on the band.",
                 "Bring your arm in to your back so that the forearm is against your lower back.",
                 "Extend the arm straight back again.",
@@ -4660,15 +4632,13 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=Vwn5hSf3WEg")])
         
         add("X-Band Walk",
-            [
-                "Put a resistance band beneath your fee twist it so that it forms an X, and raise it to your chest.",
+            ["Put a resistance band beneath your fee twist it so that it forms an X, and raise it to your chest.",
                 "Walk sideways several steps.",
                 "Walk back to your starting position."],
             [("Link", "https://www.exercise.com/exercises/x-resistance-band-walk")])
         
         add("Z Press",
-            [
-                "Sit inside a power rack.",
+            ["Sit inside a power rack.",
                 "Adjust the pins so that the bar is a couple of inches below your shoulders.",
                 "Extend your legs out straight in front of you.",
                 "Keep your back straight: don't slouch.",
@@ -4678,8 +4648,7 @@ extension Notes {
             [("Link", "https://www.t-nation.com/training/z-press-advanced-overhead-pressing")])
         
         add("Zercher Squat",
-            [
-                "Load a bar on a squat rack where the bar is above your waist but below your chest.",
+            ["Load a bar on a squat rack where the bar is above your waist but below your chest.",
                 "Lock your hands together and pick the bar up with it resting on your forearms just below the elbow.",
                 "Step away from the rack and take a shoulder width stance.",
                 "Point toes out slightly.",
