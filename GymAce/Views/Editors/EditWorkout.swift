@@ -6,6 +6,7 @@ struct EditWorkout: View {
     @Bindable var program: Program
     @Bindable var workout: Workout
     @State private var showNameHelp = false
+    @State private var showNotesHelp = false
     @State private var showTypeHelp = false
     @State private var showScheduleHelp = false
     @State private var showWeeksHelp = false
@@ -293,6 +294,24 @@ struct EditWorkout: View {
             if let m = malformedWeeks {
                 Text(m)
                     .foregroundColor(.red)
+                    .font(.footnote)
+            }
+
+            // Notes
+            HStack {
+                TextField("Notes", text: $workout.notes)
+                    .textInputAutocapitalization(.sentences)
+                    .textFieldStyle(.roundedBorder)
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showNotesHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showNotesHelp {
+                Text("Shown in the Workout view. Can style with **bold**, *italic*, or [text](url).")
+                    .foregroundColor(.blue)
                     .font(.footnote)
             }
 

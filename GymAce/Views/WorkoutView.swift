@@ -70,7 +70,7 @@ struct WorkoutView: View {
             Text(s)
                 .font(.footnote)
         } else if !workout.notes.isEmpty {
-            Text(workout.notes)
+            Text(LocalizedStringKey(workout.notes))
                 .font(.footnote)
         }
     }

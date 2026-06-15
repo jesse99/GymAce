@@ -49,6 +49,7 @@ struct EditProgram: View {
                             showCurrentWeekHelp.toggle()
                         }
                         .buttonStyle(.plain)
+                        .foregroundColor(.blue)
                         .padding(.leading, 5)
                     }
                     if showCurrentWeekHelp {
@@ -67,7 +68,7 @@ struct EditProgram: View {
                 HStack {
                     TextField("Summary", text: summaryBinding)
                         .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.words)
+                        .textInputAutocapitalization(.sentences)
                     Spacer()
                     
                     Button("", systemImage: "info.circle") {
