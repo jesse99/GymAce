@@ -4,49 +4,14 @@ struct EditProgram: View {
     @Bindable var model: Model
     @Bindable var program: Program
     @State private var showNameHelp = false
+    @State private var showSummaryHelp = false
     @State private var showCurrentWeekHelp = false
     @State private var malformedCurrentWeek: String? = nil
 
-    // Note that here we are always editing the active program so we do know which name to use.
-    private var nameBinding: Binding<String> {
-        Binding(
-            get: {return model.activeProgram},
-            set: {model.renameProgram(program, $0)}
-        )
-    }
-
-    private var isValid: Bool {
-        !model.activeProgram.isEmpty
-    }
-
-    private var currentWeekBinding: Binding<String> {
-        Binding(
-            get: {
-                if let w = program.currentWeek(on: Date()) {
-                    return "\(w)"
-                } else {
-                    return ""
-                }
-            },
-            set: {
-                if let n = Int($0) {
-                    if n > 0 {
-                        program.setCurrentWeek(n)
-                        malformedCurrentWeek = nil
-                    } else {
-                        malformedCurrentWeek = "Current weeks cannot be 0."
-                    }
-                } else {
-                    // Note that, if there are workouts with weeks, we need a current week.
-                    malformedCurrentWeek = "Current week should be a 1-based number."
-                }
-            }
-        )
-    }
-    
     var body: some View {
         VStack {
             Form {
+                // Name
                 HStack {
                     TextField("Name", text: nameBinding)
                         .textFieldStyle(.roundedBorder)
@@ -73,6 +38,7 @@ struct EditProgram: View {
                         .font(.footnote)
                 }
 
+                // Current week
                 if program.usesWeeks() {
                     HStack {
                         TextField("Current week, e.g. 1", text: currentWeekBinding)
@@ -96,12 +62,34 @@ struct EditProgram: View {
                             .font(.footnote)
                     }
                 }
+                
+                // Summary
+                HStack {
+                    TextField("Summary", text: summaryBinding)
+                        .textFieldStyle(.roundedBorder)
+                        .textInputAutocapitalization(.words)
+                    Spacer()
+                    
+                    Button("", systemImage: "info.circle") {
+                        showSummaryHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundColor(.blue)
+                    .padding(.leading, 5)
+                }
+                if showSummaryHelp {
+                    Text(verbatim: "Shown in the Edit Programs view. Can style with **bold**, *italic*, or [text](url).")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
             }
             .formStyle(.columns)    // only decent way I can find to stop the form from taking way too much vertical space
             .padding(7)
-            // Note that we don't allow these rows to be moved in edit mode
-            // because in ContentView they're sorted by due date.
+
+            // Workouts
             List {
+                // Note that we don't allow these rows to be moved in edit mode
+                // because in ContentView they're sorted by due date.
                 Section(header: Text("Workouts")) {
                     ForEach(program.workouts.sorted(by: {$0.name < $1.name})) { workout in
                         NavigationLink {
@@ -132,6 +120,56 @@ struct EditProgram: View {
         .navigationTitle("Edit Program")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(!isValid)
+    }
+    
+    // Note that here we are always editing the active program so we do know which name to use.
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {return model.activeProgram},
+            set: {model.renameProgram(program, $0)}
+        )
+    }
+
+    private var isValid: Bool {
+        !model.activeProgram.isEmpty
+    }
+
+    private var summaryBinding: Binding<String> {
+        Binding(
+            get: {return program.summary ?? ""},
+            set: {
+                if $0.isBlankOrEmpty {
+                    program.summary = nil
+                } else {
+                    program.summary = $0
+                }
+            }
+        )
+    }
+
+    private var currentWeekBinding: Binding<String> {
+        Binding(
+            get: {
+                if let w = program.currentWeek(on: Date()) {
+                    return "\(w)"
+                } else {
+                    return ""
+                }
+            },
+            set: {
+                if let n = Int($0) {
+                    if n > 0 {
+                        program.setCurrentWeek(n)
+                        malformedCurrentWeek = nil
+                    } else {
+                        malformedCurrentWeek = "Current weeks cannot be 0."
+                    }
+                } else {
+                    // Note that, if there are workouts with weeks, we need a current week.
+                    malformedCurrentWeek = "Current week should be a 1-based number."
+                }
+            }
+        )
     }
     
     private func addWorkout() {

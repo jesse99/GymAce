@@ -53,8 +53,6 @@ struct EditPrograms: View {
         }
         .navigationTitle("Edit Programs")
         .navigationBarTitleDisplayMode(.inline)
-        
-        // TODO show description for the selected program (if not empty)
     }
     
     private func labelColor(_ program: Program) -> Color {
