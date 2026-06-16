@@ -15,7 +15,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if !model.programs.isEmpty {
-                ProgramView(today: Date(), model: model)
+                ProgramView(model: model)
             } else {
                 NoProgramView()
             }

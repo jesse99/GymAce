@@ -5,7 +5,7 @@ import SwiftUI
 /// first) and workouts may appear multiple times (e.g. due might be today and then
 /// "in 7 days").
 struct ProgramView: View {
-    var today: Date        // used for custom previews
+    var today: Date? = nil        // used for custom previews
     @Bindable var model: Model
     @State private var newWorkout: Workout? = nil
     @State private var viewID = UUID()
@@ -15,9 +15,10 @@ struct ProgramView: View {
     private var entries: [WorkoutEntry] {
         var e: [WorkoutEntry] = []
         let calendar = Calendar.current
+        let today = self.today ?? Date()
         for i in (0...30) {
-            if let date = calendar.date(byAdding: .day, value: i, to: self.today), let program = model.active() {
-                e.append(contentsOf: program.findWorkouts(on: date, today: self.today))
+            if let date = calendar.date(byAdding: .day, value: i, to: today), let program = model.active() {
+                e.append(contentsOf: program.findWorkouts(on: date, today: today))
             }
         }
         return e
