@@ -59,6 +59,24 @@ func createRestingTimerView(_ remaining: Int) -> some View {
 }
 
 @ViewBuilder
+func createManualTimerView(_ remaining: Int) -> some View {
+    if let hr = getHeartRate(remaining) {
+        VStack {
+            Text(secsToLongStr(remaining))
+                .font(.largeTitle)
+                .foregroundColor(.red)
+            Text(hr)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    } else {
+        Text(secsToLongStr(remaining))
+            .font(.largeTitle)
+            .foregroundColor(.red)
+    }
+}
+
+@ViewBuilder
 func createTimedView(_ elapsed: Int) -> some View {
     if let hr = getHeartRate(elapsed) {
         VStack {
@@ -159,9 +177,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 } else if case .manualTimer(let start, let oldMode) = entry.mode {   // user has explicitly started a timer
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = elapsedSecs(now: context.date, start: start)
-                        Text(secsToLongStr(remaining))
-                            .font(.largeTitle)
-                            .foregroundColor(.red)
+                        createManualTimerView(remaining)
                     }
                     .padding(.top, 5)
                     Button("Stop Timer") {
