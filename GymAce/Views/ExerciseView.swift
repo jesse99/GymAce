@@ -8,10 +8,10 @@ fileprivate var lastSecs = -1
 func getHeartRate(_ secs: Int) -> String? {
     if healthKit.enabled && healthKit.inProgress {
         if secs != lastSecs {
-            if abs(secs) % 5 == 0 {         // fetch more often so we should always have a sample
+            if abs(secs) % 5 == 0 || lastSecs < 0 {  // fetch often so we should always have a sample
                 healthKit.fetchHeartRate()
             }
-            if abs(secs) % 10 == 0 {
+            if abs(secs) % 10 == 0 {                // sample less because it's beats per minute...
                 if let hr = healthKit.popHeartRate() {
                     heartRates.append("\(Int(hr))")
                 }
@@ -39,59 +39,12 @@ func createRestingTimerView(_ remaining: Int) -> some View {
     } else if remaining > -5 {
         .green
     } else {
-         .green
+        .green
     }
 
-    if let hr = getHeartRate(remaining) {
-        VStack {
-            Text(title)
-                .font(.largeTitle)
-                .foregroundColor(color)
-            Text(hr)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    } else {
-        Text(title)
-            .font(.largeTitle)
-            .foregroundColor(color)
-    }
-}
-
-@ViewBuilder
-func createManualTimerView(_ remaining: Int) -> some View {
-    if let hr = getHeartRate(remaining) {
-        VStack {
-            Text(secsToLongStr(remaining))
-                .font(.largeTitle)
-                .foregroundColor(.red)
-            Text(hr)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    } else {
-        Text(secsToLongStr(remaining))
-            .font(.largeTitle)
-            .foregroundColor(.red)
-    }
-}
-
-@ViewBuilder
-func createTimedView(_ elapsed: Int) -> some View {
-    if let hr = getHeartRate(elapsed) {
-        VStack {
-            Text(secsToLongStr(elapsed))
-                .font(.largeTitle)
-                .foregroundColor(.green)
-            Text(hr)
-                .lineLimit(nil)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    } else {
-        Text(secsToLongStr(elapsed))
-            .font(.largeTitle)
-            .foregroundColor(.green)
-    }
+    Text(title)
+        .font(.largeTitle)
+        .foregroundColor(color)
 }
 
 struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to scale font sizes
@@ -100,20 +53,14 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     var workout: Workout
     var exercise: Exercise
     @Bindable var entry: ExerciseEntry
-    @Environment(\.dismiss) var dismiss 
-
-    private var expectedBinding: Binding<Int> {
-        Binding(
-            get: {return entry.expectedReps(exercise)},
-            set: {entry.setActualReps(exercise, $0)}
-        )
-    }
+    @State var showHeartRate = false
+    @Environment(\.dismiss) var dismiss
 
     var body: some View {
         VStack {
             // Warmup 3 of 3
             Text(entry.headline(exercise))
-                .font(Font.headline)
+                .font(.headline)
                 .padding(2)
             
             // 5 reps @ 225 lbs
@@ -123,7 +70,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             // 45x2
             if let s = entry.footer(model, program, exercise) {
                 Text(s)
-                    .font(Font.body)
+                    .font(.body)
                     .padding(.bottom, 2)
             }
             
@@ -134,6 +81,30 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(2)
             }
             
+            if let t = workout.type, t == 24 || t == 37 || t == 46 || t == 52 { // hiking, running, swimming, or walking
+                if let value = healthKit.distance {
+                    let s = String(format: "%.2f", value*0.000621371)
+                    Text("distance: \(s) miles")    // TODO should have a distance to str function? do need to use km if metric tho
+                        .font(.body)
+                        .padding(.top, 10)
+                }
+            }
+            if showHeartRate {
+                TimelineView(.periodic(from: .now, by: 1.0)) {context in
+                    if let hr = getHeartRate(Int(context.date.timeIntervalSince1970)) {
+                        Text(hr)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .font(.body)
+                            .padding(.top, 10)
+                    } else {
+                        Text("sampling heart rate")
+                            .font(.body)
+                            .padding(.top, 10)
+                    }
+                }
+            }
+
             // The way this works is that the user does a set.
             // View will have a Next button (and optionally a picker for actual reps).
             // When that Next is pressed we will show a timer (if there is rest enabled).
@@ -177,7 +148,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 } else if case .manualTimer(let start, let oldMode) = entry.mode {   // user has explicitly started a timer
                     TimelineView(.periodic(from: .now, by: 1.0)) { context in
                         let remaining = elapsedSecs(now: context.date, start: start)
-                        createManualTimerView(remaining)
+                        Text(secsToLongStr(remaining))
+                            .font(.largeTitle)
+                            .foregroundColor(.red)
                     }
                     .padding(.top, 5)
                     Button("Stop Timer") {
@@ -201,20 +174,20 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     if case .timing = entry.mode, let working = entry.working {
                         TimelineView(.periodic(from: .now, by: 1.0)) { context in
                             let elapsed = Int(context.date.timeIntervalSince(working.started))
-                            createTimedView(elapsed)
+                            Text(secsToLongStr(elapsed))
+                                .font(.largeTitle)
+                                .foregroundColor(.green)
                         }
                         .padding(.top, 5)
                     }
                     Button(nextTitle()) {
                         if let rest = entry.rest(workout, exercise) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
-                            heartRates = []
                         } else if case .timed = exercise.data {
                             if case .timing = entry.mode {
                                 gotoFinished()
                             } else {
                                 entry.mode = .timing
-                                heartRates = []
                             }
                         } else {
                             entry.completedSet(exercise)
@@ -231,14 +204,6 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 20)
-                }
-            }
-            if let t = workout.type, t == 24 || t == 37 || t == 46 || t == 52 { // hiking, running, swimming, or walking
-                if let value = healthKit.distance {
-                    let s = String(format: "%.2f", value*0.000621371)
-                    Text("distance: \(s) miles")    // TODO should have a distance to str function? do need to use km if metric tho
-                        .font(.footnote)
-                        .padding(.top, 10)
                 }
             }
             if let s = findIssues() {
@@ -261,6 +226,19 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 } label: {
                     Image(systemName: "line.horizontal.3")
                         .foregroundColor(.blue)
+                }
+            }
+            ToolbarItem {
+                Button {
+                    showHeartRate.toggle()
+                    if showHeartRate {
+                        heartRates = []
+                        lastSecs = -1
+                        healthKit.resetHeartRate()
+                    }
+                } label: {
+                    Image(systemName: showHeartRate ? "bolt.heart.fill" : "heart.fill")
+                        .foregroundStyle(healthKit.enabled && healthKit.inProgress ? .red : .gray)
                 }
             }
         }
@@ -286,6 +264,13 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
     }
     
+    private var expectedBinding: Binding<Int> {
+        Binding(
+            get: {return entry.expectedReps(exercise)},
+            set: {entry.setActualReps(exercise, $0)}
+        )
+    }
+
     private func findIssues() -> String? {
         var issues = ""
         

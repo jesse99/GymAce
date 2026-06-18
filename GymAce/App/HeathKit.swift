@@ -117,6 +117,10 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         print("Ending workout...")
     }
 
+    func resetHeartRate() {
+        heartRate = nil
+    }
+
     func fetchHeartRate() {
         Task {
             if let sample = try? await fetchMostRecentSample(for: .heartRate) {
