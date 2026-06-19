@@ -219,6 +219,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             ToolbarItem(placement: .navigationBarTrailing) {   
                 Menu {
                     Button("Clear History", action: {confirmClear = true})
+                        .disabled(exercise.history.isEmpty)
                     NavigationLink(destination: EditExercise(model: model, program: program, exercise: program.findExercise(entry.name)!)) {
                         Text("Edit Exercise")
                     }
