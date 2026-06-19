@@ -220,6 +220,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     NavigationLink(destination: EditExercise(model: model, program: program, exercise: program.findExercise(entry.name)!)) {
                         Text("Edit Exercise")
                     }
+                    NavigationLink(destination: editNote(model, exercise.formalName)) {
+                        Text("Edit Note")
+                    }
                     Button("Reset Exercise", action: resetExercise)
                     if case .performing = entry.mode {
                         Button("Start Timer") {startTimer(0)}

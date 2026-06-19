@@ -1,26 +1,44 @@
 import SwiftUI
 
+fileprivate func onChangeNote(_ model: Model, _ name: String, _ text: String) {
+    if text.isBlankOrEmpty || text == model.notes.defaults[name] {
+        model.notes.custom[name] = nil
+    } else {
+        model.notes.custom[name] = text
+    }
+    model.dirty = true
+}
+
+@ViewBuilder
+func editNote(_ model: Model, _ name: String) -> some View {
+    let currentText = model.notes.custom[name] ?? model.notes.defaults[name] ?? ""
+    let help = if model.notes.defaults[name] != nil {
+        "For styling use **bold**, *italic*, or [text](url). Setting to empty will restore the default text."
+    } else {
+        "For styling use **bold**, *italic*, or [text](url). Setting to empty will delete this note."
+    }
+    EditText(title: "Edit \(name)", help: help, text: currentText, onSave: {text in onChangeNote(model, name, text)})
+}
+
 struct EditNotes: View {
     @Bindable var model: Model
     @Bindable var program: Program
     @State private var editName = ""
     @State private var showAlert = false
-    private let help1 = "For styling use **bold**, *italic*, or [text](url). Setting to empty will restore the default text."
-    private let help2 = "For styling use **bold**, *italic*, or [text](url). Setting to empty will delete this note."
 
     var body: some View {
         VStack {
             List {
                 Section(header: Text("Notes")) {
-                    ForEach(findNames(), id: \.0) {(name, nonDefault) in
+                    ForEach(findNames(), id: \.self) {name in
                         NavigationLink {
-                            EditText(title: "Edit \(name)", help: nonDefault ? help2 : help1, text: currentText(name), onSave: {text in onNewText(name, text)})
+                            editNote(model, name)
                         } label: {
-                            if nonDefault {
+                            if model.notes.defaults[name] != nil {
                                 Text(name)
-                                    .bold()
                             } else {
                                 Text(name)
+                                    .bold()
                             }
                         }
                     }
@@ -51,29 +69,16 @@ struct EditNotes: View {
         .navigationBarTitleDisplayMode(.inline)
     }
     
-    private func currentText(_ name: String) -> String {
-        return model.notes.custom[name] ?? model.notes.defaults[name] ?? ""
-    }
-    
-    private func onNewText(_ name: String, _ text: String) {
-        if text.isBlankOrEmpty || text == model.notes.defaults[name] {
-            model.notes.custom[name] = nil
-        } else {
-            model.notes.custom[name] = text
-        }
-        model.dirty = true
-    }
-    
-    private func findNames() -> [(String, Bool)] {
-        var names = model.notes.defaults.keys.map {($0, false)}
+    private func findNames() -> [String] {
+        var names = Array(model.notes.defaults.keys)
         
         for name in model.notes.custom.keys {
             if model.notes.defaults[name] == nil {
-                names.append((name, true))
+                names.append(name)
             }
         }
         
-        return names.sorted {$0.0 < $1.0}
+        return names.sorted {$0 < $1}
     }
     
     private func nameExists(_ name: String) -> Bool {

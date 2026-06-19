@@ -365,7 +365,7 @@ fileprivate func make(_ name: String, _ formalName: String) -> Exercise {
 fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weight: Float? = nil, note: String? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    var c = Completed(reps: reps, weight: weight, units: .Imperial, completed: d!)
+    let c = Completed(reps: reps, weight: weight, units: .Imperial, completed: d!)
     c.note = note
     exercise.history.append(c)
 }
