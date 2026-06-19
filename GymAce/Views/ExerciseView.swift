@@ -215,8 +215,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
         .navigationTitle(entry.name)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {    // TODO add Edit Exercise? or minor edits?
+            ToolbarItem(placement: .navigationBarTrailing) {   
                 Menu {
+                    NavigationLink(destination: EditExercise(model: model, program: program, exercise: program.findExercise(entry.name)!)) {
+                        Text("Edit Exercise")
+                    }
                     Button("Reset Exercise", action: resetExercise)
                     if case .performing = entry.mode {
                         Button("Start Timer") {startTimer(0)}

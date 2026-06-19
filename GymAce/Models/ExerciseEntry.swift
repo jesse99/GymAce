@@ -33,6 +33,7 @@ struct Working: Codable {
     var weight: Float?
     var units: Units
     var started: Date
+    var data: ExerciseData
     
     /// Returns true if the exercise was started long enough ago that it should be considered an exercise
     /// that the user has abandoned.
@@ -41,13 +42,70 @@ struct Working: Codable {
         return delta/3600.0 > 4.0   // aka more than 4 hours
     }
     
-    init(type: ValueType, weight: Float?, units: Units) {
+    init(_ exercise: Exercise, _ weight: Float?, _ units: Units) {
+        switch exercise.data {
+        case .reps(let d):
+            self.type = .reps
+            self.expected = []
+            for (index, reps) in d.workset.enumerated() {
+                let r = findExpected(exercise, reps, index)
+                expected.append(r)
+            }
+        case .durations(let d):
+            self.type = .secs
+            self.expected = []
+            for s in d.secs {
+                expected.append(s)
+            }
+        case .percent(let d):
+            self.type = .reps
+            self.expected = []
+            for (index, reps) in d.workset.enumerated() {
+                let r = findExpected(exercise, reps, index)
+                expected.append(r)
+            }
+        case .timed:
+            self.type = .secs
+            self.expected = []
+        }
         self.values = []
-        self.type = type
-        self.expected = []
         self.weight = weight
         self.units = units
         self.started = Date()
+        self.data = exercise.data
+    }
+    
+    func compatible(_ rhs: ExerciseData) -> Bool {
+        switch data {
+        case .durations(let d1):
+            switch rhs {
+            case .durations(let d2):
+                return d1.secs.count == d2.secs.count
+            default:
+                return false
+            }
+        case .percent(let d1):
+            switch rhs {
+            case .percent(let d2):
+                return d1.warmups.count == d2.warmups.count && d1.workset.count == d2.workset.count
+            default:
+                return false
+            }
+        case .reps(let d1):
+            switch rhs {
+            case .reps(let d2):
+                return d1.warmups.count == d2.warmups.count && d1.workset.count == d2.workset.count && d1.backoff.count == d2.backoff.count
+            default:
+                return false
+            }
+        case .timed:
+            switch rhs {
+            case .timed:
+                return true
+            default:
+                return false
+            }
+        }
     }
     
     /// Used to show the user what happened for that workout.
@@ -216,7 +274,7 @@ final class ExerciseEntry: Codable {
     /// Called when the user starts an exercise. Resets setIndex and working if needed.
     func started(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) {
         if let w = self.working {
-            if w.isStale {
+            if w.isStale || !w.compatible(exercise.data) {
                 reset(model, program, exercise)
                 if workout.isStale {
                     workout.started = Date()
@@ -246,28 +304,7 @@ final class ExerciseEntry: Codable {
             }
         }
         
-        switch exercise.data {
-        case .reps(let d):
-            working = Working(type: .reps, weight: weight, units: units)
-            for (index, reps) in d.workset.enumerated() {
-                let r = findExpected(exercise, reps, index)
-                working!.expected.append(r)
-            }
-        case .durations(let d):
-            working = Working(type: .secs, weight: weight, units: units)
-            for s in d.secs {
-                working!.expected.append(s)
-            }
-        case .percent(let d):
-            working = Working(type: .reps, weight: weight, units: units)
-            for (index, reps) in d.workset.enumerated() {
-                let r = findExpected(exercise, reps, index)
-                working!.expected.append(r)
-            }
-        case .timed:
-            working = Working(type: .secs, weight: weight, units: units)
-        }
-                
+        working = Working(exercise, weight, units)
         mode = .performing
     }
     
