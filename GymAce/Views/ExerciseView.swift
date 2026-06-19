@@ -54,6 +54,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     var exercise: Exercise
     @Bindable var entry: ExerciseEntry
     @State var showHeartRate = false
+    @State var confirmClear = false
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -62,11 +63,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             Text(entry.headline(exercise))
                 .font(.headline)
                 .padding(2)
-            
+
             // 5 reps @ 225 lbs
             Text(entry.subhead(model, program, exercise))
                 .font(Font.body)
-            
+
             // 45x2
             if let s = entry.footer(model, program, exercise) {
                 Text(s)
@@ -217,6 +218,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {   
                 Menu {
+                    Button("Clear History", action: {confirmClear = true})
                     NavigationLink(destination: EditExercise(model: model, program: program, exercise: program.findExercise(entry.name)!)) {
                         Text("Edit Exercise")
                     }
@@ -254,13 +256,28 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
         TabView {
             List {
-                ForEach(entry.history(exercise), id: \.index) {
+                if let w = entry.working, !w.values.isEmpty {
+                    workingView(model, exercise, w)
+                }
+                ForEach((0..<exercise.history.count).reversed().suffix(20), id: \.self) {
                     completedView(model, exercise, $0)
                 }
             }
             .listStyle(.plain)
             .tabItem {Label("History", systemImage: "figure.run")}
-            
+            .confirmationDialog(
+                "Are you sure you want to delete all the history entries for this exercise?",
+                 isPresented: $confirmClear,
+                titleVisibility: .visible,
+            ) {
+                Button("Delete", role: .destructive) {
+                    withAnimation {
+                        clearHistory()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}  // this isn't notmally shown now: users are expected to click outside the alert to cancel
+            }
+
             ScrollView {
                 Text(LocalizedStringKey(model.notes.find(exercise.formalName))) // localized so that markdown works
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -268,6 +285,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
             .tabItem {Label("Notes", systemImage: "book.pages")}
         }
+    }
+    
+    private func clearHistory() {
+        exercise.history.removeAll()
     }
     
     private var expectedBinding: Binding<Int> {
@@ -388,52 +409,64 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
 
 // View for a line in the history tab.
 @ViewBuilder
-private func completedView(_ model: Model, _ exercise: Exercise,_ snapshot: Snapshot) -> some View {
+private func workingView(_ model: Model, _ exercise: Exercise,_ working: Working) -> some View {
+    VStack {
+        HStack {
+            // in progress
+            Image(systemName: "questionmark.square.dashed")
+            
+            // today
+            Text(Date().daysStr(0))
+            
+            // sets completed so far
+            let c = Completed(values: working.values, type: working.type, weight: working.weight, units: working.units)
+            Text(c.details())
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+// View for a line in the history tab.
+@ViewBuilder
+private func completedView(_ model: Model, _ exercise: Exercise,_ index: Int) -> some View {
+    let current = exercise.history[index]
     VStack {
         HStack {
             // icon labeling how well the user did compared to prior workout
-            if snapshot.finished {
-                if let prior = snapshot.prior {
-                    let better = snapshot.current.better(prior)
-                    if better == 1 {
-                        Image(systemName: "hand.thumbsup.fill")   // current is better
-                            .foregroundColor(.green)
-                    } else if better == 0 {
-                        Image(systemName: "staroflife.fill")   // current is same as prior
-                    } else {
-                        Image(systemName: "hand.thumbsdown.fill")   // current is worse
-                            .foregroundColor(.red)
-                    }
+            if let prior = exercise.history.at(index - 1) {
+                let better = current.better(prior)
+                if better == 1 {
+                    Image(systemName: "hand.thumbsup.fill")     // current is better
+                        .foregroundColor(.green)
+                } else if better == 0 {
+                    Image(systemName: "staroflife.fill")        // current is same as prior
                 } else {
-                    Image(systemName: "staroflife.fill")
+                    Image(systemName: "hand.thumbsdown.fill")   // current is worse
+                        .foregroundColor(.red)
                 }
             } else {
-                Image(systemName: "questionmark.square.dashed")   // in progress
+                Image(systemName: "staroflife.fill")
             }
             
             // the date the workout happened
-            if let days = Date().daysBetween(snapshot.current.completed) {
+            if let days = Date().daysBetween(current.completed) {
                 Text(Date().daysStr(days))
             } else {
                 Text("?")
             }
             
             // details for the workout
-            if snapshot.finished {
-                NavigationLink {
-                    EditCompleted(model: model, exercise: exercise, snapshot: snapshot)
-                } label: {
-                    Text(snapshot.current.details())
-                }
-                .navigationLinkIndicatorVisibility(.hidden)
-                .gridColumnAlignment(.leading)
-                .foregroundColor(.blue)
-            } else {
-                Text(snapshot.current.details())
+            NavigationLink {
+                EditCompleted(model: model, exercise: exercise, current: current, index: index)
+            } label: {
+                Text(current.details())
             }
+            .navigationLinkIndicatorVisibility(.hidden)
+            .gridColumnAlignment(.leading)
+            .foregroundColor(.blue)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        if let n = snapshot.current.note {
+        if let n = current.note {
             Text(n)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }

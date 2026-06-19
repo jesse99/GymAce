@@ -368,10 +368,6 @@ final class ExerciseEntry: Codable {
         }
     }
         
-    func history(_ exercise: Exercise) -> HistorySnapshot {
-        return HistorySnapshot(entry: self, exercise: exercise)
-    }
-
     private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
         if let exercise = program.findExercise(name), let bweight = findBaseWeight(program), case .success(let weight) = bweight {
             if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
@@ -669,54 +665,6 @@ extension ExerciseEntry {
             break
         }
         return nil
-    }
-}
-
-class Snapshot {
-    var current: Completed
-    let prior: Completed?
-    let finished: Bool
-    let index: Int          // index into exercise.history
-    
-    init(current: Completed, prior: Completed?, finished: Bool, index: Int) {
-        self.current = current
-        self.prior = prior
-        self.finished = finished
-        self.index = index
-    }
-}
-
-struct HistorySnapshot: RandomAccessCollection {
-    let entry: ExerciseEntry
-    let exercise: Exercise
-    let maxItems = 20
-    
-    var startIndex: Int {0}
-    var endIndex: Int {Swift.min(exercise.history.endIndex, maxItems) + (hasWorking ? 1 : 0)}
-    var hasWorking: Bool {entry.working != nil && !entry.working!.values.isEmpty}
-    
-    subscript(position: Int) -> Snapshot {
-        var index = position
-        if let w = entry.working, !w.values.isEmpty {
-            if index == 0 {
-                let c = Completed(values: w.values, type: w.type, weight: w.weight, units: w.units)
-                return Snapshot(current: c, prior: nil, finished: false, index: -1)  // nil prior since we can't compare the two yet
-            }
-        } else {
-            index += 1
-        }
-        
-        let i = exercise.history.count - index
-        return Snapshot(current: exercise.history[i], prior: previous(index), finished: true, index: i)
-    }
-    
-    private func previous(_ position: Int) -> Completed! {
-        let i = exercise.history.count - position - 1
-        if i >= 0 && i < exercise.history.count {
-            return exercise.history[i]
-        } else {
-            return nil
-        }
     }
 }
 

@@ -3,7 +3,8 @@ import SwiftUI
 struct EditCompleted: View {
     var model: Model
     @Bindable var exercise: Exercise
-    @State var snapshot: Snapshot
+    @State var current: Completed
+    @State var index: Int
     @State private var showWeightHelp = false
     @State private var showRepsHelp = false
     @State private var repsError: String? = nil
@@ -90,7 +91,7 @@ struct EditCompleted: View {
     private var repsBinding: Binding<String> {
         Binding(
             get: {
-                let completed = exercise.history[snapshot.index]
+                let completed = exercise.history[index]
                 let a = completed.values.map {"\($0)"}
                 return a.joined(separator: " ")
             },
@@ -110,7 +111,7 @@ struct EditCompleted: View {
                         break
                     }
                 }
-                exercise.history[snapshot.index].values = values
+                exercise.history[index].values = values
             }
         )
     }
@@ -118,13 +119,13 @@ struct EditCompleted: View {
     private var noteBinding: Binding<String> {
         Binding(
             get: {
-                return snapshot.current.note ?? ""
+                return current.note ?? ""
             },
             set: {
                 if $0.isBlankOrEmpty {
-                    snapshot.current.note = nil
+                    current.note = nil
                 } else {
-                    snapshot.current.note = $0
+                    current.note = $0
                 }
             }
         )
@@ -133,14 +134,14 @@ struct EditCompleted: View {
     private var weightBinding: Binding<String> {
         Binding(
             get: {
-                if let w = exercise.history[snapshot.index].weight {
+                if let w = exercise.history[index].weight {
                     return formatWeight(w, .None)
                 } else {
                     return ""
                 }
             },
             set: {
-                exercise.history[snapshot.index].weight = Float($0)
+                exercise.history[index].weight = Float($0)
             }
         )
     }
@@ -152,8 +153,7 @@ struct EditCompleted: View {
     let workout = program.workouts[0]
     let entry = workout.entries[0]
     let exercise = program.findExercise(entry.name)!
-    let snapshot = entry.history(exercise)[1]
     NavigationView {
-        EditCompleted(model: model, exercise: exercise, snapshot: snapshot)
+        EditCompleted(model: model, exercise: exercise, current: exercise.history[1], index: 1)
     }
 }

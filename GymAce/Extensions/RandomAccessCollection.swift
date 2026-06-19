@@ -25,4 +25,8 @@ extension RandomAccessCollection where Element: Comparable {
             return .missing(low)
         }
     }
+    
+    func at(_ index: Index) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
 }
