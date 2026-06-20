@@ -138,9 +138,7 @@ struct EditExercise: View {
         Form {
             // Name
             HStack {
-                TextField("Name", text: nameBinding)
-                    .textFieldStyle(.roundedBorder)
-                    .textInputAutocapitalization(.words)
+                nameTextField("Name", nameBinding)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNameHelp.toggle()
@@ -165,9 +163,7 @@ struct EditExercise: View {
             
             // Formal name
             HStack {
-                TextField("Formal Name", text: formalBinding)
-                    .textFieldStyle(.roundedBorder)
-                    .textInputAutocapitalization(.words)
+                nameTextField("Formal Name", formalBinding)
                     .foregroundStyle(formalColor(formalBinding.wrappedValue))   // TODO not 100% reliable when editing
                 //                    .id(exercise.formalName.hashValue) // think this causes the text field to lose focus when typing
                 Menu("", systemImage: "chevron.up.chevron.down") {
@@ -250,11 +246,7 @@ struct EditExercise: View {
                 }
             } else {
                 HStack {
-                    TextField("Weight", text: weightBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.decimalPad)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    weightTextField("Weight", weightBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showWeightHelp.toggle()
@@ -309,10 +301,7 @@ struct EditExercise: View {
             if typeBinding.wrappedValue == 0 {
                 // Durations type
                 HStack {
-                    TextField("Durations", text: durationsBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    durationsTextField("Durations", durationsBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showDurationsHelp.toggle()
@@ -361,11 +350,7 @@ struct EditExercise: View {
                 }
                 
                 HStack {
-                    TextField("Percent", text: percentBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numberPad)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    intTextField("Percent", percentBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentHelp.toggle()
@@ -385,11 +370,7 @@ struct EditExercise: View {
                 }
 
                 HStack {
-                    TextField("Warmups", text: percentWarmupBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numbersAndPunctuation)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    repsTextField("Warmups", percentWarmupBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentWarmupHelp.toggle()
@@ -409,11 +390,7 @@ struct EditExercise: View {
                 }
 
                 HStack {
-                    TextField("Worksets", text: percentWorksetsBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numbersAndPunctuation)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    repsTextField("Worksets", percentWorksetsBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentWorksetsHelp.toggle()
@@ -433,10 +410,7 @@ struct EditExercise: View {
                 }
 
                 HStack {
-                    TextField("Rest", text: percentRestBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    durationsTextField("Rest", percentRestBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentRestHelp.toggle()
@@ -458,11 +432,7 @@ struct EditExercise: View {
             } else if typeBinding.wrappedValue == 2 {
                 // Reps type
                 HStack {
-                    TextField("Warmups", text: repsWarmupBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numbersAndPunctuation)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    repsTextField("Warmups", repsWarmupBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsWarmupHelp.toggle()
@@ -482,11 +452,7 @@ struct EditExercise: View {
                 }
 
                 HStack {
-                    TextField("Worksets", text: repsWorksetsBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numbersAndPunctuation)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    repsTextField("Worksets", repsWorksetsBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsWorksetsHelp.toggle()
@@ -506,11 +472,7 @@ struct EditExercise: View {
                 }
 
                 HStack {
-                    TextField("Backoff", text: repsBackoffBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .keyboardType(.numbersAndPunctuation)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    repsTextField("Backoff", repsBackoffBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsBackoffHelp.toggle()
@@ -530,10 +492,7 @@ struct EditExercise: View {
                 }
                 
                 HStack {
-                    TextField("Rest", text: repsRestBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.never)
-                        .autocorrectionDisabled(true)
+                    durationsTextField("Rest", repsRestBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsRestHelp.toggle()

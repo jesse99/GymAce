@@ -13,9 +13,7 @@ struct EditProgram: View {
             Form {
                 // Name
                 HStack {
-                    TextField("Name", text: nameBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.words)
+                    nameTextField("Name", nameBinding)
                     Spacer()
                     
                     // TODO what if we just toggle a field to show/hide a text field?
@@ -41,11 +39,7 @@ struct EditProgram: View {
                 // Current week
                 if program.usesWeeks() {
                     HStack {
-                        TextField("Current week, e.g. 1", text: currentWeekBinding)
-                            .keyboardType(.numberPad)
-                            .textFieldStyle(.roundedBorder)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled(true)
+                        intTextField("Current week, e.g. 1", currentWeekBinding)
                         Spacer()
                         Button("", systemImage: "info.circle") {
                             showCurrentWeekHelp.toggle()
@@ -68,9 +62,7 @@ struct EditProgram: View {
                 
                 // Summary
                 HStack {
-                    TextField("Summary", text: summaryBinding)
-                        .textFieldStyle(.roundedBorder)
-                        .textInputAutocapitalization(.sentences)
+                    noteTextField("Summary", summaryBinding)
                     Spacer()
                     
                     Button("", systemImage: "info.circle") {

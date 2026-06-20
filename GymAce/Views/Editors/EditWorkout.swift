@@ -114,17 +114,17 @@ struct EditWorkout: View {
         )
     }
 
-    private var everyNBinding: Binding<Int> {
+    private var everyNBinding: Binding<String> {
         Binding(
             get: {
                 switch workout.schedule {
-                    case .anyDay: return 0
-                    case .every(let n): return n
-                    case .days(_): return 2
+                    case .anyDay: return "0"
+                    case .every(let n): return "\(n)"
+                    case .days(_): return "2"
                 }
             },
             set: {
-                self.workout.schedule = .every($0)
+                self.workout.schedule = .every(Int($0) ?? 0)
             }
         )
     }
@@ -249,9 +249,7 @@ struct EditWorkout: View {
         Form {
             // Name
             HStack {
-                TextField("Name", text: $workout.name)
-                    .textFieldStyle(.roundedBorder)
-                    .textInputAutocapitalization(.words)
+                nameTextField("Name", $workout.name)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNameHelp.toggle()
@@ -276,11 +274,7 @@ struct EditWorkout: View {
 
             // Weeks
             HStack {
-                TextField("Weeks, e.g. 1-4", text: weeksBinding)
-                    .textFieldStyle(.roundedBorder)
-                    .keyboardType(.numbersAndPunctuation)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled(true)
+                rangeTextField("Weeks, e.g. 1-4", weeksBinding)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showWeeksHelp.toggle()
@@ -301,9 +295,7 @@ struct EditWorkout: View {
 
             // Notes
             HStack {
-                TextField("Notes", text: $workout.notes)
-                    .textInputAutocapitalization(.sentences)
-                    .textFieldStyle(.roundedBorder)
+                noteTextField("Notes", $workout.notes)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNotesHelp.toggle()
@@ -427,13 +419,7 @@ struct EditWorkout: View {
                         EmptyView()
                     case .every(_):
                         HStack {
-                            // I think NumberFormatter requires a number so it prevents
-                            // users from deleting the last digit.
-                            TextField("", value: everyNBinding, formatter: NumberFormatter())
-                                .textFieldStyle(.roundedBorder)
-                                .keyboardType(.numberPad)
-                                .textInputAutocapitalization(.never)
-                                .autocorrectionDisabled(true)
+                            intTextField("", everyNBinding)
                             Text("days")
                         }
                     case .days(_):
