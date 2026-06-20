@@ -256,6 +256,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             entry.started(model, program, workout, exercise)
         }
         TabView {
+            // History tab
             List {
                 if let w = entry.working, !w.values.isEmpty {
                     workingView(model, exercise, w)
@@ -279,6 +280,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 Button("Cancel", role: .cancel) {}  // this isn't notmally shown now: users are expected to click outside the alert to cancel
             }
 
+            // Note tab
             ScrollView {
                 Text(LocalizedStringKey(model.notes.find(exercise.formalName))) // localized so that markdown works
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -302,7 +304,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     private func findIssues() -> String? {
         var issues = ""
         
-        if let wn = exercise.weightSet {
+        if let wn = exercise.weightSet, !wn.isBlankOrEmpty {
             if model.weightSets[wn] == nil {
                 issues += "There is no weight set named '\(wn)'. "
             }
@@ -311,6 +313,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             if program.findExercise(d.other) == nil {
                 issues += "Couldn't find a base exercise named '\(d.other)'. "
             }
+        }
+        if !exercise.formalName.isBlankOrEmpty && !model.notes.has(exercise.formalName) {
+            issues += "There's no note for '\(exercise.formalName)'. "
         }
         if exercise.name != entry.name {
             issues += "The exercise is named \(exercise.name) but the entry is named \(entry.name). "  // shouldn't happen

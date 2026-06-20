@@ -39,6 +39,10 @@ final class Notes: Codable {
         try container.encode(custom, forKey: .custom)
     }
 
+    func has(_ name: String) -> Bool {
+        return defaults[name] != nil || custom[name] != nil
+    }
+
     func find(_ name: String) -> String {
         if let n = custom[name] {
             return n
