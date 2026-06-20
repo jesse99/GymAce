@@ -37,8 +37,8 @@ struct EditDiscrete: View {
             // Name
             HStack {
                 TextField("Name", text: nameBinding)
-                    .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
                     .padding(.leading, 10)
                 Spacer()
                 Button("", systemImage: "info.circle") {
@@ -66,8 +66,10 @@ struct EditDiscrete: View {
             // Extra 1
             HStack {
                 TextField("Extra weight 1", text: extra1Binding)
-                    .keyboardType(.decimalPad)
                     .textFieldStyle(.roundedBorder)
+                    .keyboardType(.decimalPad)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                     .padding(.leading, 10)
                 Spacer()
                 Button("", systemImage: "info.circle") {
@@ -88,8 +90,10 @@ struct EditDiscrete: View {
             // Extra 2
             HStack {
                 TextField("Extra weight 2", text: extra2Binding)
-                    .keyboardType(.decimalPad)
                     .textFieldStyle(.roundedBorder)
+                    .keyboardType(.decimalPad)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                     .padding(.leading, 10)
                 Spacer()
                 Button("", systemImage: "info.circle") {

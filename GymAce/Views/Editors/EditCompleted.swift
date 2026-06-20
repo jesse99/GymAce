@@ -16,6 +16,9 @@ struct EditCompleted: View {
             HStack {
                 TextField(repsTitle().capitalized, text: repsBinding)
                     .textFieldStyle(.roundedBorder)
+                    .keyboardType(.numbersAndPunctuation)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showRepsHelp.toggle()
@@ -37,8 +40,10 @@ struct EditCompleted: View {
             // Weight
             HStack {
                 TextField("Weight", text: weightBinding)
-                    .keyboardType(.decimalPad)
                     .textFieldStyle(.roundedBorder)
+                    .keyboardType(.decimalPad)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showWeightHelp.toggle()
@@ -56,6 +61,7 @@ struct EditCompleted: View {
             HStack {
                 TextField("note", text: noteBinding)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.sentences)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNoteHelp.toggle()

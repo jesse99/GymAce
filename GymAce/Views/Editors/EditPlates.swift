@@ -35,8 +35,8 @@ struct EditPlates: View {
             // Name
             HStack {
                 TextField("Name", text: nameBinding)
-                    .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
                     .padding(.leading, 10)
                 Spacer()
                 Button("", systemImage: "info.circle") {
@@ -64,8 +64,10 @@ struct EditPlates: View {
             // Bar
             HStack {
                 TextField("Bar", text: barBinding)
-                    .keyboardType(.decimalPad)
                     .textFieldStyle(.roundedBorder)
+                    .keyboardType(.decimalPad)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                     .padding(.leading, 10)
                 Spacer()
                 Button("", systemImage: "info.circle") {

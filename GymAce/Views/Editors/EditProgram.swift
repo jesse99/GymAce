@@ -44,6 +44,8 @@ struct EditProgram: View {
                         TextField("Current week, e.g. 1", text: currentWeekBinding)
                             .keyboardType(.numberPad)
                             .textFieldStyle(.roundedBorder)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled(true)
                         Spacer()
                         Button("", systemImage: "info.circle") {
                             showCurrentWeekHelp.toggle()

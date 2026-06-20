@@ -250,8 +250,8 @@ struct EditWorkout: View {
             // Name
             HStack {
                 TextField("Name", text: $workout.name)
-                    .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNameHelp.toggle()
@@ -277,8 +277,10 @@ struct EditWorkout: View {
             // Weeks
             HStack {
                 TextField("Weeks, e.g. 1-4", text: weeksBinding)
-                    .keyboardType(.numbersAndPunctuation)
                     .textFieldStyle(.roundedBorder)
+                    .keyboardType(.numbersAndPunctuation)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled(true)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showWeeksHelp.toggle()
@@ -428,8 +430,10 @@ struct EditWorkout: View {
                             // I think NumberFormatter requires a number so it prevents
                             // users from deleting the last digit.
                             TextField("", value: everyNBinding, formatter: NumberFormatter())
-                                .keyboardType(.numberPad)
                                 .textFieldStyle(.roundedBorder)
+                                .keyboardType(.numberPad)
+                                .textInputAutocapitalization(.never)
+                                .autocorrectionDisabled(true)
                             Text("days")
                         }
                     case .days(_):

@@ -139,8 +139,8 @@ struct EditExercise: View {
             // Name
             HStack {
                 TextField("Name", text: nameBinding)
-                    .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNameHelp.toggle()
@@ -166,8 +166,8 @@ struct EditExercise: View {
             // Formal name
             HStack {
                 TextField("Formal Name", text: formalBinding)
-                    .textInputAutocapitalization(.words)
                     .textFieldStyle(.roundedBorder)
+                    .textInputAutocapitalization(.words)
                     .foregroundStyle(formalColor(formalBinding.wrappedValue))   // TODO not 100% reliable when editing
                 //                    .id(exercise.formalName.hashValue) // think this causes the text field to lose focus when typing
                 Menu("", systemImage: "chevron.up.chevron.down") {
@@ -251,8 +251,10 @@ struct EditExercise: View {
             } else {
                 HStack {
                     TextField("Weight", text: weightBinding)
-                        .keyboardType(.decimalPad)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.decimalPad)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showWeightHelp.toggle()
@@ -309,6 +311,8 @@ struct EditExercise: View {
                 HStack {
                     TextField("Durations", text: durationsBinding)
                         .textFieldStyle(.roundedBorder)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showDurationsHelp.toggle()
@@ -358,8 +362,10 @@ struct EditExercise: View {
                 
                 HStack {
                     TextField("Percent", text: percentBinding)
-                        .keyboardType(.numberPad)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numberPad)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentHelp.toggle()
@@ -381,6 +387,9 @@ struct EditExercise: View {
                 HStack {
                     TextField("Warmups", text: percentWarmupBinding)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numbersAndPunctuation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentWarmupHelp.toggle()
@@ -402,6 +411,9 @@ struct EditExercise: View {
                 HStack {
                     TextField("Worksets", text: percentWorksetsBinding)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numbersAndPunctuation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentWorksetsHelp.toggle()
@@ -423,6 +435,8 @@ struct EditExercise: View {
                 HStack {
                     TextField("Rest", text: percentRestBinding)
                         .textFieldStyle(.roundedBorder)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showPercentRestHelp.toggle()
@@ -446,6 +460,9 @@ struct EditExercise: View {
                 HStack {
                     TextField("Warmups", text: repsWarmupBinding)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numbersAndPunctuation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsWarmupHelp.toggle()
@@ -467,6 +484,9 @@ struct EditExercise: View {
                 HStack {
                     TextField("Worksets", text: repsWorksetsBinding)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numbersAndPunctuation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsWorksetsHelp.toggle()
@@ -488,6 +508,9 @@ struct EditExercise: View {
                 HStack {
                     TextField("Backoff", text: repsBackoffBinding)
                         .textFieldStyle(.roundedBorder)
+                        .keyboardType(.numbersAndPunctuation)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsBackoffHelp.toggle()
@@ -509,6 +532,8 @@ struct EditExercise: View {
                 HStack {
                     TextField("Rest", text: repsRestBinding)
                         .textFieldStyle(.roundedBorder)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled(true)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showRepsRestHelp.toggle()
