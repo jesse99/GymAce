@@ -1,6 +1,6 @@
 import SwiftUI
 
-// 1min 30s
+/// 1min 30s
 @ViewBuilder
 func durationsTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
@@ -9,7 +9,7 @@ func durationsTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
-// 90
+/// 90
 @ViewBuilder
 func intTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
@@ -19,7 +19,7 @@ func intTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
-// Bench Press
+/// Bench Press
 @ViewBuilder
 func nameTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
@@ -27,7 +27,7 @@ func nameTextField(_ title: String, _ text: Binding<String>) -> some View {
         .textInputAutocapitalization(.words)
 }
 
-// one line of arbitrary text
+/// one line of arbitrary text
 @ViewBuilder
 func noteTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
@@ -35,7 +35,7 @@ func noteTextField(_ title: String, _ text: Binding<String>) -> some View {
         .textInputAutocapitalization(.sentences)
 }
 
-// 1-4
+/// 1-4
 @ViewBuilder
 func rangeTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
@@ -45,7 +45,7 @@ func rangeTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
-// 5 5 5
+/// 5 5 5
 @ViewBuilder
 func repsTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
@@ -55,7 +55,7 @@ func repsTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
-// 135.0
+/// 135.0
 @ViewBuilder
 func weightTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
