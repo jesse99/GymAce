@@ -14,6 +14,7 @@ struct EditText: View {
     var body: some View {
         VStack {
             TextEditor(text: $text)
+                .textInputAutocapitalization(.sentences)
             
             if let s = help {
                 Text(s)

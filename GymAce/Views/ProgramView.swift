@@ -13,15 +13,10 @@ struct ProgramView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     private var entries: [WorkoutEntry] {
-        var e: [WorkoutEntry] = []
-        let calendar = Calendar.current
         let today = self.today ?? Date()
-        for i in (0...30) {
-            if let date = calendar.date(byAdding: .day, value: i, to: today), let program = model.active() {
-                e.append(contentsOf: program.findWorkouts(on: date, today: today))
-            }
-        }
-        return e
+        let program = model.active()
+        let entries = program?.findScheduledWorkouts(today: today)
+        return entries?.flatMap {$0} ?? []
     }
 
     // TODO

@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [myProgram(), previewProgram(), stopgapProgram()]
+let defaultPrograms: [Program] = [dumbbellPPL(), myProgram(), previewProgram(), stopgapProgram()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -133,6 +133,147 @@ fileprivate func myProgram() -> Program {
     addSquat(program)
     addDeadlift(program)
     addRest(program)
+    return program
+}
+
+fileprivate func dumbbellPPL() -> Program {
+    func addExercises(_ program: Program) {
+        let reps: [VariableRep] = [.variable(4, 12), .variable(4, 12), .variable(4, 12)]
+
+        var exercise = make("Chest Press", "Dumbbell Bench Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Incline Fly", "Dumbbell Incline Flyes", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Arnold Press", "Arnold Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Overhead Tricep Extension", "Standing Triceps Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        
+        exercise = make("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Bent-over Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Reverse Fly", "Reverse Flyes", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Shrug", "Dumbbell Shrug", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Bicep Curl", "Concentration Curls", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        
+        exercise = make("Pull-ups", "Pull-up", warmups: [], worksets: reps, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Goblet Squat", "Goblet Squat", warmups: [], worksets: reps, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Lunge", "Dumbbell Lunge", warmups: [], worksets: reps, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Single Leg Deadlift", "Single Leg Dumbbell Deadlift", warmups: [], worksets: reps, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Calf Raise", "One-Leg DB Calf Raises", warmups: [], worksets: reps, rest: 90)
+        program.exercises.append(exercise)
+
+
+        exercise = make("Hanging Leg Raises", "Hanging Leg Raise", warmups: [], worksets: reps, rest: 90)
+        program.exercises.append(exercise)
+    }
+
+    func push1(_ program: Program) {
+        let workout = Workout("Push1", .cyclic)
+        workout.addExercise(name: "Chest Press")
+        workout.addExercise(name: "Incline Fly")
+        workout.addExercise(name: "Arnold Press")
+        workout.addExercise(name: "Overhead Tricep Extension")
+        program.addWorkout(workout)
+    }
+
+    func pull1(_ program: Program) {
+        let workout = Workout("Pull1", .cyclic)
+        workout.addExercise(name: "Pull-ups")
+        workout.addExercise(name: "Bent-over Row")
+        workout.addExercise(name: "Reverse Fly")
+        workout.addExercise(name: "Shrug")
+        workout.addExercise(name: "Bicep Curl")
+        workout.addExercise(name: "Hanging Leg Raises")
+        program.addWorkout(workout)
+    }
+
+    func legs1(_ program: Program) {
+        let workout = Workout("Legs1", .cyclic)
+        workout.addExercise(name: "Goblet Squat")
+        workout.addExercise(name: "Split Squat", enabled: false)
+        workout.addExercise(name: "Lunge")
+        workout.addExercise(name: "Single Leg Deadlift")
+        workout.addExercise(name: "Calf Raise")
+        program.addWorkout(workout)
+    }
+
+    func rest1(_ program: Program) {
+        let workout = Workout("Rest1", .cyclic)
+        program.addWorkout(workout)
+    }
+
+    func push2(_ program: Program) {
+        let workout = Workout("Push2", .cyclic)
+        workout.addExercise(name: "Chest Press")
+        workout.addExercise(name: "Incline Fly")
+        workout.addExercise(name: "Arnold Press")
+        workout.addExercise(name: "Overhead Tricep Extension")
+        workout.addExercise(name: "Hanging Leg Raises")
+        program.addWorkout(workout)
+    }
+
+    func pull2(_ program: Program) {
+        let workout = Workout("Pull2", .cyclic)
+        workout.addExercise(name: "Pull-ups")
+        workout.addExercise(name: "Bent-over Row")
+        workout.addExercise(name: "Reverse Fly")
+        workout.addExercise(name: "Shrug")
+        workout.addExercise(name: "Bicep Curl")
+        program.addWorkout(workout)
+    }
+
+    func legs2(_ program: Program) {
+        let workout = Workout("Legs2", .cyclic)
+        workout.addExercise(name: "Goblet Squat")
+        workout.addExercise(name: "Split Squat", enabled: false)
+        workout.addExercise(name: "Lunge")
+        workout.addExercise(name: "Single Leg Deadlift")
+        workout.addExercise(name: "Calf Raise")
+        workout.addExercise(name: "Hanging Leg Raises")
+        program.addWorkout(workout)
+    }
+
+    func rest2(_ program: Program) {
+        let workout = Workout("Rest2", .cyclic)
+        program.addWorkout(workout)
+    }
+
+    let program = Program("Dumbbell PPL")
+    program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment. Note that there are some optional exercises that you can enable using Edit Program on the top right of the main screen."
+    addExercises(program)
+    push1(program)
+    pull1(program)
+    legs1(program)
+    rest1(program)
+    push2(program)
+    pull2(program)
+    legs2(program)
+    rest2(program)
+    for w in program.workouts {
+        w.notes = "Increase weight once you can do twelve reps for all three sets. If you can't increase weight or reps for an exercise after three tries then deload the weight for that exercise by two increments."
+    }
     return program
 }
 

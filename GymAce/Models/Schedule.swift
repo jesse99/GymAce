@@ -5,8 +5,9 @@ enum Schedule: nonisolated Codable {
     /// The user can do the workout whenever is convenient. This would be used for stuff like cardio.
     case anyDay
     
-    /// If 2 then the workout should be performed every other day, if 3 then every 3rd day, etc.
-    case every(Int)
+    /// Workouts are performed in the order they are listed within the program. Note that this
+    /// typically requires explicit rest days.
+    case cyclic
 
     /// List of days when the workout should be performed, e.g. Mon and Wed.
     case days(Weekdays)
@@ -16,7 +17,7 @@ extension Schedule {
     func id() -> Int {
         switch self {
         case .anyDay: return 0
-        case .every(_): return 1
+        case .cyclic: return 1
         case .days(_): return 2
         }
     }

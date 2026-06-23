@@ -14,7 +14,7 @@ struct EditWorkout: View {
     @State private var malformedWeeks: String? = nil
 
     @State private var anySchedule = Schedule.anyDay
-    @State private var everySchedule = Schedule.anyDay
+    @State private var cyclicSchedule = Schedule.cyclic
     @State private var daysSchedule = Schedule.anyDay
 
     init(model: Model, program: Program, workout: Workout) {
@@ -27,13 +27,13 @@ struct EditWorkout: View {
         // settings.
         switch workout.schedule {
         case .anyDay:
-            _everySchedule = State(initialValue: .every(2))
+            _cyclicSchedule = State(initialValue: .cyclic)
             _daysSchedule = State(initialValue: .days(Weekdays([])))
-        case .every(let n):
-            _everySchedule = State(initialValue: .every(n))
+        case .cyclic:
+            _cyclicSchedule = State(initialValue: .cyclic)
             _daysSchedule = State(initialValue: .days(Weekdays([])))
         case .days(let days):
-            _everySchedule = State(initialValue: .every(2))
+            _cyclicSchedule = State(initialValue: .cyclic)
             _daysSchedule = State(initialValue: .days(days))
         }
     }
@@ -84,7 +84,7 @@ struct EditWorkout: View {
             get: {
                 switch workout.schedule {
                     case .anyDay: return 0
-                    case .every(_): return 1
+                    case .cyclic: return 1
                     case .days(_): return 2
                 }
             },
@@ -94,8 +94,8 @@ struct EditWorkout: View {
                 switch oldSchedule {
                 case .anyDay:
                     self.anySchedule = oldSchedule
-                case .every(_):
-                    self.everySchedule = oldSchedule
+                case .cyclic:
+                    self.cyclicSchedule = oldSchedule
                 case .days(_):
                     self.daysSchedule = oldSchedule
                 }
@@ -104,7 +104,7 @@ struct EditWorkout: View {
                 case 0:
                     self.workout.schedule = self.anySchedule
                 case 1:
-                    self.workout.schedule = self.everySchedule
+                    self.workout.schedule = self.cyclicSchedule
                 case 2:
                     self.workout.schedule = self.daysSchedule
                 default:
@@ -114,21 +114,6 @@ struct EditWorkout: View {
         )
     }
 
-    private var everyNBinding: Binding<String> {
-        Binding(
-            get: {
-                switch workout.schedule {
-                    case .anyDay: return "0"
-                    case .every(let n): return "\(n)"
-                    case .days(_): return "2"
-                }
-            },
-            set: {
-                self.workout.schedule = .every(Int($0) ?? 0)
-            }
-        )
-    }
-    
     // We will get a runtime error here if the locale has more than seven weekdays.
     // But it's very rare for locales to not have seven days and the few that do tend
     // to have fewer than seven days.
@@ -170,7 +155,7 @@ struct EditWorkout: View {
     private func getWeekday(_ i: Int) -> Bool {
         switch workout.schedule {
             case .anyDay: return false
-            case .every(_): return false
+            case .cyclic: return false
             case .days(let days): return days.includes(i+1) ? true : false
         }
     }
@@ -178,7 +163,7 @@ struct EditWorkout: View {
     private func setWeekday(_ i: Int, _ enable: Bool) {
         switch workout.schedule {
             case .anyDay: break
-            case .every(_): break
+            case .cyclic: break
             case .days(let days):
                 var days = days.days
                 if enable {
@@ -402,8 +387,8 @@ struct EditWorkout: View {
                     Text("The workout can be done whenever, e.g. cardio.")
                         .foregroundColor(.blue)
                         .font(.footnote)
-                    case .every(_):
-                    Text("The workout should be done every N days, e.g. 2 for every other day.")
+                    case .cyclic:
+                    Text("Cyclic workouts are done one after the other, in the order they are listed. Typically explicit rest days are used.")
                         .foregroundColor(.blue)
                         .font(.footnote)
                     case .days(_):
@@ -417,11 +402,8 @@ struct EditWorkout: View {
                 switch workout.schedule {
                     case .anyDay:
                         EmptyView()
-                    case .every(_):
-                        HStack {
-                            intTextField("", everyNBinding)
-                            Text("days")
-                        }
+                    case .cyclic:
+                        EmptyView()
                     case .days(_):
                         ForEach(0..<Calendar.current.weekdaySymbols.count, id: \.self) { i in
                             Toggle(Calendar.current.standaloneWeekdaySymbols[i], isOn: weekdayBindings[i])
