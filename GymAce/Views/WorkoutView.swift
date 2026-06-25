@@ -69,9 +69,13 @@ struct WorkoutView: View {
         if let s = footer() {
             Text(s)
                 .font(.footnote)
+                .padding(.leading, 20)
+                .padding(.trailing, 20)
         } else if !workout.notes.isEmpty {
             Text(LocalizedStringKey(workout.notes))
                 .font(.footnote)
+                .padding(.leading, 20)
+                .padding(.trailing, 20)
         }
     }
     

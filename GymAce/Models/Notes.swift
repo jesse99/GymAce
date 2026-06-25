@@ -1856,41 +1856,23 @@ extension Notes {
             [("Link", "https://www.muscleandstrength.com/exercises/hanging-leg-raise.html")],
         )
         
-        add(
-            "Heel Pulls",
-            [
-                "Get into a handstand with your toes touching a wall.",
-                "Squeeze your fingers into the ground and allow your toes to come off the wall.",
-            ],
-            [
-                ("Video", "https://www.youtube.com/watch?v=OYehg2ruMN0"),
-                (
-                    "Handstand Progression",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand",
-                ),
-            ],
+        add("Heel Pulls",
+            ["Get into a handstand with your toes touching a wall.",
+                "Squeeze your fingers into the ground and allow your toes to come off the wall."],
+            [("Video", "https://www.youtube.com/watch?v=OYehg2ruMN0"),
+                ("Handstand Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand")],
         )
         
-        add(
-            "HIIT",
-            [
-                "Do a 3-4 min warmup at low to moderate intensity of whatever exercise you're doing.",
+        add("HIIT",
+            ["Do a 3-4 min warmup at low to moderate intensity of whatever exercise you're doing.",
                 "Do 6-10 sets of 60/60, 30/60, 30/30, 20/10 seconds of high/low intensity.",
-                "Do a 3-4 min cooldown at low intensity.",
-            ],
-            [
-                (
-                    "Guide",
-                    "https://www.reddit.com/r/hiit/wiki/beginners_guide",
-                ),
-                ("FAQ", "https://www.reddit.com/r/hiit/wiki/faq"),
-            ],
+                "Do a 3-4 min cooldown at low intensity."],
+            [("Guide", "https://www.reddit.com/r/hiit/wiki/beginners_guide"),
+                ("FAQ", "https://www.reddit.com/r/hiit/wiki/faq")],
         )
         
-        add(
-            "High bar Squat",
-            [
-                "Bar goes at the top of shoulders at the base of the neck.",
+        add("High bar Squat",
+            ["Bar goes at the top of shoulders at the base of the neck.",
                 "Brace core and unrack the bar.",
                 "Toes slightly pointed outward.",
                 "Push hips back slightly, chest forward, and squat down.",
@@ -1898,13 +1880,8 @@ extension Notes {
                 "High bar depth is typically greater than low bar depth.",
                 "If your neck gets sore the bar is in the wrong position.",
             ],
-            [
-                (
-                    "Link",
-                    "https://squatuniversity.com/2016/03/18/how-to-perfect-the-high-bar-back-squat-2/",
-                ),
-                ("Video", "https://www.youtube.com/watch?v=lUGpa_Wz2gs"),
-            ],
+            [("Link", "https://squatuniversity.com/2016/03/18/how-to-perfect-the-high-bar-back-squat-2/"),
+                ("Video", "https://www.youtube.com/watch?v=lUGpa_Wz2gs")],
         )
         
         add("Hip Flexor Lunge Stretch",

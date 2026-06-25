@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [dumbbellPPL(), myProgram(), previewProgram(), stopgapProgram()]
+let defaultPrograms: [Program] = [dumbbellPPL4(), dumbbellPPL7(), myProgram(), previewProgram(), stopgapProgram()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -136,7 +136,7 @@ fileprivate func myProgram() -> Program {
     return program
 }
 
-fileprivate func dumbbellPPL() -> Program {
+fileprivate func dumbbellPPL47() -> (Program, Program) {
     func addExercises(_ program: Program) {
         let reps: [VariableRep] = [.variable(4, 12), .variable(4, 12), .variable(4, 12)]
 
@@ -255,25 +255,49 @@ fileprivate func dumbbellPPL() -> Program {
         program.addWorkout(workout)
     }
 
-    func rest2(_ program: Program) {
-        let workout = Workout("Rest2", .cyclic)
+    func rest(_ program: Program, suffix: String) {
+        let workout = Workout("Rest\(suffix)", .cyclic)
         program.addWorkout(workout)
     }
 
-    let program = Program("Dumbbell PPL")
-    program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment. Note that there are some optional exercises that you can enable using Edit Program on the top right of the main screen."
-    addExercises(program)
-    push1(program)
-    pull1(program)
-    legs1(program)
-    rest1(program)
-    push2(program)
-    pull2(program)
-    legs2(program)
-    rest2(program)
-    for w in program.workouts {
+    let program4 = Program("Dumbbell PPL4")
+    program4.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment. Note that there are some optional exercises that you can enable using Edit Program on the top right of the main screen. This version uses a 4 day cycle with one rest day."
+    addExercises(program4)
+    push1(program4)
+    pull1(program4)
+    legs1(program4)
+    rest(program4, suffix: "1")
+    push2(program4)
+    pull2(program4)
+    legs2(program4)
+    rest(program4, suffix: "2")
+    for w in program4.workouts {
         w.notes = "Increase weight once you can do twelve reps for all three sets. If you can't increase weight or reps for an exercise after three tries then deload the weight for that exercise by two increments."
     }
+
+    let program7 = Program("Dumbbell PPL7")
+    program7.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment. Note that there are some optional exercises that you can enable using Edit Program on the top right of the main screen. This version uses a 7 day cycle with one rest day."
+    addExercises(program7)
+    push1(program7)
+    pull1(program7)
+    legs1(program7)
+    push2(program7)
+    pull2(program7)
+    legs2(program7)
+    rest(program4, suffix: "")
+    for w in program7.workouts {
+        w.notes = "Increase weight once you can do twelve reps for all three sets. If you can't increase weight or reps for an exercise after three tries then deload the weight for that exercise by two increments."
+    }
+    return (program4, program7)
+}
+
+fileprivate func dumbbellPPL4() -> Program {
+    let (program, _) = dumbbellPPL47()
+    return program
+}
+
+fileprivate func dumbbellPPL7() -> Program {
+    let (_, program) = dumbbellPPL47()
     return program
 }
 
