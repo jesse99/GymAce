@@ -274,10 +274,8 @@ extension Notes {
             )],
         )
         
-        add(
-            "Barbell Lunge",
-            [
-                "Load up a bar within a squat rack.",
+        add("Barbell Lunge",
+            ["Load up a bar within a squat rack.",
                 "Step under the bar and place it just below your neck.",
                 "Step away from the rack and squat down with one leg.",
                 "Squat with the other leg and repeat.",
@@ -286,10 +284,7 @@ extension Notes {
                 "Don't allow your knees to go forward beyond your toes.",
                 "Difficulty can be increased by walking as you lunge.",
             ],
-            [(
-                "Link",
-                "https://www.muscleandstrength.com/exercises/barbell-lunge.html",
-            )],
+            [("Link", "https://www.muscleandstrength.com/exercises/barbell-lunge.html")],
         )
         
         add("Barbell Shrug",
@@ -551,10 +546,8 @@ extension Notes {
             ],
         )
         
-        add(
-            "Body-weight Step Up + Reverse Lunge",
-            [
-                "Use one leg to step onto a low bench.",
+        add("Body-weight Step Up + Reverse Lunge",
+            ["Use one leg to step onto a low bench.",
                 "Step back down and lower the knee of that leg onto the ground.",
                 "Repeat.",
                 "Difficulty can be increased by holding a dumbbell.",
@@ -562,22 +555,15 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=F72adrSjfiU")],
         )
         
-        add(
-            "Body-weight Walking Lunge",
-            [
-                "Stand with feet shoulder width apart and your hands on your hips.",
+        add("Body-weight Walking Lunge",
+            ["Stand with feet shoulder width apart and your hands on your hips.",
                 "Step forward with one leg and descend until one knee nearly touches the ground.",
                 "Press using your heel to raise yourself back up.",
                 "Repeat with the other leg.",
                 "Keep your torso upright.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.muscleandstrength.com/exercises/bodyweight-walking-lunge.html",
-                ),
-                ("Video", "https://www.youtube.com/watch?v=L8fvypPrzzs"),
-            ],
+            [("Link", "https://www.muscleandstrength.com/exercises/bodyweight-walking-lunge.html"),
+             ("Video", "https://www.youtube.com/watch?v=L8fvypPrzzs")],
         )
         
         add(
@@ -907,19 +893,37 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/close-grip-barbell-bench-press")],
         )
         
-        add(
-            "Close-Grip Lat Pulldown",
-            [
-                "Use a grip smaller than shoulder width.",
+        add("Close-Grip Lat Pulldown",
+            ["Use a grip smaller than shoulder width.",
                 "Palms facing forward.",
                 "Lean torso back about thirty degrees, stick chest out.",
                 "Touch the bar to chest keeping torso still.",
                 "Squeeze shoulders together.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/close-grip-front-lat-pulldown",
-            )],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/close-grip-front-lat-pulldown")],
+        )
+        
+        add("Complex - beginner",
+            ["[Sumo Deadlift - 10 reps](https://lipsticklifters.com/exercises/bum-exercises/dumbbell-sumo-deadlift/)",
+             "[Bent Over Row - 10 reps](https://lipsticklifters.com/exercises/back-exercises/bent-over-row/)",
+             "[Goblet Squat - 10 reps](https://lipsticklifters.com/exercises/leg-exercises/goblet-squat/)",
+             "[Shoulder Press - 8 reps](https://lipsticklifters.com/exercises/shoulder-exercises/dumbbell-shoulder-press/)",
+             "[Lunges - 8 reps/leg](https://lipsticklifters.com/exercises/leg-exercises/lunges/)",
+             "Do all of these in order without resting or putting the weight down.",
+            ],
+            [("Link", "https://lipsticklifters.com/articles/dumbbell-complex/#three-complete-dumbbell-complexe/")],
+        )
+        
+        add("Complex - intermediate",
+            ["[Sumo Deadlift - 10 reps](https://lipsticklifters.com/exercises/bum-exercises/dumbbell-sumo-deadlift/)",
+             "[Clean - 6 reps](https://lipsticklifters.com/exercises/full-body-exercises/kettlebell-clean/)",
+             "[Push Press - 6 reps](https://lipsticklifters.com/exercises/shoulder-exercises/dumbbell-push-press/)",
+             "[Lunges - 8 reps/leg](https://lipsticklifters.com/exercises/leg-exercises/lunges/)",
+             "[Bent Over Row - 8 reps](https://lipsticklifters.com/exercises/back-exercises/bent-over-row/)",
+             "[Swing - 10 reps](https://lipsticklifters.com/exercises/leg-exercises/kettlebell-swing/)",
+             "Do all of these in order without resting or putting the weight down.",
+            ],
+            [("Link", "https://lipsticklifters.com/articles/dumbbell-complex/#three-complete-dumbbell-complexe/")],
         )
         
         add("Cocoons",
@@ -1572,8 +1576,7 @@ extension Notes {
         )
         
         add("Forward Lunge Stretch",
-            [
-                "Kneel down with one leg forward and the other stretched behind you so that your weight is supported by your forward foot and back knee.",
+            ["Kneel down with one leg forward and the other stretched behind you so that your weight is supported by your forward foot and back knee.",
                 "Forward foot should be directly under your knee.",
                 "Back leg should be stretched out straight behind you.",
                 "If you're having balance problems you may rest your hands on the ground.",
@@ -1885,8 +1888,7 @@ extension Notes {
         )
         
         add("Hip Flexor Lunge Stretch",
-            [
-                "Get on your hands and knees and extend your right leg out in front of you.",
+            ["Get on your hands and knees and extend your right leg out in front of you.",
                 "Make sure your extended foot is in front of your knee.",
                 "Square your hips by rotating your right hip back and your left hip forward.",
                 "Place one hand below your belly button and the other on your tail bone and use them to bring the front of your hips up and your backside down.",
@@ -3227,10 +3229,8 @@ extension Notes {
             )],
         )
         
-        add(
-            "Rotational Lunge",
-            [
-                "Stand up with one foot behind you and the other forward.",
+        add("Rotational Lunge",
+            ["Stand up with one foot behind you and the other forward.",
                 "Angle your back foot so that it is pointing to the side.",
                 "Clasp your hands together, stretch them out forward, and crouch onto your back leg.",
                 "It's OK if your front toes come off the ground.",

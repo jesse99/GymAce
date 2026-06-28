@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [dumbbellPPL4(), dumbbellPPL7(), myProgram(), previewProgram(), stopgapProgram()]
+let defaultPrograms: [Program] = [complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), myProgram(), previewProgram(), stopgapProgram()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -133,6 +133,38 @@ fileprivate func myProgram() -> Program {
     addSquat(program)
     addDeadlift(program)
     addRest(program)
+    return program
+}
+
+fileprivate func complexBeginner() -> Program {
+    let program = Program("Complex - beginner")
+    program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
+
+    let reps: [VariableRep] = [.fixed(1), .fixed(1), .fixed(1)]
+    let exercise = make("Complex", "Complex - beginner", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+    program.exercises.append(exercise)
+
+    let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+    let workout = Workout("Complex", schedule)
+    workout.addExercise(name: "Complex")
+    program.addWorkout(workout)
+
+    return program
+}
+
+fileprivate func complexIntermediate() -> Program {
+    let program = Program("Complex - intermediate")
+    program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
+
+    let reps: [VariableRep] = [.fixed(1), .fixed(1), .fixed(1), .fixed(1)]
+    let exercise = make("Complex", "Complex - intermediate", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 10, rest: 90)
+    program.exercises.append(exercise)
+
+    let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+    let workout = Workout("Complex", schedule)
+    workout.addExercise(name: "Complex")
+    program.addWorkout(workout)
+
     return program
 }
 
