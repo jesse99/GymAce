@@ -77,7 +77,7 @@ struct EditExercise: View {
         }
 
         let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-        let reps3: [VariableRep] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
+        let reps3: [VariableReps] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
         switch exercise.data {
         case .durations(let d):
             _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
@@ -461,7 +461,7 @@ struct EditExercise: View {
                     .padding(.leading, 5)
                 }
                 if showRepsWorksetsHelp {
-                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps.")
+                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps. For fixed and AMRAP sets you can append an optional percent, e.g. 5/90 5/80 3+/70.")
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
@@ -634,10 +634,10 @@ struct EditExercise: View {
                 return percentWorksetsText
             },
             set: {
-                var a: [VariableRep] = []
+                var a: [VariableReps] = []
                 percentWorksetsText = $0
                 for s in $0.split(separator: " ") {
-                    if let r = VariableRep(String(s)) {
+                    if let r = VariableReps(String(s)) {
                         a.append(r)
                     } else {
                         percentWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."
@@ -706,10 +706,10 @@ struct EditExercise: View {
                 return repsWorksetsText
             },
             set: {
-                var a: [VariableRep] = []
+                var a: [VariableReps] = []
                 repsWorksetsText = $0
                 for s in $0.split(separator: " ") {
-                    if let r = VariableRep(String(s)) {
+                    if let r = VariableReps(String(s)) {
                         a.append(r)
                     } else {
                         repsWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."

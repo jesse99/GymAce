@@ -342,7 +342,11 @@ extension WeightSet {
         case .found(let i): return enums[i]
         case .missing(let i):
             if i > 0 {
-                return findBest(target, enums[i - 1], enums[i])
+                if i < enums.count {
+                    return findBest(target, enums[i - 1], enums[i])
+                } else {
+                    return enums.last!
+                }
             } else if !enums.isEmpty {
                 let empty = InternalPlates(plates: [], bar: bar, units: units)
                 return findBest(target, empty, enums[i])

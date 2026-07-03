@@ -105,9 +105,9 @@ final class Exercise: Codable {
                 for i in 0..<d.workset.count {
                     let n = findExpected(self, d.workset[i], i)
                     switch d.workset[i] {
-                    case .amrap(_):
+                    case .amrap(_, _):
                         a.append("\(n)+")
-                    case .fixed(_):
+                    case .fixed(_, _):
                         if n == 1 {
                             a.append("1 rep")
                         } else {
@@ -130,9 +130,9 @@ final class Exercise: Codable {
                 for i in 0..<d.workset.count {
                     let n = findExpected(self, d.workset[i], i)
                     switch d.workset[i] {
-                    case .amrap(_):
+                    case .amrap(_, _):
                         a.append("\(n)+")
-                    case .fixed(_):
+                    case .fixed(_, _):
                         if n == 1 {
                             a.append("1 rep")
                         } else {

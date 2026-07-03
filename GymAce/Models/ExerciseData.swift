@@ -33,7 +33,7 @@ struct PercentData: Codable {
     var percent: Int
     
     var warmups: [FixedReps]
-    var workset: [VariableRep]
+    var workset: [VariableReps]
     
     /// Seconds to rest for worksets.
     var rest: Int?
@@ -42,7 +42,7 @@ struct PercentData: Codable {
     var isVariable: Bool {
         for s in workset {
             switch s {
-            case .amrap(_): return true
+            case .amrap(_, _): return true
             case .fixed: break
             case .variable(_, _): return true
             }
@@ -51,9 +51,15 @@ struct PercentData: Codable {
     }
 }
 
+// TODO
+// add a new VariableReps enum that includes percents for fixed and amwap
+//    maybe tuple names too
+//    custom decoder would try to decode it normally and then fallback to decoding it as VariableRep and then mapping
+// worksets would be VariableReps enum
+// try on phone
 struct RepsData: Codable {
     var warmups: [FixedReps]
-    var workset: [VariableRep]
+    var workset: [VariableReps]
     var backoff: [FixedReps]        // TODO might be nice to make this variable tho it would need min, max, and percent. expected might be weird too
     var version: Int = 1
     
@@ -63,7 +69,7 @@ struct RepsData: Codable {
     var isVariable: Bool {
         for s in workset {
             switch s {
-            case .amrap(_): return true
+            case .amrap(_, _): return true
             case .fixed: break
             case .variable(_, _): return true
             }
@@ -71,7 +77,7 @@ struct RepsData: Codable {
         return false
     }
         
-    init(warmups: [FixedReps], worksets: [VariableRep], backoff: [FixedReps], rest: Int? = nil) {
+    init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps], rest: Int? = nil) {
         self.warmups = warmups
         self.workset = worksets
         self.backoff = backoff
@@ -104,33 +110,43 @@ struct FixedReps: Codable {
     }
 }
 
-enum VariableRep: Codable {
-    case amrap(Int)
-    case fixed(Int)
-    case variable(Int, Int)
-    
-    /// Parse a string formatted as "5", "8-12", or "3+".
+enum VariableReps: Codable {
+    case amrap(Int, Int = 100)  // minReps, percent
+    case fixed(Int, Int = 100)  // reps, percent
+    case variable(Int, Int)     // minReps, maxReps
+        
+    /// Parse a string formatted as "5", "8-12", or "3+" followed by an optional "/90"..
     init?(_ str: String) {
-        if str.contains("-") {
-            let parts = str.split(separator: "-")
+        var text = str
+        var percent = 100
+        if str.contains("/") {
+            let parts = str.split(separator: "/")
+            guard parts.count == 2 else {return nil}
+            guard let p = Int(parts[1]) else {return nil}
+            text = String(parts[0])
+            percent = p
+        }
+        
+        if text.contains("-") {
+            let parts = text.split(separator: "-")
             guard parts.count == 2 else {return nil}
             guard let min = Int(parts[0]) else {return nil}
             guard let max = Int(parts[1]) else {return nil}
             self = .variable(min, max)
-        } else if str.last == "+" {
-            let s = str.dropLast(1)
+        } else if text.last == "+" {
+            let s = text.dropLast(1)
             guard let reps = Int(s) else {return nil}
-            self = .amrap(reps)
+            self = .amrap(reps, percent)
         } else {
-            guard let reps = Int(str) else {return nil}
-            self = .fixed(reps)
+            guard let reps = Int(text) else {return nil}
+            self = .fixed(reps, percent)
         }
     }
     
     func asString() -> String {
         switch self {
-        case .amrap(let r): return "\(r)+"
-        case .fixed(let r): return "\(r)"
+        case .amrap(let r, let p): if p != 100 {return "\(r)+/\(p)"} else {return "\(r)+"}
+        case .fixed(let r, let p): if p != 100 {return "\(r)/\(p)"} else {return "\(r)"}
         case .variable(let min, let max): return "\(min)-\(max)"
         }
     }
