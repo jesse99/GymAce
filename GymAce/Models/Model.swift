@@ -17,15 +17,15 @@ final class Model: Codable {
         
     static func load() -> Model {
         do {
-//#if targetEnvironment(simulator)
-//            print("skipping load")
-//            return Model()
-//#else
+#if targetEnvironment(simulator)
+            print("skipping load")
+            return Model()
+#else
             let data = try Data(contentsOf: url)
             let model = try JSONDecoder().decode(Model.self, from: data)
             model.fixup()
             return model
-//#endif
+#endif
         } catch {
             // Note that new fields are OK if they are optionals. Otherwise
             // a cusom init(from decoder: Decoder) method is required to

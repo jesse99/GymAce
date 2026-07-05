@@ -368,55 +368,64 @@ final class ExerciseEntry: Codable {
         }
     }
         
-    private func actualWeight(_ model: Model, _ program: Program, _ percent: Int = 100) -> ActualWeight? {
+    private func actualWeight(_ model: Model, _ program: Program) -> ActualWeight? {
         if let exercise = program.findExercise(name), let bweight = findBaseWeight(program), case .success(let weight) = bweight {
             if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
                 switch exercise.data {
                     case .durations(_):
-                        let p = Float(percent) / 100.0
-                        return ws.lower(target: p*weight)
+                        return ws.lower(target: weight)
                     case .reps(let d):
                         var index = fixedIndex(exercise)
                         if index < d.warmups.count {
-                            let p = Float(percent) / 100.0
+                            let p = Float(d.warmups[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                        
+                        index -= d.warmups.count
+                        if index < d.workset.count {
+                            switch d.workset[index] {
+                            case .amrap(_, let percent):
+                                let p = Float(percent) / 100.0
+                                return ws.lower(target: p*weight)
+                            case .fixed(_, let percent):
+                                let p = Float(percent) / 100.0
+                                return ws.lower(target: p*weight)
+                            case .variable(_, _):
+                                return ws.lower(target: weight)
+                            }
+                        }
+                        
+                        index -= d.workset.count
+                        if index < d.backoff.count {
+                            let p = Float(d.backoff[index].percent) / 100.0
+                            return ws.closest(target: p*weight)
+                        }
+                    case .percent(let d):
+                        var index = fixedIndex(exercise)
+                        if index < d.warmups.count {
+                            let p = Float(d.percent) / 100.0
                             let q = Float(d.warmups[index].percent) / 100.0
                             return ws.closest(target: p*q*weight)
                         }
                         
                         index -= d.warmups.count
                         if index < d.workset.count {
-                            let p = Float(percent) / 100.0
-                            return ws.lower(target: p*weight)
-                        }
-                        
-                        index -= d.workset.count
-                        if index < d.backoff.count {
-                            let p = Float(percent) / 100.0
-                            let q = Float(d.backoff[index].percent) / 100.0
-                            return ws.closest(target: p*q*weight)
-                        }
-                    case .percent(let d):
-                        var index = fixedIndex(exercise)
-                        if index < d.warmups.count {
-                            let p = Float(percent) / 100.0
-                            let q = Float(d.percent) / 100.0
-                            let r = Float(d.warmups[index].percent) / 100.0
-                            return ws.closest(target: p*q*r*weight)
-                        }
-                        
-                        index -= d.warmups.count
-                        if index < d.workset.count {
-                            let p = Float(percent) / 100.0
-                            let q = Float(d.percent) / 100.0
-                            return ws.lower(target: p*q*weight)
+                            switch d.workset[index] {
+                            case .amrap(_, let percent):
+                                let p = Float(percent) / 100.0
+                                return ws.lower(target: p*weight)
+                            case .fixed(_, let percent):
+                                let p = Float(percent) / 100.0
+                                return ws.lower(target: p*weight)
+                            case .variable(_, _):
+                                return ws.lower(target: weight)
+                            }
                         }
                     case .timed:
-                        let p = Float(percent) / 100.0
-                        return ws.lower(target: p*weight)
+                        return ws.lower(target: weight)
                 }
             }
-            let p = Float(percent) / 100.0
-            return ActualWeight(discrete: p*weight, .None)
+            return ActualWeight(discrete: weight, .None)
         }
         return nil
     }
@@ -505,112 +514,105 @@ extension ExerciseEntry {
     
     // Shown second in the exercise view, e.g. "5 reps @ 140 lbs" or "30s".
     func subhead(_ model: Model, _ program: Program, _ exercise: Exercise) -> String {
-        func suffix(_ model: Model, _ program: Program, _ exercise: Exercise, _ percent: Int = 100) -> String {
-            var suffix = ""
-            if let actual = actualWeight(model, program, percent) {
-                suffix = "\(actual.text())"
-            }
-            
-            if isFinished(exercise) {
-                if suffix.isEmpty {
-                    return ""
+        func build(_ model: Model, _ program: Program, _ exercise: Exercise, _ prefix: String) -> String {
+            if let actual = actualWeight(model, program), actual.value() > 0.0 {
+                let suffix = actual.text()
+
+                if isFinished(exercise) {
+                    return suffix           // TODO would be nice to only do this if weight is different than completed (e.g. if the user upped the weight)
+                } else {
+                    if prefix.isBlankOrEmpty {
+                        return suffix
+                    } else {
+                        return "\(prefix) @ \(suffix)"
+                    }
                 }
-                return "\(suffix) next"
+            } else {
+                if isFinished(exercise) {
+                    return ""
+                } else {
+                    return prefix
+                }
             }
-            if !suffix.isEmpty {
-                suffix = " @ \(suffix)"
-            }
-            return suffix
         }
         
         let index = fixedIndex(exercise)
         switch exercise.data {
         case .durations(let d):
-            let suffix = suffix(model, program, exercise)
-            return secsToLongStr(d.secs[index]) + suffix
+            return build(model, program, exercise, secsToLongStr(d.secs[index]))
         case .reps(let d):
             var index = index
             if index < d.warmups.count {
-                let suffix = suffix(model, program, exercise)
-                return "\(d.warmups[index].reps) reps" + suffix
+                return build(model, program, exercise, "\(d.warmups[index].reps) reps")
             }
             
             index -= d.warmups.count
             if index < d.workset.count {
                 switch d.workset[index] {
-                case .amrap(let r, let percent):
-                    let suffix = suffix(model, program, exercise, percent)
-                    return "\(r)+ reps" + suffix
-                case .fixed(let r, let percent):
-                    let suffix = suffix(model, program, exercise, percent)
+                case .amrap(let r, _):
+                    return build(model, program, exercise, "\(r)+ reps")
+                case .fixed(let r, _):
                     if r == 1 {
-                        return "1 rep" + suffix
+                        return build(model, program, exercise, "1 rep")
                     } else {
-                        return "\(r) reps" + suffix
+                        return build(model, program, exercise, "\(r) reps")
                     }
                 case .variable(let min, let max):
-                    let suffix = suffix(model, program, exercise)
                     var minReps = self.expectedReps(exercise)
                     if minReps == 0 {
                         minReps = min
                     }
                     if minReps == max {
                         if minReps == 1 {
-                            return "1 rep" + suffix
+                            return build(model, program, exercise, "1 rep")
                         } else {
-                            return "\(minReps) reps" + suffix
+                            return build(model, program, exercise, "\(minReps) reps")
                         }
                     } else {
-                        return "\(minReps)-\(max) reps" + suffix
+                        return build(model, program, exercise, "\(minReps)-\(max) reps")
                     }
                 }
             }
             
             index -= d.workset.count
             if index < d.backoff.count {
-                let suffix = suffix(model, program, exercise)
-                return "\(d.backoff[index].reps) reps" + suffix
+                return build(model, program, exercise, "\(d.backoff[index].reps) reps")
             }
         case .percent(let d):
             var index = index
             if index < d.warmups.count {
-                let suffix = suffix(model, program, exercise)
-                return "\(d.warmups[index].reps) reps" + suffix
+                return build(model, program, exercise, "\(d.warmups[index].reps) reps")
             }
             
             index -= d.warmups.count
             if index < d.workset.count {
                 switch d.workset[index] {
-                case .amrap(let r, let percent):
-                    let suffix = suffix(model, program, exercise, percent)
-                    return "\(r)+ reps" + suffix
-                case .fixed(let r, let percent):
-                    let suffix = suffix(model, program, exercise, percent)
+                case .amrap(let r, _):
+                    return build(model, program, exercise, "\(r)+ reps")
+                case .fixed(let r, _):
                     if r == 1 {
-                        return "1 rep" + suffix
+                        return build(model, program, exercise, "1 rep")
                     } else {
-                        return "\(r) reps" + suffix
+                        return build(model, program, exercise, "\(r) reps")
                     }
                 case .variable(let min, let max):
-                    let suffix = suffix(model, program, exercise)
                     var minReps = self.expectedReps(exercise)
                     if minReps == 0 {
                         minReps = min
                     }
                     if minReps == max {
                         if minReps == 1 {
-                            return "1 rep" + suffix
+                            return build(model, program, exercise, "1 rep")
                         } else {
-                            return "\(minReps) reps" + suffix
+                            return build(model, program, exercise, "\(minReps) reps")
                         }
                     } else {
-                        return "\(minReps)-\(max) reps" + suffix
+                        return build(model, program, exercise, "\(minReps)-\(max) reps")
                     }
                 }
             }
         case .timed:
-            let suffix = suffix(model, program, exercise)
-            return suffix
+            return build(model, program, exercise, "")
         }
         return ""
     }
@@ -620,7 +622,7 @@ extension ExerciseEntry {
         if isFinished(exercise) {
             return ""
         }
-        if let actual = actualWeight(model, program) {
+        if let actual = actualWeight(model, program), actual.value() > 0.0 {
             return actual.details()
         }
         return nil
@@ -676,13 +678,22 @@ extension ExerciseEntry {
                     
                     var index = fixedIndex(exercise)
                     if index < d.warmups.count {
-                        let p = Int(Float(d.percent) * Float(d.warmups[index].percent) / 100.0)
-                        return "\(p)% of \(weightStr)"
+                        let p = Float(d.percent) / 100.0
+                        let q = Float(d.warmups[index].percent) / 100.0
+                        let x = Int(100.0 * p * q)
+                        return "\(x)% of \(weightStr)"
                     }
 
                     index -= d.warmups.count
                     if index < d.workset.count {
-                        return "\(d.percent)% of \(weightStr)"
+                        let p = Float(d.percent) / 100.0
+                        let q: Float = switch d.workset[index] {
+                        case .amrap(_, let percent): Float(percent) / 100.0
+                        case .fixed(_, let percent): Float(percent) / 100.0
+                        case .variable: 1.0
+                        }
+                        let x = Int(100.0 * p * q)
+                        return "\(x)% of \(weightStr)"
                     }
                 case .failure(let mesg):
                     return mesg.err

@@ -94,8 +94,10 @@ final class Exercise: Codable {
         if let weight = findWeight(program) {
             if let name = weightSet, let ws = model.weightSets[name] {
                 let actual = ws.lower(target: weight)
-                suffix = " @ \(actual.text())"
-            } else {
+                if actual.value() > 0.0 {
+                    suffix = " @ \(actual.text())"
+                }
+            } else if weight > 0.0 {
                 suffix = " @ \(formatWeight(weight, .None))"
             }
         }

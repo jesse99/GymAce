@@ -2357,24 +2357,17 @@ extension Notes {
             )],
         )
         
-        add(
-            "Leg Swings",
-            [
-                "Hold onto a pole or some other support with one hand.",
+        add("Leg Swings",
+            ["Hold onto a pole or some other support with one hand.",
                 "Extend the other arm all the way out from your side.",
                 "Cross one leg across the other and then kick it up towards your outstretched arm.",
                 "Then move one leg behind you and kick towards your front.",
             ],
-            [(
-                "Link",
-                "https://www.youtube.com/watch?v=AkqakLhh1fI&feature=youtu.be",
-            )],
+            [("Link", "https://www.youtube.com/watch?v=AkqakLhh1fI&feature=youtu.be")],
         )
         
-        add(
-            "Low bar Squat",
-            [
-                "Hands should be as close together as possible without pain or discomfort.",
+        add("Low bar Squat",
+            ["Hands should be as close together as possible without pain or discomfort.",
                 "Bar goes as far down as it can go without sliding downwards.",
                 "Wrists should be straight and thumbs above the bar.",
                 "Elbows should be up.",
@@ -2386,20 +2379,15 @@ extension Notes {
                 "When starting the ascent drive shoulders back so the bar remains over mid-foot.",
                 "Can help to try to screw heels inward.",
             ],
-            [
-                ("The Definitive Guide", "https://stronglifts.com/squat/"),
-                (
-                    "Candito Video",
-                    "https://www.youtube.com/watch?v=zoZWgTrZLd8",
-                ),
+            [("The Definitive Guide", "https://stronglifts.com/squat/"),
+                ("Candito Video", "https://www.youtube.com/watch?v=zoZWgTrZLd8"),
                 ("Stronglifts", "http://stronglifts.com/squat/"),
                 ("Problems", "https://www.trainuntamed.com/fix_your_squat/"),
             ],
         )
         
         add("Lying External Rotation",
-            [
-                "Lie down on your side with your injured arm on top.",
+            ["Lie down on your side with your injured arm on top.",
                 "Rest your head against your other arm and bend your knees.",
                 "Bend the injured arm ninety degrees with your hand down and palm facing your body.",
                 "Keep your elbow tucked against your body and raise your forearm until it's parallel with the ground.",

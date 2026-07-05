@@ -27,6 +27,10 @@ extension Program {
         let N = 30
         var entries: [[WorkoutEntry]] = Array(repeating: [], count: N)
 
+        // TODO this gets a little weird when starting out, e.g. if workouts are scheduled
+        // for workdays AND today is Sat or Sun AND weeks are being used then we'll show
+        // week 2 workouts as due next. Though this should be fixed up when Monday rolls
+        // around.
         let calendar = Calendar.current
         for i in 0..<entries.count {
             if let on = calendar.date(byAdding: .day, value: i, to: today) {

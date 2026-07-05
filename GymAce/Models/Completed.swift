@@ -140,7 +140,7 @@ func completedDetails(_ values: [Int], _ type: ValueType, _ weight: Float?, _ un
         return ""
     }
     var trailer = ""
-    if let w = weight {
+    if let w = weight, w > 0.0 {
         trailer = " @ " + formatWeight(w, units)
     }
     
