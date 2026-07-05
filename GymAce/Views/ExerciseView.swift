@@ -164,7 +164,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
                 } else {
-                    if entry.hasExpected(exercise) {    // user is in the middle of a set
+                    if entry.canSetActualReps(exercise) {    // user is in the middle of a set
                         Picker("", selection: expectedBinding) {
                             ForEach(0...entry.maxEpectedHint(exercise), id: \.self) {n in
                                 Text("\(n) reps").tag(n)

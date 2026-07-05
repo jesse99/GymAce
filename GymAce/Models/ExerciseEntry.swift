@@ -150,37 +150,35 @@ final class ExerciseEntry: Codable {
 //        }
     }
         
-    /// Returns true if the user is on a workset with an expected rep that may be changed to an actual rep.
-    func hasExpected(_ exercise: Exercise) -> Bool {
-        if case let .reps(d) = exercise.data {      // there's an annoying amount of duplication here but I'm not sure how we'd fix that unless we do something like fold RepsData into PercentData
-            if d.isVariable, !isFinished(exercise) {
-                var index = fixedIndex(exercise)
-                index -= d.warmups.count
+    /// Returns true if the user is on a workset where the actual rep count should be recorded.
+    func canSetActualReps(_ exercise: Exercise) -> Bool {
+        switch exercise.data {
+        case .durations(_), .timed:
+            return false
+        case .percent(let d):
+            if !isFinished(exercise) {
+                let index = fixedIndex(exercise) - d.warmups.count
                 if index >= 0 && index < d.workset.count {
-                    switch d.workset[index] {
-                    case .amrap: return true
-                    case .fixed: return false
-                    case .variable: return true
-                    }
+                    // fixed reps are a bit of a weird case, but even there the user may have a bad
+                    // day or may have upped the weight too much and we need a way to indicate that.
+                    return true
                 }
             }
-        } else if case let .percent(d) = exercise.data {
-            if d.isVariable, !isFinished(exercise) {
-                var index = fixedIndex(exercise)
-                index -= d.warmups.count
+            return false
+        case .reps(let d):
+            if !isFinished(exercise) {
+                let index = fixedIndex(exercise) - d.warmups.count
                 if index >= 0 && index < d.workset.count {
-                    switch d.workset[index] {
-                    case .amrap: return true
-                    case .fixed: return false
-                    case .variable: return true
-                    }
+                    // fixed reps are a bit of a weird case, but even there the user may have a bad
+                    // day or may have upped the weight too much and we need a way to indicate that.
+                    return true
                 }
             }
+            return false
         }
-        return false
     }
 
-    /// The reps that the user is expected to do, only used when the number of reps is variable.
+    /// The reps that the user is expected to do.
     func expectedReps(_ exercise: Exercise) -> Int {
         if case let .reps(d) = exercise.data {
             var index = fixedIndex(exercise)
@@ -216,7 +214,7 @@ final class ExerciseEntry: Codable {
             index -= d.warmups.count
             switch d.workset[index] {
             case .amrap(let r, _): return r+10
-            case .fixed: return 0
+            case .fixed(let r, _): return r
             case .variable(_, let max): return max
             }
         } else if case let .percent(d) = exercise.data {
@@ -224,7 +222,7 @@ final class ExerciseEntry: Codable {
             index -= d.warmups.count
             switch d.workset[index] {
             case .amrap(let r, _): return r+10
-            case .fixed: return 0
+            case .fixed(let r, _): return r
             case .variable(_, let max): return max
             }
         }
