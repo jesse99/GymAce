@@ -31,7 +31,8 @@ struct WorkoutView: View {
                             .gridColumnAlignment(.leading)
                             .foregroundColor(fgColor(entry, exercise))
                             
-                            Text(exercise.details(model, program))
+                            let plan = ExercisePlan(model, program, workout, exercise)
+                            Text(plan.details(exercise))
                                 .gridColumnAlignment(.leading)
                         }
                     } else {

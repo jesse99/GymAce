@@ -12,6 +12,15 @@ enum ExerciseData: Codable {
     
     /// An exercise that is performed for an indefinite amount of time, e.g. jogging.
     case timed
+    
+    func numSets() -> Int {
+        switch self {
+        case .durations(let d): return d.secs.count
+        case .percent(let d): return d.warmups.count + d.workset.count
+        case .reps(let d): return d.warmups.count + d.workset.count + d.backoff.count
+        case .timed: return 1
+        }
+    }
 }
 
 struct DurationsData: Codable {

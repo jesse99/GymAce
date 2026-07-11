@@ -88,7 +88,6 @@ final class Program: Codable, Identifiable {
                 started = nextWeek
             }
         }
-//        print("started: \(started!)")
     }
 
     private func totalWeeks() -> Int {

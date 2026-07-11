@@ -9,7 +9,8 @@ enum ValueType: Codable {
 class Completed: Codable, Comparable, Equatable {
     var values: [Int]
     var type: ValueType
-    var weight: Float?
+    var weights: [Float]?   // these are the same unless the work sets have percentages
+    var weight: Float?      // historical
     var units: Units
     var completed: Date
     var distance: Double?   // meters
@@ -51,26 +52,29 @@ class Completed: Codable, Comparable, Equatable {
 //        completed = try container.decode(Date.self, forKey: .completed)
 //    }
     
-    init(reps: [Int], weight: Float?, units: Units, completed: Date = Date()) {
+    init(reps: [Int], weights: [Float]?, units: Units, completed: Date = Date()) {
         self.values = reps
         self.type = .reps
-        self.weight = weight
+        self.weights = weights
+        self.weight = nil
         self.units = units
         self.completed = completed
     }
     
-    init(secs: [Int], weight: Float?, units: Units, completed: Date = Date()) {
+    init(secs: [Int], weights: [Float]?, units: Units, completed: Date = Date()) {
         self.values = secs
         self.type = .secs
-        self.weight = weight
+        self.weights = weights
+        self.weight = nil
         self.units = units
         self.completed = completed
     }
     
-    init(values: [Int], type: ValueType, weight: Float?, units: Units, completed: Date = Date(), distance: Double? = nil) {
+    init(values: [Int], type: ValueType, weights: [Float]?, units: Units, completed: Date = Date(), distance: Double? = nil) {
         self.values = values
         self.type = type
-        self.weight = weight
+        self.weights = weights
+        self.weight = nil
         self.units = units
         self.completed = completed
         self.distance = distance
@@ -78,7 +82,7 @@ class Completed: Codable, Comparable, Equatable {
     
     /// Used to show the user what happened for that workout.
     func details() -> String {
-        return completedDetails(values, type, weight, units, distance)
+        return completedDetails(values, type, weights, units, distance)
     }
     
     // Returns +1 if self is better than rhs.
@@ -135,15 +139,25 @@ class Completed: Codable, Comparable, Equatable {
     }
 }
 
-func completedDetails(_ values: [Int], _ type: ValueType, _ weight: Float?, _ units: Units, _ distance: Double?) -> String {
+func weightSuffix(_ weights: [Float]?, _ units: Units) -> String {
+    if let min = weights?.min(), let max = weights?.max(), max > 0.0 {
+        if min.sameWeight(max) {
+            let smin = formatWeight(min, units)
+            return " @ \(smin)"
+        } else {
+            let smin = formatWeight(min, .None)
+            let smax = formatWeight(max, units)
+            return " @ \(smin)-\(smax)"
+        }
+    }
+    return ""
+}
+
+func completedDetails(_ values: [Int], _ type: ValueType, _ weights: [Float]?, _ units: Units, _ distance: Double?) -> String {
     if values.isEmpty {
         return ""
     }
-    var trailer = ""
-    if let w = weight, w > 0.0 {
-        trailer = " @ " + formatWeight(w, units)
-    }
-    
+    var trailer = weightSuffix(weights, units)
     if let distance = distance {
         let s = String(format: "%.2f", distance*0.000621371)   // TODO use meters if metric
         trailer += " \(s) miles"

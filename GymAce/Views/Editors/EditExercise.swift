@@ -909,7 +909,6 @@ struct EditExercise: View {
     }
 
     private var isValid: Bool {
-//        print("isNameEmpty: \(isNameEmpty) dupeName: \(dupeName)")
         guard !isNameEmpty && !dupeName else {
             return false
         }

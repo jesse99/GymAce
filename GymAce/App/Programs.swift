@@ -530,9 +530,9 @@ fileprivate func previewProgram() -> Program {   // TODO get rid of this?
         let backoff = [FixedReps(reps: 5, percent: 80)]
 
         var exercise = make("Light Bench", "Bench Press", warmups: warmup, worksets: areps5, weights: "Dual Plates", weight: 130, rest: 10)
-        addCompleted(exercise, daysAgo: 5, reps: [5, 5, 5], weight: 130, note: "So hard, nearly died")
-        addCompleted(exercise, daysAgo: 3, reps: [5, 5, 5], weight: 135, note: "Went up easy peasy")
-        addCompleted(exercise, daysAgo: 1, reps: [5, 5, 5], weight: 135)
+        addCompleted(exercise, daysAgo: 5, reps: [5, 5, 5], weights: [130], note: "So hard, nearly died")
+        addCompleted(exercise, daysAgo: 3, reps: [5, 5, 5], weights: [135], note: "Went up easy peasy")
+        addCompleted(exercise, daysAgo: 1, reps: [5, 5, 5], weights: [135])
         program.exercises.append(exercise)
 
         exercise = make("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps3, weights: "Dual Plates", weight: 145, rest: 12)
@@ -742,18 +742,18 @@ fileprivate func make(_ name: String, _ formalName: String) -> Exercise {
     return Exercise(name: name, formalName: formalName, weights: nil)
 }
 
-fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weight: Float? = nil, note: String? = nil) {
+fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Float]? = nil, note: String? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(reps: reps, weight: weight, units: .Imperial, completed: d!)
+    let c = Completed(reps: reps, weights: weights, units: .Imperial, completed: d!)
     c.note = note
     exercise.history.append(c)
 }
 
-fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weight: Float? = nil) {
+fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Float]? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(secs: secs, weight: weight, units: .Imperial, completed: d!)
+    let c = Completed(secs: secs, weights: weights, units: .Imperial, completed: d!)
     exercise.history.append(c)
 }
 

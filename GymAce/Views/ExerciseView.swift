@@ -60,23 +60,24 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     var body: some View {
         VStack {
             // Warmup 3 of 3
-            Text(entry.headline(exercise))
+            let plan = ExercisePlan(model, program, workout, exercise)
+            Text(entry.headline(plan))
                 .font(.headline)
                 .padding(2)
 
             // 5 reps @ 225 lbs
-            Text(entry.subhead(model, program, exercise))
+            Text(entry.subhead(plan, model, exercise))
                 .font(Font.body)
 
             // 45x2
-            if let s = entry.footer(model, program, exercise) {
+            if let s = entry.footer(plan) {
                 Text(s)
                     .font(.body)
                     .padding(.bottom, 2)
             }
             
             // 90% of 250 lbs
-            if let s = entry.subfooter(model, program, exercise) {
+            if let s = entry.subfooter(plan, model, exercise) {
                 Text(s)
                     .font(Font.footnote)
                     .padding(2)
@@ -137,7 +138,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                     .padding(.top, 5)
                     Button(stopTitle()) {
-                        entry.completedSet(exercise)
+                        entry.completedSet(plan)
                         if entry.isFinished(exercise) {
                             gotoFinished()
                         } else {
@@ -164,9 +165,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .buttonStyle(.borderedProminent)
                     .padding(.top, 5)
                 } else {
-                    if entry.canSetActualReps(exercise) {    // user is in the middle of a set
-                        Picker("", selection: expectedBinding) {
-                            ForEach(0...entry.maxEpectedHint(exercise), id: \.self) {n in
+                    if entry.canSetActualReps(plan) {    // user is in the middle of a set
+                        Picker("", selection: expectedBinding(plan)) {
+                            ForEach(0...entry.maxEpectedHint(plan), id: \.self) {n in
                                 Text("\(n) reps").tag(n)
                             }
                         }
@@ -182,7 +183,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         .padding(.top, 5)
                     }
                     Button(nextTitle()) {
-                        if let rest = entry.rest(workout, exercise) {
+                        if let rest = entry.rest(plan) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
                         } else if case .timed = exercise.data {
                             if case .timing = entry.mode {
@@ -191,7 +192,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                                 entry.mode = .timing
                             }
                         } else {
-                            entry.completedSet(exercise)
+                            entry.completedSet(plan)
                             
                             // Note that we don't go to picking here because if there's no rest
                             // we always show the picker.
@@ -294,10 +295,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         exercise.history.removeAll()
     }
     
-    private var expectedBinding: Binding<Int> {
+    private func expectedBinding(_ plan: ExercisePlan) -> Binding<Int> {
         Binding(
-            get: {return entry.expectedReps(exercise)},
-            set: {entry.setActualReps(exercise, $0)}
+            get: {return entry.expectedReps(plan)},
+            set: {entry.setActualReps(plan, $0)}
         )
     }
 
@@ -377,7 +378,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     
     private func resetExercise() {
         entry.mode = .performing
-        entry.reset(model, program, exercise)
+        entry.reset(model, program, workout, exercise)
     }
 
     private func startTimer(_ oldMode: Int) {
@@ -425,7 +426,7 @@ private func workingView(_ model: Model, _ exercise: Exercise,_ working: Working
             Text(Date().daysStr(0))
             
             // sets completed so far
-            let c = Completed(values: working.values, type: working.type, weight: working.weight, units: working.units)
+            let c = Completed(values: working.values, type: working.type, weights: working.weights, units: working.units)
             Text(c.details())
         }
         .frame(maxWidth: .infinity, alignment: .leading)

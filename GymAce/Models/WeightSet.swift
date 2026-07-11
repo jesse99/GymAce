@@ -73,7 +73,7 @@ struct ActualWeight {
         self.weight = .Discrete(discrete, units)
     }
     
-    fileprivate init(error: String, _ target: Float) {
+    init(error: String, _ target: Float) {
         self.weight = .Error(error, target)
     }
 
