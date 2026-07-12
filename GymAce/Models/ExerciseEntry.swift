@@ -265,7 +265,7 @@ final class ExerciseEntry: Codable {
                 working!.values.append(actual)
             }
             
-            if let w = plan.sets[setIndex].weight {
+            if let w = plan.sets[setIndex].weight, w.value() > 0.0 {
                 working!.weights!.append(w.value())
             }
         }

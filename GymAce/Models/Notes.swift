@@ -356,7 +356,9 @@ extension Notes {
                 "Bring bar down to about lower nipples. Raise back to over eyes.",
                 "Don't watch the bar, instead look at a fixed point on the ceiling.",
                 "Press feet hard into the floor to help maintain tension."],
-            [("Stronglifts", "http://stronglifts.com/bench-press/"), ("Thrall Video", "https://www.youtube.com/watch?v=BYKScL2sgCs"), ("4 mistakes", "https://www.youtube.com/watch?v=TDSXgCB6KfI")],
+            [("Stronglifts", "http://stronglifts.com/bench-press/"),
+             ("Thrall Video", "https://www.youtube.com/watch?v=BYKScL2sgCs"),
+             ("4 mistakes", "https://www.youtube.com/watch?v=TDSXgCB6KfI")],
         )
         
         add(
@@ -823,34 +825,24 @@ extension Notes {
                 "Slowly lower back down.",
                 "Difficulty can be lessened by doing negatives: jump to raised position and very slowly lower yourself.",
                 "Difficulty can be increased by attaching plates to a belt."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/chin-up"), ("Weighted", "http://relativestrengthadvantage.com/7-ways-to-add-resistance-to-pull-ups-chin-ups-and-dips/"), ("Elbow Pain", "https://breakingmuscle.com/fitness/5-ways-to-end-elbow-pain-during-chin-ups")],
+            [("Link", "https://columbiaassociation.org/blog/gyms-fitness/how-to-do-a-proper-chin-up/"),
+             ("Weighted", "http://relativestrengthadvantage.com/7-ways-to-add-resistance-to-pull-ups-chin-ups-and-dips/"), ("Elbow Pain", "https://breakingmuscle.com/fitness/5-ways-to-end-elbow-pain-during-chin-ups")],
         )
         
-        add(
-            "Circuit1",
+        add("Circuit1",
             [],
-            [(
-                "Link",
-                "https://experiencelife.com/article/the-dumbbell-complex-workout",
+            [("Link", "https://experiencelife.com/article/the-dumbbell-complex-workout")],
+        )
+        
+        add("Circuit2",
+            [],
+            [("Link", "https://experiencelife.com/article/the-dumbbell-complex-workout",
             )],
         )
         
-        add(
-            "Circuit2",
+        add("Circuit3",
             [],
-            [(
-                "Link",
-                "https://experiencelife.com/article/the-dumbbell-complex-workout",
-            )],
-        )
-        
-        add(
-            "Circuit3",
-            [],
-            [(
-                "Link",
-                "https://experiencelife.com/article/the-dumbbell-complex-workout",
-            )],
+            [("Link", "https://experiencelife.com/article/the-dumbbell-complex-workout")],
         )
         
         add(
@@ -997,22 +989,15 @@ extension Notes {
             [("Link", "http://www.nick-e.com/deadbug/")],
         )
         
-        add(
-            "Dead Hang",
-            [
-                "Arms should be roughly shoulder width apart.",
+        add("Dead Hang",
+            ["Arms should be roughly shoulder width apart.",
                 "Keep arms straight and stay relaxed.",
-                "Work your way to a 60s hang time.",
-            ],
-            [(
-                "Link",
-                "https://www.healthline.com/health/fitness-exercise/dead-hang#how-to",
-            )],
+                "Work your way to a 60s hang time."],
+            [("Link", "https://www.healthline.com/health/fitness-exercise/dead-hang#how-to")],
         )
         
         add("Deadlift",
-            [
-                "Walk to the bar and place feet so that the bar is over the middle of your feet.",
+            ["Walk to the bar and place feet so that the bar is over the middle of your feet.",
                 "Feet should be pointed out ten to thirty degrees.",
                 "Feet should be about as far apart as they would be for a vertical jump (hip width not shoulder width).",
                 "Bend over and grab the bar keeping hips as high as possible.",
@@ -1029,29 +1014,24 @@ extension Notes {
                 "Don't shrug or lean back too far at the top.",
                 "Can help to switch to a mixed grip for the last warmup and work sets.",
                 "Can build grip strength by holding a set for 10-15s."],
-            [("Stronglifts", "http://stronglifts.com/deadlift/"), ("Thrall Video", "https://www.youtube.com/watch?v=Y1IGeJEXpF4"), ("Tips", "https://www.t-nation.com/training/5-tips-to-dominate-the-deadlift"), ("Grip", "https://stronglifts.com/deadlift/grip/")],
+            [("Stronglifts", "http://stronglifts.com/deadlift/"),
+            ("Thrall Video", "https://www.youtube.com/watch?v=Y1IGeJEXpF4")],
         )
         
         add("Decline Bench Press",
-            [
-                "Lay on a bench tilted such that your head is lower than your hips.",
+            ["Lay on a bench tilted such that your head is lower than your hips.",
                 "Use a medium grip (so that in the middle of the movement your upper and lower arms make a 90 degree angle).",
                 "Slowly lower the bar to your lower chest.",
                 "A lift off from a spotter will help protect your rotator cuffs."],
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/decline-barbell-bench-press")],
         )
         
-        add(
-            "Decline Plank",
-            [
-                "Lie prone on a mat keeping elbows below shoulders.",
+        add("Decline Plank",
+            ["Lie prone on a mat keeping elbows below shoulders.",
                 "Support your legs using your toes and a bench.",
                 "Raise body upwards to create a straight line.",
             ],
-            [(
-                "Progression",
-                "http://www.startbodyweight.com/p/plank-progression.html",
-            )],
+            [("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
         )
         
         add(
@@ -2380,8 +2360,8 @@ extension Notes {
                 "Can help to try to screw heels inward.",
             ],
             [("The Definitive Guide", "https://stronglifts.com/squat/"),
-                ("Candito Video", "https://www.youtube.com/watch?v=zoZWgTrZLd8"),
                 ("Stronglifts", "http://stronglifts.com/squat/"),
+                ("Candito Video", "https://www.youtube.com/watch?v=zoZWgTrZLd8"),
                 ("Problems", "https://www.trainuntamed.com/fix_your_squat/"),
             ],
         )
@@ -2564,23 +2544,16 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/one-handed-hang")],
         )
         
-        add(
-            "One-Legged Cable Kickback",
-            [
-                "Hook a cuff to a low cable pulley.",
+        add("One-Legged Cable Kickback",
+            ["Hook a cuff to a low cable pulley.",
                 "Face the machine from about two feet away.",
                 "Hold the machine to stay balanced.",
-                "Kick the leg with the cuff backwards as high as it will comfortably go.",
-            ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/one-legged-cable-kickback",
-            )],
+                "Kick the leg with the cuff backwards as high as it will comfortably go."],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/one-legged-cable-kickback")],
         )
         
         add("One-Leg DB Calf Raises",
-            [
-                "Hold a dumbbell in one hand.",
+            ["Hold a dumbbell in one hand.",
                 "With your leg on that side place the balls of your foot on a step.",
                 "Hook your other leg behind the foot on the step.",
                 "Drop your heel as far as possible.",
@@ -2591,8 +2564,7 @@ extension Notes {
         )
         
         add("Overhead Press",
-            [
-                "Grip should be narrow enough that forearms are vertical at the bottom.",
+            ["Grip should be narrow enough that forearms are vertical at the bottom.",
                 "Bar should be on the base of the palms, close to wrist.",
                 "Keep wrists straight.",
                 "Elbows should start under the bar and touching your lats.",
@@ -2602,53 +2574,34 @@ extension Notes {
                 "Lean backward a bit to allow the bar to clear your head and then forward once it is past your head.",
                 "Stay tight by bracing your abs and squeezing your glutes together.",
                 "Shrug shoulders upward at the top (this is important to prevent impingement)."],
-            [("Stronglifts", "http://stronglifts.com/overhead-press/"), ("Rippetoe Video", "https://www.youtube.com/watch?v=tMAiNQJ6FPc")],
+            [("Stronglifts", "http://stronglifts.com/overhead-press/"),
+             ("Rippetoe Video", "https://www.youtube.com/watch?v=tMAiNQJ6FPc")],
         )
         
-        add(
-            "Overhead Pull Down (band)",
-            [
-                "Hold the band overhead and make it taut.",
+        add("Overhead Pull Down (band)",
+            ["Hold the band overhead and make it taut.",
                 "Rotate your arms down to your side so that the band stretches outwards.",
                 "The band should come down behind your back.",
-                "Keep your arms straight the entire time.",
-            ],
-            [(
-                "Link",
-                "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s",
-            )],
+                "Keep your arms straight the entire time."],
+            [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")],
         )
         
-        add(
-            "Pallof Press",
-            [
-                "Attach a band to a support.",
+        add("Pallof Press",
+            ["Attach a band to a support.",
                 "Grab the band with both hands and turn your body to the side.",
                 "Thrust the band outwards and then back in.",
                 "Keep core braced and back straight.",
                 "Chin tucked and knees slightly bent.",
-                "Arms stay tight beside ribs.",
-            ],
+                "Arms stay tight beside ribs."],
             [("Video", "https://www.youtube.com/watch?v=AH_QZLm_0-s")],
         )
         
-        add(
-            "Parallel Bar Support",
-            [
-                "Arms straight.",
+        add("Parallel Bar Support",
+            ["Arms straight.",
                 "Body straight or slightly hollow.",
-                "Depress the shoulders.",
-            ],
-            [
-                (
-                    "Link",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support",
-                ),
-                (
-                    "Supports",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support",
-                ),
-            ],
+                "Depress the shoulders."],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support"),
+                ("Supports", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
         )
         
         add("Pause Bench",
