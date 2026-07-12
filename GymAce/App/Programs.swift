@@ -140,7 +140,7 @@ fileprivate func boringButBigProgram() -> Program {
     func addExercises(_ program: Program) {
         let warmup = [FixedReps(reps: 5, percent: 40), FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 60)]
         
-        let repsMax: [VariableReps] = [.fixed(1)]
+        let warmup2 = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
         let reps5: [VariableReps] = [.fixed(5, 65), .fixed(5, 75), .amrap(5, 85)]
         let reps3: [VariableReps] = [.fixed(3, 70), .fixed(3, 80), .amrap(3, 90)]
         let reps1: [VariableReps] = [.fixed(5, 75), .fixed(3, 85), .amrap(1, 90)]
@@ -148,16 +148,16 @@ fileprivate func boringButBigProgram() -> Program {
         let reps10: [VariableReps] = [.fixed(10, 30), .fixed(10, 40), .fixed(10, 50), .fixed(10, 60), .fixed(10, 70)]
 
         // 1 rep max
-        var exercise = make("Max OHP", "Overhead Press", warmups: [], worksets: repsMax, weights: "Dual Plates", weight: 65, rest: 2*60)
+        var exercise = make("Max OHP", "Overhead Press", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 80)
         program.exercises.append(exercise)
 
-        exercise = make("Max Bench", "Bench Press", warmups: [], worksets: repsMax, weights: "Dual Plates", weight: 145, rest: 2*60)
+        exercise = make("Max Bench", "Bench Press", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 160)
         program.exercises.append(exercise)
         
-        exercise = make("Max Deadlift", "Deadlift", warmups: [], worksets: repsMax, weights: "Dual Plates", weight: 200, rest: 3*60)
+        exercise = make("Max Deadlift", "Deadlift", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 200)
         program.exercises.append(exercise)
         
-        exercise = make("Max Squat", "Low bar Squat", warmups: [], worksets: repsMax, weights: "Dual Plates", weight: 200, rest: 3*60)
+        exercise = make("Max Squat", "Low bar Squat", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 225)
         program.exercises.append(exercise)
 
         // 5 reps part of 531
@@ -255,6 +255,18 @@ fileprivate func boringButBigProgram() -> Program {
         }
     }
 
+    func addMax(_ program: Program) {
+        let schedule = Schedule.anyDay
+        let workout = Workout("One Rep Max", schedule)
+        
+        workout.addExercise(name: "Max Bench")
+        workout.addExercise(name: "Max OHP")
+        workout.addExercise(name: "Max Squat")
+        workout.addExercise(name: "Max Deadlift")
+
+        program.addWorkout(workout)
+    }
+
     func addPress(_ program: Program, _ week: Int) {
         let schedule = Schedule.days(Weekdays([.monday]))
         let workout = Workout("Press \(wname(week))", schedule)
@@ -310,6 +322,7 @@ fileprivate func boringButBigProgram() -> Program {
     let program = Program("531 Boring but Big")
     program.summary = "[This](https://www.jimwendler.com/blogs/jimwendler-com/101077382-boring-but-big) is a high volume program for intermediate to advanced lifters. This version is four days a week and uses a four week cycle with one deload week. The exercises use percentages based on your one rep max for the exercise (set these using Edit Exercise, e.g. for \"Max Bench\"). When starting out use a low weight, espcially for the lower body exercises. You can substitute in alternate versions of exercises but you shouldn't add new exercises to this program."
     addExercises(program)
+    addMax(program)
     for week in 1...4 {
         addPress(program, week)
         addDeadlift(program, week)
@@ -720,6 +733,15 @@ fileprivate func make(_ name: String, _ formalName: String, secs: [Int], weights
         return Exercise(name: name, formalName: formalName, durations: durations, weights: n, weight: weight)
     } else {
         return Exercise(name: name, formalName: formalName, durations: durations)
+    }
+}
+
+fileprivate func make(_ name: String, _ formalName: String, warmups: [FixedReps] = [], oneRepMax: Bool, weights: String? = nil, weight: Float? = nil) -> Exercise {
+    let reps = OneRepMaxData(warmups: warmups)
+    if let n = weights {
+        return Exercise(name: name, formalName: formalName, orm: reps, weights: n, weight: weight)
+    } else {
+        return Exercise(name: name, formalName: formalName, orm: reps)
     }
 }
 

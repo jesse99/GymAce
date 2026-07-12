@@ -65,7 +65,7 @@ struct Working: Codable {
         self.started = Date()
         self.data = exercise.data
         switch exercise.data {
-        case .reps(_), .percent(_):
+        case .oneRepMax, .reps(_), .percent(_):
             self.type = .reps
         case .durations(_), .timed:
             self.type = .secs
@@ -78,6 +78,13 @@ struct Working: Codable {
             switch rhs {
             case .durations(let d2):
                 return d1.secs.count == d2.secs.count
+            default:
+                return false
+            }
+        case .oneRepMax:
+            switch rhs {
+            case .oneRepMax:
+                return true
             default:
                 return false
             }
@@ -173,16 +180,11 @@ final class ExerciseEntry: Codable {
     /// The reps that the user is expected to do. Note that this is only called if canSetActualReps is true.
     func expectedReps(_ plan: ExercisePlan) -> Int {
         if setIndex < plan.sets.count, case .workset = plan.sets[setIndex].kind {
-            switch plan.sets[setIndex].expected {
-            case .amrap(min: let min):
-                return min
-            case .duration:
-                return 0
-            case .reps(min: let min, _):
-                return min
-            case .timed:
-                return 0
-            }
+            let numWarmups = plan.sets.count(where: {
+                switch $0.kind {
+                case .warmup: return true
+                    default: return false}})
+            return working?.expected[setIndex - numWarmups] ?? 0  // this can be called before ExerciseView onAppear so we need to handle nil working
         }
         return 0
     }
@@ -275,6 +277,13 @@ final class ExerciseEntry: Codable {
     /// Called when the user completes an exercise. Adds current to Exercise.history.
     func completedLast(_ workout: Workout, _ exercise: Exercise) {
         if var w = self.working {
+            if case .oneRepMax = exercise.data, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
+                if let orm = compute1RM(weight: weight, reps: reps) {
+                    print("weight: \(weight) reps: \(reps) 1rm: \(orm)")
+                    exercise.weight = orm.rounded() // looks a lot nicer if we round, and no one cares about a tenth of a pound or kilogram here
+                }
+            }
+            
             if let e = workout.elapsed {
                 let elapsed = Date().timeIntervalSince(w.started)
                 workout.elapsed = e + elapsed
@@ -384,10 +393,6 @@ extension ExerciseEntry {
                 }
             }
         }
-//        let percent = Int(100.0 * plan.sets[setIndex].percent)
-//        if let actual = plan.sets[setIndex].weight, actual.value() > 0.0, percent != 100 {
-//            return "\(percent)% of \(actual.text())"
-//        }
         return nil
     }
 }
@@ -398,17 +403,27 @@ func typeMatches(_ completed: Completed, _ exercise: Exercise) -> Bool {
     switch completed.type {
     case .reps:
         switch exercise.data {
-        case .percent(_): return true
-        case .durations(_): return false
-        case .reps(_): return true
-        case .timed: return false
+        case .oneRepMax, .percent(_), .reps(_): return true
+        case .durations(_), .timed: return false
         }
     case .secs:
         switch exercise.data {
-        case .percent(_): return false
-        case .durations(_): return true
-        case .reps(_): return false
-        case .timed: return true
+        case .oneRepMax, .percent(_), .reps(_): return false
+        case .durations(_), .timed: return true
         }
+    }
+}
+
+// References:
+// https://www.nsca.com/contentassets/61d813865e264c6e852cadfe247eae52/nsca_training_load_chart.pdf?srsltid=AfmBOopfqWIOmJzGNEuYohCPYo-13gCVBjb6Nh6t9rKbfprUXsSeY6E6
+// https://theathletesphysique.com/wp-content/uploads/2020/08/1RM-500-600-Max-Tables.pdf
+func compute1RM(weight: Float, reps: Int) -> Float? {
+    //                       0    1    2     3     4     5     6     7     8     9     10    11    12 reps
+    let percents: [Float] = [0.0, 1.0, 0.95, 0.93, 0.90, 0.87, 0.85, 0.83, 0.80, 0.77, 0.75, 0.70, 0.67]
+    
+    if reps >= 1 && reps < percents.count {
+        return weight / percents[reps]
+    } else {
+        return nil
     }
 }

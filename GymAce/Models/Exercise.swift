@@ -32,6 +32,14 @@ final class Exercise: Codable {
         self.data = .durations(durations)
     }
     
+    init (name: String, formalName: String, orm: OneRepMaxData, weights: String? = nil, weight: Float? = nil) {
+        self.name = name
+        self.formalName = formalName
+        self.weightSet = weights
+        self.weight = weight
+        self.data = .oneRepMax(orm)
+    }
+    
     init (name: String, formalName: String, reps: RepsData, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName

@@ -78,8 +78,7 @@ struct EditCompleted: View {
     private func repsTitle() -> String {
         switch exercise.data {
         case .durations(_): return "seconds"
-        case .percent(_): return "reps"
-        case .reps(_): return "reps"
+        case .oneRepMax, .percent(_), .reps(_): return "reps"
         case .timed: return "seconds"
         }
     }

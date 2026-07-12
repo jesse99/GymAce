@@ -25,6 +25,11 @@ struct EditExercise: View {
     @State private var showDurationsHelp = false
     @State private var durationsErr: String? = nil
 
+    @State private var ormData: OneRepMaxData
+    @State private var ormWarmupText = ""
+    @State private var ormWarmupErr: String? = nil
+    @State private var showOrmWarmupHelp = false
+
     @State private var percentData: PercentData
     @State private var percentOther: Int = -1
     @State private var percentOthers: [String] = []
@@ -81,18 +86,27 @@ struct EditExercise: View {
         switch exercise.data {
         case .durations(let d):
             _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
+            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+        case .oneRepMax(let d):
+            _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _ormData = State(initialValue: d)
             _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
             _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
         case .percent(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
             _percentData = State(initialValue: d)
             _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
         case .reps(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
             _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
             _repsData = State(initialValue: d)
         case .timed:
             _durationsData = State(initialValue: DurationsData(secs: [30]))
+            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
             _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
             _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
         }
@@ -108,6 +122,9 @@ struct EditExercise: View {
         }
         names.sort()
         names.append("Missing Exercise")    // TODO don't allow an exercise to be named "Missing Exercise"
+        
+        _ormWarmupText = State(initialValue: ormData.warmups.map {$0.asString()}.joined(separator: " "))
+
         _percentOthers = State(initialValue: names)
         _percent = State(initialValue: "\(percentData.percent)")
         if let index = names.firstIndex(of: percentData.other) {
@@ -265,6 +282,7 @@ struct EditExercise: View {
             HStack {
                 Picker("", selection: typeBinding) {
                     Text("Durations").tag(0)
+                    Text("One Rep Max").tag(4)
                     Text("Percent").tag(1)
                     Text("Reps").tag(2)
                     Text("Timed").tag(3)
@@ -287,19 +305,23 @@ struct EditExercise: View {
                     Text("Each set is done using weights that are a percentage of another exercise.")
                         .foregroundColor(.blue)
                         .font(.footnote)
-                } else if typeBinding.wrappedValue == 1 {
+                } else if typeBinding.wrappedValue == 2 {
                     Text("Each work set is done using fixed reps, min-max reps, or As Many Reps As Possible (AMRAP).")
                         .foregroundColor(.blue)
                         .font(.footnote)
-                } else {
+                } else if typeBinding.wrappedValue == 3 {
                     Text("The exercise is done for an indefinite amount of time, e.g. jogging.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                } else {
+                    Text("Used to figure out the maximum weight for an exercise. Typically paired with a Percent exercise within an intermediate or advanced program.")
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
             }
 
+            // Durations type
             if typeBinding.wrappedValue == 0 {
-                // Durations type
                 HStack {
                     durationsTextField("Durations", durationsBinding)
                     Spacer()
@@ -319,9 +341,9 @@ struct EditExercise: View {
                         .foregroundColor(.red)
                         .font(.footnote)
                 }
-                
+                                
+            // Percent type
             } else if typeBinding.wrappedValue == 1 {
-                // Percent type
                 HStack {
                     Picker("Other exercise", selection: percentOtherBinding) {
                         ForEach(Array(percentOthers.enumerated()), id: \.element) {tuple in
@@ -429,8 +451,8 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
 
+            // Reps type
             } else if typeBinding.wrappedValue == 2 {
-                // Reps type
                 HStack {
                     repsTextField("Warmups", repsWarmupBinding)
                     Spacer()
@@ -510,6 +532,28 @@ struct EditExercise: View {
                         .foregroundColor(.red)
                         .font(.footnote)
                 }
+            
+            // One Rep Max type
+            } else if typeBinding.wrappedValue == 4 {
+                HStack {
+                    repsTextField("Warmups", ormWarmupBinding)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showOrmWarmupHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showOrmWarmupHelp {
+                    Text("Sets to do before the work set. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = ormWarmupErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
             }
             Text(workoutsLabel)
                 .font(.footnote)
@@ -531,6 +575,7 @@ struct EditExercise: View {
                 case .percent(_): return 1
                 case .reps(_): return 2
                 case .timed: return 3
+                case .oneRepMax: return 4
                 }
             },
             set: {
@@ -540,8 +585,10 @@ struct EditExercise: View {
                     exercise.data = .percent(percentData)
                 } else if $0 == 2 {
                     exercise.data = .reps(repsData)
-                } else {
+                } else if $0 == 3 {
                     exercise.data = .timed
+                } else {
+                    exercise.data = .oneRepMax(ormData)
                 }
             }
         )
@@ -673,6 +720,29 @@ struct EditExercise: View {
                 } else {
                     percentRestErr = "Expected nothing or a number with an optional time suffix, not '\($0)'."
                 }
+            }
+        )
+    }
+
+    private var ormWarmupBinding: Binding<String> {
+        Binding(
+            get: {
+                return ormWarmupText
+            },
+            set: {
+                var a: [FixedReps] = []
+                ormWarmupText = $0
+                for s in $0.split(separator: " ") {
+                    if let r = FixedReps(String(s)) {
+                        a.append(r)
+                    } else {
+                        ormWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+                        return
+                    }
+                }
+                ormWarmupErr = nil
+                ormData.warmups = a
+                exercise.data = .oneRepMax(ormData)
             }
         )
     }
@@ -915,6 +985,8 @@ struct EditExercise: View {
         switch exercise.data {
         case .durations(_):
             return durationsErr == nil
+        case .oneRepMax:
+            return ormWarmupErr == nil
         case .percent(_):
             return percentErr == nil // TODO make sure this is up to date
         case .reps(_):

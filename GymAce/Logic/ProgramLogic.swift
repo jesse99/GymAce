@@ -7,6 +7,12 @@ struct WorkoutEntry: Identifiable {
     let color: Color
     let id = UUID()
     
+    init(_ workout: Workout, anyDay: Bool) {
+        self.workout = workout
+        self.label = "Any Day"
+        self.color = .orange
+    }
+
     init(_ workout: Workout, delta: Int, today: Date) {
         self.workout = workout
         self.label = today.daysStr(delta)
@@ -42,9 +48,12 @@ extension Program {
                     switch workout.schedule {
                     case .anyDay:
                         // We only schedule anyDay workouts for the first available option to avoid clutter.
-                        if workout.weeks != nil || calendar.isDate(on, inSameDayAs: today) {
-                            let entry = WorkoutEntry(workout, delta: i, today: today)
+                        if calendar.isDate(on, inSameDayAs: today) {
+                            let entry = WorkoutEntry(workout, anyDay: true)
                             entries[i].append(entry)  // show these after the others
+                        } else if workout.weeks != nil {
+                            let entry = WorkoutEntry(workout, delta: i, today: today)
+                            entries[i].append(entry)  
                         }
                     case .cyclic: // we'll special case this below
                         break

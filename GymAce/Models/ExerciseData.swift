@@ -3,6 +3,10 @@ enum ExerciseData: Codable {
     /// An exercise that is performed for a fixed number of seconds, e.g. a plank.
     case durations(DurationsData)
     
+    /// These are always done for one set with 1-12 reps. After completing this the weight is
+    /// updated to an estimate of the user's one rep max.
+    case oneRepMax(OneRepMaxData)
+    
     /// An exercise that uses weights that are a percentage of a base exercise, e.g. a light squat.
     case percent(PercentData)
     
@@ -16,6 +20,7 @@ enum ExerciseData: Codable {
     func numSets() -> Int {
         switch self {
         case .durations(let d): return d.secs.count
+        case .oneRepMax: return 1
         case .percent(let d): return d.warmups.count + d.workset.count
         case .reps(let d): return d.warmups.count + d.workset.count + d.backoff.count
         case .timed: return 1
@@ -30,6 +35,14 @@ struct DurationsData: Codable {
     init(secs: [Int], targetSecs: Int? = nil) {
         self.secs = secs
         self.targetSecs = targetSecs
+    }
+}
+
+struct OneRepMaxData: Codable {
+    var warmups: [FixedReps]
+        
+    init(warmups: [FixedReps]) {
+        self.warmups = warmups
     }
 }
 
@@ -60,12 +73,6 @@ struct PercentData: Codable {
     }
 }
 
-// TODO
-// add a new VariableReps enum that includes percents for fixed and amwap
-//    maybe tuple names too
-//    custom decoder would try to decode it normally and then fallback to decoding it as VariableRep and then mapping
-// worksets would be VariableReps enum
-// try on phone
 struct RepsData: Codable {
     var warmups: [FixedReps]
     var workset: [VariableReps]

@@ -208,6 +208,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 20)
                 }
             }
+            if case .oneRepMax = exercise.data, !entry.isFinished(exercise) {
+                Text("Set the exercise weight to 90% or so of your one rep max. After finishing, the weight will be updated to reflect your actual one rep max.")
+                    .font(.footnote)
+                    .padding(.top, 10)
+            }
             if let s = findIssues() {
                 Text(s)
                     .font(.footnote)
@@ -327,6 +332,8 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     
     private func canSetWeight() -> Bool {
         if case .percent = exercise.data {
+            return false
+        } else if case .oneRepMax = exercise.data {
             return false
         }
         return exercise.weight != nil && exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil

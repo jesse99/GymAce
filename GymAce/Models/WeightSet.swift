@@ -19,7 +19,7 @@ enum Units: Codable {
 
 /// Converts a weight into a user friendly string representation.
 func formatWeight(_ weight: Float, _ units: Units) -> String {
-    var s = "\(weight, default: "%.3")"
+    var s = String(format: "%.3f", weight)
     while s.hasSuffix("0") {
         s.removeLast(1)
     }
