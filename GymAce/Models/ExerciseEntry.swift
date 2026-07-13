@@ -279,8 +279,7 @@ final class ExerciseEntry: Codable {
         if var w = self.working {
             if case .oneRepMax = exercise.data, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
                 if let orm = compute1RM(weight: weight, reps: reps) {
-                    print("weight: \(weight) reps: \(reps) 1rm: \(orm)")
-                    exercise.weight = orm.rounded() // looks a lot nicer if we round, and no one cares about a tenth of a pound or kilogram here
+                    exercise.weight = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
                 }
             }
             

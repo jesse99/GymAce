@@ -20,7 +20,7 @@ enum ExerciseData: Codable {
     func numSets() -> Int {
         switch self {
         case .durations(let d): return d.secs.count
-        case .oneRepMax: return 1
+        case .oneRepMax(let d): return d.warmups.count + 1
         case .percent(let d): return d.warmups.count + d.workset.count
         case .reps(let d): return d.warmups.count + d.workset.count + d.backoff.count
         case .timed: return 1

@@ -313,7 +313,7 @@ fileprivate func boringButBigProgram() -> Program {
         workout.addExercise(name: "Ab Wheel")
         
         if week == 4 {
-            workout.notes = "If you were able to hit the rep goals for an exercise then up the weight for the \"Max\" version of the exercise. Otherwise drop the weight by 10% for that exercise."
+            workout.notes = "If you were able to hit the rep goals for an exercise then use Edit Exercise to up the weight for the \"Max\" version of the exercise. Otherwise drop the weight by 10% for that exercise."
         }
 
         program.addWorkout(workout)

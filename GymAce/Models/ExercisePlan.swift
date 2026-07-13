@@ -19,7 +19,11 @@ final class ExercisePlan {
             for (i, s) in d.secs.enumerated() {
                 sets.append(PlanSet(model, program, exercise, secs: s, index: i, count: d.secs.count))
             }
-        case .oneRepMax:
+        case .oneRepMax(let d):
+            for (i, s) in d.warmups.enumerated() {
+                let kind = PlanSet.Kind.warmup(index: i, count: d.warmups.count)
+                sets.append(PlanSet(model, program, exercise, kind: kind, fixed: s, rest: nil))
+            }
             let s = VariableReps.variable(1, 12)
             sets.append(PlanSet(model, program, exercise, variable: s, index: 0, count: 1, rest: nil))
         case .percent(let d):
