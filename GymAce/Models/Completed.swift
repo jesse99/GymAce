@@ -82,17 +82,20 @@ class Completed: Codable, Comparable, Equatable {
     
     /// Used to show the user what happened for that workout.
     func details() -> String {
-        return completedDetails(values, type, weights, units, distance)
+        return completedDetails(values, type, getWeights(), units, distance)
     }
     
     // Returns +1 if self is better than rhs.
     // Returns  0 if self is equal to rhs.
     // Returns -1 if self is worse than rhs.
     func better(_ rhs: Completed) -> Int {
-        if let lw = self.weight {
-            if let rw = rhs.weight {
-                let li = Int(1000.0*lw)
-                let ri = Int(1000.0*rw)
+        if let lw = self.getWeights() {
+            if let rw = rhs.getWeights() {
+                let sl = lw.reduce(0, +)
+                let sr = rw.reduce(0, +)
+                
+                let li = Int(1000.0*sl)
+                let ri = Int(1000.0*sr)
                 if li > ri {
                     return 1    // left has more weight
                 } else if li < ri {
@@ -101,7 +104,7 @@ class Completed: Codable, Comparable, Equatable {
             } else {
                 return 1    // only left has weight
             }
-        } else if rhs.weight != nil {
+        } else if rhs.getWeights() != nil {
             return -1       // only right has weight
         }
         
@@ -132,6 +135,16 @@ class Completed: Codable, Comparable, Equatable {
 
     static func <(lhs: Completed, rhs: Completed) -> Bool {
         return lhs.completed < rhs.completed
+    }
+    
+    private func getWeights() -> [Float]? {
+        return if weights != nil {
+            weights
+        } else if weight != nil {
+            [weight!]
+        } else {
+            nil
+        }
     }
     
     private func completedReps() -> Int {

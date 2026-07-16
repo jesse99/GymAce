@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [boringButBigProgram(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), myProgram(), previewProgram(), stopgapProgram()]
+let defaultPrograms: [Program] = [boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), myProgram(), previewProgram(), stopgapProgram()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -136,105 +136,206 @@ fileprivate func myProgram() -> Program {
     return program
 }
 
-fileprivate func boringButBigProgram() -> Program {
-    func addExercises(_ program: Program) {
-        let warmup = [FixedReps(reps: 5, percent: 40), FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 60)]
-        
-        let warmup2 = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-        let reps5: [VariableReps] = [.fixed(5, 65), .fixed(5, 75), .amrap(5, 85)]
-        let reps3: [VariableReps] = [.fixed(3, 70), .fixed(3, 80), .amrap(3, 90)]
-        let reps1: [VariableReps] = [.fixed(5, 75), .fixed(3, 85), .amrap(1, 90)]
-        let repsd: [VariableReps] = [.fixed(5, 40), .fixed(5, 50), .fixed(5, 60)]
-        let reps10: [VariableReps] = [.fixed(10, 30), .fixed(10, 40), .fixed(10, 50), .fixed(10, 60), .fixed(10, 70)]
+func add531Exercises(_ program: Program) {
+    let warmup = [FixedReps(reps: 5, percent: 40), FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 60)]
+    
+    let warmup2 = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+    let reps5: [VariableReps] = [.fixed(5, 65), .fixed(5, 75), .amrap(5, 85)]
+    let reps3: [VariableReps] = [.fixed(3, 70), .fixed(3, 80), .amrap(3, 90)]
+    let reps1: [VariableReps] = [.fixed(5, 75), .fixed(3, 85), .amrap(1, 90)]
+    let repsd: [VariableReps] = [.fixed(5, 40), .fixed(5, 50), .fixed(5, 60)]
+    let reps10: [VariableReps] = [.fixed(10, 30), .fixed(10, 40), .fixed(10, 50), .fixed(10, 60), .fixed(10, 70)]
 
-        // 1 rep max
-        var exercise = make("Max OHP", "Overhead Press", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 80)
-        program.exercises.append(exercise)
+    // 1 rep max
+    var exercise = make("Max OHP", "Overhead Press", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 80)
+    program.exercises.append(exercise)
 
-        exercise = make("Max Bench", "Bench Press", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 160)
-        program.exercises.append(exercise)
-        
-        exercise = make("Max Deadlift", "Deadlift", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 200)
-        program.exercises.append(exercise)
-        
-        exercise = make("Max Squat", "Low bar Squat", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 225)
-        program.exercises.append(exercise)
+    exercise = make("Max Bench", "Bench Press", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 160)
+    program.exercises.append(exercise)
+    
+    exercise = make("Max Deadlift", "Deadlift", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 200)
+    program.exercises.append(exercise)
+    
+    exercise = make("Max Squat", "Low bar Squat", warmups: warmup2, oneRepMax: true, weights: "Dual Plates", weight: 225)
+    program.exercises.append(exercise)
 
-        // 5 reps part of 531
-        exercise = make("OHP 5", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
-        
-        exercise = make("Deadlift 5", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 3*60)
-        program.exercises.append(exercise)
+    // 5 reps part of 531
+    exercise = make("OHP 5", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
+    
+    exercise = make("Deadlift 5", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 3*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Squat 5", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 3*60)
-        program.exercises.append(exercise)
+    exercise = make("Squat 5", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 3*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Bench 5", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
+    exercise = make("Bench 5", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: reps5, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
 
-        // 3 reps part of 531
-        exercise = make("OHP 3", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
-        
-        exercise = make("Deadlift 3", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 3*60)
-        program.exercises.append(exercise)
+    // 3 reps part of 531
+    exercise = make("OHP 3", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
+    
+    exercise = make("Deadlift 3", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 3*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Squat 3", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 3*60)
-        program.exercises.append(exercise)
+    exercise = make("Squat 3", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 3*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Bench 3", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
+    exercise = make("Bench 3", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: reps3, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
 
-        // 1 rep part of 531
-        exercise = make("OHP 1", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
-        
-        exercise = make("Deadlift 1", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 1*60)
-        program.exercises.append(exercise)
+    // 1 rep part of 531
+    exercise = make("OHP 1", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
+    
+    exercise = make("Deadlift 1", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 1*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Squat 1", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 1*60)
-        program.exercises.append(exercise)
+    exercise = make("Squat 1", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 1*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Bench 1", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
-        
-        // deload
-        exercise = make("OHP deload", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
-        
-        exercise = make("Deadlift deload", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 1*60)
-        program.exercises.append(exercise)
+    exercise = make("Bench 1", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: reps1, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
+    
+    // deload
+    exercise = make("OHP deload", "Overhead Press", "Max OHP", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
+    
+    exercise = make("Deadlift deload", "Deadlift", "Max Deadlift", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 1*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Squat deload", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 1*60)
-        program.exercises.append(exercise)
+    exercise = make("Squat deload", "Low bar Squat", "Max Squat", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 1*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Bench deload", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
+    exercise = make("Bench deload", "Bench Press", "Max Bench", percent: 100, warmups: warmup, worksets: repsd, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
 
-        // 5 sets of 10 reps
-        exercise = make("Bench Press", "Bench Press", "Max Bench", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
-        
-        exercise = make("Deadlift", "Deadlift", "Max Deadlift", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 3*60)
-        program.exercises.append(exercise)
+    // 5 sets of 10 reps
+    exercise = make("Bench Press", "Bench Press", "Max Bench", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
+    
+    exercise = make("Deadlift", "Deadlift", "Max Deadlift", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 3*60)
+    program.exercises.append(exercise)
 
-        exercise = make("Squat", "Low bar Squat", "Max Squat", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 3*60)
-        program.exercises.append(exercise)
+    exercise = make("Squat", "Low bar Squat", "Max Squat", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 3*60)
+    program.exercises.append(exercise)
 
-        exercise = make("OHP", "Overhead Press", "Max OHP", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 2*60)
-        program.exercises.append(exercise)
+    exercise = make("OHP", "Overhead Press", "Max OHP", percent: 100, warmups: [], worksets: reps10, weights: "Dual Plates", rest: 2*60)
+    program.exercises.append(exercise)
 
-        // accessories
-        let creps: [VariableReps] = [.fixed(10), .fixed(10), .fixed(10), .fixed(10), .fixed(10)]
-        exercise = make("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 0, rest: 2*60)
-        program.exercises.append(exercise)
+    // accessories
+    let creps: [VariableReps] = [.fixed(10), .fixed(10), .fixed(10), .fixed(10), .fixed(10)]
+    exercise = make("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 0, rest: 2*60)
+    program.exercises.append(exercise)
 
-        let areps: [VariableReps] = [.fixed(1), .fixed(1), .fixed(1), .fixed(1), .fixed(1)]
-        exercise = make("Ab Wheel", "Ab Wheel Rollout", warmups: [], worksets: areps, rest: 2*60)
-        program.exercises.append(exercise)
+    let areps: [VariableReps] = [.fixed(1), .fixed(1), .fixed(1), .fixed(1), .fixed(1)]
+    exercise = make("Ab Wheel", "Ab Wheel Rollout", warmups: [], worksets: areps, rest: 2*60)
+    program.exercises.append(exercise)
+}
+
+func add531Max(_ program: Program) {
+    let schedule = Schedule.anyDay
+    let workout = Workout("One Rep Max", schedule)
+    
+    workout.addExercise(name: "Max Bench")
+    workout.addExercise(name: "Max OHP")
+    workout.addExercise(name: "Max Squat")
+    workout.addExercise(name: "Max Deadlift")
+
+    program.addWorkout(workout)
+}
+
+fileprivate func boringButBigProgram3() -> Program {
+    func wname(_ week: Int) -> String {
+        if week == 5 {
+            return "deload"
+        } else {
+            return "\(week)"
+        }
     }
 
+    func addPress(_ program: Program, _ day: Weekdays.Day, _ week: Int, _ version: String) {
+        let schedule = Schedule.days(Weekdays([day]))
+        let workout = Workout("Press \(wname(week))", schedule)
+        workout.weeks = week...week
+        
+        workout.addExercise(name: "OHP \(version)")
+        workout.addExercise(name: "Bench Press")
+        workout.addExercise(name: "Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+
+    func addDeadlift(_ program: Program, _ day: Weekdays.Day, _ week: Int, _ version: String) {
+        let schedule = Schedule.days(Weekdays([day]))
+        let workout = Workout("Deadlift \(wname(week))", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "Deadlift \(version)")
+        workout.addExercise(name: "Squat")
+        workout.addExercise(name: "Ab Wheel")
+
+        program.addWorkout(workout)
+    }
+
+    func addBench(_ program: Program, _ day: Weekdays.Day, _ week: Int, _ version: String) {
+        let schedule = Schedule.days(Weekdays([day]))
+        let workout = Workout("Bench \(wname(week))", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "Bench \(version)")
+        workout.addExercise(name: "OHP")
+        workout.addExercise(name: "Chin Ups")
+
+        program.addWorkout(workout)
+    }
+
+    func addSquat(_ program: Program, _ day: Weekdays.Day, _ week: Int, _ version: String) {
+        let schedule = Schedule.days(Weekdays([day]))
+        let workout = Workout("Squat \(wname(week))", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "Squat \(version)")
+        workout.addExercise(name: "Deadlift")
+        workout.addExercise(name: "Ab Wheel")
+        
+        if version == "deload" {
+            workout.notes = "If you were able to hit the rep goals for an exercise then use Edit Exercise to up the weight for the \"Max\" version of the exercise. Otherwise drop the weight by 10% for that exercise."
+        }
+
+        program.addWorkout(workout)
+    }
+
+    let program = Program("531 Boring but Big 3")
+    program.summary = "[This](https://www.jimwendler.com/blogs/jimwendler-com/101077382-boring-but-big) is a high volume program for intermediate to advanced lifters. This version is three days a week and uses a five week cycle with one deload week. The exercises use percentages based on your one rep max for the exercise (set these using Edit Exercise, e.g. for \"Max Bench\"). When starting out use a low weight, espcially for the lower body exercises."
+    add531Exercises(program)
+    add531Max(program)
+
+    addPress(program, .monday, 1, "5")
+    addDeadlift(program, .wednesday, 1, "5")
+    addBench(program, .friday, 1, "5")
+
+    addSquat(program, .monday, 2, "5")
+    addPress(program, .wednesday, 2, "3")
+    addDeadlift(program, .friday, 2, "3")
+
+    addBench(program, .monday, 3, "3")
+    addSquat(program, .wednesday, 3, "3")
+    addPress(program, .friday, 3, "1")
+
+    addDeadlift(program, .monday, 4, "1")
+    addBench(program, .wednesday, 4, "1")
+    addSquat(program, .friday, 4, "1")
+
+    addPress(program, .monday, 5, "deload")
+    addBench(program, .wednesday, 5, "deload")
+    addSquat(program, .friday, 5, "deload")
+
+    return program
+}
+
+fileprivate func boringButBigProgram4() -> Program {
     func wname(_ week: Int) -> String {
         if week == 4 {
             return "deload"
@@ -253,18 +354,6 @@ fileprivate func boringButBigProgram() -> Program {
         } else {
             return "deload"
         }
-    }
-
-    func addMax(_ program: Program) {
-        let schedule = Schedule.anyDay
-        let workout = Workout("One Rep Max", schedule)
-        
-        workout.addExercise(name: "Max Bench")
-        workout.addExercise(name: "Max OHP")
-        workout.addExercise(name: "Max Squat")
-        workout.addExercise(name: "Max Deadlift")
-
-        program.addWorkout(workout)
     }
 
     func addPress(_ program: Program, _ week: Int) {
@@ -319,10 +408,10 @@ fileprivate func boringButBigProgram() -> Program {
         program.addWorkout(workout)
     }
 
-    let program = Program("531 Boring but Big")
+    let program = Program("531 Boring but Big 4")
     program.summary = "[This](https://www.jimwendler.com/blogs/jimwendler-com/101077382-boring-but-big) is a high volume program for intermediate to advanced lifters. This version is four days a week and uses a four week cycle with one deload week. The exercises use percentages based on your one rep max for the exercise (set these using Edit Exercise, e.g. for \"Max Bench\"). When starting out use a low weight, espcially for the lower body exercises. You can substitute in alternate versions of exercises but you shouldn't add new exercises to this program."
-    addExercises(program)
-    addMax(program)
+    add531Exercises(program)
+    add531Max(program)
     for week in 1...4 {
         addPress(program, week)
         addDeadlift(program, week)
