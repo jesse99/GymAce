@@ -65,3 +65,13 @@ func weightTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
+/// 140.0 135.0 135.0
+@ViewBuilder
+func weightsTextField(_ title: String, _ text: Binding<String>) -> some View {
+    TextField(title, text: text)
+        .textFieldStyle(.roundedBorder)
+        .keyboardType(.numbersAndPunctuation)   // need numbers and . and space
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled(true)
+}
+

@@ -249,7 +249,7 @@ fileprivate func findMinExpected(_ exercise: Exercise, _ reps: VariableReps, _ i
         // For AMRAP we'll just do the default unless the user did better last time at
         // the current weight.
         if let last = exercise.latestCompleted(), typeMatches(last, exercise), index < last.values.count {
-            if let new = exercise.weight, let old = last.weight, new == old {
+            if let new = exercise.weight, let old = last.maxWeight(), new == old {
                 let r = last.values[index]
                 if r > min {
                     return r
@@ -262,7 +262,7 @@ fileprivate func findMinExpected(_ exercise: Exercise, _ reps: VariableReps, _ i
     case .variable(let min, let max):
         // Usually we'll just return min except for a few cases:
         if let last = exercise.latestCompleted(), typeMatches(last, exercise) {
-            if let new = exercise.weight, let old = last.weight {
+            if let new = exercise.weight, let old = last.maxWeight() {
                 if new < old {
                     // 1) the user has dropped the weight
                     // Possible that they can't now do max, but they should be close to that...
@@ -293,7 +293,7 @@ fileprivate func findBaseWeight(_ program: Program, _ exercise: Exercise) -> Res
         case .percent(let d):
             if let otherExercise = program.findExercise(d.other) {
                 if let last = otherExercise.history.last {
-                    if let weight = last.weight {
+                    if let weight = last.maxWeight() {
                         return .success(weight)
                     }
                 }

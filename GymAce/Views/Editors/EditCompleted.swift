@@ -8,6 +8,7 @@ struct EditCompleted: View {
     @State private var showWeightHelp = false
     @State private var showRepsHelp = false
     @State private var repsError: String? = nil
+    @State private var weightsError: String? = nil
     @State private var showNoteHelp = false
 
     var body: some View {
@@ -33,9 +34,9 @@ struct EditCompleted: View {
                     .font(.footnote)
             }
 
-            // Weight
+            // Weights
             HStack {
-                weightTextField("Weight", weightBinding)
+                weightsTextField("Weights", weightsBinding)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showWeightHelp.toggle()
@@ -48,7 +49,12 @@ struct EditCompleted: View {
                     .foregroundColor(.blue)
                     .font(.footnote)
             }
-            
+            if let e = weightsError {
+                Text(e)
+                    .foregroundColor(.red)
+                    .font(.footnote)
+            }
+
             // Note
             HStack {
                 noteTextField("note", noteBinding)
@@ -69,7 +75,7 @@ struct EditCompleted: View {
         }
         .navigationTitle("Edit Completed")
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(repsError != nil)
+        .navigationBarBackButtonHidden(repsError != nil && weightsError != nil)
         .onAppear {
             model.dirty = true
         }
@@ -126,17 +132,32 @@ struct EditCompleted: View {
         )
     }
 
-    private var weightBinding: Binding<String> {
+    private var weightsBinding: Binding<String> {
         Binding(
             get: {
-                if let w = exercise.history[index].weight {
-                    return formatWeight(w, .None)
+                if let ws = exercise.history[index].getWeights() {
+                    return ws.map{formatWeight($0, .None)}.joined(separator: " ")
                 } else {
                     return ""
                 }
             },
             set: {
-                exercise.history[index].weight = Float($0)
+                var values: [Float] = []
+                weightsError = nil
+                for part in $0.split(separator: " ") {
+                    if let r = Float(part) {
+                        if r >= 0 {
+                            values.append(r)
+                        } else {
+                            weightsError = "The weight can't be negative."
+                            break
+                        }
+                    } else {
+                        weightsError = "Expected a floating point number, but found '\(part)'."
+                        break
+                    }
+                }
+                exercise.history[index].weights = values
             }
         )
     }

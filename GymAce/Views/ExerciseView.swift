@@ -213,6 +213,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .font(.footnote)
                     .padding(.top, 10)
             }
+            if let s = findNotes(plan) {
+                Text(s)
+                    .font(.footnote)
+                    .padding(.top, 10)
+            }
             if let s = findIssues() {
                 Text(s)
                     .font(.footnote)
@@ -328,6 +333,20 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
 
         return issues.isEmpty ? nil : issues
+    }
+    
+    private func findNotes(_ plan: ExercisePlan) -> String? {
+        var notes: String? = nil
+        
+        if case .durations(let d) = exercise.data, let target = d.targetSecs {
+            for set in plan.sets {
+                if case .duration = set.expected, let r = set.rest, r < target {
+                    notes = "Target up to \(target) seconds."
+                }
+            }
+        }
+        
+        return notes
     }
     
     private func canSetWeight() -> Bool {

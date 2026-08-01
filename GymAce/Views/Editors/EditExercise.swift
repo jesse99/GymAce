@@ -24,6 +24,9 @@ struct EditExercise: View {
     @State private var durationsText = ""
     @State private var showDurationsHelp = false
     @State private var durationsErr: String? = nil
+    @State private var targetText = ""
+    @State private var showTargetHelp = false
+    @State private var targetErr: String? = nil
 
     @State private var ormData: OneRepMaxData
     @State private var ormWarmupText = ""
@@ -112,6 +115,11 @@ struct EditExercise: View {
         }
         
         _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
+        if let t = durationsData.targetSecs {
+            _targetText = State(initialValue: secsToShortStr(t))
+        } else {
+            _targetText = State(initialValue: "")
+        }
 
         var names: [String] = []
         for e in program.exercises where e.name != exercise.name {
@@ -342,7 +350,27 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
                                 
-            // Percent type
+                HStack {
+                    durationsTextField("Target", targetBinding)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showTargetHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showTargetHelp {
+                    Text("Optional maximum amount of time to do each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix. Once you hit the target you might want to switch to a harder version of the exercise.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = targetErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
+
+                // Percent type
             } else if typeBinding.wrappedValue == 1 {
                 HStack {
                     Picker("Other exercise", selection: percentOtherBinding) {
@@ -615,6 +643,31 @@ struct EditExercise: View {
                 } else {
                     durationsErr = nil
                     durationsData.secs = a
+                    exercise.data = .durations(durationsData)
+                }
+            }
+        )
+    }
+
+    private var targetBinding: Binding<String> {
+        Binding(
+            get: {
+                return targetText
+            },
+            set: {
+                targetText = $0
+                if targetText.isBlankOrEmpty {
+                    targetErr = nil
+                    durationsData.targetSecs = nil
+                    exercise.data = .durations(durationsData)
+                } else {
+                    var t = parseShortSecs(targetText)
+                    if t == nil {
+                        targetErr = "Expected a number with an optional time suffix, not '\(targetText)'."
+                        return
+                    }
+                    targetErr = nil
+                    durationsData.targetSecs = t
                     exercise.data = .durations(durationsData)
                 }
             }
@@ -984,7 +1037,7 @@ struct EditExercise: View {
         }
         switch exercise.data {
         case .durations(_):
-            return durationsErr == nil
+            return durationsErr == nil && targetErr == nil
         case .oneRepMax:
             return ormWarmupErr == nil
         case .percent(_):

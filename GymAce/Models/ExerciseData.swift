@@ -30,7 +30,7 @@ enum ExerciseData: Codable {
 
 struct DurationsData: Codable {
     var secs: [Int]
-    var targetSecs: Int?    // TODO support this? support progression somehow?
+    var targetSecs: Int?
     
     init(secs: [Int], targetSecs: Int? = nil) {
         self.secs = secs
@@ -131,7 +131,7 @@ enum VariableReps: Codable {
     case fixed(Int, Int = 100)  // reps, percent
     case variable(Int, Int)     // minReps, maxReps
         
-    /// Parse a string formatted as "5", "8-12", or "3+" followed by an optional "/90"..
+    /// Parse a string formatted as "5", "8-12", or "3+" followed by an optional "/90".
     init?(_ str: String) {
         var text = str
         var percent = 100

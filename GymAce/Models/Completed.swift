@@ -10,7 +10,7 @@ class Completed: Codable, Comparable, Equatable {
     var values: [Int]
     var type: ValueType
     var weights: [Float]?   // these are the same unless the work sets have percentages
-    var weight: Float?      // historical
+    private var weight: Float?      // historical
     var units: Units
     var completed: Date
     var distance: Double?   // meters
@@ -80,6 +80,10 @@ class Completed: Codable, Comparable, Equatable {
         self.distance = distance
     }
     
+    func maxWeight() -> Float? {
+        return weights?.max() ?? weight
+    }
+    
     /// Used to show the user what happened for that workout.
     func details() -> String {
         return completedDetails(values, type, getWeights(), units, distance)
@@ -137,7 +141,7 @@ class Completed: Codable, Comparable, Equatable {
         return lhs.completed < rhs.completed
     }
     
-    private func getWeights() -> [Float]? {
+    func getWeights() -> [Float]? {
         return if weights != nil {
             weights
         } else if weight != nil {
