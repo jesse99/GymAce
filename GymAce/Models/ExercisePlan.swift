@@ -214,7 +214,7 @@ struct PlanSet {
                 let q = Float(setPercent) / 100.0
                 let percent = p*q
                 if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                    let weight = ws.lower(target: percent*baseWeight)
+                    let weight = ws.closest(target: percent*baseWeight)
                     return (baseWeight, percent, weight)
                 } else {
                     let weight = ActualWeight(discrete: percent*baseWeight, .None)

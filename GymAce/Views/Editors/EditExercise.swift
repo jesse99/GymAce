@@ -84,7 +84,7 @@ struct EditExercise: View {
             self.workoutsLabel = "Part of \(workouts.sorted().joined(separator: " and ")) workouts."
         }
 
-        let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        let warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
         let reps3: [VariableReps] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
         switch exercise.data {
         case .durations(let d):
@@ -661,7 +661,7 @@ struct EditExercise: View {
                     durationsData.targetSecs = nil
                     exercise.data = .durations(durationsData)
                 } else {
-                    var t = parseShortSecs(targetText)
+                    let t = parseShortSecs(targetText)
                     if t == nil {
                         targetErr = "Expected a number with an optional time suffix, not '\(targetText)'."
                         return

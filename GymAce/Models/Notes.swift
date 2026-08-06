@@ -1902,7 +1902,7 @@ extension Notes {
         )
         
         add("Kroc Row",
-            ["Bend at the waist and use one arm to grip a suppor if using a bench place one knee on the bench.",
+            ["Bend at the waist and use one arm to grip a support if using a bench place one knee on the bench.",
                 "Using your other arm bring a dumbbell from the floor all the way back.",
                 "At the bottom allow your shoulders to roll forward, at the top retract.",
                 "Keep your shoulders higher than your hips, your back should be at a 15 degree angle to the floor.",
