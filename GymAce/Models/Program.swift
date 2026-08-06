@@ -45,6 +45,29 @@ final class Program: Codable, Identifiable {
         }
     }
     
+    func valid(_ model: Model) -> Bool {
+        var valid = true
+        for name in exercises.findDupes(using: {$0.name}) {
+            print("There's already an exercise named \(name) in \(self.name)")
+            valid = false
+        }
+        for name in workouts.findDupes(using: {$0.name}) {
+            print("There's already a workout named \(name) in \(self.name)")
+            valid = false
+        }
+        for exercise in exercises {
+            if !exercise.valid(model, self) {
+                valid = false
+            }
+        }
+        for workout in workouts {
+            if !workout.valid() {
+                valid = false
+            }
+        }
+        return valid
+    }
+    
     func didExercise() {
         if started == nil {
             started = Date()

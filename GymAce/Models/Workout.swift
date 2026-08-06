@@ -45,6 +45,15 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         }
     }
         
+    func valid() -> Bool {
+        var valid = true
+        for name in entries.findDupes(using: {$0.name}) {   // technically OK but shouldn't normally happen
+            print("There's already an exercise named \(name) in \(self.name)")
+            valid = false
+        }
+        return valid
+    }
+
     var isStale: Bool {
         if let s = started {
             let delta = s.distance(to: Date.now)

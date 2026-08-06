@@ -337,7 +337,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     
     private func findNotes(_ plan: ExercisePlan) -> String? {
         var notes: String? = nil
-        
+                
         if case .durations(let d) = exercise.data, let target = d.targetSecs {
             for set in plan.sets {
                 if case .duration = set.expected, let r = set.rest, r < target {

@@ -202,20 +202,16 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=uo4_wM5r7zY")],
         )
         
-        add(
-            "Band Standing Abduction",
-            [
-                "Place a resistance band just above your ankles.",
+        add("Band Standing Abduction",
+            ["Place a resistance band just above your ankles.",
                 "Use one hand to brace yourself.",
                 "Bring one foot up off the floor and to the side.",
             ],
             [("Video", "https://www.youtube.com/watch?v=HzUgVEAjixY")],
         )
         
-        add(
-            "Banded Nordic Curl",
-            [
-                "Kneel on the ground.",
+        add("Banded Nordic Curl",
+            ["Kneel on the ground.",
                 "Secure a band to a support and wrap it around your chest.",
                 "Lean forward.",
                 "Keep your back straight at all times.",
@@ -223,16 +219,11 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=HUXS3S2xSX4")],
         )
         
-        add(
-            "Bent-legged Calf Stretch",
-            [
-                "Place one foot on a flight of stairs so that just your toes are supported.",
+        add("Bent-legged Calf Stretch",
+            ["Place one foot on a flight of stairs so that just your toes are supported.",
                 "Bend the knee on that leg forward and hold.",
             ],
-            [(
-                "Link",
-                "https://www.saintlukeskc.org/health-library/bent-knee-calf-stretch#:~:text=Stand%20an%20arm's%20length%20away,both%20knees%20and%20lean%20forward.",
-            )],
+            [("Link", "https://www.saintlukeskc.org/health-library/bent-knee-calf-stretch#:~:text=Stand%20an%20arm's%20length%20away,both%20knees%20and%20lean%20forward.")],
         )
         
         add(
@@ -598,25 +589,19 @@ extension Notes {
             )],
         )
         
-        add(
-            "Cable Crunch",
-            [
-                "Kneel below a high pulley with a rope attachment.",
+        add("Cable Crunch",
+            ["Kneel below a high pulley with a rope attachment.",
                 "Lower the rope until your hands are next to your face.",
                 "Keep your back straight throughout.",
                 "Tuck chin.",
                 "Flex abs and lower your torso keeping arms and hips still.",
                 "Elbows should be lowered to mind-thighs.",
             ],
-            [(
-                "Link",
-                "https://steelsupplements.com/blogs/steel-blog/how-to-do-casble-crunches-form-benefits",
-            )],
+            [("Link", "https://steelsupplements.com/blogs/steel-blog/how-to-do-casble-crunches-form-benefits")],
         )
         
         add("Cable Crossover",
-            [
-                "Start with pulleys above your head.",
+            ["Start with pulleys above your head.",
                 "Place one foot forward and bend slightly at the waist.",
                 "With a slight bend to your elbows, extend your arms straight in front of you in a wide arc until you feel a stretch in your chest.",
                 "Keep your torso straight: don't lean forward as you move your arms.",
@@ -2475,25 +2460,13 @@ extension Notes {
              ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup")],
         )
         
-        add(
-            "Pull-up Negative",
-            [
-                "Jump to the top and slowly lower yourself.",
+        add("Pull-up Negative",
+            ["Jump to the top and slowly lower yourself.",
                 "Work towards taking 10s to lower yourself.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.fitstream.com/exercises/negative-pull-up-a6041",
-                ),
-                (
-                    "Pull-ups",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup",
-                ),
-                (
-                    "Elbow Pain",
-                    "https://breakingmuscle.com/fitness/5-ways-to-end-elbow-pain-during-chin-ups",
-                ),
+            [("Link", "https://www.fitstream.com/exercises/negative-pull-up-a6041"),
+                ("Pull-ups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup"),
+                ("Elbow Pain", "https://breakingmuscle.com/fitness/5-ways-to-end-elbow-pain-during-chin-ups"),
             ],
         )
         
@@ -3488,16 +3461,13 @@ extension Notes {
         )
         
         add("Stress Ball Squeeze",
-            [
-                "Squeeze a rubber stress ball for either 10 reps or 30s.",
+            ["Squeeze a rubber stress ball for either 10 reps or 30s.",
                 "If you're doing Wrist Extension or Flexion then use that arm position."],
             [("Link", "https://www.greencroft.org/Library/docLib/2020/04/5-Minute-Stress-Ball-Workout.pdf"), ("AAoS", "https://orthoinfo.aaos.org/globalassets/pdfs/a00790_therapeutic-exercise-program-for-epicondylitis_final.pdf")],
         )
         
-        add(
-            "Suboccipitals Release",
-            [
-                "Place a tennis ball on the upper back side of the neck.",
+        add("Suboccipitals Release",
+            ["Place a tennis ball on the upper back side of the neck.",
                 "Lie on your back with the ball on one side of your neck.",
                 "Can use one hand to hold the ball in place.",
                 "Tuck your chin up and down for 10 deep breaths.",
@@ -3507,10 +3477,8 @@ extension Notes {
             [("Link", "https://www.youtube.com/watch?v=wQylqaCl8Zo")],
         )
         
-        add(
-            "Sumo Deadlift",
-            [
-                "Take a wide stance with knees pushed out.",
+        add("Sumo Deadlift",
+            ["Take a wide stance with knees pushed out.",
                 "Place bar below middle of feet with toes pointed out slightly.",
                 "Grab the bar by bending over at the hips instead of squatting down.",
                 "Your arms should be hanging from the shoulders and between your legs.",
@@ -3519,20 +3487,9 @@ extension Notes {
                 "Try to use feet to spread the floor apart and explode up.",
                 "At the midpoint push hips into the bar.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.bodybuilding.com/exercises/detail/view/name/sumo-deadlift",
-                ),
-                (
-                    "7-Steps",
-                    "https://www.elitefts.com/education/7-step-guide-to-learning-the-sumo-deadlift/",
-                ),
-                (
-                    "Mastering",
-                    "https://www.t-nation.com/training/6-tips-to-master-the-sumo-deadlift",
-                ),
-            ],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/sumo-deadlift"),
+                ("7-Steps", "https://www.elitefts.com/education/7-step-guide-to-learning-the-sumo-deadlift/"),
+                ("Mastering", "https://www.t-nation.com/training/6-tips-to-master-the-sumo-deadlift")],
         )
         
         add("Sumo Squat",
@@ -3680,29 +3637,17 @@ extension Notes {
             ],
         )
         
-        add(
-            "Tuck Ice Cream Maker",
-            [
-                "From the top point of a pull-up on rings tuck your legs.",
+        add("Tuck Ice Cream Maker",
+            ["From the top point of a pull-up on rings tuck your legs.",
                 "Then lean back while keeping body horizontal.",
                 "Lock out arms and pause for a second in tuck front level position.",
             ],
-            [
-                (
-                    "Untucked Video",
-                    "https://www.youtube.com/watch?v=AszLwoAvLKg",
-                ),
-                (
-                    "Body Weight Rows",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row",
-                ),
-            ],
+            [("Untucked Video", "https://www.youtube.com/watch?v=AszLwoAvLKg"),
+                ("Body Weight Rows",  "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
-        add(
-            "Turkish Get-Up",
-            [
-                "Cradle and grip the kettlebell.",
+        add("Turkish Get-Up",
+            ["Cradle and grip the kettlebell.",
                 "Press the kettlebell overhead (using both hands is OK).",
                 "Roll up onto your far elbow and then your hand.",
                 "Lift your hips off the floor.",
@@ -3712,32 +3657,21 @@ extension Notes {
                 "Keep your wrist straight and elbow locked the entire time.",
                 "Instead of shrugging your shoulder up pull your shoulder blades down.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.bodybuilding.com/fun/the-ultimate-guide-to-the-turkish-get-up.html",
-                ),
-                ("Video", "https://www.youtube.com/watch?v=0bWRPC49-KI"),
-            ],
+            [("Link", "https://www.bodybuilding.com/fun/the-ultimate-guide-to-the-turkish-get-up.html"),
+                ("Video", "https://www.youtube.com/watch?v=0bWRPC49-KI")],
         )
         
-        add(
-            "Underhand Cable Pulldowns",
-            [
-                "Sit at a lat pulldown machine with a wide bar attached to the pulley.",
+        add("Underhand Cable Pulldowns",
+            ["Sit at a lat pulldown machine with a wide bar attached to the pulley.",
                 "Grab the bar with your palms facing you at closer than shoulder width.",
                 "Stick your chest out and lean back about thirty degrees.",
                 "Pull the bar to your upper chest keeping elbows in tight.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/underhand-cable-pulldowns",
-            )],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/underhand-cable-pulldowns")],
         )
         
         add("Upper Trapezius Stretch",
-            [
-                "Start either standing or sitting.",
+            ["Start either standing or sitting.",
                 "Place one hand on the opposite side of your head.",
                 "Place your other hand behind your back.",
                 "Use your hand to bring your head down towards your shoulder.",

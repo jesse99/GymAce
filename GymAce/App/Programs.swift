@@ -828,7 +828,7 @@ fileprivate func strongCurves1() -> Program {
         exercise = make("One-arm Row", "Kroc Row", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 90)
         program.exercises.append(exercise)
 
-        exercise = make("Box Squat", "Body-weight Box Squat", workstr: "10-20 10-20 10-20", rest: 90)
+        exercise = make("BW Box Squat", "Body-weight Box Squat", workstr: "10-20 10-20 10-20", rest: 90)
         program.exercises.append(exercise)
 
         exercise = make("DB Bench Press", "Dumbbell Bench Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 90)
@@ -909,9 +909,8 @@ fileprivate func strongCurves1() -> Program {
         exercise = make("Romanian Deadlift", "Romanian Deadlift", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 65, rest: 90)
         program.exercises.append(exercise)
 
-        exercise = make("Side Lying Abduction", "Side Lying Abduction", workstr: "15-30 15-30", rest: 90)
-        program.exercises.append(exercise)
-        
+//        exercise = make("Side Lying Abduction", "Side Lying Abduction", workstr: "15-30 15-30", rest: 90)
+    
         exercise = make("Feet Elevated Plank", "Plank", secs: [20], target: 60)
         program.exercises.append(exercise)
 
@@ -984,7 +983,7 @@ fileprivate func strongCurves1() -> Program {
         program.exercises.append(exercise)
 
         // Workout B 9-12
-        exercise = make("Hip Thrust (shoulders elevated)", "Hip Thrust (shoulders elevated)", workstr: "10-20 10-20 10-20", rest: 90)
+        exercise = make("Hip Thrust (shoulders elevated)", "Hip Thrust", workstr: "10-20 10-20 10-20", rest: 90)
         program.exercises.append(exercise)
         
         exercise = make("Chin-ups", "Chin-up", workstr: "1-5 1-5 1-5", rest: 90)
@@ -1000,7 +999,8 @@ fileprivate func strongCurves1() -> Program {
         
 //        exercise = make("X-Band Walk (moderate)", "X-Band Walk", workstr: "10-20 10-20", rest: 90)
         exercise = make("Feet Elevated Plank 2", "Plank", secs: [60], target: 120)
-        
+        program.exercises.append(exercise)
+
         exercise = make("Side Bend", "Dumbbell Side Bend", workstr: "15-30 15-30", weights: "Dumbbells", weight: 20, rest: 90)
         program.exercises.append(exercise)
 
@@ -1032,14 +1032,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.monday, .thursday]))
         let workout = Workout("A14", schedule)
         workout.weeks = 1...4
-        workout.addExercise(name: "Glute Bridge")   // TODO super set these two
+        workout.addExercise(name: "Glute Bridge")
         workout.addExercise(name: "One-arm Row")
-        workout.addExercise(name: "Box Squat")   // TODO super set these two
+        workout.addExercise(name: "BW Box Squat")
         workout.addExercise(name: "DB Bench Press")
         workout.addExercise(name: "DB Romanian Deadlift")
         workout.addExercise(name: "Side Lying Abduction")
         workout.addExercise(name: "Front Plank")
         workout.addExercise(name: "Side Plank")
+        workout.notes = "To save time you can superset Glute Bridge/One-arm Row and Box Squat/DB Bench Press."
         program.addWorkout(workout)
     }
 
@@ -1047,13 +1048,14 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.tuesday]))
         let workout = Workout("B14", schedule)
         workout.weeks = 1...4
-        workout.addExercise(name: "Single-leg Glute Bridge")   // TODO super set these two
+        workout.addExercise(name: "Single-leg Glute Bridge")
         workout.addExercise(name: "Lat Pulldown")
-        workout.addExercise(name: "Step-ups")   // TODO super set these two
+        workout.addExercise(name: "Step-ups")
         workout.addExercise(name: "Overhead Press")
         workout.addExercise(name: "Back Extension")
         workout.addExercise(name: "Crunches")
         workout.addExercise(name: "Side Crunch")
+        workout.notes = "To save time you can superset Glute Bridge/Lat Pulldown and Overhead Press/Back Extension."
         program.addWorkout(workout)
     }
 
@@ -1061,14 +1063,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.friday]))
         let workout = Workout("C14", schedule)
         workout.weeks = 1...4
-        workout.addExercise(name: "Glute March")   // TODO super set these two
+        workout.addExercise(name: "Glute March")
         workout.addExercise(name: "Cable Row")
-        workout.addExercise(name: "Squat")   // TODO super set these two
+        workout.addExercise(name: "Squat")
         workout.addExercise(name: "Incline Press")
         workout.addExercise(name: "Single-Leg Romanian Deadlift")
         workout.addExercise(name: "X-Band Walk (light)")
         workout.addExercise(name: "RKC Plank")
         workout.addExercise(name: "Cable Wood Chop")
+        workout.notes = "To save time you can superset Glute March/Cable Row and Squat/Incline Press."
         program.addWorkout(workout)
     }
 
@@ -1076,14 +1079,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.monday, .thursday]))
         let workout = Workout("A58", schedule)
         workout.weeks = 5...8
-        workout.addExercise(name: "Body-weight Hip Thrust")   // TODO super set these two
+        workout.addExercise(name: "Body-weight Hip Thrust")
         workout.addExercise(name: "Standing One Arm Cable Row")
-        workout.addExercise(name: "Step Up + Reverse Lunge")   // TODO super set these two
+        workout.addExercise(name: "Step Up + Reverse Lunge")
         workout.addExercise(name: "Bench Press")
         workout.addExercise(name: "Romanian Deadlift")
         workout.addExercise(name: "Side Lying Abduction")
         workout.addExercise(name: "Feet Elevated Plank")
         workout.addExercise(name: "Side Plank")
+        workout.notes = "To save time you can superset Hip Thrust/Cable Row and Step Up/Bench Press."
         program.addWorkout(workout)
     }
 
@@ -1091,14 +1095,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.tuesday]))
         let workout = Workout("B58", schedule)
         workout.weeks = 5...8
-        workout.addExercise(name: "Single-leg Glute Bridge")   // TODO super set these two
+        workout.addExercise(name: "Single-leg Glute Bridge")
         workout.addExercise(name: "Negative Chin-ups")
-        workout.addExercise(name: "Walking Lunge")   // TODO super set these two
+        workout.addExercise(name: "Walking Lunge")
         workout.addExercise(name: "Overhead Press")
         workout.addExercise(name: "Reverse Hyper")
         workout.addExercise(name: "Clam")
         workout.addExercise(name: "Crunches")
         workout.addExercise(name: "Side Crunch")
+        workout.notes = "To save time you can superset Glute Bridge/Chin-ups and Lunge/Overhead Press."
         program.addWorkout(workout)
     }
 
@@ -1106,14 +1111,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.friday]))
         let workout = Workout("C58", schedule)
         workout.weeks = 5...8
-        workout.addExercise(name: "Hip Thrust (rest pause)")   // TODO super set these two
+        workout.addExercise(name: "Hip Thrust (rest pause)")
         workout.addExercise(name: "Inverted Row")
-        workout.addExercise(name: "Goblet Squat")   // TODO super set these two
+        workout.addExercise(name: "Goblet Squat")
         workout.addExercise(name: "Close-Grip Bench Press")
         workout.addExercise(name: "Kettlebell Swing")
         workout.addExercise(name: "X-Band Walk (moderate)")
         workout.addExercise(name: "Situp")
         workout.addExercise(name: "Band Rotary Hold")
+        workout.notes = "To save time you can superset Hip Thrust/Row and Goblet Squat/Bench Press."
         program.addWorkout(workout)
     }
 
@@ -1121,14 +1127,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.monday, .thursday]))
         let workout = Workout("A912", schedule)
         workout.weeks = 9...42              // 42 so users can keep going for a while if they want
-        workout.addExercise(name: "Hip Thrust")   // TODO super set these two
+        workout.addExercise(name: "Hip Thrust")
         workout.addExercise(name: "One-arm Row")
-        workout.addExercise(name: "Box Squat")   // TODO super set these two
+        workout.addExercise(name: "Box Squat")
         workout.addExercise(name: "Pushup")
         workout.addExercise(name: "Deadlift")
         workout.addExercise(name: "Side Lying Abduction")
         workout.addExercise(name: "Crunches")
         workout.addExercise(name: "Anti-Rotation Press")
+        workout.notes = "To save time you can superset Hip Thrust/Row and Box Squat/Pushup."
         program.addWorkout(workout)
     }
 
@@ -1136,14 +1143,15 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.tuesday]))
         let workout = Workout("B912", schedule)
         workout.weeks = 9...42
-        workout.addExercise(name: "Hip Thrust (shoulders elevated)")   // TODO super set these two
+        workout.addExercise(name: "Hip Thrust (shoulders elevated)")
         workout.addExercise(name: "Chin-ups")
-        workout.addExercise(name: "Bulgarian Split Squat")   // TODO super set these two
+        workout.addExercise(name: "Bulgarian Split Squat")
         workout.addExercise(name: "Overhead Press")
         workout.addExercise(name: "Good Morning")
         workout.addExercise(name: "X-Band Walk (moderate)")
         workout.addExercise(name: "Feet Elevated Plank 2")
         workout.addExercise(name: "Side Bend")
+        workout.notes = "To save time you can superset Hip Thrust/Chin-ups and Split Squat/Overhead Press."
         program.addWorkout(workout)
     }
 
@@ -1151,18 +1159,466 @@ fileprivate func strongCurves1() -> Program {
         let schedule = Schedule.days(Weekdays([.friday]))
         let workout = Workout("C912", schedule)
         workout.weeks = 9...42
-        workout.addExercise(name: "Hip Thrust (pause rep)")   // TODO super set these two
+        workout.addExercise(name: "Hip Thrust (pause rep)")
         workout.addExercise(name: "Dumbbell Incline Row")
-        workout.addExercise(name: "High bar Squat")   // TODO super set these two
+        workout.addExercise(name: "High bar Squat")
         workout.addExercise(name: "Incline Bench Press")
         workout.addExercise(name: "Back Extension2")
         workout.addExercise(name: "Clam")
         workout.addExercise(name: "Hanging Leg Raise")
         workout.addExercise(name: "Cable Wood Chop")
+        workout.notes = "To save time you can superset Hip Thrust/Row and Squat/Bench Press."
         program.addWorkout(workout)
     }
 
     let program = Program("Strong Curves beginner")
+    program.summary = "A 12-week four workouts a week [program](https://www.amazon.com/Strong-Curves-Womans-Building-Better/dp/1936608642) designed for women. After the 12 weeks are up you can continue the week 9-12 workouts or switch to the advanced program."
+    addExercises(program)
+    addA14(program)
+    addB14(program)
+    addC14(program)
+
+    addA58(program)
+    addB58(program)
+    addC58(program)
+
+    addA912(program)
+    addB912(program)
+    addC912(program)
+    return program
+}
+
+fileprivate func strongCurves2() -> Program {
+    func addExercises(_ program: Program) {
+        // Workout A 1-4
+        var exercise = make("Glute Bridge", "Glute Bridge", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 85, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("One-arm Row", "Kroc Row", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 30, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Box Squat", "Body-weight Box Squat", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 65, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Dumbbell Incline Press", "Dumbbell Incline Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Deadlift", "Deadlift", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 85, rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Cable Hip Abduction", "Cable Hip Abduction", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("RKC Plank", "RKC Plank", secs: [60])
+        program.exercises.append(exercise)
+
+        exercise = make("Side Plank", "Kneeling Side Plank", secs: [60, 60])
+        program.exercises.append(exercise)
+
+        // Workout B 1-4
+        exercise = make("Single Leg Hip Thrust", "Body-weight Single Leg Hip Thrust", workstr: "8-20 8-20 8-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Chin-ups", "Chin-up", workstr: "5 5 5", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Step-ups", "Step-ups", workstr: "10 10 10", weights: "Dumbbells", weight: 10, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Overhead Press", "Overhead Press", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 55, rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Prisoner Back Extension", "Back Extension", workstr: "12 12", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Band Seated Abduction", "Band Seated Abduction", workstr: "10-30", rest: 90)  // book had 20
+        program.exercises.append(exercise)
+
+        exercise = make("Situp", "Situp", workstr: "10-20", rest: 90)  // book had 20
+        program.exercises.append(exercise)
+
+        exercise = make("Side Bend", "Dumbbell Side Bend", workstr: "10-20 10-20", weights: "Dumbbells", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        // Workout C 1-4
+        exercise = make("Hip Thrust", "Hip Thrust", workstr: "3-8 3-8 3-8", weights: "Dual Plates", weight: 105, rest: 90) // book had fixed 20 which seems weird
+        program.exercises.append(exercise)
+
+        exercise = make("One Arm Cable Row", "Standing One Arm Cable Row", workstr: "8 8", weights: "Cable Machine", weight: 30, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Goblet Squat", "Goblet Squat", workstr: "5 5 5", weights: "Dumbbells", weight: 40, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("DB Bench Press", "Dumbbell Bench Press", workstr: "8 8 8", weights: "Dumbbells", weight: 30, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Pull Through", "Pull Through", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Side Lying Hip Raise", "Side Lying Hip Raise", workstr: "10-30 10-30", rest: 90)   // book had 10
+        program.exercises.append(exercise)
+
+        exercise = make("Turkish Get-Up", "Turkish Get-Up", workstr: "5", weights: "Kettlebells", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Anti-Rotation Press", "Half-kneeling Cable Anti-Rotation Press", workstr: "8-12 8-12 ", weights: "Cable Machine", weight: 30, rest: 90)
+        program.exercises.append(exercise)
+
+        // Workout A 5-8
+//        exercise = make("Hip Thrust", "Hip Thrust", workstr: "3-8 3-8 3-8", weights: "Dual Plates", weight: 105, rest: 90)
+
+        exercise = make("Cable Row", "Seated Cable Row", workstr: "8 8 8", weights: "Cable Machine", weight: 30, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("High bar Squat", "High bar Squat", workstr: "5 5 5", weights: "Dual Plates", weight: 85, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Bench Press", "Bench Press", workstr: "3-8 3-8 3-8", weights: "Dual Plates", weight: 65, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Good Morning", "Good Morning", workstr: "8-12 8-12 8-12", weights: "Dual Plates", weight: 85, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Band Standing Abduction", "Band Standing Abduction", workstr: "10-30 10-30", rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Ab Wheel Rollout", "Ab Wheel Rollout", workstr: "8-20", rest: 90)
+        program.exercises.append(exercise)
+
+//        exercise = make("Side Bend", "Dumbbell Side Bend", workstr: "10-20 10-20", weights: "Dumbbells", weight: 20, rest: 90)
+
+        // Workout B 5-8
+        exercise = make("BW Hip Thrust", "Hip Thrust", workstr: "8-20 8-20 8-20", rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Pull-up", "Pull-up", workstr: "3-8 3-8 3-8", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Walking Lunge", "Body-weight Walking Lunge", workstr: "3-10", rest: 90)
+        program.exercises.append(exercise)
+
+//        exercise = make("Overhead Press", "Overhead Press", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 55, rest: 90)   // book had 3x10
+
+        exercise = make("Back Extension", "Back Extension", workstr: "20 20", weights: "Dumbbells", weight: 10, rest: 90)
+        program.exercises.append(exercise)
+        
+//        exercise = make("Band Seated Abduction", "Band Seated Abduction", workstr: "10-30", rest: 90)
+        
+        exercise = make("Hanging Leg Raise", "Hanging Leg Raise", workstr: "8-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Landmines", "Landmine 180's", workstr: "8-12 8-12", weights: "Single Plates", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        // Workout C 5-8
+        exercise = make("Hip Thrust (isohold)", "Hip Thrust (isohold)", secs: [30, 30, 30], target: 60, weights: "Dual Plates", weight: 85)
+        program.exercises.append(exercise)
+
+        exercise = make("Lat Pulldown", "Lat Pulldown", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 40, rest: 90)  // book had 8
+        program.exercises.append(exercise)
+
+        exercise = make("Skater Squat", "Skater Squat", workstr: "8 8 8", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Pushup", "Pushup", workstr: "5-15 5-15 5-15", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Single Leg Romanian Deadlift", "Single Leg Romanian Deadlift", workstr: "8-12 8-12 8-12", weights: "Dual Plates", weight: 65, rest: 90)
+        program.exercises.append(exercise)
+
+//        exercise = make("Side Lying Hip Raise", "Side Lying Hip Raise", workstr: "10-30 10-30", rest: 90)
+//        exercise = make("Situp", "Situp", workstr: "10-20", rest: 90)
+//        exercise = make("Side Bend", "Dumbbell Side Bend", workstr: "10-20 10-20", weights: "Dumbbells", weight: 20, rest: 90)
+
+        // Workout A 9-12
+        exercise = make("Hip Thrust (rest pause)", "Hip Thrust (rest pause)", workstr: "5-10 5-10 5-10", weights: "Dual Plates", weight: 105, rest: 90) // book had fixed 10 which seems weird
+        program.exercises.append(exercise)
+        
+        exercise = make("Inverted Row", "Inverted Row", workstr: "6-12 6-12 6-12", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Zercher Squat", "Zercher Squat", workstr: "5-10 5-10 5-10", weights: "Dual Plates", weight: 85, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Pushup (feet elevated)", "Pushup", workstr: "5-20 5-20 5-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Sumo Deadlift", "Sumo Deadlift", workstr: "6-12 6-12 6-12", weights: "Dual Plates", weight: 105, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("X-Band Walk", "X-Band Walk", workstr: "20 20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Crunches", "Swiss Ball Hip Internal Rotation", workstr: "20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Band Rotary Hold", "Band Anti-Rotary Hold", secs: [15, 15])
+        program.exercises.append(exercise)
+
+        // Workout B 9-12
+        exercise = make("Hip Thrust (constant tension)", "Hip Thrust (constant tension)", workstr: "20-30 20-30 20-30", weights: "Dual Plates", weight: 85, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Weighted Pull-up", "Pull-up", workstr: "1-5 1-5 1-5", weights: "Dumbbells", weight: 5, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Bulgarian Split Squat", "Dumbbell Single Leg Split Squat", workstr: "5-10 5-10 5-10", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Incline Press", "Incline Bench Press", workstr: "6-10 6-10 6-10", weights: "Dual Plates", weight: 55, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Gliding Leg Curl", "Gliding Leg Curl", workstr: "6-15 6-15", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Cable Hip Rotation", "Cable Hip Rotation", workstr: "8-15", weights: "Cable Machine", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Body Saw", "Body Saw", workstr: "8-15", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Cable Anti-Rotation Press", "Half-kneeling Cable Anti-Rotation Press", workstr: "8-12 8-12", weights: "Cable Machine", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        // Workout C 9-12
+
+        
+        exercise = make("DB Romanian Deadlift", "Dumbbell Romanian Deadlift", workstr: "10-20 10-20 10-20", weights: "Dumbbells", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Side Lying Abduction", "Side Lying Abduction", workstr: "15-30 15-30", rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Front Plank", "Plank", secs: [20], target: 120)
+        program.exercises.append(exercise)
+
+        exercise = make("Single-leg Glute Bridge", "Single Leg Glute Bridge", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Overhead Press", "Overhead Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 10, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Back Extension", "Back Extension", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Side Crunch", "Exercise Ball Side Crunch", workstr: "15-30 15-30", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Glute March", "Glute March", secs: [60, 60, 60])
+        program.exercises.append(exercise)
+
+        exercise = make("Squat", "Body-weight Squat", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Single-Leg Romanian Deadlift", "Body-weight Single-Leg Romanian Deadlift", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Cable Wood Chop", "Cable Wood Chop", workstr: "5-10 5-10", weights: "Cable Machine", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Body-weight Hip Thrust", "Body-weight Hip Thrust", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Standing One Arm Cable Row", "Standing One Arm Cable Row", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Step Up + Reverse Lunge", "Body-weight Step Up + Reverse Lunge", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Romanian Deadlift", "Romanian Deadlift", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 65, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Side Lying Abduction", "Side Lying Abduction", workstr: "15-30 15-30", rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Feet Elevated Plank", "Plank", secs: [20], target: 60)
+        program.exercises.append(exercise)
+
+        exercise = make("Reverse Hyper", "Reverse Hyperextension", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Clam", "Clam", workstr: "15-30 15-30", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Hip Thrust (rest pause)", "Hip Thrust (rest pause)", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Close-Grip Bench Press", "Close-Grip Bench Press", workstr: "8-12 8-12 8-12", weights: "Dual Plates", weight: 45, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Kettlebell Swing", "Kettlebell Two Arm Swing", workstr: "10-20 10-20 10-20", weights: "Kettlebells", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("X-Band Walk (moderate)", "X-Band Walk", workstr: "15-30 15-30", rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Hip Thrust (shoulders elevated)", "Hip Thrust (shoulders elevated)", workstr: "10-20 10-20 10-20", rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Chin-ups", "Chin-up", workstr: "1-5 1-5 1-5", rest: 90)
+        program.exercises.append(exercise)
+                                
+        exercise = make("Feet Elevated Plank 2", "Plank", secs: [60], target: 120)
+        program.exercises.append(exercise)
+
+        exercise = make("Hip Thrust (pause rep)", "Hip Thrust", workstr: "8-15 8-15 8-15", weights: "Dual Plates", weight: 65, rest: 90)
+        program.exercises.append(exercise)
+
+        exercise = make("Dumbbell Incline Row", "Dumbbell Incline Row", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Incline Bench Press", "Incline Bench Press", workstr: "3-10 3-10 3-10", weights: "Dual Plates", weight: 45, rest: 90)
+        program.exercises.append(exercise)
+        
+        exercise = make("Back Extension2", "Back Extension", workstr: "10-30 10-30 10-30", rest: 90)
+        program.exercises.append(exercise)
+    }
+    
+    func addA14(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+        let workout = Workout("A14", schedule)
+        workout.weeks = 1...4
+        workout.addExercise(name: "Glute Bridge")
+        workout.addExercise(name: "One-arm Row")
+        workout.addExercise(name: "Box Squat")
+        workout.addExercise(name: "DB Bench Press")
+        workout.addExercise(name: "DB Romanian Deadlift")
+        workout.addExercise(name: "Side Lying Abduction")
+        workout.addExercise(name: "Front Plank")
+        workout.addExercise(name: "Side Plank")
+        workout.notes = "To save time you can superset Glute Bridge/One-arm Row and Box Squat/DB Bench Press."
+        program.addWorkout(workout)
+    }
+
+    func addB14(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.tuesday]))
+        let workout = Workout("B14", schedule)
+        workout.weeks = 1...4
+        workout.addExercise(name: "Single-leg Glute Bridge")
+        workout.addExercise(name: "Lat Pulldown")
+        workout.addExercise(name: "Step-ups")
+        workout.addExercise(name: "Overhead Press")
+        workout.addExercise(name: "Back Extension")
+        workout.addExercise(name: "Crunches")
+        workout.addExercise(name: "Side Crunch")
+        workout.notes = "To save time you can superset Glute Bridge/Lat Pulldown and Overhead Press/Back Extension."
+        program.addWorkout(workout)
+    }
+
+    func addC14(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.friday]))
+        let workout = Workout("C14", schedule)
+        workout.weeks = 1...4
+        workout.addExercise(name: "Glute March")
+        workout.addExercise(name: "Cable Row")
+        workout.addExercise(name: "Squat")
+        workout.addExercise(name: "Incline Press")
+        workout.addExercise(name: "Single-Leg Romanian Deadlift")
+        workout.addExercise(name: "X-Band Walk (light)")
+        workout.addExercise(name: "RKC Plank")
+        workout.addExercise(name: "Cable Wood Chop")
+        workout.notes = "To save time you can superset Glute March/Cable Row and Squat/Incline Press."
+        program.addWorkout(workout)
+    }
+
+    func addA58(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+        let workout = Workout("A58", schedule)
+        workout.weeks = 5...8
+        workout.addExercise(name: "Body-weight Hip Thrust")
+        workout.addExercise(name: "Standing One Arm Cable Row")
+        workout.addExercise(name: "Step Up + Reverse Lunge")
+        workout.addExercise(name: "Bench Press")
+        workout.addExercise(name: "Romanian Deadlift")
+        workout.addExercise(name: "Side Lying Abduction")
+        workout.addExercise(name: "Feet Elevated Plank")
+        workout.addExercise(name: "Side Plank")
+        workout.notes = "To save time you can superset Hip Thrust/Cable Row and Step Up/Bench Press."
+        program.addWorkout(workout)
+    }
+
+    func addB58(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.tuesday]))
+        let workout = Workout("B58", schedule)
+        workout.weeks = 5...8
+        workout.addExercise(name: "Single-leg Glute Bridge")
+        workout.addExercise(name: "Negative Chin-ups")
+        workout.addExercise(name: "Walking Lunge")
+        workout.addExercise(name: "Overhead Press")
+        workout.addExercise(name: "Reverse Hyper")
+        workout.addExercise(name: "Clam")
+        workout.addExercise(name: "Crunches")
+        workout.addExercise(name: "Side Crunch")
+        workout.notes = "To save time you can superset Glute Bridge/Chin-ups and Lunge/Overhead Press."
+        program.addWorkout(workout)
+    }
+
+    func addC58(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.friday]))
+        let workout = Workout("C58", schedule)
+        workout.weeks = 5...8
+        workout.addExercise(name: "Hip Thrust (rest pause)")
+        workout.addExercise(name: "Inverted Row")
+        workout.addExercise(name: "Goblet Squat")
+        workout.addExercise(name: "Close-Grip Bench Press")
+        workout.addExercise(name: "Kettlebell Swing")
+        workout.addExercise(name: "X-Band Walk (moderate)")
+        workout.addExercise(name: "Situp")
+        workout.addExercise(name: "Band Rotary Hold")
+        workout.notes = "To save time you can superset Hip Thrust/Row and Goblet Squat/Bench Press."
+        program.addWorkout(workout)
+    }
+
+    func addA912(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+        let workout = Workout("A912", schedule)
+        workout.weeks = 9...42              // 42 so users can keep going for a while if they want
+        workout.addExercise(name: "Hip Thrust")
+        workout.addExercise(name: "One-arm Row")
+        workout.addExercise(name: "Box Squat")
+        workout.addExercise(name: "Pushup")
+        workout.addExercise(name: "Deadlift")
+        workout.addExercise(name: "Side Lying Abduction")
+        workout.addExercise(name: "Crunches")
+        workout.addExercise(name: "Anti-Rotation Press")
+        workout.notes = "To save time you can superset Hip Thrust/Row and Box Squat/Pushup."
+        program.addWorkout(workout)
+    }
+
+    func addB912(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.tuesday]))
+        let workout = Workout("B912", schedule)
+        workout.weeks = 9...42
+        workout.addExercise(name: "Hip Thrust (shoulders elevated)")
+        workout.addExercise(name: "Chin-ups")
+        workout.addExercise(name: "Bulgarian Split Squat")
+        workout.addExercise(name: "Overhead Press")
+        workout.addExercise(name: "Good Morning")
+        workout.addExercise(name: "X-Band Walk (moderate)")
+        workout.addExercise(name: "Feet Elevated Plank 2")
+        workout.addExercise(name: "Side Bend")
+        workout.notes = "To save time you can superset Hip Thrust/Chin-ups and Split Squat/Overhead Press."
+        program.addWorkout(workout)
+    }
+
+    func addC912(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.friday]))
+        let workout = Workout("C912", schedule)
+        workout.weeks = 9...42
+        workout.addExercise(name: "Hip Thrust (pause rep)")
+        workout.addExercise(name: "Dumbbell Incline Row")
+        workout.addExercise(name: "High bar Squat")
+        workout.addExercise(name: "Incline Bench Press")
+        workout.addExercise(name: "Back Extension2")
+        workout.addExercise(name: "Clam")
+        workout.addExercise(name: "Hanging Leg Raise")
+        workout.addExercise(name: "Cable Wood Chop")
+        workout.notes = "To save time you can superset Hip Thrust/Row and Squat/Bench Press."
+        program.addWorkout(workout)
+    }
+
+    let program = Program("Strong Curves advanced")
     program.summary = "A 12-week four workouts a week [program](https://www.amazon.com/Strong-Curves-Womans-Building-Better/dp/1936608642) designed for women. After the 12 weeks are up you can continue the week 9-12 workouts or switch to the advanced program."
     addExercises(program)
     addA14(program)

@@ -59,6 +59,20 @@ final class Model: Codable {
             p.fixup()
         }
     }
+    
+    func validate() {
+        var valid = true
+        for name in programs.findDupes(using: {$0.name}) {
+            print("There's already a program named \(name)")
+            valid = false
+        }
+        for program in programs {
+            if !program.valid(self) {
+                valid = false
+            }
+        }
+        assert(valid)
+    }
         
     func active() -> Program? {
         return programs.first(where: {$0.name == activeProgram})

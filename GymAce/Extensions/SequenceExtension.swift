@@ -11,5 +11,19 @@ extension Sequence {
             }
         }
     }
+
+    func findDupes(using: (Element) -> String) -> [String] {
+        var dupes: Set<String> = Set()
+        var names: Set<String> = Set()
+        for entry in self {
+            let name = using(entry)
+            if names.contains(name) {
+                dupes.insert(name)
+            } else {
+                names.insert(name)
+            }
+        }
+        return Array(dupes)
+    }
 }
 

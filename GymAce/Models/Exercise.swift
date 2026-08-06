@@ -70,6 +70,34 @@ final class Exercise: Codable {
 //        }
     }
         
+    func valid(_ model: Model, _ program: Program) -> Bool {
+        var valid = true
+        if !model.notes.has(formalName) {
+            print("Program \(program.name) formal name \(formalName) is missing for exercise \(name)")
+            valid = false
+        }
+        if let ws = weightSet {
+            if model.weightSets[ws] == nil {
+                if let p = model.active(), p.name == program.name { // we only add weight sets for the active program
+                    print("Program \(program.name) weight set \(ws) is missing for exercise \(name)")
+                    valid = false
+                }
+            }
+            
+            switch self.data {
+            case .durations, .oneRepMax, .reps, .timed:
+                if weight == nil {
+                    print("Program \(program.name) exercise \(name) has a weight set but no weight")    // note that the reverse is ok
+                    valid = false
+                }
+            case .percent:
+                // Weights are from the other exercise.
+                break
+            }
+        }
+        return valid
+    }
+
     func latestCompleted() -> Completed? {
         return history.last
     }

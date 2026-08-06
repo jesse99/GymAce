@@ -27,6 +27,7 @@ struct GymAceApp: App {
             model.activeProgram = "Preview" // TODO pick something else, or even better go directly to EditPrograms
         }
         model.addMissingWeightsets()
+        model.validate()
         // TODO may want a warning somewhere if weight set is missing
         
         healthKit.requestPerms()
