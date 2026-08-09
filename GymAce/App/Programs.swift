@@ -14,16 +14,20 @@ func findDefaultWeightSet(_ name: String) -> WeightSet? {
         let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
         return WeightSet.plates(dual)
+    } else if name == "Home Dumbbells" {
+        let dumbbells = DiscreteWeights(weights: [5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 30.0, 40.0, 45.0, 52.5], units: .Imperial)
+        return WeightSet.discrete(dumbbells)
     } else if name == "Kettlebells" {
         let kettlebells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50], units: .Imperial)
         return WeightSet.discrete(kettlebells)
+    } else if name == "Single Plates" {
+        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+        return WeightSet.plates(single)
     } else if name == "Trapbar" {
         let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
         return WeightSet.plates(dual)
-    } else if name == "Home Dumbbells" {
-        let dumbbells = DiscreteWeights(weights: [5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 30.0, 40.0, 45.0, 52.5], units: .Imperial)
-        return WeightSet.discrete(dumbbells)
     } else {
         return nil
     }

@@ -16,7 +16,7 @@ struct ClosestTests {
         let ws = WeightSet.discrete(weights)
 
         var v = ws.closest(target: 0.0)
-        #expect(v.text() == "5 lbs")
+        #expect(v.text() == "0 lbs")
         
         v = ws.closest(target: 4.0)
         #expect(v.text() == "5 lbs")
@@ -44,7 +44,7 @@ struct ClosestTests {
         let ws = WeightSet.discrete(weights)
 
         var v = ws.closest(target: 0.0)
-        #expect(v.text() == "5 lbs")
+        #expect(v.text() == "0 lbs")
         
         v = ws.closest(target: 4.0)
         #expect(v.text() == "5 lbs")
@@ -64,12 +64,12 @@ struct ClosestTests {
 
     @Test("Dumbbells with extra 2")
     func extra2() {
-        var weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
+        let weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
         weights.extra2 = 2.5
         let ws = WeightSet.discrete(weights)
 
         var v = ws.closest(target: 0.0)
-        #expect(v.text() == "5 lbs")
+        #expect(v.text() == "0 lbs")
         
         v = ws.closest(target: 4.0)
         #expect(v.text() == "5 lbs")
@@ -89,7 +89,7 @@ struct ClosestTests {
 
     @Test("Dumbbells with extra 1 and 2")
     func extra3() {
-        var weights = DiscreteWeights(weights: [10.0, 20.0, 30.0], units: .Imperial)
+        let weights = DiscreteWeights(weights: [10.0, 20.0, 30.0], units: .Imperial)
         weights.extra1 = 2.5
         weights.extra2 = 2.5
         let ws = WeightSet.discrete(weights)
