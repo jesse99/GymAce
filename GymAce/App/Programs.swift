@@ -1197,7 +1197,7 @@ fileprivate func strongCurves2() -> Program {
         exercise = make("One-arm Row", "Kroc Row", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 30, rest: 90)
         program.exercises.append(exercise)
 
-        exercise = make("Box Squat", "Body-weight Box Squat", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 65, rest: 90)
+        exercise = make("Box Squat", "Box Squat", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 65, rest: 90)
         program.exercises.append(exercise)
 
         exercise = make("Dumbbell Incline Press", "Dumbbell Incline Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 90)
@@ -1228,7 +1228,7 @@ fileprivate func strongCurves2() -> Program {
         exercise = make("Overhead Press", "Overhead Press", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 55, rest: 90)
         program.exercises.append(exercise)
         
-        exercise = make("Prisoner Back Extension", "Back Extension", workstr: "12 12", rest: 90)
+        exercise = make("Prisoner Back Extension", "Back Extension", workstr: "8-15 8-15 8-15", rest: 90)
         program.exercises.append(exercise)
 
         exercise = make("Band Seated Abduction", "Band Seated Abduction", workstr: "10-30", rest: 90)  // book had 20
@@ -1363,7 +1363,7 @@ fileprivate func strongCurves2() -> Program {
         exercise = make("Weighted Pull-up", "Pull-up", workstr: "1-5 1-5 1-5", weights: "Dumbbells", weight: 5, rest: 90)
         program.exercises.append(exercise)
 
-        exercise = make("Bulgarian Split Squat", "Dumbbell Single Leg Split Squat", workstr: "5-10 5-10 5-10", rest: 90)
+        exercise = make("Bulgarian Split Squat", "Dumbbell Single Leg Split Squat", workstr: "5-10 5-10 5-10", weights: "Dumbbells", weight: 20, rest: 90)
         program.exercises.append(exercise)
 
         exercise = make("Incline Press", "Incline Bench Press", workstr: "6-10 6-10 6-10", weights: "Dual Plates", weight: 55, rest: 90)
@@ -1382,97 +1382,21 @@ fileprivate func strongCurves2() -> Program {
         program.exercises.append(exercise)
 
         // Workout C 9-12
+//        exercise = make("Hip Thrust", "Hip Thrust", workstr: "3-8 3-8 3-8", weights: "Dual Plates", weight: 105, rest: 90) // book had fixed 20 which seems weird
 
-        
-        exercise = make("DB Romanian Deadlift", "Dumbbell Romanian Deadlift", workstr: "10-20 10-20 10-20", weights: "Dumbbells", weight: 20, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Side Lying Abduction", "Side Lying Abduction", workstr: "15-30 15-30", rest: 90)
+        exercise = make("Chest Supported Row", "Chest Supported Row", workstr: "6-12 6-12 6-12", weights: "Dumbbells", weight: 15, rest: 90)
         program.exercises.append(exercise)
         
-        exercise = make("Front Plank", "Plank", secs: [20], target: 120)
-        program.exercises.append(exercise)
-
-        exercise = make("Single-leg Glute Bridge", "Single Leg Glute Bridge", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Overhead Press", "Overhead Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 10, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Back Extension", "Back Extension", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Side Crunch", "Exercise Ball Side Crunch", workstr: "15-30 15-30", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Glute March", "Glute March", secs: [60, 60, 60])
-        program.exercises.append(exercise)
-
-        exercise = make("Squat", "Body-weight Squat", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Single-Leg Romanian Deadlift", "Body-weight Single-Leg Romanian Deadlift", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Cable Wood Chop", "Cable Wood Chop", workstr: "5-10 5-10", weights: "Cable Machine", weight: 20, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Body-weight Hip Thrust", "Body-weight Hip Thrust", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Standing One Arm Cable Row", "Standing One Arm Cable Row", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 20, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Step Up + Reverse Lunge", "Body-weight Step Up + Reverse Lunge", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Romanian Deadlift", "Romanian Deadlift", workstr: "10-20 10-20 10-20", weights: "Dual Plates", weight: 65, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Side Lying Abduction", "Side Lying Abduction", workstr: "15-30 15-30", rest: 90)
+        exercise = make("Dumbbell Lunge", "Dumbbell Lunge", workstr: "8-15 8-15 8-15", weights: "Dumbbells", weight: 10, rest: 90)
         program.exercises.append(exercise)
         
-        exercise = make("Feet Elevated Plank", "Plank", secs: [20], target: 60)
+        exercise = make("Dumbbell Shoulder Press", "Dumbbell Shoulder Press", workstr: "8-15 8-15 8-15", weights: "Dumbbells", weight: 10, rest: 90)
         program.exercises.append(exercise)
 
-        exercise = make("Reverse Hyper", "Reverse Hyperextension", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Clam", "Clam", workstr: "15-30 15-30", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Hip Thrust (rest pause)", "Hip Thrust (rest pause)", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Close-Grip Bench Press", "Close-Grip Bench Press", workstr: "8-12 8-12 8-12", weights: "Dual Plates", weight: 45, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Kettlebell Swing", "Kettlebell Two Arm Swing", workstr: "10-20 10-20 10-20", weights: "Kettlebells", weight: 20, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("X-Band Walk (moderate)", "X-Band Walk", workstr: "15-30 15-30", rest: 90)
-        program.exercises.append(exercise)
-        
-        exercise = make("Hip Thrust (shoulders elevated)", "Hip Thrust (shoulders elevated)", workstr: "10-20 10-20 10-20", rest: 90)
-        program.exercises.append(exercise)
-        
-        exercise = make("Chin-ups", "Chin-up", workstr: "1-5 1-5 1-5", rest: 90)
-        program.exercises.append(exercise)
-                                
-        exercise = make("Feet Elevated Plank 2", "Plank", secs: [60], target: 120)
-        program.exercises.append(exercise)
-
-        exercise = make("Hip Thrust (pause rep)", "Hip Thrust", workstr: "8-15 8-15 8-15", weights: "Dual Plates", weight: 65, rest: 90)
-        program.exercises.append(exercise)
-
-        exercise = make("Dumbbell Incline Row", "Dumbbell Incline Row", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 90)
-        program.exercises.append(exercise)
-        
-        exercise = make("Incline Bench Press", "Incline Bench Press", workstr: "3-10 3-10 3-10", weights: "Dual Plates", weight: 45, rest: 90)
-        program.exercises.append(exercise)
-        
-        exercise = make("Back Extension2", "Back Extension", workstr: "10-30 10-30 10-30", rest: 90)
-        program.exercises.append(exercise)
+//        exercise = make("Prisoner Back Extension", "Back Extension", workstr: "8-15 8-15 8-15", rest: 90)
+//        exercise = make("Side Lying Hip Raise", "Side Lying Hip Raise", workstr: "10-30 10-30", rest: 90)
+//        exercise = make("Hanging Leg Raise", "Hanging Leg Raise", workstr: "8-20", rest: 90)
+//        exercise = make("Landmines", "Landmine 180's", workstr: "8-12 8-12", weights: "Single Plates", weight: 20, rest: 90)
     }
     
     func addA14(_ program: Program) {

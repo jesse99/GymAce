@@ -648,47 +648,38 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/calf-press")],
         )
         
-        add(
-            "Cat Camels",
-            [
-                "Crouch on your hands and knees with arms straight.",
+        add("Cat Camels",
+            ["Crouch on your hands and knees with arms straight.",
                 "For the cat lift head and chest up letting your stomach sink.",
                 "For the camel round back and bring head and hips together.",
             ],
             [("Link", "https://www.youtube.com/watch?v=K9bK0BwKFjs")],
         )
         
-        add(
-            "Chest Flies (band)",
-            [
-                "Start with your arms extending out to your sides stretching a band behind your back.",
+        add("Chest Flies (band)",
+            ["Start with your arms extending out to your sides stretching a band behind your back.",
                 "Rotate your arms so that they point straight in front of you.",
                 "Keep your arms straight the entire time.",
                 "Bring your arms back behind your back.",
             ],
-            [(
-                "Link",
-                "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s",
-            )],
+            [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")],
         )
         
-        add(
-            "Chest Wall Stretch",
-            [
-                "Place a palm on a wall so that your arm is raised up at a 45 degree angle.",
+        add("Chest Supported Row",
+            ["Lay face down on a bench inclined to a 45 degree angle.",
+             "Use a neutral grip and pull the dumbbells upwards.",
+                "Stop when your elbows are just behind your torso.",
+            ],
+            [("Link", "https://www.muscleandstrength.com/exercises/chest-supported-dumbbell-row")],
+        )
+        
+        add("Chest Wall Stretch",
+            ["Place a palm on a wall so that your arm is raised up at a 45 degree angle.",
                 "Turn your torso away from the wall to perform the stretch.",
                 "Can use your other hand to help pull your torso away.",
             ],
-            [
-                (
-                    "Video",
-                    "https://www.youtube.com/watch?v=PQ7tgOHj9vM&feature=youtu.be&t=30s",
-                ),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1",
-                ),
-            ],
+            [("Video", "https://www.youtube.com/watch?v=PQ7tgOHj9vM&feature=youtu.be&t=30s"),
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1")],
         )
         
         add("Child's Pose",
@@ -1807,7 +1798,8 @@ extension Notes {
                 "Keep your body straight and elbows in.",
                 "Arms should be straight at the bottom.",
                 "Don't let your shoulders shrug up."],
-            [("Link", "https://www.youtube.com/watch?v=tDUWmbzs154"), ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"), ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/row")],
+            [("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"),
+              ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/row")],
         )
         
         add("Intermediate Shrimp Squat",
