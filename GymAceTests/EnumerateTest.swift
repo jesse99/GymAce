@@ -5,14 +5,14 @@ struct EnumerateTests {
     @Test("No plates")
     func enumerate0() {
         let plates: [Plate] = []
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
         #expect(v.count == 0)
     }
     
     @Test("One weight x2")
     func enumerate1() {
         let plates: [Plate] = [Plate(45.0, 2)]
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
         #expect(v.count == 1)
         #expect(v[0].plates == [Plate(45.0, 1)])
     }
@@ -20,7 +20,7 @@ struct EnumerateTests {
     @Test("One weight x4")
     func enumerate2() {
         let plates: [Plate] = [Plate(45.0, 4)]
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
         #expect(v.count == 2)
         #expect(v[0].plates == [Plate(45.0, 1)])
         #expect(v[1].plates == [Plate(45.0, 2)])
@@ -29,7 +29,7 @@ struct EnumerateTests {
     @Test("Two weights")
     func enumerate3() {
         let plates: [Plate] = [Plate(45.0, 2), Plate(25.0, 2)]
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
         #expect(v.count == 3)
         #expect(v[0].plates == [Plate(25.0, 1)])
         #expect(v[1].plates == [Plate(45.0, 1)])
@@ -39,7 +39,7 @@ struct EnumerateTests {
     @Test("Two weights - different counts")
     func enumerate4() {
         let plates: [Plate] = [Plate(45.0, 2), Plate(25.0, 4)]
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
 //        print("\(v)")
         #expect(v.count == 5)
         #expect(v[0].plates == [Plate(25.0, 1)])
@@ -52,7 +52,7 @@ struct EnumerateTests {
     @Test("Two weights x4")
     func enumerate5() {
         let plates: [Plate] = [Plate(45.0, 4), Plate(25.0, 4)]
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
         #expect(v.count == 8)
         #expect(v[0].plates == [Plate(25.0, 1)])
         #expect(v[1].plates == [Plate(45.0, 1)])
@@ -75,7 +75,7 @@ struct EnumerateTests {
             Plate(2.5, 2),
             Plate(1.25, 2),
         ]
-        let v = enumeratePlates(plates, bar: nil, units: .Imperial)
+        let v = enumeratePlates(plates, bar: nil, dual: true, units: .Imperial)
         #expect(v.count == 247)
     }
 }

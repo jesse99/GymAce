@@ -39,7 +39,7 @@ struct ClosestTests {
 
     @Test("Dumbbells with extra 1")
     func extra1() {
-        var weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
+        let weights = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0], units: .Imperial)
         weights.extra1 = 2.5
         let ws = WeightSet.discrete(weights)
 

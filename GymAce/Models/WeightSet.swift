@@ -170,7 +170,7 @@ final class PlateWeights: Codable {
         }
 #endif
         if combos.isEmpty {
-            combos = enumeratePlates(plates, bar: bar, units: units)
+            combos = enumeratePlates(plates, bar: bar, dual: dual, units: units)
         }
         return combos
     }
@@ -264,7 +264,7 @@ extension WeightSet {
                 if d.dual {
                     return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
                 } else {
-                    fatalError("not supported")
+                    return ActualWeight(plates: upperSingle(target, d.findCombos(), d.bar, d.units))
                 }
         }
     }
@@ -278,7 +278,7 @@ extension WeightSet {
                 if d.dual {
                     return ActualWeight(plates: closestDual(target, d.findCombos(), d.bar, d.units))
                 } else {
-                    fatalError("not supported")
+                    return ActualWeight(plates: closestSingle(target, d.findCombos(), d.bar, d.units))
                 }
         }
     }
@@ -293,7 +293,7 @@ extension WeightSet {
                 if d.dual {
                     return ActualWeight(plates: lowerDual(target, d.findCombos(), d.bar, d.units))
                 } else {
-                    fatalError("not supported")
+                    return ActualWeight(plates: lowerSingle(target, d.findCombos(), d.bar, d.units))
                 }
         }
     }
@@ -308,7 +308,7 @@ extension WeightSet {
                 if d.dual {
                     return ActualWeight(plates: upperDual(target, d.findCombos(), d.bar, d.units))
                 } else {
-                    fatalError("not supported")
+                    return ActualWeight(plates: upperSingle(target, d.findCombos(), d.bar, d.units))
                 }
         }
     }
@@ -323,6 +323,19 @@ extension WeightSet {
     }
     
     private func closestDual(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        // Little tricky here: InternalPlates tracks the number of plates on one side
+        // so we need to divide by 2, but that won't quite work unless we also set
+        // bar to nil.
+        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units, dual: true)
+        return closestInternal(target, t, enums, bar)
+    }
+
+    private func closestSingle(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        let t = InternalPlates(plates: [Plate(target, 1)], bar: nil, units: units, dual: false)
+        return closestInternal(target, t, enums, bar)
+    }
+
+    private func closestInternal(_ target: Float, _ t: InternalPlates, _ enums: [InternalPlates], _ bar: Float?) -> InternalPlates {
         func findBest(_ target: Float, _ lhs: InternalPlates, _ rhs: InternalPlates) -> InternalPlates {
             let l = lhs.totalWeight()
             let r = rhs.totalWeight()
@@ -332,11 +345,6 @@ extension WeightSet {
                 return rhs
             }
         }
-
-        // Little tricky here: InternalPlates tracks the number of plates on one side
-        // so we need to divide by 2, but that won't quite work unless we also set
-        // bar to nil.
-        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units)
         
         switch enums.binarySearch(t) {
         case .found(let i): return enums[i]
@@ -348,30 +356,47 @@ extension WeightSet {
                     return enums.last!
                 }
             } else if !enums.isEmpty {
-                let empty = InternalPlates(plates: [], bar: bar, units: units)
+                let empty = InternalPlates(plates: [], bar: bar, units: t.units, dual: t.dual)
                 return findBest(target, empty, enums[i])
             } else {
-                return InternalPlates(plates: [], bar: bar, units: units)
+                return InternalPlates(plates: [], bar: bar, units: t.units, dual: t.dual)
             }
         }
     }
 
-    // TODO may want to make these internal for unit tests
     private func lowerDual(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
-        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units)
+        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units, dual: true)
+        return lowerInternal(t, enums, bar)
+    }
+
+    private func lowerSingle(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        let t = InternalPlates(plates: [Plate(target, 1)], bar: nil, units: units, dual: false)
+        return lowerInternal(t, enums, bar)
+    }
+
+    private func lowerInternal(_ t: InternalPlates, _ enums: [InternalPlates], _ bar: Float?) -> InternalPlates {
         switch enums.binarySearch(t) {
         case .found(let i): return enums[i]
         case .missing(let i):
             if i > 0 {
                 return enums[i - 1]
             } else {
-                return InternalPlates(plates: [], bar: bar, units: units)
+                return InternalPlates(plates: [], bar: bar, units: t.units, dual: t.dual)
             }
         }
     }
 
     private func upperDual(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
-        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units)
+        let t = InternalPlates(plates: [Plate(target/2.0, 1)], bar: nil, units: units, dual: true)
+        return upperInternal(target, t, enums, bar)
+    }
+    
+    private func upperSingle(_ target: Float, _ enums: [InternalPlates], _ bar: Float?, _ units: Units) -> InternalPlates {
+        let t = InternalPlates(plates: [Plate(target, 1)], bar: nil, units: units, dual: false)
+        return upperInternal(target, t, enums, bar)
+    }
+    
+    private func upperInternal(_ target: Float, _ t: InternalPlates, _ enums: [InternalPlates], _ bar: Float?) -> InternalPlates {
         switch enums.binarySearch(t) {
         case .found(let i):
             if i + 1 < enums.count {
@@ -380,8 +405,8 @@ extension WeightSet {
                 return enums[i]
             }
         case .missing(let i):
-            if target < (bar ?? 0.0) || enums.isEmpty {
-                return InternalPlates(plates: [], bar: bar, units: units)
+            if target < (t.bar ?? 0.0) || enums.isEmpty {
+                return InternalPlates(plates: [], bar: bar, units: t.units, dual: t.dual)
             } else {
                 if i < enums.count {
                     return enums[i]

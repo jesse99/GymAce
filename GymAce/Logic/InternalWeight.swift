@@ -7,7 +7,7 @@ enum InternalWeight: Codable {
     case Plates(InternalPlates)
 }
 
-// This is very much like DualPlates but can also be used by SinglePlates once we add that.
+// This is very much like DualPlates but also supports single plates.
 struct InternalPlates: Codable, Comparable, Equatable {
     /// Sorted from largest to smallest.
     let plates: [Plate]
@@ -19,10 +19,10 @@ struct InternalPlates: Codable, Comparable, Equatable {
     
     let units: Units
     
-    init(plates: [Plate], bar: Float?, units: Units) {
+    init(plates: [Plate], bar: Float?, units: Units, dual: Bool) {
         self.plates = plates
         self.bar = bar
-        self.dual = true
+        self.dual = dual
         self.units = units
     }
     
@@ -68,7 +68,7 @@ struct InternalPlates: Codable, Comparable, Equatable {
 // For duplicate total weights the combination with the least plates is returned,
 // so [45] is returned but not [10, 35]. Plates should be sorted by plate weight
 // from largest to smallest.
-func enumeratePlates(_ plates: [Plate], bar: Float?, units: Units) -> [InternalPlates] {  // internal access so that unit tests can test it
+func enumeratePlates(_ plates: [Plate], bar: Float?, dual: Bool, units: Units) -> [InternalPlates] {  // internal access so that unit tests can test it
     // Takes an n representing the number of plates where n is encoded like 2045 where
     // the 2 means 2 of the smallest plate, 0 of the next largest, 4 of the next, and
     // 5 of the largest plate.
@@ -190,7 +190,7 @@ func enumeratePlates(_ plates: [Plate], bar: Float?, units: Units) -> [InternalP
         }
     }
 
-    var result: [InternalPlates] = candidates.values.map {InternalPlates(plates: $0, bar: bar, units: units)}
+    var result: [InternalPlates] = candidates.values.map {InternalPlates(plates: $0, bar: bar, units: units, dual: dual)}
     result.sort()       // smallest weight to largest
     return result
 }

@@ -2,8 +2,19 @@ import Testing
 @testable import GymAce
 
 struct LowerUpperTests {
-    @Test("Dual Plates no bar")
+    @Test("Single Plates no bar")
     func lu0() {
+        let plates = [Plate(5.0, 6), Plate(10.0, 6), Plate(25.0, 4), Plate(45.0, 4)]
+        let dual = PlateWeights(dual: false, plates: plates, units: .Metric)
+        let ws = WeightSet.plates(dual)
+        
+        #expect(compute(ws, 11.0) == ("10", "10 + 5"))
+        #expect(compute(ws, 14.0) == ("10", "10 + 5"))
+        #expect(compute(ws, 18.0) == ("10 + 5", "10x2"))
+    }
+    
+    @Test("Dual Plates no bar")
+    func lu1() {
         let plates = [Plate(5.0, 6), Plate(10.0, 6), Plate(25.0, 4), Plate(45.0, 4)]
         let dual = PlateWeights(dual: true, plates: plates, units: .Metric)
         let ws = WeightSet.plates(dual)
@@ -34,7 +45,7 @@ struct LowerUpperTests {
     }
     
     @Test("Dual Plates with bar")
-    func lu1() {
+    func lu2() {
         // we'll use a somewhat unusual plate distribution here
         let plates = [Plate(5.0, 3), Plate(10.0, 2), Plate(25.0, 6), Plate(45.0, 2)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Metric)
@@ -52,6 +63,16 @@ struct LowerUpperTests {
         #expect(compute(ws, 260.0) == ("45 + 25x2 + 10", "45 + 25x2 + 10 + 5"))
         #expect(compute(ws, 290.0) == ("45 + 25x3", "45 + 25x3 + 5"))
         #expect(compute(ws, 320.0) == ("45 + 25x3 + 10 + 5", "45 + 25x3 + 10 + 5"))
+    }
+    
+    @Test("Single Plates with bar")
+    func lu3() {
+        let plates = [Plate(5.0, 3), Plate(10.0, 2), Plate(25.0, 6), Plate(45.0, 2)]
+        let dual = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Metric)
+        let ws = WeightSet.plates(dual)
+
+        #expect(compute(ws, 60.0) == ("10 + 5", "25"))
+        #expect(compute(ws, 70.0) == ("25", "25 + 5"))
     }
     
     private func compute(_ ws: WeightSet, _ target: Float) -> (String, String) {

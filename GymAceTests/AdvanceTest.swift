@@ -52,7 +52,7 @@ struct AdvanceTests {
         let ws = WeightSet.plates(dual)
 
         var v = ws.advance(target: 0.0)
-        #expect(v.details() == "")
+        #expect(v.details() == "5")
         
         v = ws.advance(target: 45.0)
         #expect(v.details() == "5")
