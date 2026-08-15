@@ -419,23 +419,16 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=hUboSbJdvvU")],
         )
         
-        add(
-            "Body-weight Single Leg Deadlift",
-            [
-                "Stand straight up.",
+        add("Body-weight Single Leg Deadlift",
+            ["Stand straight up.",
                 "Extend one leg straight out behind you.",
                 "At the same time lower your torso.",
                 "Continue until your outstretched leg and torso are parallel to the floor.",
                 "Keep your back straight the entire time.",
                 "Your hands can be stretched out in front of you or one can be lowered to the floor.",
             ],
-            [
-                (
-                    "Link",
-                    "https://classpass.com/movements/single-leg-deadlift",
-                ),
-                ("Contreras", "https://bretcontreras.com/the-single-leg-rdl/"),
-            ],
+            [("Link", "https://classpass.com/movements/single-leg-deadlift"),
+                ("Contreras", "https://bretcontreras.com/the-single-leg-rdl/")],
         )
         
         add("Body-weight Bulgarian Split Squat",
@@ -613,7 +606,7 @@ extension Notes {
             ["Use an ankle cuff to attach a leg to a low pulley.",
                 "Step away from the pulley and turn so that the leg with the cuff is closest to the pulley.",
                 "Take a wide stance and move the leg with the cuff closer to the puller and then back to your starting position."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/cable-hip-adduction")],
+            [("Link", "https://www.muscleandstrength.com/exercises/cable-hip-abduction.html")],
         )
         
         add("Cable Hip Rotation",
@@ -1753,7 +1746,7 @@ extension Notes {
                 "Slowly lower the weights and repeat.",
                 "After completing a set put the dumbbells onto your thighs and then onto the floor.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/incline-dumbbell-press")],
+            [("Link", "https://www.muscleandstrength.com/exercises/incline-dumbbell-bench-press.html")],
         )
         
         add("Incline Dumbbell Curl",
@@ -1935,7 +1928,7 @@ extension Notes {
                 "Rotate the bar from side to side by rotating your trunk and hips.",
                 "Keep your arms extended throughout.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/landmine-180s")],
+            [("Link", "https://loadmuscle.com/exercises/landmine-180"), ("Video", "https://www.myworkouts.io/exercise/landmine-180s/92643")],
         )
         
         add("Lat Pulldown",
@@ -2437,7 +2430,7 @@ extension Notes {
                 "Keep your arms straight.",
                 "Bend your knees slightly.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/pull-through")])
+            [("Link", "https://www.strengthlog.com/cable-pull-through/")])
         
         add("Pull-up",
             ["Hands can be wider, the same, or narrower than shoulder width.",
@@ -3479,9 +3472,8 @@ extension Notes {
                 "Try to use feet to spread the floor apart and explode up.",
                 "At the midpoint push hips into the bar.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/sumo-deadlift"),
-                ("7-Steps", "https://www.elitefts.com/education/7-step-guide-to-learning-the-sumo-deadlift/"),
-                ("Mastering", "https://www.t-nation.com/training/6-tips-to-master-the-sumo-deadlift")],
+            [("Link", "https://www.muscleandstrength.com/exercises/sumo-deadlift"),
+             ("More", "https://www.trainheroic.com/blog/sumo-deadlift/")],
         )
         
         add("Sumo Squat",
@@ -3649,7 +3641,7 @@ extension Notes {
                 "Keep your wrist straight and elbow locked the entire time.",
                 "Instead of shrugging your shoulder up pull your shoulder blades down.",
             ],
-            [("Link", "https://www.bodybuilding.com/fun/the-ultimate-guide-to-the-turkish-get-up.html"),
+            [("Link", "https://www.usa-iron.com/pages/kettlebell-turkish-get-up"),
                 ("Video", "https://www.youtube.com/watch?v=0bWRPC49-KI")],
         )
         
@@ -3960,8 +3952,7 @@ extension Notes {
                 "Squat down until your thighs just break parallel with the ground.",
                 "At the bottom your knees should be over your toes.",
                 "Keep your head up at all times."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/zercher-squats"),
-             ("Details", "https://www.t-nation.com/training/complete-guide-to-zerchers")])
+            [("Link", "https://www.trainheroic.com/blog/how-to-zercher-squat-one-exercise-to-rule-them-all/")])
     }
     
     private func add(_ name: String, _ lines: [String], _ links: [(String, String)]) {
