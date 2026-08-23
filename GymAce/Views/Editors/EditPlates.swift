@@ -20,7 +20,7 @@ struct EditPlates: View {
     @State private var showAlert = false
     @State private var pweight = ""
     @State private var pcount = ""
-    @State private var nameErr: String? = ""
+    @State private var nameErr: String? = nil
     @State private var addErr: String? = nil
     @State var name: String
 
