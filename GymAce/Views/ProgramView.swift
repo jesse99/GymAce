@@ -25,9 +25,9 @@ struct ProgramView: View {
     //    don't show disabled workouts in ProgramView
     var body: some View {
         Group {
-            if let program = model.active() {
-                NavigationStack {
-                    VStack {
+            NavigationStack {
+                VStack {
+                    if let program = model.active() {
                         // TODO should be able to use a Grid here
                         List {
                             ForEach(entries) { entry in
@@ -62,30 +62,35 @@ struct ProgramView: View {
                                 viewID = UUID()
                             }
                         }
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Menu {
-                                    NavigationLink(destination: EditExercises(model: model, program: program)) {
-                                        Text("Edit Exercises")
-                                    }
-                                    NavigationLink(destination: EditNotes(model: model, program: program)) {
-                                        Text("Edit Notes")
-                                    }
-                                    NavigationLink(destination: EditProgram(model: model, program: program)) {
-                                        Text("Edit Program")
-                                    }
-                                    NavigationLink(destination: EditPrograms(model: model)) {
-                                        Text("Edit Programs")
-                                    }
-                                    NavigationLink(destination: EditWeightSets(model: model)) {
-                                        Text("Edit Weight Sets") 
-                                    }
-                                    Button("Email Program", action: sendEmail)
-                                } label: {
-                                    Image(systemName: "line.horizontal.3")
-                                        .foregroundColor(.blue)
+                    } else {
+                        ContentUnavailableView("Use Edit Programs on the top right to select a program to use, or to create a new custom program.", systemImage: "figure.run.square.stack.fill")
+                        .padding()
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Menu {
+                            if let program = model.active() {
+                                NavigationLink(destination: EditExercises(model: model, program: program)) {
+                                    Text("Edit Exercises")
+                                }
+                                NavigationLink(destination: EditNotes(model: model, program: program)) {
+                                    Text("Edit Notes")
+                                }
+                                NavigationLink(destination: EditProgram(model: model, program: program)) {
+                                    Text("Edit Program")
                                 }
                             }
+                            NavigationLink(destination: EditPrograms(model: model)) {
+                                Text("Edit Programs")
+                            }
+                            NavigationLink(destination: EditWeightSets(model: model)) {
+                                Text("Edit Weight Sets")
+                            }
+                            Button("Email Program", action: sendEmail)
+                        } label: {
+                            Image(systemName: "line.horizontal.3")
+                                .foregroundColor(.blue)
                         }
                     }
                 }

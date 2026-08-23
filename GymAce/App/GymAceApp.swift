@@ -8,13 +8,8 @@ struct GymAceApp: App {
     init() {
         model = Model.load()
         
-        // TODO for now add Preview and My programs if they are not present
-        //      don't include My program?
-        //      Programs will need a defaultPrograms list
-        //      also add program if debug?
-        // TODO if a program is added grovel thru it and add any weight sets that are missing
         // TODO how do we handle program updates? add something like v2 to the name?
-        //      or hijack version and install newer versions? can include a top of what changed
+        //      or use version and install of newer and not active? if active could say what changed
         //      or silently update if not active?
 //        if let i = model.programs.firstIndex(where: {$0.name == "Masters GZCL"}) {
 //            model.programs.remove(at: i)
@@ -26,12 +21,8 @@ struct GymAceApp: App {
             }
         }
         
-        if model.activeProgram.isEmpty {
-            model.activeProgram = "Preview" // TODO pick something else, or even better go directly to EditPrograms
-        }
         model.addMissingWeightsets()
-        model.validate()
-        // TODO may want a warning somewhere if weight set is missing
+        model.validate()    // TODO user visible warning? also do this when activating a new program?
         
         healthKit.requestPerms()
     }
