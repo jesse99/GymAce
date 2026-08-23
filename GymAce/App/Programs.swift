@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), GZCL(), masterGZCL(), myProgram(), previewProgram(), stopgapProgram(), strongCurves1(), strongCurves2()]
+let defaultPrograms: [Program] = [basic(), boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), GZCL(), masterGZCL(), myProgram(), previewProgram(), stopgapProgram(), strongCurves1(), strongCurves2()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -44,6 +44,71 @@ func previewModel() -> Model {
     model.programs.append(previewProgram())
     model.addMissingWeightsets()
     return model
+}
+
+fileprivate func basic() -> Program {
+    func addExercises(_ program: Program) {
+        let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        let warmup2 = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80)]
+        let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+        
+        let reps: [VariableReps] = [.fixed(5, 100), .fixed(5, 100), .amrap(5, 100)]
+
+        var exercise = make("Pendlay Row", "Pendlay Row", warmups: warmup2, worksets: reps, weights: "Dual Plates", weight: 55, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Bench Press", "Bench Press", warmups: warmup, worksets: reps, weights: "Dual Plates", weight: 65, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Squat", "High bar Squat", warmups: warmup, worksets: reps, weights: "Dual Plates", weight: 85, rest: 3*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Chin Ups", "Chin-up", warmups: [], worksets: reps, rest: 3*60)
+        program.exercises.append(exercise)
+
+        exercise = make("OHP", "Overhead Press", warmups: warmup, worksets: reps, weights: "Dual Plates", weight: 55, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Deadlift", "Deadlift", warmups: dwarmup, worksets: reps, weights: "Deadlift", weight: 95, rest: 3*60)
+        program.exercises.append(exercise)
+        
+        exercise = make("Lat Pulldown", "Lat Pulldown", warmups: warmup2, worksets: reps, weights: "Cable Machine", weight: 30, rest: 2*60)
+        program.exercises.append(exercise)
+    }
+
+    func addSquat(_ program: Program, _ weekdays: Weekdays, week: Int) {
+        let schedule = Schedule.days(weekdays)
+        let workout = Workout("Squat \(week)", schedule)
+        workout.weeks = week...week
+        
+        workout.addExercise(name: "Pendlay Row")
+        workout.addExercise(name: "Bench Press")
+        workout.addExercise(name: "Squat")
+        
+        program.addWorkout(workout)
+    }
+
+    func addDead(_ program: Program, _ weekdays: Weekdays, week: Int) {
+        let schedule = Schedule.days(weekdays)
+        let workout = Workout("Deadlift \(week)", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "Chin Ups")
+        workout.addExercise(name: "Lat Pulldown", enabled: false)
+        workout.addExercise(name: "OHP")
+        workout.addExercise(name: "Deadlift")
+        
+        program.addWorkout(workout)
+    }
+
+    let program = Program("Basic Beginner")
+    program.summary = "A simple gym [program](https://thefitness.wiki/routines/r-fitness-basic-beginner-routine) for beginners. It's meant to be run for three months after which you should switch to another program like 531. Try to increase weights each workout. For the last sets do as many reps as you can but try to stop when you have 1-2 reps left."
+    addExercises(program)
+    addSquat(program, Weekdays([.monday, .friday]), week: 1)
+    addDead(program, Weekdays([.wednesday]), week: 1)
+    addDead(program, Weekdays([.monday, .friday]), week: 2)
+    addSquat(program, Weekdays([.wednesday]), week: 2)
+    return program
 }
 
 fileprivate func masterGZCL() -> Program {

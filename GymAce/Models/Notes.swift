@@ -2249,29 +2249,17 @@ extension Notes {
             [("Pausing", "https://www.t-nation.com/training/2-second-pause-for-big-gains")],
         )
         
-        add(
-            "Pause Squat",
-            [
-                "Squat normally.",
+        add("Pause Squat",
+            ["Squat normally.",
                 "Once you hit below parallell pause for a full two seconds.",
                 "Resume the squat.",
             ],
-            [
-                (
-                    "Link",
-                    "http://bruteforcestrength.com/techniques/leg-training-pause-squats/",
-                ),
-                (
-                    "Pausing",
-                    "https://www.t-nation.com/training/2-second-pause-for-big-gains",
-                ),
-            ],
+            [("Link", "http://bruteforcestrength.com/techniques/leg-training-pause-squats/"),
+                ("Pausing", "https://www.t-nation.com/training/2-second-pause-for-big-gains")],
         )
         
-        add(
-            "Pendlay Row",
-            [
-                "Bar above middle of feet. Feet about shoulder width apart.",
+        add("Pendlay Row",
+            ["Bar above middle of feet. Feet about shoulder width apart.",
                 "Toes out about thirty degrees.",
                 "Keep knees slightly bent.",
                 "Hands just outside shoulder width. Palms in. Grip close to fingers.",
@@ -2281,30 +2269,22 @@ extension Notes {
                 "Lower to floor slowly.",
                 "Torso remain parallel to the floor and have minimal movement.",
             ],
-            [
-                ("Stronglifts", "http://stronglifts.com/barbell-row/"),
+            [("Stronglifts", "http://stronglifts.com/barbell-row/"),
                 ("Video", "https://www.youtube.com/watch?v=Weu9HMHdiDA"),
             ],
         )
         
-        add(
-            "Perry Complex",
-            [
-                "Start with a weight you can curl&press 10 times.",
+        add("Perry Complex",
+            ["Start with a weight you can curl&press 10 times.",
                 "Don't let the dumbbell touch the floor during a set.",
                 "For lunges and curl&press do six reps for each side.",
                 "Aim for no rest between sets.",
             ],
-            [(
-                "Link",
-                "https://www.builtlean.com/2012/04/10/dumbbell-complex",
-            )],
+            [("Link", "https://www.builtlean.com/2012/04/10/dumbbell-complex")],
         )
         
-        add(
-            "Pike Pushup",
-            [
-                "Lay face down on the floor.",
+        add("Pike Pushup",
+            ["Lay face down on the floor.",
                 "Scoot your hips way up into the air.",
                 "Keep your chin tucked.",
                 "Lower your torso until your forehead touches the ground.",
@@ -2312,13 +2292,8 @@ extension Notes {
                 "Difficulty can be lessened by moving your feet backwards.",
                 "Difficulty can be increased by resting your feet on a low bench or stool.",
             ],
-            [
-                ("Video", "https://www.youtube.com/watch?v=EA8g7q9jauM"),
-                (
-                    "Feet Elevated Video",
-                    "https://www.youtube.com/watch?v=Oy3zxr6W-vI",
-                ),
-            ],
+            [("Video", "https://www.youtube.com/watch?v=EA8g7q9jauM"),
+                ("Feet Elevated Video", "https://www.youtube.com/watch?v=Oy3zxr6W-vI")],
         )
         
         add(
