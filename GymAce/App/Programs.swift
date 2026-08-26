@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [basic(), boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), GZCL(), masterGZCL(), myProgram(), previewProgram(), stopgapProgram(), strongCurves1(), strongCurves2()]
+let defaultPrograms: [Program] = [basic(), boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), GZCL(), masterGZCL(), myProgram(), pf6(), pf3(), previewProgram(), stopgapProgram(), strongCurves1(), strongCurves2()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -28,6 +28,10 @@ func findDefaultWeightSet(_ name: String) -> WeightSet? {
         let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
         return WeightSet.plates(single)
+    } else if name == "Smith Machine" {
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+        return WeightSet.plates(dual)
     } else if name == "Trapbar" {
         let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
@@ -1065,6 +1069,278 @@ fileprivate func dumbbellPPL7() -> Program {
     return program
 }
 
+fileprivate func pf6() -> Program {
+    func addExercises(_ program: Program) {
+        let warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+
+        // Pull
+        var exercise = make("SM Deadlift", "Smith Machine Deadlift", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Pullups", "Pull-up", workstr: "8-12 8-12 8-12", rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Seated Cable Row", "Seated Cable Row", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 40.0, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Hammer Curls", "Hammer Curls", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Face Pulls", "Face Pull", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 32.5, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("SM Row", "Smith Machine Bent-Over Row", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 80, rest: 2*60)
+        program.exercises.append(exercise)
+        
+        // Push
+        exercise = make("SM Bench Press", "Smith Machine Bench", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("DB OHP", "Dumbbell Shoulder Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 30, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Incline DB Press", "Incline Bench Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 30, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Tricep Pushdown", "Triceps Pushdown (rope)", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 20.0, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("Lateral Raise", "Side Lateral Raise", workstr: "15 15 15", weights: "Dumbbells", weight: 5, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+        
+        // Legs
+        exercise = make("SM Squat", "Smith Machine Squat", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("SM Romanian Deadlift", "Smith Machine Romanian Deadlift", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Leg Press", "Leg Press", warmups: warmup, workstr: "8-12 8-12 8-12", weights: "Dual Plates", weight: 225, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("SM Calf Raises", "Standing Calf Raises", warmups: warmup, workstr: "30 30 30", weights: "Smith Machine", weight: 180, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Seated Leg Curls", "Seated Leg Curl", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 40.0, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("SM Front Squat", "Smith Machine Front Squat", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+    }
+
+    func addPull1(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday]))
+        let workout = Workout("Pull 1", schedule)
+        workout.weeks = 1...1
+        
+        workout.addExercise(name: "SM Deadlift")
+        workout.addExercise(name: "Pullups")
+        workout.addExercise(name: "Seated Cable Row")
+        workout.addExercise(name: "Hammer Curls")
+        workout.addExercise(name: "Face Pulls")
+        workout.notes = "To save time you can superset Hammer Curls/Face Pulls."
+
+        program.addWorkout(workout)
+    }
+
+    func addPull2(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.thursday]))
+        let workout = Workout("Pull 2", schedule)
+        workout.weeks = 2...2
+        
+        workout.addExercise(name: "SM Row")
+        workout.addExercise(name: "Pullups")
+        workout.addExercise(name: "Seated Cable Row")
+        workout.addExercise(name: "Hammer Curls")
+        workout.addExercise(name: "Face Pulls")
+        workout.notes = "To save time you can superset Hammer Curls/Face Pulls."
+
+        program.addWorkout(workout)
+    }
+
+    func addPush1(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.tuesday]))
+        let workout = Workout("Push 1", schedule)
+        workout.weeks = 1...1
+
+        workout.addExercise(name: "SM Bench Press")
+        workout.addExercise(name: "DB OHP")
+        workout.addExercise(name: "Incline DB Press")
+        workout.addExercise(name: "Tricep Pushdown")
+        workout.addExercise(name: "Lateral Raise")
+        workout.notes = "To save time you can superset Tricep Pushdown/Lateral Raise."
+
+        program.addWorkout(workout)
+    }
+
+    func addPush2(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.friday]))
+        let workout = Workout("Push 2", schedule)
+        workout.weeks = 2...2
+
+        workout.addExercise(name: "SM Bench Press")
+        workout.addExercise(name: "DB OHP")
+        workout.addExercise(name: "Incline DB Press")
+        workout.addExercise(name: "Tricep Pushdown")
+        workout.addExercise(name: "Lateral Raise")
+        workout.notes = "To save time you can superset Tricep Pushdown/Lateral Raise."
+
+        program.addWorkout(workout)
+    }
+
+    func addLegs1(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.wednesday]))
+        let workout = Workout("Legs 1", schedule)
+        workout.weeks = 1...1
+
+        workout.addExercise(name: "SM Squat")
+        workout.addExercise(name: "SM Romanian Deadlift")
+        workout.addExercise(name: "Leg Press")
+        workout.addExercise(name: "SM Calf Raises")
+        workout.addExercise(name: "Seated Leg Curls")
+        workout.notes = "To save time you can superset Calf Raises/Leg Curls."
+
+        program.addWorkout(workout)
+    }
+
+    func addLegs2(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.saturday]))
+        let workout = Workout("Legs 2", schedule)
+        workout.weeks = 2...2
+
+        workout.addExercise(name: "SM Front Squat")
+        workout.addExercise(name: "SM Romanian Deadlift")
+        workout.addExercise(name: "Leg Press")
+        workout.addExercise(name: "SM Calf Raises")
+        workout.addExercise(name: "Seated Leg Curls")
+        workout.notes = "To save time you can superset Calf Raises/Leg Curls."
+
+        program.addWorkout(workout)
+    }
+
+    let program = Program("Planet Fitness 6")
+    program.summary = "Intermediate [program](https://www.reddit.com/r/Fitness/comments/9ldxy3/planet_fitness_hotel_apartment_gym_workout) for gyms without free barbells. This is a push/pull/legs split and designed to be performed six days a week."
+    addExercises(program)
+    addPull1(program)
+    addPush1(program)
+    addLegs1(program)
+    addPull2(program)
+    addPush2(program)
+    addLegs2(program)
+    return program
+}
+
+fileprivate func pf3() -> Program {
+    func addExercises(_ program: Program) {
+        let warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+
+        // Pull
+        var exercise = make("SM Deadlift", "Smith Machine Deadlift", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Pullups", "Pull-up", workstr: "8-12 8-12 8-12", rest: 2*60)
+        program.exercises.append(exercise)
+        
+        exercise = make("Lat Pulldown", "Lat Pulldown", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 30, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("Seated Cable Row", "Seated Cable Row", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 40.0, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Hammer Curls", "Hammer Curls", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 20, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Face Pulls", "Face Pull", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 32.5, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("SM Row", "Smith Machine Bent-Over Row", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 80, rest: 2*60)
+        program.exercises.append(exercise)
+        
+        // Push
+        exercise = make("SM Bench Press", "Smith Machine Bench", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("DB OHP", "Dumbbell Shoulder Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 30, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Incline DB Press", "Incline Bench Press", workstr: "8-12 8-12 8-12", weights: "Dumbbells", weight: 30, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Tricep Pushdown", "Triceps Pushdown (rope)", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 20.0, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("Lateral Raise", "Side Lateral Raise", workstr: "15 15 15", weights: "Dumbbells", weight: 5, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+        
+        // Legs
+        exercise = make("SM Squat", "Smith Machine Squat", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("SM Romanian Deadlift", "Smith Machine Romanian Deadlift", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Leg Press", "Leg Press", warmups: warmup, workstr: "8-12 8-12 8-12", weights: "Dual Plates", weight: 225, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("SM Calf Raises", "Standing Calf Raises", warmups: warmup, workstr: "30 30 30", weights: "Smith Machine", weight: 180, rest: 2*60)
+        program.exercises.append(exercise)
+
+        exercise = make("Seated Leg Curls", "Seated Leg Curl", workstr: "8-12 8-12 8-12", weights: "Cable Machine", weight: 40.0, rest: Int(1.5*60))
+        program.exercises.append(exercise)
+
+        exercise = make("SM Front Squat", "Smith Machine Front Squat", warmups: warmup, workstr: "5 5 5+", weights: "Smith Machine", weight: 90, rest: 2*60)
+        program.exercises.append(exercise)
+    }
+
+    func addPull(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.monday]))
+        let workout = Workout("Pull", schedule)
+        
+        workout.addExercise(name: "SM Deadlift")
+        workout.addExercise(name: "Lat Pulldown")
+        workout.addExercise(name: "Pullups", enabled: false)
+        workout.addExercise(name: "Seated Cable Row")
+        workout.addExercise(name: "Hammer Curls")
+        workout.addExercise(name: "Face Pulls", enabled: false)
+
+        program.addWorkout(workout)
+    }
+
+    func addPush(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.wednesday]))
+        let workout = Workout("Push", schedule)
+
+        workout.addExercise(name: "SM Bench Press")
+        workout.addExercise(name: "DB OHP")
+        workout.addExercise(name: "Incline DB Press")
+        workout.addExercise(name: "Tricep Pushdown", enabled: false)
+        workout.addExercise(name: "Lateral Raise")
+
+        program.addWorkout(workout)
+    }
+
+    func addLegs(_ program: Program) {
+        let schedule = Schedule.days(Weekdays([.friday]))
+        let workout = Workout("Legs", schedule)
+
+        workout.addExercise(name: "SM Squat")
+        workout.addExercise(name: "SM Romanian Deadlift")
+        workout.addExercise(name: "Leg Press")
+        workout.addExercise(name: "SM Calf Raises", enabled: false)
+        workout.addExercise(name: "Seated Leg Curls")
+
+        program.addWorkout(workout)
+    }
+
+    let program = Program("Planet Fitness 3")
+    program.summary = "[Program](https://www.reddit.com/r/Fitness/comments/9ldxy3/planet_fitness_hotel_apartment_gym_workout) for gyms without free barbells. This is a push/pull/legs split and designed to be performed three days a week."
+    addExercises(program)
+    addPull(program)
+    addPush(program)
+    addLegs(program)
+    return program
+}
+
 /// Simulator only program used for testing.
 fileprivate func previewProgram() -> Program {   // TODO get rid of this?
     func addExercises(_ program: Program) {
@@ -2068,29 +2344,3 @@ fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], w
     let c = Completed(secs: secs, weights: weights, units: .Imperial, completed: d!)
     exercise.history.append(c)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

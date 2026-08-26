@@ -908,46 +908,25 @@ extension Notes {
             [("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
         )
         
-        add(
-            "Decline Situp",
-            [
-                "Lie on your back on a decline bench.",
+        add("Decline Situp",
+            ["Lie on your back on a decline bench.",
                 "Place your hands behind your head, but don't lock your fingers together.",
                 "Push your lower back into the bench and raise your shoulders about four inches.",
                 "At the top contract your abs and hold for a second.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/decline-crunch",
-            )],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/decline-crunch")],
         )
         
-        add(
-            "Deep Step-ups",
-            [
-                "Place one foot on a high object.",
+        add("Deep Step-ups",
+            ["Place one foot on a high object.",
                 "Place all of your weight on that object and step up onto the object.",
                 "Use your back leg as little as possible.",
                 "Difficulty can be increased by using a higher object or holding a weight.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat",
-                ),
-                (
-                    "Body Weight Squats",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat",
-                ),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/playground/deep-step-up",
-                ),
-                (
-                    "Progression",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat",
-                ),
-            ],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat"),
+                ("Body Weight Squats", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat"),
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/playground/deep-step-up"),
+                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat")],
         )
         
         add(
@@ -1518,7 +1497,7 @@ extension Notes {
                 "Keep elbows close to your torso and palms facing inwards.",
                 "Using only your forearms curl both dumbbells.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/hammer-curls")],
+            [("Link", "https://www.muscleandstrength.com/exercises/standing-hammer-curl.html")],
         )
         
         add("Hammer Strength Chest Press",
@@ -1946,8 +1925,7 @@ extension Notes {
         )
         
         add("Leg Lift (intro)",
-            [
-                "Lie down with legs slightly apart and palms under your thighs.",
+            ["Lie down with legs slightly apart and palms under your thighs.",
                 "Lift your left leg, bending at the hip and the knee, while also lifting your head from the floor.",
                 "Lower leg and repeat with the right leg (one rep includes both legs)."],
             [("Link", "https://www.fourmilab.ch/hackdiet/e4/")],
@@ -1961,18 +1939,13 @@ extension Notes {
             [("Progression", "http://www.startbodyweight.com/p/plank-progression.html")],
         )
         
-        add(
-            "Leg Press",
-            [
-                "Feet at shoulder width.",
+        add("Leg Press",
+            ["Feet at shoulder width.",
                 "Torso and legs should be ninety degrees apart.",
                 "Push until legs are fully extended but **don't lock knees**.",
                 "Lower platform until upper and lower legs make a ninety degree angle.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/leg-press",
-            )],
+            [("Link", "https://www.muscleandstrength.com/exercises/45-degree-leg-press.html")],
         )
         
         add("Leg Swings",
@@ -2087,36 +2060,25 @@ extension Notes {
             )],
         )
         
-        add(
-            "Medicine Ball Slam",
-            [
-                "Hold the ball with both hands.",
+        add("Medicine Ball Slam",
+            ["Hold the ball with both hands.",
                 "Stand with feet shoulder width apart.",
                 "Raise the ball above your head.",
                 "Slam it down in front of you as hard as you can.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/overhead-slam",
-            )],
+            [("Link", "https://www.bodybuilding.com/exercises/overhead-slam")],
         )
         
-        add(
-            "Military Press",
-            [
-                "Grip the bar with palms facing out slightly wider than shoulder width.",
+        add("Military Press",
+            ["Grip the bar with palms facing out slightly wider than shoulder width.",
                 "Place the bar on your collar bone.",
                 "Lift it overhead without moving your hips (as you would with an OHP).",
             ],
-            [(
-                "Link",
-                "https://www.muscleandstrength.com/exercises/military-press.html",
-            )],
+            [("Link", "https://www.muscleandstrength.com/exercises/military-press.html")],
         )
         
         add("Mountain Climber",
-            [
-                "Get into a pushup position with hands a bit closer than normal.",
+            ["Get into a pushup position with hands a bit closer than normal.",
                 "Keep arms straight.",
                 "Bring one leg up and plant your foot outside your arm.",
                 "Sink back leg down and repeat with other leg."],
@@ -2124,16 +2086,14 @@ extension Notes {
         )
         
         add("Negative Handstand Pushup",
-            [
-                "Get into a wall handstand about a foot from the wall. Hands should be shoulder width or a little wider.",
+            ["Get into a wall handstand about a foot from the wall. Hands should be shoulder width or a little wider.",
                 "Slowly lower yourself (take up to 10s).",
                 "Once your forehead touches the floor roll out."],
             [("Video", "https://www.youtube.com/watch?v=Lj2KZwbr_jo"), ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase3/hspu")],
         )
         
         add("Neck Flexion",
-            [
-                "Tuck your chin down using two fingers.",
+            ["Tuck your chin down using two fingers.",
                 "Place your other hand on the back of your head and pull down.",
                 "Hold for 20-30s once you feel a stretch on the back of your neck."],
             [("Link", "https://backintelligence.com/how-to-fix-forward-head-posture/")],
@@ -3121,10 +3081,8 @@ extension Notes {
                 ("Picture", "https://www.espclinics.com/patients/stretches-exercises/sleeper-stretch/")],
         )
         
-        add(
-            "Sliding Leg Curl",
-            [
-                "Lay down on your back.",
+        add("Sliding Leg Curl",
+            ["Lay down on your back.",
                 "Place slides under your feet (or a towel if you have a smooth floor).",
                 "Bring your feet in and raise your hips off the ground.",
                 "Slide your feet all the way forward.",
@@ -3135,33 +3093,83 @@ extension Notes {
         )
         
         add("Smith Machine Bench",
-            [
-                "Plce the bar at a height that you can reach with arms almost fully extended while lying down.",
+            ["Place the bar at a height that you can reach with arms almost fully extended while lying down.",
                 "Using a grip wider than shoulder width unrack the bar to start.",
-                "Lower the bar to middle ches around nipples.",
+                "Lower the bar to middle chest around nipples.",
                 "Raise the bar back up."],
-            [("Link", "https://www.bodybuilding.com/exercises/smith-machine-bench-press")],
+            [("Link", "https://ee.repfitness.com/blogs/training/smith-machine-bench-press?gad_source=1&gad_campaignid=17245875046&gbraid=0AAAAADGahfTuoUJpqCkWBr9vZ4SLtmdHm&gclid=Cj0KCQjwnbrUBhDOARIsAKKhPpfYyjjZALgLFH-VHeW6aZh690Zdhy94ohMcKbLAfsh3UPLDNvQfsQsaAryMEALw_wcB")],
         )
         
-        add(
-            "Smith Machine Shrug",
-            [
-                "Set the bar height to be about the middle of your thighs.",
+        add("Smith Machine Bent-Over Row",
+            ["Set the bar as low as it will go.",
+             "Grip the bar with hands wider than shoulder width apart.",
+             "Stand straight up and then lower the bar to just below your knees.",
+             "That will be the start position.",
+             "Then, keeping your body still, raise the bar until it almost hits your body.",
+             "Pause and then slowly lower the bar back to the starting position.",
+            ],
+            [("Link", "https://www.muscleandstrength.com/exercises/smith-machine-bent-over-row.html")],
+        )
+        
+        add("Smith Machine Deadlift",
+            ["Set the bar as low as it will go.",
+             "Place your feet beneath the bar, about hip to shoulder width apart.",
+             "Toes pointed forward or slightly out.",
+             "Hinge at your hips and bend your knees until you can just reach the bar.",
+             "Grip the bar outside your legs. Shins should touch the bar.",
+             "Brace your core, pull shoulders back, and drive through your heels.",
+             "When the bar passes your knees drive hips forward.",
+             "To lower bring hips back and then bend your knees."],
+            [("Link", "https://repfitness.com/blogs/guides/smith-machine-deadlift")],
+        )
+        
+        add("Smith Machine Front Squat",
+            ["Set the bar just under shoulder height.",
+             "Step forward and place the bar under your chin resting on your shoulders.",
+             "Grab the bar with your hands to help stablize it.",
+             "Rotate your hands to unrack the bar.",
+             "Brace your core and simultaneously bend your knees and push your hips back.",
+             "Reverse the movement when your thighs are parallel with the floor.",
+             ],
+            [("Link", "https://www.muscleandstrength.com/exercises/smith-machine-front-squat.html")],
+        )
+        
+        add("Smith Machine Romanian Deadlift",
+            ["Set the bar around hip height.",
+             "Place your feet beneath the bar, about hip to shoulder width apart.",
+             "Toes pointed forward or slightly out.",
+             "Hinge at your hips and bend your knees until you can just reach the bar.",
+             "Grip the bar outside your legs.",
+             "Brace your core, pull shoulders back, and drive through your heels.",
+             "When the bar passes your knees drive hips forward.",
+             "To lower bring hips back and then bend your knees.",
+             "Lower until you feel a strong hamstring stretch."],
+            [("Link", "https://www.ritfitsports.com/blogs/article/how-to-do-smith-machine-romanian-deadlift?srsltid=AfmBOorblhaYu_sH-bdxKpFw0ptdrNBn4vUCf7PdphqN2rl74YFGTTsX")],
+        )
+        
+        add("Smith Machine Shrug",
+            ["Set the bar height to be about the middle of your thighs.",
                 "Grab the bar with your palms facing you.",
                 "Lift the bar up keeping your arms fully extended.",
                 "Raise your shoulders until they come close to touching your ears.",
                 "Lower your shoulders.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/smith-machine-shrug",
-            )],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/smith-machine-shrug")],
         )
         
-        add(
-            "SMR Glutes with Ball",
-            [
-                "Use a lacrosse or hockey ball.",
+        add("Smith Machine Squat",
+            ["Set the bar just under shoulder height.",
+             "Step under the bar and let it rest across your traps.",
+             "Place your hands on the bar, just outside shoulder width.",
+             "Feet about shoulder width apart, toes slightly pointed out.",
+             "Brace your core amd lower until thighs are parallel to the floor.",
+             "Keep your chest out and back straight.",
+             ],
+            [("Link", "https://repfitness.com/blogs/guides/smith-machine-squat?gad_source=1&gad_campaignid=17245875046&gbraid=0AAAAADGahfTuoUJpqCkWBr9vZ4SLtmdHm&gclid=Cj0KCQjwnbrUBhDOARIsAKKhPpddPZ1OOyhC80OUBsFQEEixfB0zBBeJquO67h99wyCJz7GJ3EWXH0gaAhm9EALw_wcB")],
+        )
+        
+        add("SMR Glutes with Ball",
+            ["Use a lacrosse or hockey ball.",
                 "Sit on the ball and roll it back and forth on your glutes.",
                 "Difficulty can be lessened by using a foam roller.",
                 "Pause on areas that are especially tender until they feel better.",
