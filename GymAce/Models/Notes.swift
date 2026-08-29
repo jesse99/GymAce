@@ -594,6 +594,15 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/cable-crossover")],
         )
         
+        add("Cable Hammer Curls",
+            ["Use a rope attachment and set the pulley as low as it will go.",
+             "Grab the rope with your palms facing each other.",
+             "Keep your elbows to your side and curl the rope upwards.",
+             "Stop when the rope is near shoulder height.",
+             ],
+            [("Link", "https://www.strongermobileapp.com/exercises/cable-hammer-curl")],
+        )
+        
         add("Cable Hip Abduction",
             ["Use an ankle cuff to attach a leg to a low pulley.",
                 "Step away from the pulley and turn so that the leg with the cuff is closest to the pulley.",
@@ -1475,12 +1484,11 @@ extension Notes {
         )
         
         add("Hack Squat",
-            ["Stand up straight with a barbell held behind you.",
-                "Feet at shoulder width.",
-                "Squat until thighs are parallel with the floor, keep head up and back straight.",
-                "Go back up by pressing heels into the floor using quads.",
+            ["Shoulders under the pad.",
+             "Place feet slightly higher on the platform to emphasize glutes.",
+                "Place feet slightly lower on the platform to emphasize quads.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/barbell-hack-squat")],
+            [("Link", "https://exrx.net/WeightExercises/Quadriceps/SLHackSquat")],
         )
         
         add("Half-kneeling Cable Anti-Rotation Press",
@@ -2014,32 +2022,21 @@ extension Notes {
             )],
         )
         
-        add(
-            "Lying Straight Leg Raise",
-            [
-                "Lay on your back on a bench or mat.",
+        add("Lying Straight Leg Raise",
+            ["Lay on your back on a bench or mat.",
                 "Place your hands underneath your bottom to help support yourself.",
                 "Keep your knees straight and raise your legs to a vertical position.",
                 "Use slow and controlled movements.",
                 "Can be made easier by bending the knees.",
                 "Also can be made easier by using a mat and allowing heels to touch the ground.",
             ],
-            [
-                (
-                    "Link",
-                    "http://www.exrx.net/WeightExercises/HipFlexors/BWStraightLegRaise.html",
-                ),
-                (
-                    "Progression",
-                    "http://www.startbodyweight.com/p/leg-raises-progression.html",
-                ),
+            [("Link", "http://www.exrx.net/WeightExercises/HipFlexors/BWStraightLegRaise.html"),
+                ("Progression", "http://www.startbodyweight.com/p/leg-raises-progression.html"),
             ],
         )
         
-        add(
-            "LYTP",
-            [
-                "**L** Raise elbows back and rotate forearms forward and backward.",
+        add("LYTP",
+            ["**L** Raise elbows back and rotate forearms forward and backward.",
                 "**Y** Raise arms upward keeping them about 45 degrees from head.",
                 "**T** Raise arms upward keeping them 90 degrees from body.",
                 "**P** Position arms so that they and your torso form a W. Bring elbows back. Pinkies up.",
@@ -2047,17 +2044,53 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=VyBJQQz3eok")],
         )
         
-        add(
-            "Machine Bench Press",
-            [
-                "Palms down grip.",
+        add("Machine Bench Press",
+            ["Palms down grip.",
                 "Lift arms so that upper arms are parallel to the floor.",
                 "Push handles out.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/machine-bench-press",
-            )],
+            [("Link", "https://www.muscleandstrength.com/exercises/hammer-strength-bench-press.html")],
+        )
+        
+        add("Machine Incline Press",
+            ["Adjust the seat so that the handles are aligned with the top of your chest.",
+                "Keep your back against the padding and grab the handles with an overhand grip.",
+             "Slowly press until your arms are fully extended.",
+                "Slowly return back to the starting position.",
+            ],
+            [("Link", "https://www.jefit.com/exercises/178/machine-incline-chest-press")],
+        )
+        
+        add("Machine Lateral Raise",
+            ["Adjust the seat so that your hands are on the pads when your arms are at your sides.",
+             "Keep your elbows slightly bent and raise your elbows towards you head.",
+            ],
+            [("Link", "https://www.muscleandstrength.com/exercises/machine-lateral-raise.html")],
+        )
+        
+        add("Machine Pullover",
+            ["Adjust the seat so that your shoulders are inline with the pivot point.",
+             "Drive your elbows towards your hips.",
+             "Continue until the pads are about waist level or you feel a strong lat contraction.",
+             "Slowly return to the starting position.",
+            ],
+            [("Link", "https://www.strongermobileapp.com/exercises/machine-pullover")],
+        )
+        
+        add("Machine Preacher Curl",
+            ["Adjust the seat so that your upper arms rest comfortably on the pads.",
+             "Grip the handles with an underhanded grip.",
+             "Start with your arms extended out but with a slight bend in your elbows.",
+             "Curl the handles toward you shoulders.",
+            ],
+            [("Link", "https://www.strongermobileapp.com/exercises/preacher-curl-machine")],
+        )
+        
+        add("Machine Shoulder Press",
+            ["Adjust the seat so that the grips are at roughly shoulder height.",
+             "Press upward but don't fully lock out your elbows.",
+            ],
+            [("Link", "https://www.muscleandstrength.com/exercises/machine-shoulder-press")],
         )
         
         add("Medicine Ball Slam",
@@ -2146,7 +2179,7 @@ extension Notes {
                 "Face the machine from about two feet away.",
                 "Hold the machine to stay balanced.",
                 "Kick the leg with the cuff backwards as high as it will comfortably go."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/one-legged-cable-kickback")],
+            [("Link", "https://exrx.net/WeightExercises/GluteusMaximus/CBGluteKickback")],
         )
         
         add("One-Leg DB Calf Raises",
@@ -2202,8 +2235,7 @@ extension Notes {
         )
         
         add("Pause Bench",
-            [
-                "Bench normally.",
+            ["Bench normally.",
                 "Pause for a full two seconds at whatever depth you are weakest at.",
                 "Most people should pause just below the mid-point but you can also pause an inch or two above your chest."],
             [("Pausing", "https://www.t-nation.com/training/2-second-pause-for-big-gains")],
@@ -2216,6 +2248,14 @@ extension Notes {
             ],
             [("Link", "http://bruteforcestrength.com/techniques/leg-training-pause-squats/"),
                 ("Pausing", "https://www.t-nation.com/training/2-second-pause-for-big-gains")],
+        )
+        
+        add("Pec Deck Fly",
+            ["Adjust the seat height so that the handles are at chest height.",
+             "Bring your arms together keeping your elbows slightly bent.",
+             "Keep your shoulders against the padding.",
+            ],
+            [("Link", "https://www.jefit.com/exercises/45/machine-fly")],
         )
         
         add("Pendlay Row",
@@ -3216,18 +3256,13 @@ extension Notes {
             )],
         )
         
-        add(
-            "Squat to Stand",
-            [
-                "Stand with feet shoulder width apart.",
+        add("Squat to Stand",
+            ["Stand with feet shoulder width apart.",
                 "Keeping legs as straight as possible, bend over and grab your toes.",
                 "Lower your hips into a squat while pushing shoulders and chest up.",
                 "Raise your hips back to the starting position keeping your hands on your toes.",
             ],
-            [(
-                "Link",
-                "https://www.exercise.com/exercises/sumo-squat-to-stand",
-            )],
+            [("Link", "https://www.exercise.com/exercises/sumo-squat-to-stand")],
         )
         
         add("Stack Complex",
@@ -3343,41 +3378,27 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/stiff-legged-barbell-deadlift")],
         )
         
-        add(
-            "Stomach to Wall Handstand",
-            [
-                "Toes are the only point that should be in contact with the wall.",
+        add("Stomach to Wall Handstand",
+            ["Toes are the only point that should be in contact with the wall.",
                 "Arms and legs are straight and locked.",
                 "Hands should be close together (closer than you initially think).",
                 "Push up through the shoulders, elevating your shoulder blades.",
                 "Squeeze your legs together and point your toes up.",
             ],
-            [
-                ("Video", "https://www.youtube.com/watch?v=m64XxmNHjfs"),
-                (
-                    "Progression",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand",
-                ),
-            ],
+            [("Video", "https://www.youtube.com/watch?v=m64XxmNHjfs"),
+                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand")],
         )
         
-        add(
-            "Straight Leg Raise",
-            [
-                "Lie on your back with your good leg pulled back.",
+        add("Straight Leg Raise",
+            ["Lie on your back with your good leg pulled back.",
                 "Raise your other leg into the air keeping it straight.",
                 "Move slowly both up and down.",
             ],
-            [(
-                "Link",
-                "https://www.verywellhealth.com/how-to-the-straight-leg-raise-2696526",
-            )],
+            [("Link", "https://www.verywellhealth.com/how-to-the-straight-leg-raise-2696526")],
         )
         
-        add(
-            "Straight Leg Situp",
-            [
-                "Lie on your back, optionally with your feet held in place.",
+        add("Straight Leg Situp",
+            ["Lie on your back, optionally with your feet held in place.",
                 "Cross your hands over your chest.",
                 "Keep your legs extended straight outwards.",
                 "Raise your torso up.",
@@ -3454,10 +3475,8 @@ extension Notes {
                 ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1")],
         )
         
-        add(
-            "Tiger Tail Roller",
-            [
-                "Apply about ten pounds of force.",
+        add("Tiger Tail Roller",
+            ["Apply about ten pounds of force.",
                 "Try to relax your muscles.",
                 "Discomfort is OK, major pain is not.",
                 "Spend 10-20 seconds on each muscle group.",
@@ -3465,25 +3484,16 @@ extension Notes {
             [("Link", "https://www.tigertailusa.com/pages/how-to-roll")],
         )
         
-        add(
-            "Toe Pulls",
-            [
-                "Get into a handstand with your toes touching a wall.",
+        add("Toe Pulls",
+            ["Get into a handstand with your toes touching a wall.",
                 "Push your butt ou bring your toes off the wall, and re-balance.",
             ],
-            [
-                ("Video", "https://www.youtube.com/watch?v=J9-7QXCsPL0"),
-                (
-                    "Handstand Progression",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand",
-                ),
-            ],
+            [("Video", "https://www.youtube.com/watch?v=J9-7QXCsPL0"),
+                ("Handstand Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase4/handstand")],
         )
         
-        add(
-            "Trap Bar Deadlift",
-            [
-                "Feet should be roughly hip-width with toes slightly pointed out.",
+        add("Trap Bar Deadlift",
+            ["Feet should be roughly hip-width with toes slightly pointed out.",
                 "Grip handles. Sit hips back until feel a stretch in hamstrings.",
                 "Lift chest and flatten back. Look ahead or slightly down.",
                 "While keeping arms straight rotate elbows to face behind you and pull shoulders down.",
@@ -3493,16 +3503,8 @@ extension Notes {
                 "As the bar approaches your knees drive forward with your hips.",
                 "Repeat.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.chrisadamspersonaltraining.com/trap-bar-deadlift.html",
-                ),
-                (
-                    "Guide",
-                    "https://www.garagegymreviews.com/trap-bar-deadlift",
-                ),
-            ],
+            [("Link", "https://www.chrisadamspersonaltraining.com/trap-bar-deadlift.html"),
+                ("Guide", "https://www.garagegymreviews.com/trap-bar-deadlift")],
         )
         
         add("Trap-3 Raise",
@@ -3516,8 +3518,7 @@ extension Notes {
         )
         
         add("Triceps Pushdown (rope)",
-            [
-                "Attach a rope attachment to a high pulley.",
+            ["Attach a rope attachment to a high pulley.",
                 "Grab the attachment with palms facing each other.",
                 "Stand straight up with a slight forward lean.",
                 "Bring upper arms close to your torso and perpendicular to the ground.",
