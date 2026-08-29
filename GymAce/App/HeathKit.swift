@@ -221,14 +221,22 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
             Task {
                 do {
                     try await builder.endCollection(at: date)
-                    _ = try await builder.finishWorkout()
+                    
+                    var mesg: String
+                    if let start = builder.startDate, date.timeIntervalSince(start) <= 2*60 {
+                        builder.discardWorkout()
+                        mesg = "Discarded workout because it was too short."
+                    } else {
+                        _ = try await builder.finishWorkout()
+                        mesg = "Saved workout to HealthKit."
+                    }
                     workoutSession.end()
+                    
                     await MainActor.run {
                         if let w = workout {
-                            status = WorkoutStatus(w, "Saved workout to HealthKit.")
+                            status = WorkoutStatus(w, mesg)
                         } else {
-                            status = WorkoutStatus("Saved workout to HealthKit.")
-
+                            status = WorkoutStatus(mesg)
                         }
                     }
                 } catch {
