@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [basic(), boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), GZCL(), machine(), masterGZCL(), myProgram(), pf6(), pf3(), previewProgram(), stopgapProgram(), strongCurves1(), strongCurves2()]
+let defaultPrograms: [Program] = [basic(), boringButBigProgram3(), boringButBigProgram4(), complexBeginner(), complexIntermediate(), dumbbellPPL4(), dumbbellPPL7(), GZCL(), machine(), masterGZCL(), pf6(), pf3(), stopgapProgram(), strongCurves1(), strongCurves2()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -482,106 +482,105 @@ fileprivate func GZCL() -> Program {
     return program
 }
 
-// TODO Get rid of this at some point
-fileprivate func myProgram() -> Program {
-    func addMyExercises(_ program: Program) {
-        let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-        let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-        let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-        
-        let reps1: [VariableReps] = [.variable(3, 5)]
-        let reps2: [VariableReps] = [.variable(3, 5), .variable(3, 5)]
-        let reps3: [VariableReps] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
-        let reps12: [VariableReps] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)]
-
-        var exercise = make("Quad Stretch", "Standing Quad Stretch", secs: [30])
-        program.exercises.append(exercise)
-
-        exercise = make("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.5*60))
-        program.exercises.append(exercise)
-
-        exercise = make("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
-        program.exercises.append(exercise)
-
-        exercise = make("Face Pulls", "Face Pull", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
-        program.exercises.append(exercise)
-
-        exercise = make("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Trapbar", weight: 235, rest: nil)
-        program.exercises.append(exercise)
-        
-        exercise = make("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.0*60))
-        program.exercises.append(exercise)
-
-        exercise = make("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
-        program.exercises.append(exercise)
-
-        let creps: [VariableReps] = [.variable(3, 8), .variable(3, 8)]
-        exercise = make("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
-        program.exercises.append(exercise)
-
-        exercise = make("OHP", "Overhead Press", warmups: owarmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
-        program.exercises.append(exercise)
-
-        exercise = make("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
-        program.exercises.append(exercise)
-    }
-
-    func addBench(_ program: Program) {
-        let schedule = Schedule.days(Weekdays([.tuesday]))
-        let workout = Workout("Bench", schedule)
-        workout.weeks = 1...6
-        
-        workout.addExercise(name: "Heavy Bench")
-        workout.addExercise(name: "OHP")
-        workout.addExercise(name: "DB OHP")
-        workout.addExercise(name: "Chin Ups")
-        
-        program.addWorkout(workout)
-    }
-
-    func addSquat(_ program: Program) {
-        let schedule = Schedule.days(Weekdays([.thursday]))
-        let workout = Workout("Squat", schedule)
-        workout.weeks = 1...7
-
-        workout.addExercise(name: "Light Bench")
-        workout.addExercise(name: "Quad Stretch")
-        workout.addExercise(name: "Heavy Squat")
-        workout.addExercise(name: "Chin Ups")
-        
-        program.addWorkout(workout)
-    }
-
-    func addDeadlift(_ program: Program) {
-        let schedule = Schedule.days(Weekdays([.sunday]))
-        let workout = Workout("Deadlift", schedule)
-        workout.weeks = 1...7
-
-        workout.addExercise(name: "Quad Stretch")
-        workout.addExercise(name: "Light Squat")
-        workout.addExercise(name: "Face Pulls")
-        workout.addExercise(name: "Trap Deadlift")
-        
-        program.addWorkout(workout)
-    }
-
-    func addRest(_ program: Program) {
-        let schedule = Schedule.anyDay
-        let workout = Workout("Rest", schedule)
-        workout.weeks = 8...8
-        
-        program.addWorkout(workout)
-    }
-
-    let program = Program("My")
-    program.summary = "The program GH is currently using. Requires a gym and is designed for an older lifter."
-    addMyExercises(program)
-    addBench(program)
-    addSquat(program)
-    addDeadlift(program)
-    addRest(program)
-    return program
-}
+//fileprivate func myProgram() -> Program {
+//    func addMyExercises(_ program: Program) {
+//        let warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+//        let owarmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+//        let dwarmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+//        
+//        let reps1: [VariableReps] = [.variable(3, 5)]
+//        let reps2: [VariableReps] = [.variable(3, 5), .variable(3, 5)]
+//        let reps3: [VariableReps] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
+//        let reps12: [VariableReps] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)]
+//
+//        var exercise = make("Quad Stretch", "Standing Quad Stretch", secs: [30])
+//        program.exercises.append(exercise)
+//
+//        exercise = make("Light Squat", "High bar Squat", "Heavy Squat", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.5*60))
+//        program.exercises.append(exercise)
+//
+//        exercise = make("Heavy Squat", "High bar Squat", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+//        program.exercises.append(exercise)
+//
+//        exercise = make("Face Pulls", "Face Pull", warmups: [], worksets: reps12, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
+//        program.exercises.append(exercise)
+//
+//        exercise = make("Trap Deadlift", "Trap Bar Deadlift", warmups: dwarmup, worksets: reps1, weights: "Trapbar", weight: 235, rest: nil)
+//        program.exercises.append(exercise)
+//        
+//        exercise = make("Light Bench", "Bench Press", "Heavy Bench", percent: 90, warmups: warmup, worksets: [.fixed(5), .fixed(5), .fixed(5)], weights: "Dual Plates", rest: Int(3.0*60))
+//        program.exercises.append(exercise)
+//
+//        exercise = make("Heavy Bench", "Bench Press", warmups: warmup, worksets: reps2, weights: "Dual Plates", weight: 145, rest: Int(3.5*60))
+//        program.exercises.append(exercise)
+//
+//        let creps: [VariableReps] = [.variable(3, 8), .variable(3, 8)]
+//        exercise = make("Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+//        program.exercises.append(exercise)
+//
+//        exercise = make("OHP", "Overhead Press", warmups: owarmup, worksets: reps3, weights: "Dual Plates", weight: 80, rest: Int(3.0*60))
+//        program.exercises.append(exercise)
+//
+//        exercise = make("DB OHP", "Overhead Press", warmups: dwarmup, worksets: reps3, weights: "Dumbbells", weight: 30, rest: Int(3.0*60))
+//        program.exercises.append(exercise)
+//    }
+//
+//    func addBench(_ program: Program) {
+//        let schedule = Schedule.days(Weekdays([.tuesday]))
+//        let workout = Workout("Bench", schedule)
+//        workout.weeks = 1...6
+//        
+//        workout.addExercise(name: "Heavy Bench")
+//        workout.addExercise(name: "OHP")
+//        workout.addExercise(name: "DB OHP")
+//        workout.addExercise(name: "Chin Ups")
+//        
+//        program.addWorkout(workout)
+//    }
+//
+//    func addSquat(_ program: Program) {
+//        let schedule = Schedule.days(Weekdays([.thursday]))
+//        let workout = Workout("Squat", schedule)
+//        workout.weeks = 1...7
+//
+//        workout.addExercise(name: "Light Bench")
+//        workout.addExercise(name: "Quad Stretch")
+//        workout.addExercise(name: "Heavy Squat")
+//        workout.addExercise(name: "Chin Ups")
+//        
+//        program.addWorkout(workout)
+//    }
+//
+//    func addDeadlift(_ program: Program) {
+//        let schedule = Schedule.days(Weekdays([.sunday]))
+//        let workout = Workout("Deadlift", schedule)
+//        workout.weeks = 1...7
+//
+//        workout.addExercise(name: "Quad Stretch")
+//        workout.addExercise(name: "Light Squat")
+//        workout.addExercise(name: "Face Pulls")
+//        workout.addExercise(name: "Trap Deadlift")
+//        
+//        program.addWorkout(workout)
+//    }
+//
+//    func addRest(_ program: Program) {
+//        let schedule = Schedule.anyDay
+//        let workout = Workout("Rest", schedule)
+//        workout.weeks = 8...8
+//        
+//        program.addWorkout(workout)
+//    }
+//
+//    let program = Program("My")
+//    program.summary = "The program GH is currently using. Requires a gym and is designed for an older lifter."
+//    addMyExercises(program)
+//    addBench(program)
+//    addSquat(program)
+//    addDeadlift(program)
+//    addRest(program)
+//    return program
+//}
 
 func add531Exercises(_ program: Program) {
     let max_warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
