@@ -331,7 +331,7 @@ extension ExerciseEntry {
             // may bump it up or down.
             if let w = exercise.weight {
                 if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                    if case .percent(let d) = exercise.data {
+                    if case .percent(_) = exercise.data {
                         return ws.closest(target: w).text()
                     } else {
                         return ws.lower(target: w).text()

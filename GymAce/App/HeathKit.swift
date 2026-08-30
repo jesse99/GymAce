@@ -41,7 +41,7 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
     private(set) var status: WorkoutStatus? = nil
 
     private(set) var heartRate: Double? = nil   // bpm
-    private(set) var distance: Double? = nil   // feet or meters
+    private(set) var distance: Double? = nil    // meters
 
     private var workout: String? = nil
     private let store = HKHealthStore()
@@ -194,7 +194,7 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
     private func updateMetrics(for statistics: HKStatistics) {
         switch statistics.quantityType {
         case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning):
-            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.meter()) { // TODO there's no feet option
+            if let value = statistics.sumQuantity()?.doubleValue(for: HKUnit.meter()) { // there's no feet option
                 self.distance = value
             }
         default:

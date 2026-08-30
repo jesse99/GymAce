@@ -25,7 +25,7 @@ struct GymAceApp: App {
         }
         
         model.addMissingWeightsets()
-        model.validate()    // TODO user visible warning? also do this when activating a new program?
+        model.validate()   
         
         healthKit.requestPerms()
     }
