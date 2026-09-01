@@ -106,6 +106,7 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
         }
     }
 
+    // TODO stop this (for walk type exercises at least) after a few mins of no activity
     func stop(_ workout: String) {
         guard inProgress && enabled else {
             return

@@ -103,7 +103,7 @@ final class Exercise: Codable {
     }
 }
 
-/// Takes arrays like ["10s", "10s", "30s"] and converts them into "10sx2, 30s"
+/// Takes arrays like ["10s", "10s", "30s"] and converts them into "10s x2, 30s"
 func joinLabels(_ labels: [String]) -> String {
     var parts: [(Int, String)] = []
     
@@ -119,11 +119,32 @@ func joinLabels(_ labels: [String]) -> String {
         if $0.0 == 1 {
             $0.1
         } else {
-            if let c = $0.1.last, c.isNumber {
-                "\($0.1)x\($0.0)"
-            } else {
+//            if let c = $0.1.last, c.isNumber {
+//                "\($0.1)x\($0.0)"
+//            } else {
                 "\($0.1) x\($0.0)"
-            }
+//            }
+        }
+    }.joined(separator: ", ")
+}
+
+/// Takes arrays like [10, 10, 5] and converts them into "2x10, 5"
+func joinReps(_ labels: [String]) -> String {
+    var parts: [(Int, String)] = []
+    
+    for label in labels {
+        if let last = parts.last, last.1 == label {
+            parts[parts.count-1].0 += 1
+        } else {
+            parts.append((1, label))
+        }
+    }
+    
+    return parts.map {
+        if $0.0 == 1 {
+            $0.1
+        } else {
+            "\($0.0)x\($0.1)"
         }
     }.joined(separator: ", ")
 }

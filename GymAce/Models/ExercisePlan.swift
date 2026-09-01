@@ -120,12 +120,12 @@ final class ExercisePlan {
         if let min = weights.min(by: {$0.value() < $1.value()}), min.value() > 0.0 {
             if let max = weights.max(by: {$0.value() < $1.value()}) {
                 if min.value() < max.value() {
-                    return "\(joinLabels(amounts)) @ \(min.text())-\(max.text())"
+                    return "\(joinReps(amounts)) @ \(min.text())-\(max.text())"
                 }
             }
-            return "\(joinLabels(amounts)) @ \(min.text())"
+            return "\(joinReps(amounts)) @ \(min.text())"
         }
-        return joinLabels(amounts)
+        return joinReps(amounts)
     }
 }
 
