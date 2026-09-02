@@ -39,30 +39,30 @@ struct EditExercise: View {
     @State private var percent: String = ""
     @State private var percentWarmupText = ""
     @State private var percentWorksetsText = ""
-    @State private var percentRestText = ""
+//    @State private var percentRestText = ""
     @State private var percentErr: String? = nil
     @State private var percentWarmupErr: String? = nil
     @State private var percentWorksetsErr: String? = nil
-    @State private var percentRestErr: String? = nil
+//    @State private var percentRestErr: String? = nil
     @State private var showPercentOtherHelp = false
     @State private var showPercentHelp = false
     @State private var showPercentWarmupHelp = false
     @State private var showPercentWorksetsHelp = false
-    @State private var showPercentRestHelp = false
+//    @State private var showPercentRestHelp = false
 
     @State private var repsData: RepsData
     @State private var repsWarmupText = ""
     @State private var repsWorksetsText = ""
     @State private var repsBackoffText = ""
-    @State private var repsRestText = ""
+//    @State private var repsRestText = ""
     @State private var repsWarmupErr: String? = nil
     @State private var repsWorksetsErr: String? = nil
     @State private var repsBackoffErr: String? = nil
-    @State private var repsRestErr: String? = nil
+//    @State private var repsRestErr: String? = nil
     @State private var showRepsWarmupHelp = false
     @State private var showRepsWorksetsHelp = false
     @State private var showRepsBackoffHelp = false
-    @State private var showRepsRestHelp = false
+//    @State private var showRepsRestHelp = false
 
     init(model: Model, program: Program, exercise: Exercise) {
         self.model = model
@@ -90,28 +90,28 @@ struct EditExercise: View {
         case .durations(let d):
             _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
             _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
         case .oneRepMax(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
             _ormData = State(initialValue: d)
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
         case .percent(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
             _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
             _percentData = State(initialValue: d)
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
         case .reps(let d):
             _durationsData = State(initialValue: DurationsData(secs: [30]))
             _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
             _repsData = State(initialValue: d)
         case .timed:
             _durationsData = State(initialValue: DurationsData(secs: [30]))
             _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3, rest: 3*60))
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: [], rest: 3*60))
+            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
         }
         
         _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
@@ -142,20 +142,20 @@ struct EditExercise: View {
         }
         _percentWarmupText = State(initialValue: percentData.warmups.map {$0.asString()}.joined(separator: " "))
         _percentWorksetsText = State(initialValue: percentData.workset.map {$0.asString()}.joined(separator: " "))
-        if let s = percentData.rest {
-            _percentRestText = State(initialValue: secsToShortStr(s))
-        } else {
-            _percentRestText = State(initialValue: "")
-        }
+//        if let s = percentData.rest {
+//            _percentRestText = State(initialValue: secsToShortStr(s))
+//        } else {
+//            _percentRestText = State(initialValue: "")
+//        }
 
         _repsWarmupText = State(initialValue: repsData.warmups.map {$0.asString()}.joined(separator: " "))
         _repsWorksetsText = State(initialValue: repsData.workset.map {$0.asString()}.joined(separator: " "))
         _repsBackoffText = State(initialValue: repsData.backoff.map {$0.asString()}.joined(separator: " "))
-        if let s = repsData.rest {
-            _repsRestText = State(initialValue: secsToShortStr(s))
-        } else {
-            _repsRestText = State(initialValue: "")
-        }
+//        if let s = repsData.rest {
+//            _repsRestText = State(initialValue: secsToShortStr(s))
+//        } else {
+//            _repsRestText = State(initialValue: "")
+//        }
     }
     
     // TODO use onAppear to make the name textbox the focus?
@@ -459,25 +459,25 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
 
-                HStack {
-                    durationsTextField("Rest", percentRestBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showPercentRestHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showPercentRestHelp {
-                    Text("The amount of time to do rest after each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = percentRestErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
+//                HStack {
+//                    durationsTextField("Rest", percentRestBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showPercentRestHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showPercentRestHelp {
+//                    Text("The amount of time to do rest after each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = percentRestErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
 
             // Reps type
             } else if typeBinding.wrappedValue == 2 {
@@ -541,25 +541,25 @@ struct EditExercise: View {
                         .font(.footnote)
                 }
                 
-                HStack {
-                    durationsTextField("Rest", repsRestBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showRepsRestHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showRepsRestHelp {
-                    Text("The amount of time to do rest after each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = repsRestErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
+//                HStack {
+//                    durationsTextField("Rest", repsRestBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showRepsRestHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showRepsRestHelp {
+//                    Text("The amount of time to do rest after each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = repsRestErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
             
             // One Rep Max type
             } else if typeBinding.wrappedValue == 4 {
@@ -755,27 +755,27 @@ struct EditExercise: View {
         )
     }
     
-    private var percentRestBinding: Binding<String> {
-        Binding(
-            get: {
-                return percentRestText
-            },
-            set: {
-                percentRestText = $0
-                if let s = parseShortSecs($0) {
-                    percentRestErr = nil
-                    percentData.rest = s
-                    exercise.data = .percent(percentData)
-                } else if $0.isBlankOrEmpty {
-                    percentRestErr = nil
-                    percentData.rest = nil
-                    exercise.data = .percent(percentData)
-                } else {
-                    percentRestErr = "Expected nothing or a number with an optional time suffix, not '\($0)'."
-                }
-            }
-        )
-    }
+//    private var percentRestBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return percentRestText
+//            },
+//            set: {
+//                percentRestText = $0
+//                if let s = parseShortSecs($0) {
+//                    percentRestErr = nil
+//                    percentData.rest = s
+//                    exercise.data = .percent(percentData)
+//                } else if $0.isBlankOrEmpty {
+//                    percentRestErr = nil
+//                    percentData.rest = nil
+//                    exercise.data = .percent(percentData)
+//                } else {
+//                    percentRestErr = "Expected nothing or a number with an optional time suffix, not '\($0)'."
+//                }
+//            }
+//        )
+//    }
 
     private var ormWarmupBinding: Binding<String> {
         Binding(
@@ -873,27 +873,27 @@ struct EditExercise: View {
         )
     }
 
-    private var repsRestBinding: Binding<String> {
-        Binding(
-            get: {
-                return repsRestText
-            },
-            set: {
-                repsRestText = $0
-                if let s = parseShortSecs($0) {
-                    repsRestErr = nil
-                    repsData.rest = s
-                    exercise.data = .reps(repsData)
-                } else if $0.isBlankOrEmpty {
-                    repsRestErr = nil
-                    repsData.rest = nil
-                    exercise.data = .reps(repsData)
-                } else {
-                    repsRestErr = "Expected nothing or a number with an optional time suffix, not '\($0)'."
-                }
-            }
-        )
-    }
+//    private var repsRestBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return repsRestText
+//            },
+//            set: {
+//                repsRestText = $0
+//                if let s = parseShortSecs($0) {
+//                    repsRestErr = nil
+//                    repsData.rest = s
+//                    exercise.data = .reps(repsData)
+//                } else if $0.isBlankOrEmpty {
+//                    repsRestErr = nil
+//                    repsData.rest = nil
+//                    exercise.data = .reps(repsData)
+//                } else {
+//                    repsRestErr = "Expected nothing or a number with an optional time suffix, not '\($0)'."
+//                }
+//            }
+//        )
+//    }
 
     private var nameBinding: Binding<String> {
         Binding(
@@ -969,7 +969,7 @@ struct EditExercise: View {
     private func getWeightLabels(_ ws: WeightSet) -> [(String, Int)] {
         var labels: [(String, Int)] = []
         
-        let w = exercise.weight ?? 0.0
+        let w = exercise.baseWeight ?? 0.0
         var actual = ActualWeight(discrete: w, ws.units)
         for _ in 1...weightDelta {
             let old = actual.text()
@@ -1000,13 +1000,13 @@ struct EditExercise: View {
     private var weightBinding: Binding<String> {
         Binding(
             get: {
-                if let w = exercise.weight, w > 0.0 {
+                if let w = exercise.baseWeight, w > 0.0 {
                     return formatWeight(w, .None)
                 } else {
                     return ""   // this will show the placeholder text
                 }
             },
-            set: {exercise.weight = Float($0)}
+            set: {exercise.baseWeight = Float($0)}
         )
     }
 
@@ -1014,10 +1014,10 @@ struct EditExercise: View {
         Binding(
             get: {
                 // Current value is always the current exercise weight.
-                let w = exercise.weight ?? 0.0
+                let w = exercise.baseWeight ?? 0.0
                 return Int(1000*w)
             },
-            set: {exercise.weight = Float($0)/1000.0}
+            set: {exercise.baseWeight = Float($0)/1000.0}
         )
     }
 
@@ -1043,7 +1043,8 @@ struct EditExercise: View {
         case .percent(_):
             return percentErr == nil // TODO make sure this is up to date
         case .reps(_):
-            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil && repsRestErr == nil
+            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil
+//            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil && repsRestErr == nil
         case .timed:
             return true
         }

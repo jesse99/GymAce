@@ -66,7 +66,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 .padding(2)
 
             // 5 reps @ 225 lbs
-            Text(entry.subhead(plan, model, exercise))
+            Text(entry.subhead(plan, model, program, workout, exercise))
                 .font(Font.body)
 
             // 45x2
@@ -355,24 +355,24 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         } else if case .oneRepMax = exercise.data {
             return false
         }
-        return exercise.weight != nil && exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
+        return exercise.baseWeight != nil && exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
     }
     
     private func advanceWeight() {
-        if let w = exercise.weight {
+        if let w = exercise.baseWeight {
             if let wn = exercise.weightSet {
                 if let ws = model.weightSets[wn] {
-                    exercise.weight = ws.advance(target: w).value()
+                    exercise.baseWeight = ws.advance(target: w).value()
                 }
             }
         }
     }
 
     private func dropWeight() {
-        if let w = exercise.weight {
+        if let w = exercise.baseWeight {
             if let wn = exercise.weightSet {
                 if let ws = model.weightSets[wn] {
-                    exercise.weight = ws.lower(target: w - 0.001).value()
+                    exercise.baseWeight = ws.lower(target: w - 0.001).value()
                 }
             }
         }

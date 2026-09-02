@@ -57,8 +57,6 @@ struct PercentData: Codable {
     var warmups: [FixedReps]
     var workset: [VariableReps]
     
-    /// Seconds to rest for worksets.
-    var rest: Int?
     var version: Int = 1
     
     var isVariable: Bool {
@@ -79,9 +77,6 @@ struct RepsData: Codable {
     var backoff: [FixedReps]        // TODO might be nice to make this variable tho it would need min, max, and percent. expected might be weird too
     var version: Int = 1
     
-    /// Seconds to rest for worksets.
-    var rest: Int?
-
     var isVariable: Bool {
         for s in workset {
             switch s {
@@ -93,11 +88,10 @@ struct RepsData: Codable {
         return false
     }
         
-    init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps], rest: Int? = nil) {
+    init(warmups: [FixedReps], worksets: [VariableReps], backoff: [FixedReps]) {
         self.warmups = warmups
         self.workset = worksets
         self.backoff = backoff
-        self.rest = rest
     }
 }
 

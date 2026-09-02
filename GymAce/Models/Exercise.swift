@@ -6,15 +6,18 @@ final class Exercise: Codable {
     /// The name shown in the workout view.
     var name: String
 
-    /// Official name, used to lookup notes for an exercise
+    /// Official name, used to lookup notes for an exercise.
     var formalName: String
+
+    /// How to perform the exercise.
+    var styleName: String
     
     /// Optional set of weights to use with the exercise.
     var weightSet: String?
 
-    /// Base weight to use for each workset. If a weightSet is present then this weight will be mapped
-    /// onto those weights (possibly modified by a per-set percentage).
-    var weight: Float?
+    /// The weight to use for the exercise. Normal usage is for this to be mapped into an actual
+    /// weight using a Style and setIndex (which often applies a percentage).
+    var baseWeight: Float?
     
     /// Record of when and what the user did for a workout. Last is the most recent.
     var history: [Completed] = []
@@ -24,40 +27,45 @@ final class Exercise: Codable {
     
     var version: Int = 1
 
-    init (name: String, formalName: String, durations: DurationsData, weights: String? = nil, weight: Float? = nil) {
+    init (name: String, formalName: String, styleName: String, durations: DurationsData, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
+        self.styleName = styleName
         self.weightSet = weights
-        self.weight = weight
+        self.baseWeight = weight
         self.data = .durations(durations)
     }
     
-    init (name: String, formalName: String, orm: OneRepMaxData, weights: String? = nil, weight: Float? = nil) {
+    init (name: String, formalName: String, styleName: String, orm: OneRepMaxData, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
+        self.styleName = styleName
         self.weightSet = weights
-        self.weight = weight
+        self.baseWeight = weight
         self.data = .oneRepMax(orm)
     }
     
-    init (name: String, formalName: String, reps: RepsData, weights: String? = nil, weight: Float? = nil) {
+    init (name: String, formalName: String, styleName: String, reps: RepsData, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
+        self.styleName = styleName
         self.weightSet = weights
-        self.weight = weight
+        self.baseWeight = weight
         self.data = .reps(reps)
     }
     
-    init (name: String, formalName: String, percent: PercentData, weights: String? = nil, weight: Float? = nil) {
+    init (name: String, formalName: String, styleName: String, percent: PercentData, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
+        self.styleName = styleName
         self.weightSet = weights
         self.data = .percent(percent)
     }
 
-    init (name: String, formalName: String, weights: String? = nil, weight: Float? = nil) {
+    init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
+        self.styleName = styleName
         self.weightSet = weights
         self.data = .timed
     }
@@ -76,6 +84,10 @@ final class Exercise: Codable {
             print("Program \(program.name) formal name \(formalName) is missing for exercise \(name)")
             valid = false
         }
+        if program.styles[styleName] == nil {
+            print("Program \(program.name) is missing style \(styleName) for exercise \(name)")
+            valid = false
+        }
         if let ws = weightSet {
             if model.weightSets[ws] == nil {
                 if let p = model.active(), p.name == program.name { // we only add weight sets for the active program
@@ -86,7 +98,7 @@ final class Exercise: Codable {
             
             switch self.data {
             case .durations, .oneRepMax, .reps, .timed:
-                if weight == nil {
+                if baseWeight == nil {
                     print("Program \(program.name) exercise \(name) has a weight set but no weight")    // note that the reverse is ok
                     valid = false
                 }

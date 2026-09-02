@@ -279,7 +279,7 @@ final class ExerciseEntry: Codable {
         if var w = self.working {
             if case .oneRepMax = exercise.data, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
                 if let orm = compute1RM(weight: weight, reps: reps) {
-                    exercise.weight = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
+                    exercise.baseWeight = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
                 }
             }
             
@@ -325,11 +325,11 @@ extension ExerciseEntry {
     }
     
     // Shown second in the exercise view, e.g. "5 reps @ 140 lbs" or "30s".
-    func subhead(_ plan: ExercisePlan, _ model: Model, _ exercise: Exercise) -> String {
+    func subhead(_ plan: ExercisePlan, _ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) -> String {
         if setIndex >= plan.sets.count {
             // We need to print the weight when the user finishes because they
             // may bump it up or down.
-            if let w = exercise.weight {
+            if let w = exercise.weight(program, workout) {
                 if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
                     if case .percent(_) = exercise.data {
                         return ws.closest(target: w).text()

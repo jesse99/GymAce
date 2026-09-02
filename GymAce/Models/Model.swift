@@ -71,7 +71,7 @@ final class Model: Codable {
                 valid = false
             }
         }
-        assert(valid)
+        assert(valid)   // TODO these need to be shown to the user
     }
         
     func active() -> Program? {

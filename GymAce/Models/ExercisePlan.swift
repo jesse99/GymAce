@@ -17,53 +17,53 @@ final class ExercisePlan {
         switch exercise.data {
         case .durations(let d):
             for (i, s) in d.secs.enumerated() {
-                sets.append(PlanSet(model, program, exercise, secs: s, index: i, count: d.secs.count))
+                sets.append(PlanSet(model, program, workout, exercise, secs: s, index: i, count: d.secs.count))
             }
         case .oneRepMax(let d):
             for (i, s) in d.warmups.enumerated() {
                 let kind = PlanSet.Kind.warmup(index: i, count: d.warmups.count)
-                sets.append(PlanSet(model, program, exercise, kind: kind, fixed: s, rest: nil))
+                sets.append(PlanSet(model, program, workout, exercise, kind: kind, fixed: s, rest: nil))
             }
             let s = VariableReps.variable(1, 12)
-            sets.append(PlanSet(model, program, exercise, variable: s, index: 0, count: 1, rest: nil))
+            sets.append(PlanSet(model, program, workout, exercise, variable: s, index: 0, count: 1, rest: nil))
         case .percent(let d):
             for (i, s) in d.warmups.enumerated() {
                 let kind = PlanSet.Kind.warmup(index: i, count: d.warmups.count)
-                sets.append(PlanSet(model, program, exercise, kind: kind, fixed: s, rest: nil))
+                sets.append(PlanSet(model, program, workout, exercise, kind: kind, fixed: s, rest: nil))
             }
             for (i, s) in d.workset.enumerated() {
                 // Don't rest for the last set and last execise in a workout.
                 let rest: Int? = if let last = workout.entries.last, last.name == exercise.name, i == d.workset.count - 1 {
                     nil
                 } else {
-                    d.rest
+                    exercise.rest(program, workout)
                 }
-                sets.append(PlanSet(model, program, exercise, variable: s, index: i, count: d.workset.count, rest: rest))
+                sets.append(PlanSet(model, program, workout, exercise, variable: s, index: i, count: d.workset.count, rest: rest))
             }
         case .reps(let d):
             for (i, s) in d.warmups.enumerated() {
                 let kind = PlanSet.Kind.warmup(index: i, count: d.warmups.count)
-                sets.append(PlanSet(model, program, exercise, kind: kind, fixed: s, rest: nil))
+                sets.append(PlanSet(model, program, workout, exercise, kind: kind, fixed: s, rest: nil))
             }
             for (i, s) in d.workset.enumerated() {
                 let rest: Int? = if let last = workout.entries.last, last.name == exercise.name, i == d.workset.count - 1, d.backoff.isEmpty {
                     nil
                 } else {
-                    d.rest
+                    exercise.rest(program, workout)
                 }
-                sets.append(PlanSet(model, program, exercise, variable: s, index: i, count: d.workset.count, rest: rest))
+                sets.append(PlanSet(model, program, workout, exercise, variable: s, index: i, count: d.workset.count, rest: rest))
             }
             for (i, s) in d.backoff.enumerated() {
                 let kind = PlanSet.Kind.backoff(index: i, count: d.backoff.count)
                 let rest: Int? = if let last = workout.entries.last, last.name == exercise.name, i == d.backoff.count - 1 {
                     nil
                 } else {
-                    d.rest
+                    exercise.rest(program, workout)
                 }
-                sets.append(PlanSet(model, program, exercise, kind: kind, fixed: s, rest: rest))
+                sets.append(PlanSet(model, program, workout, exercise, kind: kind, fixed: s, rest: rest))
             }
         case .timed:
-            sets.append(PlanSet(model, program, exercise, timed: true))
+            sets.append(PlanSet(model, program, workout, exercise, timed: true))
         }
         self.sets = sets
     }
@@ -165,48 +165,48 @@ struct PlanSet {
     /// Seconds to rest after the set.
     let rest: Int?
     
-    fileprivate init(_ model: Model, _ program: Program, _ exercise: Exercise, secs: Int, index: Int, count: Int) {
+    fileprivate init(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise, secs: Int, index: Int, count: Int) {
         self.kind = .workset(index: index, count: count)
         self.expected = .duration
-        (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, exercise, 100)
+        (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, workout, exercise, 100)
         self.rest = secs
     }
     
-    fileprivate init(_ model: Model, _ program: Program, _ exercise: Exercise, timed: Bool) {
+    fileprivate init(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise, timed: Bool) {
         self.kind = .timed
         self.expected = .timed
-        (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, exercise, 100)
+        (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, workout, exercise, 100)
         self.rest = nil
     }
 
-    fileprivate init(_ model: Model, _ program: Program, _ exercise: Exercise, kind: Kind, fixed: FixedReps, rest: Int?) {
+    fileprivate init(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise, kind: Kind, fixed: FixedReps, rest: Int?) {
         let a = PlanSet.Amount.reps(min: fixed.reps, max: fixed.reps)
         self.kind = kind
         self.expected = a
-        (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, exercise, fixed.percent)
+        (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, workout, exercise, fixed.percent)
         self.rest = rest
     }
 
-    fileprivate init(_ model: Model, _ program: Program, _ exercise: Exercise, variable: VariableReps, index: Int, count: Int, rest: Int?) {
+    fileprivate init(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise, variable: VariableReps, index: Int, count: Int, rest: Int?) {
         self.kind = .workset(index: index, count: count)
         switch variable {
         case .amrap(_, let percent):
-            let m = findMinExpected(exercise, variable, index)
+            let m = findMinExpected(program, workout, exercise, variable, index)
             self.expected = Amount.amrap(min: m)
-            (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, exercise, percent)
+            (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, workout, exercise, percent)
         case .fixed(let r, let percent):
             let a = Amount.reps(min: r, max: r)
             self.expected = a
-            (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, exercise, percent)
+            (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, workout, exercise, percent)
         case .variable(_, let max):
-            let m = findMinExpected(exercise, variable, index)
+            let m = findMinExpected(program, workout, exercise, variable, index)
             self.expected = Amount.reps(min: m, max: max)
-            (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, exercise, 100)
+            (self.baseWeight, self.percent, self.weight) = PlanSet.getWeight(model, program, workout, exercise, 100)
         }
         self.rest = rest
     }
     
-    private static func getWeight(_ model: Model, _ program: Program, _ exercise: Exercise, _ setPercent: Int) -> (Float?, Float, ActualWeight?) {
+    private static func getWeight(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise, _ setPercent: Int) -> (Float?, Float, ActualWeight?) {
         if case .percent(let d) = exercise.data {
             switch findBaseWeight(program, exercise) {
             case .success(let baseWeight):
@@ -228,7 +228,7 @@ struct PlanSet {
             }
         } else {
             let percent = Float(setPercent) / 100.0
-            if let baseWeight = exercise.weight {
+            if let baseWeight = exercise.weight(program, workout) {
                 if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
                     let weight = ws.lower(target: percent*baseWeight)
                     return (baseWeight, percent, weight)
@@ -243,13 +243,13 @@ struct PlanSet {
     }
 }
 
-fileprivate func findMinExpected(_ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
+fileprivate func findMinExpected(_ program: Program, _ workout: Workout, _ exercise: Exercise, _ reps: VariableReps, _ index: Int) -> Int {
     switch reps {
     case .amrap(let min, _):
         // For AMRAP we'll just do the default unless the user did better last time at
         // the current weight.
         if let last = exercise.latestCompleted(), typeMatches(last, exercise), index < last.values.count {
-            if let new = exercise.weight, let old = last.maxWeight(), new == old {
+            if let new = exercise.weight(program, workout), let old = last.maxWeight(), new == old {
                 let r = last.values[index]
                 if r > min {
                     return r
@@ -262,7 +262,7 @@ fileprivate func findMinExpected(_ exercise: Exercise, _ reps: VariableReps, _ i
     case .variable(let min, let max):
         // Usually we'll just return min except for a few cases:
         if let last = exercise.latestCompleted(), typeMatches(last, exercise) {
-            if let new = exercise.weight, let old = last.maxWeight() {
+            if let new = exercise.weight(program, workout), let old = last.maxWeight() {
                 if new < old {
                     // 1) the user has dropped the weight
                     // Possible that they can't now do max, but they should be close to that...
@@ -287,7 +287,7 @@ fileprivate func findBaseWeight(_ program: Program, _ exercise: Exercise) -> Res
     if let thisExercise = program.findExercise(exercise.name) {
         switch thisExercise.data {
         case .durations(_), .oneRepMax, .reps(_), .timed:
-            if let w = thisExercise.weight {
+            if let w = thisExercise.baseWeight {
                 return .success(w)
             }
         case .percent(let d):
@@ -297,7 +297,7 @@ fileprivate func findBaseWeight(_ program: Program, _ exercise: Exercise) -> Res
                         return .success(weight)
                     }
                 }
-                if let w = otherExercise.weight {
+                if let w = otherExercise.baseWeight {
                     return .success(w)
                 }
             } else {

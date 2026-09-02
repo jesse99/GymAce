@@ -51,7 +51,7 @@ struct EditExercises: View {
     private func addExercise() {
         let d = DurationsData(secs: [30], targetSecs: nil)
         let name = findName(hasName)
-        let exercise = Exercise(name: name, formalName: "", durations: d)
+        let exercise = Exercise(name: name, formalName: "", styleName: "", durations: d)
         program.exercises.append(exercise)
     }
     

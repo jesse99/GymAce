@@ -7,6 +7,8 @@ import SwiftUI
 final class Program: Codable, Identifiable {
     var name: String
     
+    var styles: [String: Style] = [:]
+
     var exercises: [Exercise] = []
 
     var workouts: [Workout] = []
@@ -157,6 +159,10 @@ final class Program: Codable, Identifiable {
     
     func findExercise(_ name: String) -> Exercise? {
         return exercises.first(where: {$0.name == name})
+    }
+    
+    func findStyle(_ name: String) -> Style? {
+        return styles[name]
     }
     
     func setExerciseName(_ exercise: Exercise, _ name: String) {
