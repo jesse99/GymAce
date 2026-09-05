@@ -340,6 +340,7 @@ extension ExerciseEntry {
                     return "\(bottom.text()) - \(top.text())"
                 }
             }
+            return ""
         }
         let prefix = switch plan.sets[setIndex].expected {
         case .amrap(let min):
@@ -380,18 +381,20 @@ extension ExerciseEntry {
     }
     
     // Shown fourth in the exercise view, e.g. "90% of 225 lbs".
-    func subfooter(_ plan: ExercisePlan, _ model: Model, _ exercise: Exercise) -> String? {
+    func subfooter(_ plan: ExercisePlan, _ model: Model, _ program: Program, _ exercise: Exercise) -> String? {
         if setIndex >= plan.sets.count {
             return nil
         }
-        
-        if let base = plan.sets[setIndex].baseWeight, base > 0.0, let actual = plan.sets[setIndex].weight {
-            let percent = Int(100.0 * actual.value() / base)
-            if percent != 100 {
-                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                    return "\(percent)% of \(formatWeight(base, ws.units))"
-                } else {
-                    return "\(percent)% of \(formatWeight(base, .None))"
+
+        if exercise.usesPercents(program) {
+            if let base = plan.sets[setIndex].baseWeight, base > 0.0, let actual = plan.sets[setIndex].weight {
+                let percent = Int(100.0 * actual.value() / base)
+                if percent != 100 {
+                    if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                        return "\(percent)% of \(formatWeight(base, ws.units))"
+                    } else {
+                        return "\(percent)% of \(formatWeight(base, .None))"
+                    }
                 }
             }
         }

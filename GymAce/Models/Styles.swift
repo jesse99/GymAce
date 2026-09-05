@@ -98,7 +98,7 @@ struct PercentInfo: Codable {
 
 extension Exercise {
     func numSets(_ program: Program) -> Int {
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression(let info):
             return info.warmup.count + info.workset.count + info.backoff.count
         case .durations(let info):
@@ -120,7 +120,7 @@ extension Exercise {
 
     /// The minimum weight used by a workset.
     func bottomWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression(let info):
             var percents: [Int] = []
             for s in info.workset {
@@ -151,7 +151,7 @@ extension Exercise {
         
     /// The maximum weight used by a workset.
     func topWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression(let info):
             var percents: [Int] = []
             for s in info.workset {
@@ -182,7 +182,7 @@ extension Exercise {
             
     func planSets(_ model: Model, _ program: Program, _ workout: Workout, parentPercent: Float = 1.0, rest: Int? = nil) -> [PlanSet] {
         var sets: [PlanSet] = []
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression(let info):
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
@@ -272,7 +272,7 @@ extension Exercise {
     
     func validateStyle(_ program: Program) -> Bool {
         var valid = true
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression:
             if baseWeight == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's double progression style)")
@@ -297,7 +297,7 @@ extension Exercise {
             for w in program.workouts { // logic needs to match findOtherExercise
                 for n in w.entries {
                     if let e = program.findExercise(n.name), e.formalName == formalName {
-                        let style = e.findStyle(program)
+                        let style = program.findStyle(e.styleName)
                         if case .percent = style {
                             continue
                         }
@@ -319,8 +319,24 @@ extension Exercise {
     }
     
     func usesOther(_ program: Program) -> Bool {
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression, .durations, .missing, .timed: return false
+        case .gzcl, .percent: return true
+        }
+    }
+    
+    func usesPercents(_ program: Program) -> Bool {
+        switch program.findStyle(self.styleName) {
+        case .double_progression(let info):
+            for s in info.workset {
+                switch s {
+                case .amrap(_, let percent): if percent != 100 {return true}
+                case .fixed(_, let percent): if percent != 100 {return true}
+                case .variable: continue
+                }
+            }
+            return false
+        case .durations, .missing, .timed: return false
         case .gzcl, .percent: return true
         }
     }
@@ -342,7 +358,7 @@ extension Exercise {
     }
     
     private func rest(_ program: Program, _ workout: Workout) -> Int? {   // TODO may also want min/max rest (these would be recommendations)
-        switch findStyle(program) {
+        switch program.findStyle(self.styleName) {
         case .double_progression(let info):
             return info.rest
         case .durations:
@@ -370,7 +386,7 @@ extension Exercise {
         for w in program.workouts {
             for n in w.entries {
                 if let e = program.findExercise(n.name), e.formalName == formalName {
-                    let style = e.findStyle(program)
+                    let style = program.findStyle(e.styleName)
                     if case .percent = style {
                         continue
                     }
@@ -422,12 +438,6 @@ extension Exercise {
             }
             return min
         }
-    }
-    
-    // The exercise won't really work if this returns nil, but Model.validate
-    // will show the user an error message in that case.
-    fileprivate func findStyle(_ program: Program) -> Style {
-        return program.findStyle(self.styleName)
     }
 }
 

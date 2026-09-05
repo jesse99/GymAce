@@ -77,7 +77,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
             
             // 90% of 250 lbs
-            if let s = entry.subfooter(plan, model, exercise) {
+            if let s = entry.subfooter(plan, model, program, exercise) {
                 Text(s)
                     .font(Font.footnote)
                     .padding(2)

@@ -2292,15 +2292,17 @@ fileprivate func previewProgram() -> Program {
 //    return program
 //}
 
-fileprivate func make(_ name: String, _ formalName: String, _ styleName: String, weights: String? = nil, weight: Float? = nil) -> Exercise {
+// Public for unit tests
+func make(_ name: String, _ formalName: String, _ styleName: String, weights: String? = nil, weight: Float? = nil) -> Exercise {
     if let n = weights {
         return Exercise(name: name, formalName: formalName, styleName: styleName, weights: n, weight: weight)
     } else {
-        return Exercise(name: name, formalName: formalName, styleName: styleName)
+        return Exercise(name: name, formalName: formalName, styleName: styleName, weight: weight)
     }
 }
 
-fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Float]? = nil, note: String? = nil) {
+// Public for unit tests
+func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Float]? = nil, note: String? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
     let c = Completed(reps: reps, weights: weights, units: .Imperial, completed: d!)
@@ -2308,7 +2310,8 @@ fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], w
     exercise.history.append(c)
 }
 
-fileprivate func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Float]? = nil) {
+// Public for unit tests
+func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Float]? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
     let c = Completed(secs: secs, weights: weights, units: .Imperial, completed: d!)

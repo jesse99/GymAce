@@ -115,7 +115,7 @@ func joinReps(_ labels: [String]) -> String {
 func secsToLongStr(_ secs: Int) -> String {
     if secs > 60*60 {
         let n = Float(secs)/(60.0*60.0)
-        return String(format: "%.2f hours", n)
+        return String(format: "%.1f hours", n)
     } else if secs > 60 {
         let n = Float(secs)/60.0
         return String(format: "%.1f mins", n)
