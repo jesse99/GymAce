@@ -7,8 +7,38 @@ import Testing
 //    case percent(PercentInfo)
 //    case double_progression(DoubleProgressionInfo)
 //    case durations(DurationsInfo)
-//    case missing
 class PlanTests {
+    @Test("MissingPlan")
+    func missing() {
+        exercise = make("Walk", "Walking", "Bad")
+        var plan = makePlan()
+        #expect(plan.details(exercise) == "5 reps")
+        #expect(to_headers(plan) == "Workset 1 of 1/5 reps/-/-")
+        #expect(completed() == "5 reps")
+
+        exercise = make("Walk", "Walking", "Bad", weight: 130)
+        plan = makePlan()
+        #expect(plan.details(exercise) == "5 @ 130")    // no weight set so no units
+        #expect(to_headers(plan) == "Workset 1 of 1/5 reps @ 130/-/-")
+        #expect(completed() == "5 reps @ 130")
+
+        exercise = make("Walk", "Walking", "Bad", weights: "Dumbbells", weight: 28)
+        plan = makePlan()
+        #expect(plan.details(exercise) == "5 @ 25 lbs") // work sets use lower (unless the percent is under 100)
+        #expect(to_headers(plan) == "Workset 1 of 1/5 reps @ 25 lbs/-/-")
+        #expect(completed() == "5 reps @ 25 lbs")
+
+        exercise = make("Walk", "Walking", "Bad")
+        plan = makePlan(daysAgo: 2, secs: [60*60])
+        #expect(plan.details(exercise) == "5 reps")
+        #expect(to_headers(plan) == "Workset 1 of 1/5 reps/-/-")
+
+        exercise = make("Walk", "Walking", "Bad")
+        plan = makePlan(daysAgo: 2, secs: [2*60*60])
+        #expect(plan.details(exercise) == "5 reps")
+        #expect(to_headers(plan) == "Workset 1 of 1/5 reps/-/-")
+    }
+    
     @Test("TimedPlan")
     func timed() {
         exercise = make("Walk", "Walking", "Walk")

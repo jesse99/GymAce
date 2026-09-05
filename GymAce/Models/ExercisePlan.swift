@@ -32,12 +32,14 @@ final class ExercisePlan {
     func details(_ exercise: Exercise) -> String {
         var amounts: [String] = []
         var weights: [ActualWeight] = []
+        var hasReps = false
         for s in sets {
             switch s.kind {
             case .workset, .timed:
                 switch s.expected {
                 case .amrap(let min):
                     amounts.append("\(min)+")
+                    hasReps = true
                 case .reps(let min, let max):
                     if min == max {
                         if min == 1 {
@@ -48,6 +50,7 @@ final class ExercisePlan {
                     } else {
                         amounts.append("\(min)-\(max)")
                     }
+                    hasReps = true
                 case .duration:
                     amounts.append(secsToShortStr(s.rest ?? 0))
                 case .timed:
@@ -76,7 +79,11 @@ final class ExercisePlan {
                 return min.text()
             }
         }
-        return joinReps(amounts)
+        if amounts.count == 1 && hasReps {
+            return "\(joinReps(amounts)) reps"
+        } else {
+            return joinReps(amounts)
+        }
     }
 }
 
