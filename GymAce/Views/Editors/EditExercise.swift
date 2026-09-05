@@ -14,55 +14,55 @@ struct EditExercise: View {
     @State private var showWeightPickerHelp = false
     @State private var showWeightHelp = false
     @State private var showWeightSetHelp = false
-    @State private var showTypePickerHelp = false
+//    @State private var showTypePickerHelp = false
     @State private var formalNames: [MenuItem] = []
     private let weightDelta = 10
     private let weightSets: [String]
     private var workoutsLabel: String = ""
 
-    @State private var durationsData: DurationsData
-    @State private var durationsText = ""
-    @State private var showDurationsHelp = false
-    @State private var durationsErr: String? = nil
-    @State private var targetText = ""
-    @State private var showTargetHelp = false
-    @State private var targetErr: String? = nil
+//    @State private var durationsData: DurationsData
+//    @State private var durationsText = ""
+//    @State private var showDurationsHelp = false
+//    @State private var durationsErr: String? = nil
+//    @State private var targetText = ""
+//    @State private var showTargetHelp = false
+//    @State private var targetErr: String? = nil
 
-    @State private var ormData: OneRepMaxData
-    @State private var ormWarmupText = ""
-    @State private var ormWarmupErr: String? = nil
-    @State private var showOrmWarmupHelp = false
+//    @State private var ormData: OneRepMaxData
+//    @State private var ormWarmupText = ""
+//    @State private var ormWarmupErr: String? = nil
+//    @State private var showOrmWarmupHelp = false
 
-    @State private var percentData: PercentData
-    @State private var percentOther: Int = -1
-    @State private var percentOthers: [String] = []
-    @State private var percent: String = ""
-    @State private var percentWarmupText = ""
-    @State private var percentWorksetsText = ""
-//    @State private var percentRestText = ""
-    @State private var percentErr: String? = nil
-    @State private var percentWarmupErr: String? = nil
-    @State private var percentWorksetsErr: String? = nil
-//    @State private var percentRestErr: String? = nil
-    @State private var showPercentOtherHelp = false
-    @State private var showPercentHelp = false
-    @State private var showPercentWarmupHelp = false
-    @State private var showPercentWorksetsHelp = false
-//    @State private var showPercentRestHelp = false
+//    @State private var percentData: PercentData
+//    @State private var percentOther: Int = -1
+//    @State private var percentOthers: [String] = []
+//    @State private var percent: String = ""
+//    @State private var percentWarmupText = ""
+//    @State private var percentWorksetsText = ""
+////    @State private var percentRestText = ""
+//    @State private var percentErr: String? = nil
+//    @State private var percentWarmupErr: String? = nil
+//    @State private var percentWorksetsErr: String? = nil
+////    @State private var percentRestErr: String? = nil
+//    @State private var showPercentOtherHelp = false
+//    @State private var showPercentHelp = false
+//    @State private var showPercentWarmupHelp = false
+//    @State private var showPercentWorksetsHelp = false
+////    @State private var showPercentRestHelp = false
 
-    @State private var repsData: RepsData
-    @State private var repsWarmupText = ""
-    @State private var repsWorksetsText = ""
-    @State private var repsBackoffText = ""
-//    @State private var repsRestText = ""
-    @State private var repsWarmupErr: String? = nil
-    @State private var repsWorksetsErr: String? = nil
-    @State private var repsBackoffErr: String? = nil
-//    @State private var repsRestErr: String? = nil
-    @State private var showRepsWarmupHelp = false
-    @State private var showRepsWorksetsHelp = false
-    @State private var showRepsBackoffHelp = false
-//    @State private var showRepsRestHelp = false
+//    @State private var repsData: RepsData
+//    @State private var repsWarmupText = ""
+//    @State private var repsWorksetsText = ""
+//    @State private var repsBackoffText = ""
+////    @State private var repsRestText = ""
+//    @State private var repsWarmupErr: String? = nil
+//    @State private var repsWorksetsErr: String? = nil
+//    @State private var repsBackoffErr: String? = nil
+////    @State private var repsRestErr: String? = nil
+//    @State private var showRepsWarmupHelp = false
+//    @State private var showRepsWorksetsHelp = false
+//    @State private var showRepsBackoffHelp = false
+////    @State private var showRepsRestHelp = false
 
     init(model: Model, program: Program, exercise: Exercise) {
         self.model = model
@@ -84,73 +84,73 @@ struct EditExercise: View {
             self.workoutsLabel = "Part of \(workouts.sorted().joined(separator: " and ")) workouts."
         }
 
-        let warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-        let reps3: [VariableReps] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
-        switch exercise.data {
-        case .durations(let d):
-            _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
-            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
-        case .oneRepMax(let d):
-            _durationsData = State(initialValue: DurationsData(secs: [30]))
-            _ormData = State(initialValue: d)
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
-        case .percent(let d):
-            _durationsData = State(initialValue: DurationsData(secs: [30]))
-            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: d)
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
-        case .reps(let d):
-            _durationsData = State(initialValue: DurationsData(secs: [30]))
-            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
-            _repsData = State(initialValue: d)
-        case .timed:
-            _durationsData = State(initialValue: DurationsData(secs: [30]))
-            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
-            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
-            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
-        }
-        
-        _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
-        if let t = durationsData.targetSecs {
-            _targetText = State(initialValue: secsToShortStr(t))
-        } else {
-            _targetText = State(initialValue: "")
-        }
+//        let warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
+//        let reps3: [VariableReps] = [.variable(3, 5), .variable(3, 5), .variable(3, 5)]
+//        switch exercise.data {
+//        case .durations(let d):
+//            _durationsData = State(initialValue: d)   // we save this state off so it isn't lost if the user changes type
+//            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
+//            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+//            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
+//        case .oneRepMax(let d):
+//            _durationsData = State(initialValue: DurationsData(secs: [30]))
+//            _ormData = State(initialValue: d)
+//            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+//            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
+//        case .percent(let d):
+//            _durationsData = State(initialValue: DurationsData(secs: [30]))
+//            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
+//            _percentData = State(initialValue: d)
+//            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
+//        case .reps(let d):
+//            _durationsData = State(initialValue: DurationsData(secs: [30]))
+//            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
+//            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+//            _repsData = State(initialValue: d)
+//        case .timed:
+//            _durationsData = State(initialValue: DurationsData(secs: [30]))
+//            _ormData = State(initialValue: OneRepMaxData(warmups: warmup))
+//            _percentData = State(initialValue: PercentData(other: "Missing Exercise", percent: 90, warmups: warmup, workset: reps3))
+//            _repsData = State(initialValue: RepsData(warmups: warmup, worksets: reps3, backoff: []))
+//        }
+//        
+//        _durationsText = State(initialValue: durationsData.secs.map {secsToShortStr($0)}.joined(separator: " "))
+//        if let t = durationsData.targetSecs {
+//            _targetText = State(initialValue: secsToShortStr(t))
+//        } else {
+//            _targetText = State(initialValue: "")
+//        }
 
-        var names: [String] = []
-        for e in program.exercises where e.name != exercise.name {
-            names.append(e.name)
-        }
-        if percentData.other != "Missing Exercise" && !names.contains(percentData.other) {
-            names.append(percentData.other)
-        }
-        names.sort()
-        names.append("Missing Exercise")    // TODO don't allow an exercise to be named "Missing Exercise"
+//        var names: [String] = []
+//        for e in program.exercises where e.name != exercise.name {
+//            names.append(e.name)
+//        }
+//        if percentData.other != "Missing Exercise" && !names.contains(percentData.other) {
+//            names.append(percentData.other)
+//        }
+//        names.sort()
+//        names.append("Missing Exercise")    // TODO don't allow an exercise to be named "Missing Exercise"
         
-        _ormWarmupText = State(initialValue: ormData.warmups.map {$0.asString()}.joined(separator: " "))
+//        _ormWarmupText = State(initialValue: ormData.warmups.map {$0.asString()}.joined(separator: " "))
 
-        _percentOthers = State(initialValue: names)
-        _percent = State(initialValue: "\(percentData.percent)")
-        if let index = names.firstIndex(of: percentData.other) {
-            _percentOther = State(initialValue: index)
-        } else {
-            _percentOther = State(initialValue: -1)
-        }
-        _percentWarmupText = State(initialValue: percentData.warmups.map {$0.asString()}.joined(separator: " "))
-        _percentWorksetsText = State(initialValue: percentData.workset.map {$0.asString()}.joined(separator: " "))
+//        _percentOthers = State(initialValue: names)
+//        _percent = State(initialValue: "\(percentData.percent)")
+//        if let index = names.firstIndex(of: percentData.other) {
+//            _percentOther = State(initialValue: index)
+//        } else {
+//            _percentOther = State(initialValue: -1)
+//        }
+//        _percentWarmupText = State(initialValue: percentData.warmups.map {$0.asString()}.joined(separator: " "))
+//        _percentWorksetsText = State(initialValue: percentData.workset.map {$0.asString()}.joined(separator: " "))
 //        if let s = percentData.rest {
 //            _percentRestText = State(initialValue: secsToShortStr(s))
 //        } else {
 //            _percentRestText = State(initialValue: "")
 //        }
 
-        _repsWarmupText = State(initialValue: repsData.warmups.map {$0.asString()}.joined(separator: " "))
-        _repsWorksetsText = State(initialValue: repsData.workset.map {$0.asString()}.joined(separator: " "))
-        _repsBackoffText = State(initialValue: repsData.backoff.map {$0.asString()}.joined(separator: " "))
+//        _repsWarmupText = State(initialValue: repsData.warmups.map {$0.asString()}.joined(separator: " "))
+//        _repsWorksetsText = State(initialValue: repsData.workset.map {$0.asString()}.joined(separator: " "))
+//        _repsBackoffText = State(initialValue: repsData.backoff.map {$0.asString()}.joined(separator: " "))
 //        if let s = repsData.rest {
 //            _repsRestText = State(initialValue: secsToShortStr(s))
 //        } else {
@@ -287,177 +287,177 @@ struct EditExercise: View {
             }
             
             // Type picker
-            HStack {
-                Picker("", selection: typeBinding) {
-                    Text("Durations").tag(0)
-                    Text("One Rep Max").tag(4)
-                    Text("Percent").tag(1)
-                    Text("Reps").tag(2)
-                    Text("Timed").tag(3)
-                }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                Spacer()
-                Button("", systemImage: "info.circle") {
-                    showTypePickerHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
-            }
-            if showTypePickerHelp {
-                if typeBinding.wrappedValue == 0 {
-                    Text("Each set is done for a specified amount of time.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                } else if typeBinding.wrappedValue == 1 {
-                    Text("Each set is done using weights that are a percentage of another exercise.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                } else if typeBinding.wrappedValue == 2 {
-                    Text("Each work set is done using fixed reps, min-max reps, or As Many Reps As Possible (AMRAP).")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                } else if typeBinding.wrappedValue == 3 {
-                    Text("The exercise is done for an indefinite amount of time, e.g. jogging.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                } else {
-                    Text("Used to figure out the maximum weight for an exercise. Typically paired with a Percent exercise within an intermediate or advanced program.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-            }
+//            HStack {
+//                Picker("", selection: typeBinding) {
+//                    Text("Durations").tag(0)
+//                    Text("One Rep Max").tag(4)
+//                    Text("Percent").tag(1)
+//                    Text("Reps").tag(2)
+//                    Text("Timed").tag(3)
+//                }
+//                .pickerStyle(.menu)
+//                .labelsHidden()
+//                Spacer()
+//                Button("", systemImage: "info.circle") {
+//                    showTypePickerHelp.toggle()
+//                }
+//                .buttonStyle(.plain)
+//                .padding(.leading, 5)
+//            }
+//            if showTypePickerHelp {
+//                if typeBinding.wrappedValue == 0 {
+//                    Text("Each set is done for a specified amount of time.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                } else if typeBinding.wrappedValue == 1 {
+//                    Text("Each set is done using weights that are a percentage of another exercise.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                } else if typeBinding.wrappedValue == 2 {
+//                    Text("Each work set is done using fixed reps, min-max reps, or As Many Reps As Possible (AMRAP).")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                } else if typeBinding.wrappedValue == 3 {
+//                    Text("The exercise is done for an indefinite amount of time, e.g. jogging.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                } else {
+//                    Text("Used to figure out the maximum weight for an exercise. Typically paired with a Percent exercise within an intermediate or advanced program.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//            }
 
             // Durations type
-            if typeBinding.wrappedValue == 0 {
-                HStack {
-                    durationsTextField("Durations", durationsBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showDurationsHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showDurationsHelp {
-                    Text("The amount of time to do each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = durationsErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-                                
-                HStack {
-                    durationsTextField("Target", targetBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showTargetHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showTargetHelp {
-                    Text("Optional maximum amount of time to do each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix. Once you hit the target you might want to switch to a harder version of the exercise.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = targetErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-
-                // Percent type
-            } else if typeBinding.wrappedValue == 1 {
-                HStack {
-                    Picker("Other exercise", selection: percentOtherBinding) {
-                        ForEach(Array(percentOthers.enumerated()), id: \.element) {tuple in
-                            Text(tuple.1).tag(tuple.0)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showPercentOtherHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showPercentOtherHelp {
-                    Text("This name of the exercise to use for the base weight of this exercise.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if program.findExercise(percentOthers[percentOther]) == nil {
-                    Text("There is no exercise named '\(percentOthers[percentOther])'.")
-                        .foregroundColor(.orange)
-                        .font(.footnote)
-
-                }
-                
-                HStack {
-                    intTextField("Percent", percentBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showPercentHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showPercentHelp {
-                    Text("The percentage of the other exercise weight to use for work sets.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = percentErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-
-                HStack {
-                    repsTextField("Warmups", percentWarmupBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showPercentWarmupHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showPercentWarmupHelp {
-                    Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = percentWarmupErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-
-                HStack {
-                    repsTextField("Worksets", percentWorksetsBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showPercentWorksetsHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showPercentWorksetsHelp {
-                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = percentWorksetsErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
+//            if typeBinding.wrappedValue == 0 {
+//                HStack {
+//                    durationsTextField("Durations", durationsBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showDurationsHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showDurationsHelp {
+//                    Text("The amount of time to do each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = durationsErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//                                
+//                HStack {
+//                    durationsTextField("Target", targetBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showTargetHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showTargetHelp {
+//                    Text("Optional maximum amount of time to do each set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix. Once you hit the target you might want to switch to a harder version of the exercise.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = targetErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//
+//                // Percent type
+//            } else if typeBinding.wrappedValue == 1 {
+//                HStack {
+//                    Picker("Other exercise", selection: percentOtherBinding) {
+//                        ForEach(Array(percentOthers.enumerated()), id: \.element) {tuple in
+//                            Text(tuple.1).tag(tuple.0)
+//                        }
+//                    }
+//                    .pickerStyle(.menu)
+//                    .labelsHidden()
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showPercentOtherHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showPercentOtherHelp {
+//                    Text("This name of the exercise to use for the base weight of this exercise.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if program.findExercise(percentOthers[percentOther]) == nil {
+//                    Text("There is no exercise named '\(percentOthers[percentOther])'.")
+//                        .foregroundColor(.orange)
+//                        .font(.footnote)
+//
+//                }
+//                
+//                HStack {
+//                    intTextField("Percent", percentBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showPercentHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showPercentHelp {
+//                    Text("The percentage of the other exercise weight to use for work sets.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = percentErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//
+//                HStack {
+//                    repsTextField("Warmups", percentWarmupBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showPercentWarmupHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showPercentWarmupHelp {
+//                    Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = percentWarmupErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//
+//                HStack {
+//                    repsTextField("Worksets", percentWorksetsBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showPercentWorksetsHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showPercentWorksetsHelp {
+//                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = percentWorksetsErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
 
 //                HStack {
 //                    durationsTextField("Rest", percentRestBinding)
@@ -479,67 +479,67 @@ struct EditExercise: View {
 //                        .font(.footnote)
 //                }
 
-            // Reps type
-            } else if typeBinding.wrappedValue == 2 {
-                HStack {
-                    repsTextField("Warmups", repsWarmupBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showRepsWarmupHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showRepsWarmupHelp {
-                    Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = repsWarmupErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-
-                HStack {
-                    repsTextField("Worksets", repsWorksetsBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showRepsWorksetsHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showRepsWorksetsHelp {
-                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps. For fixed and AMRAP sets you can append an optional percent, e.g. 5/90 5/80 3+/70.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = repsWorksetsErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-
-                HStack {
-                    repsTextField("Backoff", repsBackoffBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showRepsBackoffHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showRepsBackoffHelp {
-                    Text("Sets to do after the work sets.  Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = repsBackoffErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
+//            // Reps type
+//            } else if typeBinding.wrappedValue == 2 {
+//                HStack {
+//                    repsTextField("Warmups", repsWarmupBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showRepsWarmupHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showRepsWarmupHelp {
+//                    Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = repsWarmupErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//
+//                HStack {
+//                    repsTextField("Worksets", repsWorksetsBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showRepsWorksetsHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showRepsWorksetsHelp {
+//                    Text("Sets to do using the maximum weight. Formated as 5 for five reps, 8-12 for eight to twelve reps, or 3+ for three or more reps. For fixed and AMRAP sets you can append an optional percent, e.g. 5/90 5/80 3+/70.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = repsWorksetsErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//
+//                HStack {
+//                    repsTextField("Backoff", repsBackoffBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showRepsBackoffHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showRepsBackoffHelp {
+//                    Text("Sets to do after the work sets.  Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = repsBackoffErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
                 
 //                HStack {
 //                    durationsTextField("Rest", repsRestBinding)
@@ -562,30 +562,30 @@ struct EditExercise: View {
 //                }
             
             // One Rep Max type
-            } else if typeBinding.wrappedValue == 4 {
-                HStack {
-                    repsTextField("Warmups", ormWarmupBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showOrmWarmupHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showOrmWarmupHelp {
-                    Text("Sets to do before the work set. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = ormWarmupErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-            }
-            Text(workoutsLabel)
-                .font(.footnote)
-                .frame(maxWidth: .infinity, alignment: .center)
+//            } else if typeBinding.wrappedValue == 4 {
+//                HStack {
+//                    repsTextField("Warmups", ormWarmupBinding)
+//                    Spacer()
+//                    Button("", systemImage: "info.circle") {
+//                        showOrmWarmupHelp.toggle()
+//                    }
+//                    .buttonStyle(.plain)
+//                    .padding(.leading, 5)
+//                }
+//                if showOrmWarmupHelp {
+//                    Text("Sets to do before the work set. Formated as 5/80, i.e. 5 reps at 80% of the work set weight.")
+//                        .foregroundColor(.blue)
+//                        .font(.footnote)
+//                }
+//                if let e = ormWarmupErr {
+//                    Text(e)
+//                        .foregroundColor(.red)
+//                        .font(.footnote)
+//                }
+//            }
+//            Text(workoutsLabel)
+//                .font(.footnote)
+//                .frame(maxWidth: .infinity, alignment: .center)
         }
         .navigationTitle("Edit Exercise")
         .navigationBarTitleDisplayMode(.inline)
@@ -595,165 +595,165 @@ struct EditExercise: View {
         }
     }
     
-    private var typeBinding: Binding<Int> {
-        Binding(
-            get: {
-                switch exercise.data {
-                case .durations(_): return 0
-                case .percent(_): return 1
-                case .reps(_): return 2
-                case .timed: return 3
-                case .oneRepMax: return 4
-                }
-            },
-            set: {
-                if $0 == 0 {
-                    exercise.data = .durations(durationsData)
-                } else if $0 == 1 {
-                    exercise.data = .percent(percentData)
-                } else if $0 == 2 {
-                    exercise.data = .reps(repsData)
-                } else if $0 == 3 {
-                    exercise.data = .timed
-                } else {
-                    exercise.data = .oneRepMax(ormData)
-                }
-            }
-        )
-    }
-    
-    private var durationsBinding: Binding<String> {
-        Binding(
-            get: {
-                return durationsText
-            },
-            set: {
-                var a: [Int] = []
-                durationsText = $0
-                for s in $0.split(separator: " ") {
-                    if let s = parseShortSecs(String(s)) {
-                        a.append(s)
-                    } else {
-                        durationsErr = "Expected a number with an optional time suffix, not '\(s)'."
-                        return
-                    }
-                }
-                if a.isEmpty {
-                    durationsErr = "Need at least one set."
-                } else {
-                    durationsErr = nil
-                    durationsData.secs = a
-                    exercise.data = .durations(durationsData)
-                }
-            }
-        )
-    }
-
-    private var targetBinding: Binding<String> {
-        Binding(
-            get: {
-                return targetText
-            },
-            set: {
-                targetText = $0
-                if targetText.isBlankOrEmpty {
-                    targetErr = nil
-                    durationsData.targetSecs = nil
-                    exercise.data = .durations(durationsData)
-                } else {
-                    let t = parseShortSecs(targetText)
-                    if t == nil {
-                        targetErr = "Expected a number with an optional time suffix, not '\(targetText)'."
-                        return
-                    }
-                    targetErr = nil
-                    durationsData.targetSecs = t
-                    exercise.data = .durations(durationsData)
-                }
-            }
-        )
-    }
-
-    private var percentOtherBinding: Binding<Int> {
-        Binding(
-            get: {
-                return percentOther
-            },
-            set: {
-                percentOther = $0
-                percentData.other = percentOthers[$0]
-                exercise.data = .percent(percentData)
-            }
-        )
-    }
-    
-    private var percentBinding: Binding<String> {
-        Binding(
-            get: {
-                return percent
-            },
-            set: {
-                percent = $0
-                if let n = Int($0) {
-                    percentErr = nil
-                    percentData.percent = n
-                    exercise.data = .percent(percentData)
-                } else {
-                    percentErr = "Expected a number for percent, not '\($0)'."
-                }
-            }
-        )
-    }
-
-    private var percentWarmupBinding: Binding<String> {
-        Binding(
-            get: {
-                return percentWarmupText
-            },
-            set: {
-                var a: [FixedReps] = []
-                percentWarmupText = $0
-                for s in $0.split(separator: " ") {
-                    if let r = FixedReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        percentWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
-                        return
-                    }
-                }
-                percentWarmupErr = nil
-                percentData.warmups = a
-                exercise.data = .percent(percentData)
-            }
-        )
-    }
-
-    private var percentWorksetsBinding: Binding<String> {
-        Binding(
-            get: {
-                return percentWorksetsText
-            },
-            set: {
-                var a: [VariableReps] = []
-                percentWorksetsText = $0
-                for s in $0.split(separator: " ") {
-                    if let r = VariableReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        percentWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."
-                        return
-                    }
-                }
-                if a.isEmpty {
-                    percentWorksetsErr = "Need at least one set."
-                } else {
-                    percentWorksetsErr = nil
-                    percentData.workset = a
-                    exercise.data = .percent(percentData)
-                }
-            }
-        )
-    }
+//    private var typeBinding: Binding<Int> {
+//        Binding(
+//            get: {
+//                switch exercise.data {
+//                case .durations(_): return 0
+//                case .percent(_): return 1
+//                case .reps(_): return 2
+//                case .timed: return 3
+//                case .oneRepMax: return 4
+//                }
+//            },
+//            set: {
+//                if $0 == 0 {
+//                    exercise.data = .durations(durationsData)
+//                } else if $0 == 1 {
+//                    exercise.data = .percent(percentData)
+//                } else if $0 == 2 {
+//                    exercise.data = .reps(repsData)
+//                } else if $0 == 3 {
+//                    exercise.data = .timed
+//                } else {
+//                    exercise.data = .oneRepMax(ormData)
+//                }
+//            }
+//        )
+//    }
+//    
+//    private var durationsBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return durationsText
+//            },
+//            set: {
+//                var a: [Int] = []
+//                durationsText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let s = parseShortSecs(String(s)) {
+//                        a.append(s)
+//                    } else {
+//                        durationsErr = "Expected a number with an optional time suffix, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                if a.isEmpty {
+//                    durationsErr = "Need at least one set."
+//                } else {
+//                    durationsErr = nil
+//                    durationsData.secs = a
+//                    exercise.data = .durations(durationsData)
+//                }
+//            }
+//        )
+//    }
+//
+//    private var targetBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return targetText
+//            },
+//            set: {
+//                targetText = $0
+//                if targetText.isBlankOrEmpty {
+//                    targetErr = nil
+//                    durationsData.targetSecs = nil
+//                    exercise.data = .durations(durationsData)
+//                } else {
+//                    let t = parseShortSecs(targetText)
+//                    if t == nil {
+//                        targetErr = "Expected a number with an optional time suffix, not '\(targetText)'."
+//                        return
+//                    }
+//                    targetErr = nil
+//                    durationsData.targetSecs = t
+//                    exercise.data = .durations(durationsData)
+//                }
+//            }
+//        )
+//    }
+//
+//    private var percentOtherBinding: Binding<Int> {
+//        Binding(
+//            get: {
+//                return percentOther
+//            },
+//            set: {
+//                percentOther = $0
+//                percentData.other = percentOthers[$0]
+//                exercise.data = .percent(percentData)
+//            }
+//        )
+//    }
+//    
+//    private var percentBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return percent
+//            },
+//            set: {
+//                percent = $0
+//                if let n = Int($0) {
+//                    percentErr = nil
+//                    percentData.percent = n
+//                    exercise.data = .percent(percentData)
+//                } else {
+//                    percentErr = "Expected a number for percent, not '\($0)'."
+//                }
+//            }
+//        )
+//    }
+//
+//    private var percentWarmupBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return percentWarmupText
+//            },
+//            set: {
+//                var a: [FixedReps] = []
+//                percentWarmupText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let r = FixedReps(String(s)) {
+//                        a.append(r)
+//                    } else {
+//                        percentWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                percentWarmupErr = nil
+//                percentData.warmups = a
+//                exercise.data = .percent(percentData)
+//            }
+//        )
+//    }
+//
+//    private var percentWorksetsBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return percentWorksetsText
+//            },
+//            set: {
+//                var a: [VariableReps] = []
+//                percentWorksetsText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let r = VariableReps(String(s)) {
+//                        a.append(r)
+//                    } else {
+//                        percentWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                if a.isEmpty {
+//                    percentWorksetsErr = "Need at least one set."
+//                } else {
+//                    percentWorksetsErr = nil
+//                    percentData.workset = a
+//                    exercise.data = .percent(percentData)
+//                }
+//            }
+//        )
+//    }
     
 //    private var percentRestBinding: Binding<String> {
 //        Binding(
@@ -777,101 +777,101 @@ struct EditExercise: View {
 //        )
 //    }
 
-    private var ormWarmupBinding: Binding<String> {
-        Binding(
-            get: {
-                return ormWarmupText
-            },
-            set: {
-                var a: [FixedReps] = []
-                ormWarmupText = $0
-                for s in $0.split(separator: " ") {
-                    if let r = FixedReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        ormWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
-                        return
-                    }
-                }
-                ormWarmupErr = nil
-                ormData.warmups = a
-                exercise.data = .oneRepMax(ormData)
-            }
-        )
-    }
-
-    private var repsWarmupBinding: Binding<String> {
-        Binding(
-            get: {
-                return repsWarmupText
-            },
-            set: {
-                var a: [FixedReps] = []
-                repsWarmupText = $0
-                for s in $0.split(separator: " ") {
-                    if let r = FixedReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        repsWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
-                        return
-                    }
-                }
-                repsWarmupErr = nil
-                repsData.warmups = a
-                exercise.data = .reps(repsData)
-            }
-        )
-    }
-
-    private var repsWorksetsBinding: Binding<String> {
-        Binding(
-            get: {
-                return repsWorksetsText
-            },
-            set: {
-                var a: [VariableReps] = []
-                repsWorksetsText = $0
-                for s in $0.split(separator: " ") {
-                    if let r = VariableReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        repsWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."
-                        return
-                    }
-                }
-                if a.isEmpty {
-                    repsWorksetsErr = "Need at least one set."
-                } else {
-                    repsWorksetsErr = nil
-                    repsData.workset = a
-                    exercise.data = .reps(repsData)
-                }
-            }
-        )
-    }
-    
-    private var repsBackoffBinding: Binding<String> {
-        Binding(
-            get: {
-                return repsBackoffText
-            },
-            set: {
-                var a: [FixedReps] = []
-                repsBackoffText = $0
-                for s in $0.split(separator: " ") {
-                    if let r = FixedReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        repsBackoffErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
-                        return
-                    }
-                }
-                repsBackoffErr = nil
-                repsData.backoff = a
-                exercise.data = .reps(repsData)
-            }
-        )
-    }
+//    private var ormWarmupBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return ormWarmupText
+//            },
+//            set: {
+//                var a: [FixedReps] = []
+//                ormWarmupText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let r = FixedReps(String(s)) {
+//                        a.append(r)
+//                    } else {
+//                        ormWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                ormWarmupErr = nil
+//                ormData.warmups = a
+//                exercise.data = .oneRepMax(ormData)
+//            }
+//        )
+//    }
+//
+//    private var repsWarmupBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return repsWarmupText
+//            },
+//            set: {
+//                var a: [FixedReps] = []
+//                repsWarmupText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let r = FixedReps(String(s)) {
+//                        a.append(r)
+//                    } else {
+//                        repsWarmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                repsWarmupErr = nil
+//                repsData.warmups = a
+//                exercise.data = .reps(repsData)
+//            }
+//        )
+//    }
+//
+//    private var repsWorksetsBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return repsWorksetsText
+//            },
+//            set: {
+//                var a: [VariableReps] = []
+//                repsWorksetsText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let r = VariableReps(String(s)) {
+//                        a.append(r)
+//                    } else {
+//                        repsWorksetsErr = "Expected a rep, rep range, or As Many Reps As Possible, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                if a.isEmpty {
+//                    repsWorksetsErr = "Need at least one set."
+//                } else {
+//                    repsWorksetsErr = nil
+//                    repsData.workset = a
+//                    exercise.data = .reps(repsData)
+//                }
+//            }
+//        )
+//    }
+//    
+//    private var repsBackoffBinding: Binding<String> {
+//        Binding(
+//            get: {
+//                return repsBackoffText
+//            },
+//            set: {
+//                var a: [FixedReps] = []
+//                repsBackoffText = $0
+//                for s in $0.split(separator: " ") {
+//                    if let r = FixedReps(String(s)) {
+//                        a.append(r)
+//                    } else {
+//                        repsBackoffErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
+//                        return
+//                    }
+//                }
+//                repsBackoffErr = nil
+//                repsData.backoff = a
+//                exercise.data = .reps(repsData)
+//            }
+//        )
+//    }
 
 //    private var repsRestBinding: Binding<String> {
 //        Binding(
@@ -1035,20 +1035,20 @@ struct EditExercise: View {
         guard !isNameEmpty && !dupeName else {
             return false
         }
-        switch exercise.data {
-        case .durations(_):
-            return durationsErr == nil && targetErr == nil
-        case .oneRepMax:
-            return ormWarmupErr == nil
-        case .percent(_):
-            return percentErr == nil // TODO make sure this is up to date
-        case .reps(_):
-            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil
-//            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil && repsRestErr == nil
-        case .timed:
-            return true
-        }
-
+//        switch exercise.data {
+//        case .durations(_):
+//            return durationsErr == nil && targetErr == nil
+//        case .oneRepMax:
+//            return ormWarmupErr == nil
+//        case .percent(_):
+//            return percentErr == nil // TODO make sure this is up to date
+//        case .reps(_):
+//            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil
+////            return repsWarmupErr == nil && repsWorksetsErr == nil && repsBackoffErr == nil && repsRestErr == nil
+//        case .timed:
+//            return true
+//        }
+        return true
     }
 }
 

@@ -161,8 +161,8 @@ final class Program: Codable, Identifiable {
         return exercises.first(where: {$0.name == name})
     }
     
-    func findStyle(_ name: String) -> Style? {
-        return styles[name]
+    func findStyle(_ name: String) -> Style {
+        return styles[name] ?? .missing
     }
     
     func setExerciseName(_ exercise: Exercise, _ name: String) {
@@ -171,12 +171,6 @@ final class Program: Codable, Identifiable {
                 if e.name == exercise.name {
                     e.name = name
                 }
-            }
-        }
-        for e in exercises {
-            if case .percent(var d) = e.data, d.other == exercise.name {
-                d.other = name
-                e.data = .percent(d)
             }
         }
         exercise.name = name

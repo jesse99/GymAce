@@ -33,7 +33,7 @@ struct Working: Codable {
     var weights: [Float]?
     var units: Units
     var started: Date
-    var data: ExerciseData
+    var style: Style
     
     /// Returns true if the exercise was started long enough ago that it should be considered an exercise
     /// that the user has abandoned.
@@ -42,7 +42,7 @@ struct Working: Codable {
         return delta/3600.0 > 4.0   // aka more than 4 hours
     }
     
-    init(_ plan: ExercisePlan, _ exercise: Exercise, _ units: Units) {
+    init(_ plan: ExercisePlan, _ program: Program, _ exercise: Exercise, _ units: Units) {
         self.expected = []
         for s in plan.sets {
             if case .workset = s.kind {
@@ -63,42 +63,44 @@ struct Working: Codable {
         self.weights = if plan.hasWeights() {[]} else {nil}
         self.units = units
         self.started = Date()
-        self.data = exercise.data
-        switch exercise.data {
-        case .oneRepMax, .reps(_), .percent(_):
+        self.style = program.findStyle(exercise.styleName)
+        switch self.style {
+        case .double_progression, .gzcl, .missing, .percent:
             self.type = .reps
-        case .durations(_), .timed:
+        case .durations, .timed:
             self.type = .secs
         }
     }
     
-    func compatible(_ rhs: ExerciseData) -> Bool {
-        switch data {
-        case .durations(let d1):
+    func compatible(_ rhs: Style) -> Bool {
+        switch style {
+        case .double_progression(let i1):
             switch rhs {
-            case .durations(let d2):
-                return d1.secs.count == d2.secs.count
+            case .double_progression(let i2):
+                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count && i1.backoff.count == i2.backoff.count
             default:
                 return false
             }
-        case .oneRepMax:
+        case .durations(let i1):
             switch rhs {
-            case .oneRepMax:
+            case .durations(let i2):
+                return i1.secs.count == i2.secs.count
+            default:
+                return false
+            }
+        case .gzcl:
+            switch rhs {
+            case .gzcl:
+                fatalError("not implemented")
+            default:
+                return false
+            }
+        case .missing:
+            return false
+        case .percent:
+            switch rhs {
+            case .percent:
                 return true
-            default:
-                return false
-            }
-        case .percent(let d1):
-            switch rhs {
-            case .percent(let d2):
-                return d1.warmups.count == d2.warmups.count && d1.workset.count == d2.workset.count
-            default:
-                return false
-            }
-        case .reps(let d1):
-            switch rhs {
-            case .reps(let d2):
-                return d1.warmups.count == d2.warmups.count && d1.workset.count == d2.workset.count && d1.backoff.count == d2.backoff.count
             default:
                 return false
             }
@@ -154,8 +156,8 @@ final class ExerciseEntry: Codable {
 //        }
     }
         
-    func isFinished(_ exercise: Exercise) -> Bool {
-        return setIndex >= exercise.data.numSets()
+    func isFinished(_ program: Program, _ exercise: Exercise) -> Bool {
+        return setIndex >= exercise.numSets(program)
     }
     
     /// Returns true if the user is on a workset where the actual rep count should be recorded.
@@ -223,7 +225,7 @@ final class ExerciseEntry: Codable {
     /// Called when the user starts an exercise. Resets setIndex and working if needed.
     func started(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) {
         if let w = self.working {
-            if w.isStale || !w.compatible(exercise.data) {
+            if w.isStale || !w.compatible(program.findStyle(exercise.styleName)) {
                 reset(model, program, workout, exercise)
                 if workout.isStale {
                     workout.started = Date()
@@ -249,7 +251,7 @@ final class ExerciseEntry: Codable {
         }
         
         setIndex = 0
-        working = Working(plan, exercise, units)
+        working = Working(plan, program, exercise, units)
         mode = .performing
     }
     
@@ -275,20 +277,21 @@ final class ExerciseEntry: Codable {
     }
     
     /// Called when the user completes an exercise. Adds current to Exercise.history.
-    func completedLast(_ workout: Workout, _ exercise: Exercise) {
+    func completedLast(_ program: Program, _ workout: Workout, _ exercise: Exercise) {
         if var w = self.working {
-            if case .oneRepMax = exercise.data, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
-                if let orm = compute1RM(weight: weight, reps: reps) {
-                    exercise.baseWeight = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
-                }
-            }
+//            if case .oneRepMax = exercise.data, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
+//                if let orm = compute1RM(weight: weight, reps: reps) {
+//                    exercise.baseWeight = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
+//                }
+//            }
             
             if let e = workout.elapsed {
                 let elapsed = Date().timeIntervalSince(w.started)
                 workout.elapsed = e + elapsed
             }
             
-            let c = if case .timed = exercise.data {
+            let style = program.findStyle(exercise.styleName)
+            let c = if case .timed = style {
                 Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weights: w.weights, units: w.units, distance: healthKit.enabled ? healthKit.distance : nil)
             } else {
                 Completed(values: w.values, type: w.type, weights: w.weights, units: w.units)
@@ -327,20 +330,16 @@ extension ExerciseEntry {
     // Shown second in the exercise view, e.g. "5 reps @ 140 lbs" or "30s".
     func subhead(_ plan: ExercisePlan, _ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) -> String {
         if setIndex >= plan.sets.count {
-            // We need to print the weight when the user finishes because they
-            // may bump it up or down.
-            if let w = exercise.weight(program, workout) {
-                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                    if case .percent(_) = exercise.data {
-                        return ws.closest(target: w).text()
-                    } else {
-                        return ws.lower(target: w).text()
-                    }
+            // If the user has finished the weight may have changed so we want to
+            // display the current weight instead of something like the weight from
+            // the last set.
+            if let bottom = exercise.bottomWeight(model, program), let top = exercise.topWeight(model, program) {
+                if bottom.value().sameWeight(top.value()) {
+                    return bottom.text()
                 } else {
-                    return formatWeight(w, .None)
+                    return "\(bottom.text()) - \(top.text())"
                 }
             }
-            return ""
         }
         let prefix = switch plan.sets[setIndex].expected {
         case .amrap(let min):
@@ -402,17 +401,17 @@ extension ExerciseEntry {
 
 // If the exercise type changes then it doesn't make sense to use the last completed to figure
 // out expected...
-func typeMatches(_ completed: Completed, _ exercise: Exercise) -> Bool {
+func typeMatches(_ program: Program, _ completed: Completed, _ exercise: Exercise) -> Bool {
     switch completed.type {
     case .reps:
-        switch exercise.data {
-        case .oneRepMax, .percent(_), .reps(_): return true
-        case .durations(_), .timed: return false
+        switch program.findStyle(exercise.styleName) {
+        case .double_progression, .gzcl, .missing, .percent: return true
+        case .durations, .timed: return false
         }
     case .secs:
-        switch exercise.data {
-        case .oneRepMax, .percent(_), .reps(_): return false
-        case .durations(_), .timed: return true
+        switch program.findStyle(exercise.styleName) {
+        case .double_progression, .gzcl, .missing, .percent: return false
+        case .durations, .timed: return true
         }
     }
 }

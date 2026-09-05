@@ -15,61 +15,24 @@ final class Exercise: Codable {
     /// Optional set of weights to use with the exercise.
     var weightSet: String?
 
-    /// The weight to use for the exercise. Normal usage is for this to be mapped into an actual
-    /// weight using a Style and setIndex (which often applies a percentage).
+    /// The weight to use for an exercise before percentage modifiers are applied. This may be
+    /// nil for exercises like stretches or styles like percent or gzcl where the baseWeight of an
+    /// "other" exercise is used.
     var baseWeight: Float?
     
     /// Record of when and what the user did for a workout. Last is the most recent.
     var history: [Completed] = []
-    
-    /// Exercise specific data.
-    var data: ExerciseData
-    
+        
     var version: Int = 1
-
-    init (name: String, formalName: String, styleName: String, durations: DurationsData, weights: String? = nil, weight: Float? = nil) {
-        self.name = name
-        self.formalName = formalName
-        self.styleName = styleName
-        self.weightSet = weights
-        self.baseWeight = weight
-        self.data = .durations(durations)
-    }
-    
-    init (name: String, formalName: String, styleName: String, orm: OneRepMaxData, weights: String? = nil, weight: Float? = nil) {
-        self.name = name
-        self.formalName = formalName
-        self.styleName = styleName
-        self.weightSet = weights
-        self.baseWeight = weight
-        self.data = .oneRepMax(orm)
-    }
-    
-    init (name: String, formalName: String, styleName: String, reps: RepsData, weights: String? = nil, weight: Float? = nil) {
-        self.name = name
-        self.formalName = formalName
-        self.styleName = styleName
-        self.weightSet = weights
-        self.baseWeight = weight
-        self.data = .reps(reps)
-    }
-    
-    init (name: String, formalName: String, styleName: String, percent: PercentData, weights: String? = nil, weight: Float? = nil) {
-        self.name = name
-        self.formalName = formalName
-        self.styleName = styleName
-        self.weightSet = weights
-        self.data = .percent(percent)
-    }
 
     init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: Float? = nil) {
         self.name = name
         self.formalName = formalName
         self.styleName = styleName
         self.weightSet = weights
-        self.data = .timed
+        self.baseWeight = weight
     }
-    
+        
     func fixup() {
 //        if name == "Chin Ups" {
 //            if var c = history.last {
@@ -84,10 +47,6 @@ final class Exercise: Codable {
             print("Program \(program.name) formal name \(formalName) is missing for exercise \(name)")
             valid = false
         }
-        if program.styles[styleName] == nil {
-            print("Program \(program.name) is missing style \(styleName) for exercise \(name)")
-            valid = false
-        }
         if let ws = weightSet {
             if model.weightSets[ws] == nil {
                 if let p = model.active(), p.name == program.name { // we only add weight sets for the active program
@@ -95,17 +54,9 @@ final class Exercise: Codable {
                     valid = false
                 }
             }
-            
-            switch self.data {
-            case .durations, .oneRepMax, .reps, .timed:
-                if baseWeight == nil {
-                    print("Program \(program.name) exercise \(name) has a weight set but no weight")    // note that the reverse is ok
-                    valid = false
-                }
-            case .percent:
-                // Weights are from the other exercise.
-                break
-            }
+        }
+        if !validateStyle(program) {
+            valid = false
         }
         return valid
     }

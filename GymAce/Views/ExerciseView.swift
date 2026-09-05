@@ -139,7 +139,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 5)
                     Button(stopTitle()) {
                         entry.completedSet(plan)
-                        if entry.isFinished(exercise) {
+                        if entry.isFinished(program, exercise) {
                             gotoFinished()
                         } else {
                             entry.mode = .performing
@@ -185,7 +185,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     Button(nextTitle()) {
                         if let rest = entry.rest(plan) {
                             entry.mode = .resting(Date().addingTimeInterval(TimeInterval(rest)))
-                        } else if case .timed = exercise.data {
+                        } else if case .timed = program.findStyle(exercise.styleName) {
                             if case .timing = entry.mode {
                                 gotoFinished()
                             } else {
@@ -196,7 +196,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                             
                             // Note that we don't go to picking here because if there's no rest
                             // we always show the picker.
-                            if entry.isFinished(exercise) {
+                            if entry.isFinished(program, exercise) {
                                 gotoFinished()
                             } else {
                                 entry.mode = .performing
@@ -208,11 +208,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 20)
                 }
             }
-            if case .oneRepMax = exercise.data, !entry.isFinished(exercise) {
-                Text("Set the exercise weight to 90% or so of your one rep max. After finishing, the weight will be updated to reflect your actual one rep max.")
-                    .font(.footnote)
-                    .padding(.top, 10)
-            }
+//            if case .oneRepMax = exercise.data, !entry.isFinished(program, exercise) {
+//                Text("Set the exercise weight to 90% or so of your one rep max. After finishing, the weight will be updated to reflect your actual one rep max.")
+//                    .font(.footnote)
+//                    .padding(.top, 10)
+//            }
             if let s = findNotes(plan) {
                 Text(s)
                     .font(.footnote)
@@ -273,7 +273,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     workingView(model, exercise, w)
                 }
                 ForEach((0..<exercise.history.count).reversed().suffix(20), id: \.self) {
-                    completedView(model, exercise, $0)
+                    completedView(model, program, exercise, $0)
                 }
             }
             .listStyle(.plain)
@@ -312,6 +312,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         )
     }
 
+    // TODO probably want to merge this and validate
     private func findIssues() -> String? {
         var issues = ""
         
@@ -320,9 +321,9 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 issues += "There is no weight set named '\(wn)'. "
             }
         }
-        if case .percent(let d) = exercise.data {
-            if program.findExercise(d.other) == nil {
-                issues += "Couldn't find a base exercise named '\(d.other)'. "
+        if case .percent = program.findStyle(exercise.styleName) {
+            if exercise.findOtherExercise(program) == nil {
+                issues += "Couldn't find a base exercise named '\(exercise.formalName)'. "
             }
         }
         if !exercise.formalName.isBlankOrEmpty && !model.notes.has(exercise.formalName) {
@@ -338,7 +339,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     private func findNotes(_ plan: ExercisePlan) -> String? {
         var notes: String? = nil
                 
-        if case .durations(let d) = exercise.data, let target = d.targetSecs {
+        if case .durations(let d) = program.findStyle(exercise.styleName), let target = d.targetSecs {
             for set in plan.sets {
                 if case .duration = set.expected, let r = set.rest, r < target {
                     notes = "Target up to \(target) seconds."
@@ -350,10 +351,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
     
     private func canSetWeight() -> Bool {
-        if case .percent = exercise.data {
+        if case .percent = program.findStyle(exercise.styleName) {
             return false
-        } else if case .oneRepMax = exercise.data {
-            return false
+//        } else if case .oneRepMax = exercise.data {
+//            return false
         }
         return exercise.baseWeight != nil && exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
     }
@@ -379,10 +380,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
     
     private func nextTitle() -> String {
-        if case .durations = exercise.data {
+        if case .durations = program.findStyle(exercise.styleName) {
             return "Start"
         }
-        if case .timed = exercise.data {
+        if case .timed = program.findStyle(exercise.styleName) {
             if case .timing = entry.mode {
                 return "Stop"
             } else {
@@ -393,10 +394,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
     
     private func stopTitle() -> String {
-        if case .durations = exercise.data {
+        if case .durations = program.findStyle(exercise.styleName) {
             return "Stop"
         }
-        if case .timed = exercise.data {
+        if case .timed = program.findStyle(exercise.styleName) {
             return "Stop"
         }
         return "Stop Resting"
@@ -434,7 +435,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     private func gotoFinished() {
         // We want to do this before the user presses the Finished button so that the user can
         // edit the Completed he just did.
-        entry.completedLast(workout, exercise)
+        entry.completedLast(program, workout, exercise)
         program.didExercise()
         entry.mode = .finished
     }
@@ -461,7 +462,7 @@ private func workingView(_ model: Model, _ exercise: Exercise,_ working: Working
 
 // View for a line in the history tab.
 @ViewBuilder
-private func completedView(_ model: Model, _ exercise: Exercise,_ index: Int) -> some View {
+private func completedView(_ model: Model, _ program: Program, _ exercise: Exercise,_ index: Int) -> some View {
     let current = exercise.history[index]
     VStack {
         HStack {
@@ -490,7 +491,7 @@ private func completedView(_ model: Model, _ exercise: Exercise,_ index: Int) ->
             
             // details for the workout
             NavigationLink {
-                EditCompleted(model: model, exercise: exercise, current: current, index: index)
+                EditCompleted(program: program, model: model, exercise: exercise, current: current, index: index)
             } label: {
                 Text(current.details())
             }

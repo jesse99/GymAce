@@ -49,10 +49,10 @@ struct EditExercises: View {
     // it harder to give them help about the different types and doesn't really
     // save them much time because they'll have to heavily edit the exercise anyway.
     private func addExercise() {
-        let d = DurationsData(secs: [30], targetSecs: nil)
-        let name = findName(hasName)
-        let exercise = Exercise(name: name, formalName: "", styleName: "", durations: d)
-        program.exercises.append(exercise)
+//        let d = DurationsData(secs: [30], targetSecs: nil)
+//        let name = findName(hasName)
+//        let exercise = Exercise(name: name, formalName: "", styleName: "", durations: d)
+//        program.exercises.append(exercise)
     }
     
     private func hasName(_ name: String) -> Bool {

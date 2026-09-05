@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EditCompleted: View {
+    var program: Program
     var model: Model
     @Bindable var exercise: Exercise
     @State var current: Completed
@@ -15,7 +16,7 @@ struct EditCompleted: View {
         Form {
             // Reps
             HStack {
-                repsTextField(repsTitle().capitalized, repsBinding)
+                repsTextField(repsTitle(program).capitalized, repsBinding)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showRepsHelp.toggle()
@@ -24,7 +25,7 @@ struct EditCompleted: View {
                 .padding(.leading, 5)
             }
             if showRepsHelp {
-                Text("The \(repsTitle()) the user did for each set.")
+                Text("The \(repsTitle(program)) the user did for each set.")
                     .foregroundColor(.blue)
                     .font(.footnote)
             }
@@ -81,11 +82,10 @@ struct EditCompleted: View {
         }
     }
     
-    private func repsTitle() -> String {
-        switch exercise.data {
-        case .durations(_): return "seconds"
-        case .oneRepMax, .percent(_), .reps(_): return "reps"
-        case .timed: return "seconds"
+    private func repsTitle(_ program: Program) -> String {
+        switch program.findStyle(exercise.styleName) {
+        case .double_progression, .gzcl, .missing, .percent: return "reps"
+        case .durations, .timed: return "seconds"
         }
     }
         
@@ -170,6 +170,6 @@ struct EditCompleted: View {
     let entry = workout.entries[0]
     let exercise = program.findExercise(entry.name)!
     NavigationView {
-        EditCompleted(model: model, exercise: exercise, current: exercise.history[1], index: 1)
+        EditCompleted(program: program, model: model, exercise: exercise, current: exercise.history[1], index: 1)
     }
 }
