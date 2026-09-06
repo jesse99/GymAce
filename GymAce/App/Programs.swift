@@ -1356,8 +1356,8 @@ func previewModel() -> Model {
 /// Simulator only program used for testing.
 fileprivate func previewProgram() -> Program {
     func addStyles(_ program: Program) {
-        program.styles["Main"] = doubleStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")
-        program.styles["Accessory"] = doubleStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")
+        program.styles["Main"] = variableStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")
+        program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")
         program.styles["Light"] = percentStyle(percent: 100, rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
         program.styles["Walk"] = Style.timed
@@ -2318,7 +2318,7 @@ func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Flo
     exercise.history.append(c)
 }
 
-fileprivate func doubleStyle(warmup: String, workset: String, backoff: String? = nil, rest: String) -> Style {
+fileprivate func variableStyle(warmup: String, workset: String, backoff: String? = nil, rest: String) -> Style {
     if let i = VariableInfo(warmup: warmup, workset: workset, backoff: backoff, rest: rest) {
         return .variable(i)
     } else {

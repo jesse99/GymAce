@@ -65,7 +65,7 @@ struct Working: Codable {
         self.started = Date()
         self.style = program.findStyle(exercise.styleName)
         switch self.style {
-        case .variable, .gzcl, .missing, .percent:
+        case .amrap, .beginner, .variable, .gzcl, .missing, .percent:
             self.type = .reps
         case .durations, .timed:
             self.type = .secs
@@ -74,6 +74,20 @@ struct Working: Codable {
     
     func compatible(_ rhs: Style) -> Bool {
         switch style {
+        case .amrap(let i1):
+            switch rhs {
+            case .amrap(let i2):
+                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count && i1.backoff.count == i2.backoff.count
+            default:
+                return false
+            }
+        case .beginner(let i1):
+            switch rhs {
+            case .beginner(let i2):
+                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count
+            default:
+                return false
+            }
         case .variable(let i1):
             switch rhs {
             case .variable(let i2):
@@ -410,12 +424,12 @@ func typeMatches(_ program: Program, _ completed: Completed, _ exercise: Exercis
     switch completed.type {
     case .reps:
         switch program.findStyle(exercise.styleName) {
-        case .variable, .gzcl, .missing, .percent: return true
+        case .amrap, .beginner, .variable, .gzcl, .missing, .percent: return true
         case .durations, .timed: return false
         }
     case .secs:
         switch program.findStyle(exercise.styleName) {
-        case .variable, .gzcl, .missing, .percent: return false
+        case .amrap, .beginner, .variable, .gzcl, .missing, .percent: return false
         case .durations, .timed: return true
         }
     }

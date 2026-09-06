@@ -96,7 +96,9 @@
 //}
 
 // TODO rename this file
-struct FixedReps: Codable {
+
+/// Used for warmup and backoff sets.
+struct OtherReps: Codable {
     var reps: Int
     var percent: Int
     

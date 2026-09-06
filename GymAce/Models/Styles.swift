@@ -2,6 +2,13 @@ import Foundation
 
 /// Controls how an exercise is performed: rest, reps, progression, etc.
 enum Style: Codable {
+    /// Workset reps are fixed, but last set is AMRAP. Progress is based on the results of
+    /// the AMRAP set.
+    case amrap(AMRAPInfo)
+
+    /// Workset reps are fixed and progress happens if user hits requsted reps.
+    case beginner(BeginnerInfo)
+    
     /// Reps increase to a max then weight increases and expected reps is set to min.
     case variable(VariableInfo)
     
@@ -25,17 +32,71 @@ enum Style: Codable {
     case timed
 }
 
+struct AMRAPInfo: Codable {
+    var warmup: [OtherReps]
+    var workset: [Int]
+    var backoff: [OtherReps]
+    var rest: Int?
+    
+    /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
+    /// rest is formatted as "2.5m", "150s", "150", or "2h"
+    init?(warmup: String, workset: [Int], backoff: String? = nil, rest: String) {
+        switch parseOtherReps(warmup) {
+        case .success(let reps): self.warmup = reps
+        case .failure: return nil
+        }
+
+        self.workset = workset
+
+        if let b = backoff {
+            switch parseOtherReps(b) {
+            case .success(let reps): self.backoff = reps
+            case .failure: return nil
+            }
+        } else {
+            self.backoff = []
+        }
+
+        switch parseRest(rest) {
+        case .success(let secs): self.rest = secs
+        case .failure: return nil
+        }
+    }
+}
+
+struct BeginnerInfo: Codable {
+    var warmup: [OtherReps]
+    var workset: [Int]
+    var rest: Int?
+    
+    /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
+    /// rest is formatted as "2.5m", "150s", "150", or "2h"
+    init?(warmup: String, workset: [Int], rest: String) {
+        switch parseOtherReps(warmup) {
+        case .success(let reps): self.warmup = reps
+        case .failure: return nil
+        }
+
+        self.workset = workset
+        
+        switch parseRest(rest) {
+        case .success(let secs): self.rest = secs
+        case .failure: return nil
+        }
+    }
+}
+
 struct VariableInfo: Codable {
-    var warmup: [FixedReps]
+    var warmup: [OtherReps]
     var workset: [VariableReps]
-    var backoff: [FixedReps]
+    var backoff: [OtherReps]
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
     /// workset entries are formatted as "5", "8-12", or "3+" followed by an optional "/90"
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
     init?(warmup: String, workset: String, backoff: String? = nil, rest: String) {
-        switch parseFixedReps(warmup) {
+        switch parseOtherReps(warmup) {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
         }
@@ -46,7 +107,7 @@ struct VariableInfo: Codable {
         }
         
         if let b = backoff {
-            switch parseFixedReps(b) {
+            switch parseOtherReps(b) {
             case .success(let reps): self.backoff = reps
             case .failure: return nil
             }
@@ -99,6 +160,10 @@ struct PercentInfo: Codable {
 extension Exercise {
     func numSets(_ program: Program) -> Int {
         switch program.findStyle(self.styleName) {
+        case .amrap(let info):
+            return info.warmup.count + info.workset.count + info.backoff.count
+        case .beginner(let info):
+            return info.warmup.count + info.workset.count
         case .variable(let info):
             return info.warmup.count + info.workset.count + info.backoff.count
         case .durations(let info):
@@ -121,6 +186,10 @@ extension Exercise {
     /// The minimum weight used by a workset.
     func bottomWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
         switch program.findStyle(self.styleName) {
+        case .amrap(let info):
+            return findActualWeight(model, program, percent)
+        case .beginner(let info):
+            return findActualWeight(model, program, percent)
         case .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
@@ -153,6 +222,10 @@ extension Exercise {
     /// The maximum weight used by a workset.
     func topWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
         switch program.findStyle(self.styleName) {
+        case .amrap(let info):
+            return findActualWeight(model, program, percent)
+        case .beginner(let info):
+            return findActualWeight(model, program, percent)
         case .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
@@ -185,6 +258,69 @@ extension Exercise {
     func planSets(_ model: Model, _ program: Program, _ workout: Workout, parentPercent: Float = 1.0, rest: Int? = nil) -> [PlanSet] {
         var sets: [PlanSet] = []
         switch program.findStyle(self.styleName) {
+        case .amrap(let info):
+            for (i, s) in info.warmup.enumerated() {        // TODO some duplication here
+                let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
+                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
+                let p = (Float(s.percent) / 100.0) * parentPercent
+                let w = findActualWeight(model, program, p)
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                sets.append(set)
+            }
+            for (i, reps) in info.workset.enumerated() {
+                let k = PlanSet.Kind.workset(index: i, count: info.workset.count)
+                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1, info.backoff.isEmpty {
+                    nil     // don't use rest for the last set of the last exercise in a workout
+                } else {
+                    rest ?? self.rest(program, workout)
+                }
+
+                let e = if i == info.workset.count - 1 {
+                    PlanSet.Amount.amrap(min: reps)
+                } else {
+                    PlanSet.Amount.reps(min: reps, max: reps)
+                }
+                let p = parentPercent
+                let w = findActualWeight(model, program, p)
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                sets.append(set)
+            }
+            for (i, s) in info.backoff.enumerated() {
+                let k = PlanSet.Kind.backoff(index: i, count: info.warmup.count)
+                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
+                let p = (Float(s.percent) / 100.0) * parentPercent
+                let w = findActualWeight(model, program, p)
+                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.backoff.count - 1 {
+                    nil     // don't use rest for the last set of the last exercise in a workout
+                } else {
+                    rest ?? self.rest(program, workout)
+                }
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                sets.append(set)
+            }
+        case .beginner(let info):
+            for (i, s) in info.warmup.enumerated() {
+                let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
+                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
+                let p = (Float(s.percent) / 100.0) * parentPercent
+                let w = findActualWeight(model, program, p)
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                sets.append(set)
+            }
+            for (i, reps) in info.workset.enumerated() {
+                let k = PlanSet.Kind.workset(index: i, count: info.workset.count)
+                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1 {
+                    nil     // don't use rest for the last set of the last exercise in a workout
+                } else {
+                    rest ?? self.rest(program, workout)
+                }
+
+                let e = PlanSet.Amount.reps(min: reps, max: reps)
+                let p = parentPercent
+                let w = findActualWeight(model, program, p)
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                sets.append(set)
+            }
         case .variable(let info):
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
@@ -276,9 +412,19 @@ extension Exercise {
     func validateStyle(_ program: Program) -> Bool {
         var valid = true
         switch program.findStyle(self.styleName) {
+        case .amrap:
+            if baseWeight == nil {
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's AMRAP style)")
+                valid = false
+            }
+        case .beginner:
+            if baseWeight == nil {
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's beginner style)")
+                valid = false
+            }
         case .variable:
             if baseWeight == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's double progression style)")
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's variable style)")
                 valid = false
             }
         case .durations:
@@ -323,13 +469,14 @@ extension Exercise {
     
     func usesOther(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .variable, .durations, .missing, .timed: return false
+        case .amrap, .beginner, .variable, .durations, .missing, .timed: return false
         case .gzcl, .percent: return true
         }
     }
     
     func usesPercents(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
+        case .amrap, .beginner, .durations, .missing, .timed: return false
         case .variable(let info):
             for s in info.workset {
                 switch s {
@@ -339,7 +486,6 @@ extension Exercise {
                 }
             }
             return false
-        case .durations, .missing, .timed: return false
         case .gzcl, .percent: return true
         }
     }
@@ -362,6 +508,10 @@ extension Exercise {
     
     private func rest(_ program: Program, _ workout: Workout) -> Int? {   // TODO may also want min/max rest (these would be recommendations)
         switch program.findStyle(self.styleName) {
+        case .amrap(let info):
+            return info.rest
+        case .beginner(let info):
+            return info.rest
         case .variable(let info):
             return info.rest
         case .durations:
@@ -444,10 +594,10 @@ extension Exercise {
     }
 }
 
-fileprivate func parseFixedReps(_ text: String) -> Result<[FixedReps], MyError> {
-    var reps: [FixedReps] = []
+fileprivate func parseOtherReps(_ text: String) -> Result<[OtherReps], MyError> {
+    var reps: [OtherReps] = []
     for s in text.split(separator: " ") {
-        if let r = FixedReps(String(s)) {
+        if let r = OtherReps(String(s)) {
             reps.append(r)
         } else {
             let err = MyError(err: "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'.")

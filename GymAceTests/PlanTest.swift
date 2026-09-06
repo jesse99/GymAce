@@ -4,8 +4,46 @@ import Testing
 @testable import GymAce
 
 class PlanTests {
-    @Test("DoubleProgressPlan")
-    func doubleProgress() {
+    @Test("AMRAPPlan")
+    func amrap() {
+        // Bench with AMRAP
+        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 225)
+        let plan = makePlan()
+        #expect(plan.details(exercise) == "2x5, 5+ @ 225 lbs")
+        
+        var sets: [String] = []
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/-")                // 0.0 * 225 = 0.0
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/-")              // 0.6 * 225 = 135.0
+        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/-") // 0.8 * 225 = 180.0
+        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/-")     // 0.9 * 225 = 202.5
+        sets.append("Workset 1 of 3/5 reps @ 225 lbs/45x2/-")
+        sets.append("Workset 2 of 3/5 reps @ 225 lbs/45x2/-")
+        sets.append("Workset 3 of 3/5+ reps @ 225 lbs/45x2/-")
+        #expect(to_headers(plan) == sets.joined(separator: ", "))
+        #expect(completed() == "5 reps x3 @ 225 lbs")
+    }
+    
+    @Test("BeginnerPlan")
+    func beginner() {
+        // Bench with AMRAP
+        exercise = make("Bench", "Bench Press", "Beginner", weights: "Dual Plates", weight: 225)
+        let plan = makePlan()
+        #expect(plan.details(exercise) == "3x5 @ 225 lbs")
+        
+        var sets: [String] = []
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/-")                // 0.0 * 225 = 0.0
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/-")              // 0.6 * 225 = 135.0
+        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/-") // 0.8 * 225 = 180.0
+        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/-")     // 0.9 * 225 = 202.5
+        sets.append("Workset 1 of 3/5 reps @ 225 lbs/45x2/-")
+        sets.append("Workset 2 of 3/5 reps @ 225 lbs/45x2/-")
+        sets.append("Workset 3 of 3/5 reps @ 225 lbs/45x2/-")
+        #expect(to_headers(plan) == sets.joined(separator: ", "))
+        #expect(completed() == "5 reps x3 @ 225 lbs")
+    }
+    
+    @Test("VariablePlan")
+    func variable() {
         // Bench with AMRAP
         exercise = make("Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 225)
         var plan = makePlan()
@@ -209,6 +247,8 @@ class PlanTests {
 
         program = Program("Test Program")
         program.styles["Accessory"] = .variable(VariableInfo(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")!)
+        program.styles["AMRAP"] = .amrap(AMRAPInfo(warmup: "5/0 5/60 3/80 1/90", workset: [5, 5, 5], rest: "2m")!)
+        program.styles["Beginner"] = .beginner(BeginnerInfo(warmup: "5/0 5/60 3/80 1/90", workset: [5, 5, 5], rest: "2m")!)
         program.styles["Light"] = .percent(PercentInfo(percent: 90, rest: "2m")!)
         program.styles["Main"] = .variable(VariableInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")!)
         program.styles["Stretch1"] = .durations(DurationsInfo(secs: "30s", targetSecs: "")!)
