@@ -123,12 +123,19 @@ struct OtherReps: Codable {
     }
 }
 
-enum VariableReps: Codable {
-    case amrap(Int, Int = 100)  // minReps, percent
-    case fixed(Int, Int = 100)  // reps, percent
-    case variable(Int, Int)     // minReps, maxReps
-        
-    /// Parse a string formatted as "5", "8-12", or "3+" followed by an optional "/90".
+/// Used for work sets with variable style.
+struct VariableReps: Codable {
+    var minReps: Int
+    var maxReps: Int
+    var percent: Int
+
+    init(minReps: Int, maxReps: Int, percent: Int) {
+        self.minReps = minReps
+        self.maxReps = maxReps
+        self.percent = percent
+    }
+
+    /// Parse a string formatted as "5" or  "4-8" with an optional percent suffix like "/80".
     init?(_ str: String) {
         var text = str
         var percent = 100
@@ -145,22 +152,22 @@ enum VariableReps: Codable {
             guard parts.count == 2 else {return nil}
             guard let min = Int(parts[0]) else {return nil}
             guard let max = Int(parts[1]) else {return nil}
-            self = .variable(min, max)
-        } else if text.last == "+" {
-            let s = text.dropLast(1)
-            guard let reps = Int(s) else {return nil}
-            self = .amrap(reps, percent)
+            guard min <= max else {return nil}
+            self.minReps = min
+            self.maxReps = max
         } else {
             guard let reps = Int(text) else {return nil}
-            self = .fixed(reps, percent)
+            self.minReps = reps
+            self.maxReps = reps
         }
+        self.percent = percent
     }
     
     func asString() -> String {
-        switch self {
-        case .amrap(let r, let p): if p != 100 {return "\(r)+/\(p)"} else {return "\(r)+"}
-        case .fixed(let r, let p): if p != 100 {return "\(r)/\(p)"} else {return "\(r)"}
-        case .variable(let min, let max): return "\(min)-\(max)"
+        if minReps == maxReps {
+            return "\(minReps)/\(percent)"
+        } else {
+            return "\(minReps)-\(maxReps)/\(percent)"
         }
     }
 }

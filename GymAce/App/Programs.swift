@@ -1356,7 +1356,7 @@ func previewModel() -> Model {
 /// Simulator only program used for testing.
 fileprivate func previewProgram() -> Program {
     func addStyles(_ program: Program) {
-        program.styles["Main"] = variableStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")
+        program.styles["Main"] = variableStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")
         program.styles["Light"] = percentStyle(percent: 100, rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")

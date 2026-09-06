@@ -93,7 +93,7 @@ struct VariableInfo: Codable {
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
-    /// workset entries are formatted as "5", "8-12", or "3+" followed by an optional "/90"
+    /// workset entries are formatted as "5" or "8-12" followed by an optional "/90"
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
     init?(warmup: String, workset: String, backoff: String? = nil, rest: String) {
         switch parseOtherReps(warmup) {
@@ -193,14 +193,7 @@ extension Exercise {
         case .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
-                switch s {
-                case .amrap(_, let percent):
-                    percents.append(percent)
-                case .fixed(_, let percent):
-                    percents.append(percent)
-                case .variable:
-                    percents.append(100)
-                }
+                percents.append(s.percent)
             }
             if let p = percents.min() {
                 let q = Float(p) / 100.0
@@ -229,14 +222,7 @@ extension Exercise {
         case .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
-                switch s {
-                case .amrap(_, let percent):
-                    percents.append(percent)
-                case .fixed(_, let percent):
-                    percents.append(percent)
-                case .variable:
-                    percents.append(100)
-                }
+                percents.append(s.percent)
             }
             if let p = percents.max() {
                 let q = Float(p) / 100.0
@@ -276,7 +262,7 @@ extension Exercise {
                 }
 
                 let e = if i == info.workset.count - 1 {
-                    PlanSet.Amount.amrap(min: reps)
+                    PlanSet.Amount.amrap(min: findMinAMRAP(model, program, reps, i))
                 } else {
                     PlanSet.Amount.reps(min: reps, max: reps)
                 }
@@ -337,28 +323,12 @@ extension Exercise {
                 } else {
                     rest ?? self.rest(program, workout)
                 }
-                switch s {
-                case .amrap(_, let percent):
-                    let m = findMinExpected(model, program, workout, s, i)
-                    let e = PlanSet.Amount.amrap(min: m)
-                    let p = (Float(percent) / 100.0) * parentPercent
-                    let w = findActualWeight(model, program, p)
-                    let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
-                    sets.append(set)
-                case .fixed(let reps, let percent):
-                    let e = PlanSet.Amount.reps(min: reps, max: reps)
-                    let p = (Float(percent) / 100.0) * parentPercent
-                    let w = findActualWeight(model, program, p)
-                    let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
-                    sets.append(set)
-                case .variable(_, let max):
-                    let m = findMinExpected(model, program, workout, s, i)
-                    let e = PlanSet.Amount.reps(min: m, max: max)
-                    let p = parentPercent
-                    let w = findActualWeight(model, program, p)
-                    let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
-                    sets.append(set)
-                }
+                let m = findMinVariable(model, program, s, i)
+                let e = PlanSet.Amount.reps(min: m, max: s.maxReps)
+                let p = parentPercent
+                let w = findActualWeight(model, program, p)
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                sets.append(set)
             }
             for (i, s) in info.backoff.enumerated() {
                 let k = PlanSet.Kind.backoff(index: i, count: info.warmup.count)
@@ -479,11 +449,7 @@ extension Exercise {
         case .amrap, .beginner, .durations, .missing, .timed: return false
         case .variable(let info):
             for s in info.workset {
-                switch s {
-                case .amrap(_, let percent): if percent != 100 {return true}
-                case .fixed(_, let percent): if percent != 100 {return true}
-                case .variable: continue
-                }
+                if s.percent != 100 {return true}
             }
             return false
         case .gzcl, .percent: return true
@@ -553,44 +519,41 @@ extension Exercise {
         return nil
     }
     
-    private func findMinExpected(_ model: Model, _ program: Program, _ workout: Workout, _ reps: VariableReps, _ index: Int) -> Int {
-        switch reps {
-        case .amrap(let min, _):
-            // For AMRAP if the user did the top weight last workout and more reps than min
-            // then use those reps as the min.
-            if let last = latestCompleted(), typeMatches(program, last, self), index < last.values.count {
-                if let top = topWeight(model, program)?.value(), let old = last.maxWeight(), old >= top {
-                    let r = last.values[index]
-                    if r > min {
-                        return r
-                    }
+    private func findMinAMRAP(_ model: Model, _ program: Program, _ reps: Int, _ index: Int) -> Int {
+        // For AMRAP if the user did the top weight last workout and more reps than min
+        // then use those reps as the min.
+        if let last = latestCompleted(), typeMatches(program, last, self), index < last.values.count {
+            if let top = topWeight(model, program)?.value(), let old = last.maxWeight(), old >= top {
+                let r = last.values[index]
+                if r > reps {
+                    return r
                 }
             }
-            return min
-        case .fixed(let r, _):
-            return r
-        case .variable(let min, let max):
-            // Usually we'll just return min except for a few cases:
-            if let last = latestCompleted(), typeMatches(program, last, self) {
-                if let top = topWeight(model, program)?.value(), let old = last.maxWeight() {
-                    if top < old {
-                        // 1) the user has dropped the weight
-                        // Possible that they can't now do max, but they should be close to that...
-                        return max
-                    } else if top == old && index < last.values.count {
-                        // 2) the user is doing the same weight so the expected is whatever
-                        // they last did clamped to what the current min/max is.
-                        let r = last.values[index]
-                        if r >= min && r < max {
-                            return r
-                        } else if r >= max {
-                            return max
-                        }
-                    }
-                }
-            }
-            return min
         }
+        return reps
+    }
+
+    private func findMinVariable(_ model: Model, _ program: Program, _ reps: VariableReps, _ index: Int) -> Int {
+        // Usually we'll just return min except for a few cases:
+        if let last = latestCompleted(), typeMatches(program, last, self) {
+            if let top = topWeight(model, program)?.value(), let old = last.maxWeight() {
+                if top < old {
+                    // 1) the user has dropped the weight
+                    // Possible that they can't now do max, but they should be close to that...
+                    return reps.maxReps
+                } else if top == old && index < last.values.count {
+                    // 2) the user is doing the same weight so the expected is whatever
+                    // they last did clamped to what the current min/max is.
+                    let r = last.values[index]
+                    if r >= reps.minReps && r < reps.maxReps {
+                        return r
+                    } else if r >= reps.maxReps {
+                        return reps.maxReps
+                    }
+                }
+            }
+        }
+        return reps.minReps
     }
 }
 
