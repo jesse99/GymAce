@@ -42,7 +42,7 @@ struct Working: Codable {
         return delta/3600.0 > 4.0   // aka more than 4 hours
     }
     
-    init(_ plan: ExercisePlan, _ program: Program, _ exercise: Exercise, _ units: Units) {
+    init(_ plan: ExercisePlan, _ program: Program, _ exercise: Exercise, units: Units) {
         self.expected = []
         for s in plan.sets {
             if case .workset = s.kind {
@@ -244,14 +244,16 @@ final class ExerciseEntry: Codable {
     /// Start the exercise all over (or for the first time).
     func reset(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) {
         let plan = ExercisePlan(model, program, workout, exercise)
-        let hasWeights: Bool = plan.hasWeights()
+        
         var units: Units = .None
-        if hasWeights, let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-            units = ws.units
+        if let last = plan.sets.last {
+            if let w = last.weight {
+                units = w.units()
+            }
         }
         
         setIndex = 0
-        working = Working(plan, program, exercise, units)
+        working = Working(plan, program, exercise, units: units)
         mode = .performing
     }
     

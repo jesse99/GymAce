@@ -48,6 +48,14 @@ struct ActualWeight {
         case .Plates(let p): p.totalWeight()
         }
     }
+    
+    func units() -> Units {
+        switch weight {
+        case .Discrete(_, let u): u
+        case .Error: .None
+        case .Plates(let p): p.units
+        }
+    }
 
     /// The weight as a string, e.g. "165 lbs".
     func text() -> String {
