@@ -83,10 +83,10 @@ struct GzclInfo: Codable {
 }
 
 struct PercentInfo: Codable {
-    var percent: Float
+    var percent: Int
     var rest: Int?
     
-    init?(percent: Float, rest: String) {
+    init?(percent: Int, rest: String) {
         self.percent = percent
 
         switch parseRest(rest) {
@@ -142,7 +142,8 @@ extension Exercise {
         case .gzcl(_):
             fatalError("not implemented")
         case .percent(let info):
-            if let (e, _) = findOtherExercise(program), let w = e.bottomWeight(model, program, info.percent) {
+            let p = Float(info.percent) / 100.0
+            if let (e, _) = findOtherExercise(program), let w = e.bottomWeight(model, program, p * percent) {
                 return w
             }
         }
@@ -173,7 +174,8 @@ extension Exercise {
         case .gzcl(_):
             fatalError("not implemented")
         case .percent(let info):
-            if let (e, _) = findOtherExercise(program), let w = e.topWeight(model, program, info.percent) {
+            let p = Float(info.percent) / 100.0
+            if let (e, _) = findOtherExercise(program), let w = e.topWeight(model, program, p * percent) {
                 return w
             }
         }
@@ -254,8 +256,9 @@ extension Exercise {
             let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: rest)
             sets.append(set)
         case .percent(let info):
+            let p = Float(info.percent) / 100.0
             if let (e, w) = findOtherExercise(program) {
-                return e.planSets(model, program, w, parentPercent: parentPercent * info.percent, rest: info.rest)
+                return e.planSets(model, program, w, parentPercent: p * parentPercent, rest: info.rest)
             } else {
                 return []   // validate will have complained
             }

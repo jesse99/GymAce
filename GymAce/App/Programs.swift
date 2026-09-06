@@ -1358,7 +1358,7 @@ fileprivate func previewProgram() -> Program {
     func addStyles(_ program: Program) {
         program.styles["Main"] = doubleStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")
         program.styles["Accessory"] = doubleStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")
-        program.styles["Light"] = percentStyle(percent: 0.9, rest: "2m")
+        program.styles["Light"] = percentStyle(percent: 100, rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
         program.styles["Walk"] = Style.timed
     }
@@ -2334,7 +2334,7 @@ fileprivate func durationsStyle(secs: String, targetSecs: String) -> Style {
     }
 }
 
-fileprivate func percentStyle(percent: Float, rest: String) -> Style {
+fileprivate func percentStyle(percent: Int, rest: String) -> Style {
     if let i = PercentInfo(percent: percent, rest: rest) {
         return .percent(i)
     } else {
