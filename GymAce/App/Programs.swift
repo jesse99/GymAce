@@ -2319,8 +2319,8 @@ func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Flo
 }
 
 fileprivate func doubleStyle(warmup: String, workset: String, backoff: String? = nil, rest: String) -> Style {
-    if let i = DoubleProgressionInfo(warmup: warmup, workset: workset, backoff: backoff, rest: rest) {
-        return .double_progression(i)
+    if let i = VariableInfo(warmup: warmup, workset: workset, backoff: backoff, rest: rest) {
+        return .variable(i)
     } else {
         fatalError("bad args")
     }

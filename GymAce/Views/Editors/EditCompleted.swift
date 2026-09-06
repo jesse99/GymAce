@@ -84,7 +84,7 @@ struct EditCompleted: View {
     
     private func repsTitle(_ program: Program) -> String {
         switch program.findStyle(exercise.styleName) {
-        case .double_progression, .gzcl, .missing, .percent: return "reps"
+        case .variable, .gzcl, .missing, .percent: return "reps"
         case .durations, .timed: return "seconds"
         }
     }

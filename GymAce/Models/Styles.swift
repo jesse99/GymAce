@@ -3,7 +3,7 @@ import Foundation
 /// Controls how an exercise is performed: rest, reps, progression, etc.
 enum Style: Codable {
     /// Reps increase to a max then weight increases and expected reps is set to min.
-    case double_progression(DoubleProgressionInfo)
+    case variable(VariableInfo)
     
     /// Exercise is done for a specified number of seconds up to a target value.
     case durations(DurationsInfo)
@@ -25,7 +25,7 @@ enum Style: Codable {
     case timed
 }
 
-struct DoubleProgressionInfo: Codable {
+struct VariableInfo: Codable {
     var warmup: [FixedReps]
     var workset: [VariableReps]
     var backoff: [FixedReps]
@@ -99,7 +99,7 @@ struct PercentInfo: Codable {
 extension Exercise {
     func numSets(_ program: Program) -> Int {
         switch program.findStyle(self.styleName) {
-        case .double_progression(let info):
+        case .variable(let info):
             return info.warmup.count + info.workset.count + info.backoff.count
         case .durations(let info):
             return info.secs.count
@@ -121,7 +121,7 @@ extension Exercise {
     /// The minimum weight used by a workset.
     func bottomWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
         switch program.findStyle(self.styleName) {
-        case .double_progression(let info):
+        case .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
                 switch s {
@@ -153,7 +153,7 @@ extension Exercise {
     /// The maximum weight used by a workset.
     func topWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
         switch program.findStyle(self.styleName) {
-        case .double_progression(let info):
+        case .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
                 switch s {
@@ -185,7 +185,7 @@ extension Exercise {
     func planSets(_ model: Model, _ program: Program, _ workout: Workout, parentPercent: Float = 1.0, rest: Int? = nil) -> [PlanSet] {
         var sets: [PlanSet] = []
         switch program.findStyle(self.styleName) {
-        case .double_progression(let info):
+        case .variable(let info):
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
@@ -276,7 +276,7 @@ extension Exercise {
     func validateStyle(_ program: Program) -> Bool {
         var valid = true
         switch program.findStyle(self.styleName) {
-        case .double_progression:
+        case .variable:
             if baseWeight == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's double progression style)")
                 valid = false
@@ -323,14 +323,14 @@ extension Exercise {
     
     func usesOther(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .double_progression, .durations, .missing, .timed: return false
+        case .variable, .durations, .missing, .timed: return false
         case .gzcl, .percent: return true
         }
     }
     
     func usesPercents(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .double_progression(let info):
+        case .variable(let info):
             for s in info.workset {
                 switch s {
                 case .amrap(_, let percent): if percent != 100 {return true}
@@ -362,7 +362,7 @@ extension Exercise {
     
     private func rest(_ program: Program, _ workout: Workout) -> Int? {   // TODO may also want min/max rest (these would be recommendations)
         switch program.findStyle(self.styleName) {
-        case .double_progression(let info):
+        case .variable(let info):
             return info.rest
         case .durations:
             return nil

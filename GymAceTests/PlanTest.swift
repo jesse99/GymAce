@@ -208,9 +208,9 @@ class PlanTests {
         model = Model()
 
         program = Program("Test Program")
-        program.styles["Accessory"] = .double_progression(DoubleProgressionInfo(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")!)
+        program.styles["Accessory"] = .variable(VariableInfo(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")!)
         program.styles["Light"] = .percent(PercentInfo(percent: 90, rest: "2m")!)
-        program.styles["Main"] = .double_progression(DoubleProgressionInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")!)
+        program.styles["Main"] = .variable(VariableInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5+", rest: "3m")!)
         program.styles["Stretch1"] = .durations(DurationsInfo(secs: "30s", targetSecs: "")!)
         program.styles["Stretch3"] = .durations(DurationsInfo(secs: "30s 40s 50s", targetSecs: "")!)
         program.styles["Stretch3b"] = .durations(DurationsInfo(secs: "30s 30s 30s", targetSecs: "60s")!)
