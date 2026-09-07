@@ -15,10 +15,6 @@ enum Style: Codable {
     /// Exercise is done for a specified number of seconds up to a target value.
     case durations(DurationsInfo)
 
-    /// Four week blocks with increasing weight but fewer reps each week. Last week
-    /// has an AMRAP set which controls whether weight is increased.
-    case gzcl(GzclInfo)
-    
     /// Used for exercises that have a styleName that isn't in the program. This allows the
     /// logic to be simplified.
     case missing
@@ -43,8 +39,6 @@ extension Style {
             return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do the max reps."
         case .durations:
             return "The exercise is done for a specified time with an optional target time. If you hit the target you may want to switch to a harder version of the exercise, e.g. plants to foot elevated planks."
-        case .gzcl:
-            return "This is run for 3-8 week blocks where the weight is increased each week but the number of reps is reduced. The last week has an AMRAP set which controls whether the weight is increased. This is intended for intermediate lifters."
         case .missing:
             return "The style is missing from the program."
         case .percent:
@@ -162,10 +156,6 @@ struct DurationsInfo: Codable {
     }
 }
 
-struct GzclInfo: Codable {
-    var rest: Int?
-}
-
 struct PercentInfo: Codable {
     var percent: Int
     var rest: Int?
@@ -228,7 +218,7 @@ extension Exercise {
                 if let expected = info.workset.last, let actual = getLastReps(n: -1), checkReps(n: -1, with: compatible) {
                     if expected == 1 && actual < 1 {
                         return -2
-                    } else if actual < expected - 1 {
+                    } else if expected > 1 && actual < expected - 1 {
                         return -2
                     }
                 }
@@ -322,8 +312,6 @@ extension Exercise {
             return 0
         case .durations, .missing, .percent, .timed:
             return nil
-        case .gzcl:
-            return 0
         }
     }
     
@@ -377,8 +365,6 @@ extension Exercise {
             return info.warmup.count + info.workset.count + info.backoff.count
         case .durations(let info):
             return info.secs.count
-        case .gzcl(_):
-            fatalError("not implemented")
         case .missing:
             return 1
         case .percent(_):
@@ -410,8 +396,6 @@ extension Exercise {
             }
         case .durations, .missing, .timed:
             return findActualWeight(model, program, percent)
-        case .gzcl(_):
-            fatalError("not implemented")
         case .percent(let info):
             let p = Float(info.percent) / 100.0
             if let (e, _) = findOtherExercise(program), let w = e.bottomWeight(model, program, p * percent) {
@@ -439,8 +423,6 @@ extension Exercise {
             }
         case .durations, .missing, .timed:
             return findActualWeight(model, program, percent)
-        case .gzcl(_):
-            fatalError("not implemented")
         case .percent(let info):
             let p = Float(info.percent) / 100.0
             if let (e, _) = findOtherExercise(program), let w = e.topWeight(model, program, p * percent) {
@@ -561,8 +543,6 @@ extension Exercise {
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: s)
                 sets.append(set)
             }
-        case .gzcl(_):
-            fatalError("not implemented")
         case .missing:
             let k = PlanSet.Kind.workset(index: 0, count: 1)
             let e = PlanSet.Amount.reps(min: 5, max: 5)
@@ -608,11 +588,6 @@ extension Exercise {
             }
         case .durations:
             break
-        case .gzcl:
-            if baseWeight != nil {
-                print("Program \(program.name) exercise \(name) should not have a base weight (it's gzcl style)")
-                valid = false
-            }
         case .missing:
             valid = false
         case .percent:
@@ -649,7 +624,7 @@ extension Exercise {
     func usesOther(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
         case .amrap, .beginner, .variable, .durations, .missing, .timed: return false
-        case .gzcl, .percent: return true
+        case .percent: return true
         }
     }
     
@@ -661,7 +636,7 @@ extension Exercise {
                 if s.percent != 100 {return true}
             }
             return false
-        case .gzcl, .percent: return true
+        case .percent: return true
         }
     }
     
@@ -691,8 +666,6 @@ extension Exercise {
             return info.rest
         case .durations:
             return nil
-        case .gzcl(let info):
-            return info.rest
         case .missing:
             return nil
         case .percent(let info):

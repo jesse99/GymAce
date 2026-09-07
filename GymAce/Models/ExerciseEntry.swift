@@ -65,7 +65,7 @@ struct Working: Codable {
         self.started = Date()
         self.style = program.findStyle(exercise.styleName)
         switch self.style {
-        case .amrap, .beginner, .variable, .gzcl, .missing, .percent:
+        case .amrap, .beginner, .variable, .missing, .percent:
             self.type = .reps
         case .durations, .timed:
             self.type = .secs
@@ -99,13 +99,6 @@ struct Working: Codable {
             switch rhs {
             case .durations(let i2):
                 return i1.secs.count == i2.secs.count
-            default:
-                return false
-            }
-        case .gzcl:
-            switch rhs {
-            case .gzcl:
-                fatalError("not implemented")
             default:
                 return false
             }
@@ -424,12 +417,12 @@ func typeMatches(_ program: Program, _ completed: Completed, _ exercise: Exercis
     switch completed.type {
     case .reps:
         switch program.findStyle(exercise.styleName) {
-        case .amrap, .beginner, .variable, .gzcl, .missing, .percent: return true
+        case .amrap, .beginner, .variable, .missing, .percent: return true
         case .durations, .timed: return false
         }
     case .secs:
         switch program.findStyle(exercise.styleName) {
-        case .amrap, .beginner, .variable, .gzcl, .missing, .percent: return false
+        case .amrap, .beginner, .variable, .missing, .percent: return false
         case .durations, .timed: return true
         }
     }
