@@ -7,7 +7,7 @@ class PlanTests {
     @Test("AMRAPPlan")
     func amrap() {
         // Bench with AMRAP
-        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 225)
+        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 226)
         let plan = makePlan()
         #expect(plan.details(exercise) == "2x5, 5+ @ 225 lbs")
         
@@ -21,6 +21,50 @@ class PlanTests {
         sets.append("Workset 3 of 3/5+ reps @ 225 lbs/45x2/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 225 lbs")
+        
+        // Check progression
+        setCompleted([])
+        #expect(exercise.progress(program) == 0)    // no completed
+        
+        let b = exercise.baseWeight!
+        setCompleted([([5, 5, 2], nil)])
+        #expect(exercise.progress(program) == -2)    // not enough reps
+        
+        setCompleted([([5, 5, 3], nil)])
+        #expect(exercise.progress(program) == -2)    // not enough reps
+        
+        setCompleted([([5, 5], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough sets
+        
+        setCompleted([([5, 5, 5], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps
+        
+        setCompleted([([5, 5, 6], b - 10.0)])
+        #expect(exercise.progress(program) == 0)    // not enough weight
+        
+        setCompleted([([5, 5, 6], nil)])
+        #expect(exercise.progress(program) == 1)    // one extra rep
+
+        setCompleted([([10, 10, 5], nil)])
+        #expect(exercise.progress(program) == 3)    // one extra rep (earlier reps do matter)
+        
+        setCompleted([([2, 2, 7], nil)])
+        #expect(exercise.progress(program) == 0)    // two extra reps (earlier reps do matter)
+        
+        setCompleted([([5, 5, 8], nil)])
+        #expect(exercise.progress(program) == 3)    // three extra reps
+        
+        setCompleted([([5, 5, 9], nil)])
+        #expect(exercise.progress(program) == 3)    // four extra reps
+        
+        setCompleted([([5, 5, 4], nil)])
+        #expect(exercise.progress(program) == 0)    // one missed rep is OK
+
+        setCompleted([([5, 5, 3], nil)])
+        #expect(exercise.progress(program) == -2)    // not enough reps
+
+        setCompleted([([5, 5, 4], nil),  ([5, 5, 5], nil),  ([5, 5, 5], nil)])
+        #expect(exercise.progress(program) == -2)    // stuck too many times
     }
     
     @Test("BeginnerPlan")
@@ -40,12 +84,54 @@ class PlanTests {
         sets.append("Workset 3 of 3/5 reps @ 225 lbs/45x2/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 225 lbs")
+        
+        // Check progression
+        setCompleted([])
+        #expect(exercise.progress(program) == 0)    // no completed
+        
+        let b = exercise.baseWeight!
+        setCompleted([([5, 5, 4], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps
+        
+        setCompleted([([4, 5, 5], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps
+        
+        setCompleted([([5, 5], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough sets
+        
+        setCompleted([([5, 5, 5], b - 10.0)])
+        #expect(exercise.progress(program) == 0)    // not enough weight, weird case, maybe can happen if baseWeight is changed mid-exercise
+        
+        setCompleted([([5, 5, 5], nil)])
+        #expect(exercise.progress(program) == 1)    // enough reps
+        
+        setCompleted([([6, 5, 5], nil)])
+        #expect(exercise.progress(program) == 1)    // extra reps
+        
+        setCompleted([([6, 5, 5], b + 10.0)])
+        #expect(exercise.progress(program) == 1)    // extra reps and extra weight
+        
+        setCompleted([([5, 5, 4], nil),  ([5, 5, 4], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps
+        
+        setCompleted([([5, 5, 2], b - 10.0),  ([5, 5, 3], nil),  ([5, 5, 4], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps too many times (but weights don't match)
+        
+        let c = b - 10.0
+        setCompleted([([5, 5, 2], c),  ([5, 5, 3], c),  ([5, 5, 4], c)])
+        #expect(exercise.progress(program) == 0)    // not enough reps too many times (but weights don't match)
+        
+        setCompleted([([5, 2, 1], nil)])
+        #expect(exercise.progress(program) == -2)    // bad workouts can happen, but if it's really bad we'll drop weight
+
+        setCompleted([([5, 5, 2], nil),  ([5, 5, 3], nil),  ([5, 5, 4], nil)])
+        #expect(exercise.progress(program) == -2)    // not enough reps too many times
     }
     
     @Test("VariablePlan")
     func variable() {
         // Variable reps
-        exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
+        exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.6)
         var plan = makePlan()
         #expect(plan.details(exercise) == "3x8-12 @ 42.5 lbs")
         
@@ -55,9 +141,9 @@ class PlanTests {
         sets.append("Workset 3 of 3/8-12 reps @ 42.5 lbs/-/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "8 reps x3 @ 42.5 lbs")
-
+        
         // Variable reps with an old completed
-        var exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
+        exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
         plan = makePlan(daysAgo: 2, reps: [10, 10, 9], weights: [42.5, 42.5, 42.5])
         #expect(plan.details(exercise) == "2x10-12, 9-12 @ 42.5 lbs")
         
@@ -66,8 +152,8 @@ class PlanTests {
         sets.append("Workset 2 of 3/10-12 reps @ 42.5 lbs/-/-")
         sets.append("Workset 3 of 3/9-12 reps @ 42.5 lbs/-/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "8 reps x3 @ 42.5 lbs, 10 reps x2, 9 reps @ 42.5 lbs, 10 reps x2, 9 reps @ 42.5 lbs")
-
+        #expect(completed() == "10 reps x2, 9 reps @ 42.5 lbs, 10 reps x2, 9 reps @ 42.5 lbs")
+        
         // Variable reps with another old completed
         exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
         plan = makePlan(daysAgo: 2, reps: [12, 12, 12], weights: [42.5, 42.5, 42.5])
@@ -78,7 +164,49 @@ class PlanTests {
         sets.append("Workset 2 of 3/12 reps @ 42.5 lbs/-/-")
         sets.append("Workset 3 of 3/12 reps @ 42.5 lbs/-/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "8 reps x3 @ 42.5 lbs, 10 reps x2, 9 reps @ 42.5 lbs, 10 reps x2, 9 reps @ 42.5 lbs, 12 reps x3 @ 42.5 lbs, 12 reps x3 @ 42.5 lbs")
+        #expect(completed() == "12 reps x3 @ 42.5 lbs, 12 reps x3 @ 42.5 lbs")
+        
+        // Check progression
+        setCompleted([])
+        #expect(exercise.progress(program) == 0)    // no completed
+        
+        let b = exercise.baseWeight!
+        setCompleted([([12, 12, 4], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps
+        
+        setCompleted([([12, 12, 12], b - 10.0)])
+        #expect(exercise.progress(program) == 0)    // not enough weight
+        
+        setCompleted([([12, 12, 12], nil)])
+        #expect(exercise.progress(program) == 1)    // enough reps
+        
+        setCompleted([([12, 13, 12], nil)])
+        #expect(exercise.progress(program) == 1)    // one extra rep
+        
+        setCompleted([([12, 12, 4], nil),  ([12, 12, 4], nil)])
+        #expect(exercise.progress(program) == 0)    // not enough reps
+        
+        setCompleted([([8, 8, 7], nil),  ([8, 8, 8], nil),  ([10, 9, 8], nil),  ([10, 10, 9], nil)])
+        #expect(exercise.progress(program) == 0)    // reps are going up
+
+        setCompleted([([11, 10, 10], nil),  ([10, 10, 10], nil),  ([10, 10, 9], nil),  ([10, 9, 8], nil)])
+        #expect(exercise.progress(program) == -2)    // reps are going down
+
+        setCompleted([([8, 8, 8], b - 10.0),  ([8, 8, 8], b - 10.0),  ([8, 8, 8], nil),  ([8, 8, 8], nil)])
+        #expect(exercise.progress(program) == 0)    // stuck at same reps too many times (but weights don't match)
+        
+        let c = b - 10.0
+        setCompleted([([10, 10, 10], c),  ([10, 10, 10], c),  ([10, 10, 10], c),  ([10, 10, 10], c)])
+        #expect(exercise.progress(program) == 0)    // stuck at same reps too many times (but weights don't match)
+        
+        setCompleted([([10, 10, 10], nil),  ([10, 10, 10], nil),  ([10, 10, 10], nil),  ([10, 10, 10], nil)])
+        #expect(exercise.progress(program) == -2)    // stuck at same reps too many times
+        
+        setCompleted([([8, 8, 7], nil)])
+        #expect(exercise.progress(program) == -2)    // did fewer than min reps
+        
+        setCompleted([([8, 7, 8], nil)])
+        #expect(exercise.progress(program) == -2)    // did fewer than min reps
     }
     
     @Test("PercentPlan")
@@ -99,13 +227,13 @@ class PlanTests {
         sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 205 lbs")   // TODO need to get weightset from other
-
+        
         // Percent is based on other baseWeight, not other completed. It makes some sense to use completed
         // because the user may not be able to do a new baseWeight but we don't want to do that for gzcl
         // and keeping things simple and consistent seems like a good idea.
         exercise = make("Light Bench", "Bench Press", "Light")
         plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 225),
-                            daysAgo: 2, reps: [5, 5, 5], weights: [250, 250, 250])
+                        daysAgo: 2, reps: [5, 5, 5], weights: [250, 250, 250])
         
         #expect(plan.details(exercise) == "3x5 @ 205 lbs")          // 0.9 * 225 = 202.5
         
@@ -120,7 +248,7 @@ class PlanTests {
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 205 lbs")
     }
-
+    
     @Test("DurationsPlan")
     func durations() {
         exercise = make("Quad Stretch", "Standing Quad Stretch", "Stretch1")
@@ -128,19 +256,19 @@ class PlanTests {
         #expect(plan.details(exercise) == "30s")
         #expect(to_headers(plan) == "Workset 1 of 1/30 secs/-/-")
         #expect(completed() == "30 secs")
-
+        
         exercise = make("Quad Stretch", "Standing Quad Stretch", "Stretch3")
         plan = makePlan()
         #expect(plan.details(exercise) == "30s, 40s, 50s")
         #expect(to_headers(plan) == "Workset 1 of 3/30 secs/-/-, Workset 2 of 3/40 secs/-/-, Workset 3 of 3/50 secs/-/-")
         #expect(completed() == "30 secs, 40 secs, 50 secs")
-
+        
         exercise = make("Quad Stretch", "Standing Quad Stretch", "Stretch3b")
         plan = makePlan()
         #expect(plan.details(exercise) == "3x30s")
         #expect(to_headers(plan) == "Workset 1 of 3/30 secs/-/-, Workset 2 of 3/30 secs/-/-, Workset 3 of 3/30 secs/-/-")
         #expect(completed() == "30 secs x3")
-
+        
         exercise = make("Quad Stretch", "Standing Quad Stretch", "Stretch3b", weights: "Dumbbells", weight: 25)
         plan = makePlan()
         #expect(plan.details(exercise) == "3x30s @ 25 lbs")
@@ -155,24 +283,24 @@ class PlanTests {
         #expect(plan.details(exercise) == "5 reps")
         #expect(to_headers(plan) == "Workset 1 of 1/5 reps/-/-")
         #expect(completed() == "5 reps")
-
+        
         exercise = make("Walk", "Walking", "Bad", weight: 130)
         plan = makePlan()
         #expect(plan.details(exercise) == "5 @ 130")    // no weight set so no units
         #expect(to_headers(plan) == "Workset 1 of 1/5 reps @ 130/-/-")
         #expect(completed() == "5 reps @ 130")
-
+        
         exercise = make("Walk", "Walking", "Bad", weights: "Dumbbells", weight: 28)
         plan = makePlan()
         #expect(plan.details(exercise) == "5 @ 25 lbs") // work sets use lower (unless the percent is under 100)
         #expect(to_headers(plan) == "Workset 1 of 1/5 reps @ 25 lbs/-/-")
         #expect(completed() == "5 reps @ 25 lbs")
-
+        
         exercise = make("Walk", "Walking", "Bad")
         plan = makePlan(daysAgo: 2, secs: [60*60])
         #expect(plan.details(exercise) == "5 reps")
         #expect(to_headers(plan) == "Workset 1 of 1/5 reps/-/-")
-
+        
         exercise = make("Walk", "Walking", "Bad")
         plan = makePlan(daysAgo: 2, secs: [2*60*60])
         #expect(plan.details(exercise) == "5 reps")
@@ -186,24 +314,24 @@ class PlanTests {
         #expect(plan.details(exercise) == "")
         #expect(to_headers(plan) == "Set 1 of 1/-/-/-")
         #expect(completed() == "0 secs")
-
+        
         exercise = make("Walk", "Walking", "Walk", weight: 130)
         plan = makePlan()
         #expect(plan.details(exercise) == "130")    // no weight set so no units
         #expect(to_headers(plan) == "Set 1 of 1/130/-/-")
         #expect(completed() == "0 secs")
-
+        
         exercise = make("Walk", "Walking", "Walk", weights: "Dumbbells", weight: 28)
         plan = makePlan()
         #expect(plan.details(exercise) == "25 lbs") // work sets use lower (unless the percent is under 100)
         #expect(to_headers(plan) == "Set 1 of 1/25 lbs/-/-")
         #expect(completed() == "0 secs")
-
+        
         exercise = make("Walk", "Walking", "Walk")
         plan = makePlan(daysAgo: 2, secs: [60*60])
         #expect(plan.details(exercise) == "60.0 mins")
         #expect(to_headers(plan) == "Set 1 of 1/-/-/-")
-
+        
         exercise = make("Walk", "Walking", "Walk")
         plan = makePlan(daysAgo: 2, secs: [2*60*60])
         #expect(plan.details(exercise) == "2.0 hours")
@@ -241,14 +369,31 @@ class PlanTests {
         
         if let reps = reps {
             let e = other ?? exercise!
-            addCompleted(e, daysAgo: daysAgo!, reps: reps, weights: weights)
+            GymAce.addCompleted(e, daysAgo: daysAgo!, reps: reps, weights: weights)
         }
         if let secs = secs {
             let e = other ?? exercise!
-            addCompleted(e, daysAgo: daysAgo!, secs: secs, weights: weights)
+            GymAce.addCompleted(e, daysAgo: daysAgo!, secs: secs, weights: weights)
         }
 
         return ExercisePlan(model, program, workout, exercise)
+    }
+
+    private func setCompleted(_ repsAndWeight: [([Int], Float?)]) {
+        let calendar = Calendar.current
+        let c = repsAndWeight.enumerated().map {
+            let daysAgo = repsAndWeight.count - $0
+            let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
+            let b = $1.1 ?? exercise.baseWeight
+            let weights: [Float]? = if let c = b {
+                Array(repeating: c, count: $1.0.count)    // values don't really matter for progression
+            } else {
+                nil
+            }
+            return Completed(reps: $1.0, weights: weights, baseWeight: b, units: .Imperial, completed: d!)
+        }
+        exercise.history.removeAll()
+        exercise.history.append(contentsOf: c)
     }
 
     private func to_headers(_ plan: ExercisePlan) -> String {
@@ -312,3 +457,4 @@ class PlanTests {
     private var workout: Workout! = nil
     private var exercise: Exercise! = nil
 }
+

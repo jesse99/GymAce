@@ -32,6 +32,29 @@ enum Style: Codable {
     case timed
 }
 
+extension Style {
+    func description() -> String {  // TODO include this somewhere
+        switch self {
+        case .amrap:
+            return "Worksets are for a fixed number of reps but the last set is As Many Reps As Possible. Weights increase based on the results of the AMRAP set."
+        case .beginner:
+            return "Worksets are for a fixed number of reps. Weights are increased if you were able to do all the requested reps. This generally should not be used for more than a few months."
+        case .variable:
+            return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do the max reps."
+        case .durations:
+            return "The exercise is done for a specified time with an optional target time. If you hit the target you may want to switch to a harder version of the exercise, e.g. plants to foot elevated planks."
+        case .gzcl:
+            return "This is run for 3-8 week blocks where the weight is increased each week but the number of reps is reduced. The last week has an AMRAP set which controls whether the weight is increased. This is intended for intermediate lifters."
+        case .missing:
+            return "The style is missing from the program."
+        case .percent:
+            return "This is associated with another exercise using the exercise's formal name. This exercise is done like the other exercise but with a percentage of the other exercise's weight. Typically this is used to perform a light version of another exercise."
+        case .timed:
+            return "The exercise is done for an arbitrary amount of time, e.g. a walk."
+        }
+    }
+}
+
 struct AMRAPInfo: Codable {
     var warmup: [OtherReps]
     var workset: [Int]
@@ -158,6 +181,192 @@ struct PercentInfo: Codable {
 }
 
 extension Exercise {
+    /// Looks at completed and returns 1 if weight should be bumped by one increment, 2 if by two increments, -1 if weight should be dropped, etc.
+    /// Returns nil if the style doesn't handle progression.
+    func progress(_ program: Program) -> Int? {
+        switch program.findStyle(self.styleName) {
+        case .amrap(let info):
+            if let b = self.baseWeight {
+                let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
+                    if let oldBase = baseWeight {
+                        if oldBase < b {
+                            return false
+                        }
+                    } else {
+                        return false
+                    }
+                    return reps.count == info.workset.count
+                }
+                let canProgress: ([Int], Float?) -> Bool = {reps, weights in
+                    let actual = reps.reduce(0, +)
+                    let expected = info.workset.reduce(0, +)
+                    return actual > expected    // technically we could just check the last set, but what really matters is total volume so we check all sets
+                }
+                
+                // Progress if the user did more than expected on the AMRAP set
+                if let actual = getLastTotalReps(n: -1), checkReps(n: -1, with: compatible) {
+                    let expected = info.workset.reduce(0, +)
+                    if actual > expected {
+                        return min(actual - expected, 3)
+                    }
+                }
+
+                if checkReps(n: -1, with: {reps, weights in compatible(reps, weights) && canProgress(reps, weights)}) {
+                    return 1
+                }
+
+                // If the user stalled 3x in a row then regress.
+                let failed1 = checkReps(n: -1, with: {reps, weights in compatible(reps, weights) && !canProgress(reps, weights)})
+                let failed2 = checkReps(n: -2, with: {reps, weights in compatible(reps, weights) && !canProgress(reps, weights)})
+                let failed3 = checkReps(n: -3, with: {reps, weights in compatible(reps, weights) && !canProgress(reps, weights)})
+                if failed1 && failed2 && failed3 {
+                    return -2
+                }
+                
+                // Also regress if the user did badly on the AMRAP. Note that we consider one missed rep on the
+                // AMRAP set as just a bad day and treat it as a stalled workout.
+                if let expected = info.workset.last, let actual = getLastReps(n: -1), checkReps(n: -1, with: compatible) {
+                    if expected == 1 && actual < 1 {
+                        return -2
+                    } else if actual < expected - 1 {
+                        return -2
+                    }
+                }
+            }
+            return 0
+        case .beginner(let info):
+            if let b = self.baseWeight {
+                let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
+                    if let oldBase = baseWeight {
+                        if oldBase < b {
+                            return false
+                        }
+                    } else {
+                        return false
+                    }
+                    return reps.count == info.workset.count
+                }
+                let canProgress: ([Int], Float?) -> Bool = {reps, weights in
+                    let actual = reps.reduce(0, +)
+                    let expected = info.workset.reduce(0, +)
+                    return actual >= expected
+                }
+                let terrible: ([Int], Float?) -> Bool = {reps, weights in
+                    let actual = reps.reduce(0, +)
+                    let expected = info.workset.reduce(0, +)
+                    return expected > 3*reps.count && actual < 3*reps.count
+                }
+                // If the user was able to do all the reps then progress.
+                if checkReps(n: -1, with: {reps, weights in compatible(reps, weights) && canProgress(reps, weights)}) {
+                    return 1
+                }
+                
+                // If the user failed 3x in a row to do all the reps then regress.
+                let failed1 = checkReps(n: -1, with: {reps, weights in compatible(reps, weights) && !canProgress(reps, weights)})
+                let failed2 = checkReps(n: -2, with: {reps, weights in compatible(reps, weights) && !canProgress(reps, weights)})
+                let failed3 = checkReps(n: -3, with: {reps, weights in compatible(reps, weights) && !canProgress(reps, weights)})
+                if failed1 && failed2 && failed3 {
+                    return -2
+                }
+                
+                // If the user did less than three reps per set then regress: that's really not enough volume
+                // for a beginner program.
+                if checkReps(n: -1, with: {reps, weights in compatible(reps, weights) && terrible(reps, weights)}) {
+                    return -2
+                }
+            }
+            return 0
+        case .variable(let info):
+            if let b = self.baseWeight {
+                let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
+                    if let oldBase = baseWeight {
+                        if oldBase < b {
+                            return false
+                        }
+                    } else {
+                        return false
+                    }
+                    return reps.count == info.workset.count
+                }
+                let canProgress: ([Int], Float?) -> Bool = {reps, weights in
+                    let actual = reps.reduce(0, +)
+                    let expected = info.workset.reduce(0, {$0 + $1.maxReps})
+                    return actual >= expected
+                }
+                // If the user was able to do all the reps then progress.
+                if checkReps(n: -1, with: {reps, weights in compatible(reps, weights) && canProgress(reps, weights)}) {
+                    return 1
+                }
+                
+                // If the user failed to make progress 3x in a row then regress.
+                if checkReps(n: -4, with: {reps, weights in compatible(reps, weights)}) &&
+                    checkReps(n: -3, with: {reps, weights in compatible(reps, weights)}) &&
+                    checkReps(n: -2, with: {reps, weights in compatible(reps, weights)}) &&
+                    checkReps(n: -1, with: {reps, weights in compatible(reps, weights)})
+                {
+                    if let r4 = getTotalReps(n: -4), let r3 = getTotalReps(n: -3), let r2 = getTotalReps(n: -2), let r1 = getTotalReps(n: -1) {
+                        if r1 <= r2 && r2 <= r3 && r3 <= r4 {
+                            return -2
+                        }
+                    }
+                }
+                
+                // If the user did less than min reps then regress
+                if let actual = getTotalReps(n: -1), checkReps(n: -1, with: compatible) {
+                    let expected = info.workset.reduce(0, {$0 + $1.minReps})
+                    if actual < expected {
+                        return -2
+                    }
+                }
+            }
+            return 0
+        case .durations, .missing, .percent, .timed:
+            return nil
+        case .gzcl:
+            return 0
+        }
+    }
+    
+    private func getLastReps(n: Int) -> Int? {
+        if self.history.count + n >= 0 {
+            let c = self.history[self.history.count + n]
+            if case .reps = c.type {
+                return c.values.last
+            }
+        }
+        return nil
+    }
+
+    private func getLastTotalReps(n: Int) -> Int? {
+        if self.history.count + n >= 0 {
+            let c = self.history[self.history.count + n]
+            if case .reps = c.type {
+                return c.values.reduce(0, +)
+            }
+        }
+        return nil
+    }
+
+    private func checkReps(n: Int, with: (_ reps: [Int], _ baseWeight: Float?) -> Bool) -> Bool {
+        if self.history.count + n >= 0 {
+            let c = self.history[self.history.count + n]
+            if case .reps = c.type {
+                return with(c.values, c.baseWeight)
+            }
+        }
+        return false
+    }
+
+    private func getTotalReps(n: Int) -> Int? {
+        if self.history.count + n >= 0 {
+            let c = self.history[self.history.count + n]
+            if case .reps = c.type {
+                return c.values.reduce(0, +)
+            }
+        }
+        return nil
+    }
+
     func numSets(_ program: Program) -> Int {
         switch program.findStyle(self.styleName) {
         case .amrap(let info):
@@ -186,9 +395,9 @@ extension Exercise {
     /// The minimum weight used by a workset.
     func bottomWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
         switch program.findStyle(self.styleName) {
-        case .amrap(let info):
+        case .amrap:
             return findActualWeight(model, program, percent)
-        case .beginner(let info):
+        case .beginner:
             return findActualWeight(model, program, percent)
         case .variable(let info):
             var percents: [Int] = []
@@ -215,9 +424,9 @@ extension Exercise {
     /// The maximum weight used by a workset.
     func topWeight(_ model: Model, _ program: Program, _ percent: Float = 1.0) -> ActualWeight? {
         switch program.findStyle(self.styleName) {
-        case .amrap(let info):
+        case .amrap:
             return findActualWeight(model, program, percent)
-        case .beginner(let info):
+        case .beginner:
             return findActualWeight(model, program, percent)
         case .variable(let info):
             var percents: [Int] = []

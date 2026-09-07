@@ -2305,7 +2305,7 @@ func make(_ name: String, _ formalName: String, _ styleName: String, weights: St
 func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Float]? = nil, note: String? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(reps: reps, weights: weights, units: .Imperial, completed: d!)
+    let c = Completed(reps: reps, weights: weights, baseWeight: exercise.baseWeight, units: .Imperial, completed: d!)
     c.note = note
     exercise.history.append(c)
 }
@@ -2314,7 +2314,7 @@ func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Flo
 func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Float]? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(secs: secs, weights: weights, units: .Imperial, completed: d!)
+    let c = Completed(secs: secs, weights: weights, baseWeight: exercise.baseWeight, units: .Imperial, completed: d!)
     exercise.history.append(c)
 }
 

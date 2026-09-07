@@ -55,6 +55,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     @Bindable var entry: ExerciseEntry
     @State var showHeartRate = false
     @State var confirmClear = false
+    @State var progressed = 0
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -68,6 +69,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             // 5 reps @ 225 lbs
             Text(entry.subhead(plan, model, program, workout, exercise))
                 .font(Font.body)
+                .foregroundColor(subheadColor())
 
             // 45x2
             if let s = entry.footer(plan) {
@@ -351,11 +353,13 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
     
     private func canSetWeight() -> Bool {
-        if case .percent = program.findStyle(exercise.styleName) {
+        // If the style handles progress then we won't show the weight picker (if needed
+        // user can change weight via Edit Exercise).
+        if exercise.progress(program) != nil {
             return false
-//        } else if case .oneRepMax = exercise.data {
-//            return false
         }
+        
+        // If the exercise has weight and a valid weight set then show the weight picker.
         return exercise.baseWeight != nil && exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
     }
     
@@ -405,6 +409,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     
     private func resetExercise() {
         entry.mode = .performing
+        progressed = 0
         entry.reset(model, program, workout, exercise)
     }
 
@@ -432,12 +437,37 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
     }
     
+    private func subheadColor() -> Color {
+        if entry.isFinished(program, exercise) {
+            if progressed > 0 {
+                return .green
+            } else if progressed < 0 {
+                return .red
+            }
+        }
+        return .black
+    }
+    
     private func gotoFinished() {
         // We want to do this before the user presses the Finished button so that the user can
         // edit the Completed he just did.
         entry.completedLast(program, workout, exercise)
         program.didExercise()
         entry.mode = .finished
+        
+        if let n = exercise.progress(program), n != 0 {
+            progressed = n
+            if n > 0 {
+                for _ in 0..<n {
+                    advanceWeight()
+                }
+            }
+            else if n < 0 {
+                for _ in 0..<(-n) {
+                    dropWeight()
+                }
+            }
+        }
     }
 }
 
@@ -453,7 +483,7 @@ private func workingView(_ model: Model, _ exercise: Exercise,_ working: Working
             Text(Date().daysStr(0))
             
             // sets completed so far
-            let c = Completed(values: working.values, type: working.type, weights: working.weights, units: working.units)
+            let c = Completed(values: working.values, type: working.type, weights: working.weights, baseWeight: exercise.baseWeight, units: working.units)
             Text(c.details())
         }
         .frame(maxWidth: .infinity, alignment: .leading)

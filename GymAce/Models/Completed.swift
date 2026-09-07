@@ -10,7 +10,7 @@ class Completed: Codable, Comparable, Equatable {
     var values: [Int]
     var type: ValueType
     var weights: [Float]?   // these are the same unless the work sets have percentages
-    private var weight: Float?      // historical
+    var baseWeight: Float?  // for styles
     var units: Units
     var completed: Date
     var distance: Double?   // meters
@@ -52,36 +52,36 @@ class Completed: Codable, Comparable, Equatable {
 //        completed = try container.decode(Date.self, forKey: .completed)
 //    }
     
-    init(reps: [Int], weights: [Float]?, units: Units, completed: Date = Date()) {
+    init(reps: [Int], weights: [Float]?, baseWeight: Float?, units: Units, completed: Date = Date()) {
         self.values = reps
         self.type = .reps
         self.weights = weights
-        self.weight = nil
+        self.baseWeight = baseWeight
         self.units = units
         self.completed = completed
     }
     
-    init(secs: [Int], weights: [Float]?, units: Units, completed: Date = Date()) {
+    init(secs: [Int], weights: [Float]?, baseWeight: Float?, units: Units, completed: Date = Date()) {
         self.values = secs
         self.type = .secs
         self.weights = weights
-        self.weight = nil
+        self.baseWeight = baseWeight
         self.units = units
         self.completed = completed
     }
     
-    init(values: [Int], type: ValueType, weights: [Float]?, units: Units, completed: Date = Date(), distance: Double? = nil) {
+    init(values: [Int], type: ValueType, weights: [Float]?, baseWeight: Float?, units: Units, completed: Date = Date(), distance: Double? = nil) {
         self.values = values
         self.type = type
         self.weights = weights
-        self.weight = nil
+        self.baseWeight = baseWeight
         self.units = units
         self.completed = completed
         self.distance = distance
     }
     
     func maxWeight() -> Float? {
-        return weights?.max() ?? weight
+        return weights?.max()
     }
     
     /// Used to show the user what happened for that workout.
@@ -144,8 +144,6 @@ class Completed: Codable, Comparable, Equatable {
     func getWeights() -> [Float]? {
         return if weights != nil {
             weights
-        } else if weight != nil {
-            [weight!]
         } else {
             nil
         }

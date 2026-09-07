@@ -308,9 +308,9 @@ final class ExerciseEntry: Codable {
             
             let style = program.findStyle(exercise.styleName)
             let c = if case .timed = style {
-                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weights: w.weights, units: w.units, distance: healthKit.enabled ? healthKit.distance : nil)
+                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weights: w.weights, baseWeight: exercise.baseWeight, units: w.units, distance: healthKit.enabled ? healthKit.distance : nil)
             } else {
-                Completed(values: w.values, type: w.type, weights: w.weights, units: w.units)
+                Completed(values: w.values, type: w.type, weights: w.weights, baseWeight: exercise.baseWeight, units: w.units)
             }
             exercise.history.append(c)
             w.values = []

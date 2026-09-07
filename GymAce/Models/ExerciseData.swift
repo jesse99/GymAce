@@ -95,7 +95,7 @@
 //    }
 //}
 
-// TODO rename this file
+// TODO rename this file, maybe to Sets
 
 /// Used for warmup and backoff sets.
 struct OtherReps: Codable {
