@@ -51,19 +51,23 @@ extension Style {
 
 struct AMRAPInfo: Codable {
     var warmup: [OtherReps]
-    var workset: [Int]
+    var workset: [PercentReps]
     var backoff: [OtherReps]
     var rest: Int?
     
-    /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
+    /// warmup is formatted as reps/percent, e.g. "5/60 8/80"
+    /// workset is formatted as reps with an optional percent
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
-    init?(warmup: String, workset: [Int], backoff: String? = nil, rest: String) {
+    init?(warmup: String, workset: String, backoff: String? = nil, rest: String) {
         switch parseOtherReps(warmup) {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
         }
 
-        self.workset = workset
+        switch parsePercentReps(workset) {
+        case .success(let reps): self.workset = reps
+        case .failure: return nil
+        }
 
         if let b = backoff {
             switch parseOtherReps(b) {
@@ -189,13 +193,13 @@ extension Exercise {
                 }
                 let canProgress: ([Int], Float?) -> Bool = {reps, weights in
                     let actual = reps.reduce(0, +)
-                    let expected = info.workset.reduce(0, +)
+                    let expected = info.workset.reduce(0, {$0 + $1.reps})
                     return actual > expected    // technically we could just check the last set, but what really matters is total volume so we check all sets
                 }
                 
                 // Progress if the user did more than expected on the AMRAP set
                 if let actual = getLastTotalReps(n: -1), checkReps(n: -1, with: compatible) {
-                    let expected = info.workset.reduce(0, +)
+                    let expected = info.workset.reduce(0, {$0 + $1.reps})
                     if actual > expected {
                         return min(actual - expected, 3)
                     }
@@ -215,7 +219,7 @@ extension Exercise {
                 
                 // Also regress if the user did badly on the AMRAP. Note that we consider one missed rep on the
                 // AMRAP set as just a bad day and treat it as a stalled workout.
-                if let expected = info.workset.last, let actual = getLastReps(n: -1), checkReps(n: -1, with: compatible) {
+                if let expected = info.workset.last?.reps, let actual = getLastReps(n: -1), checkReps(n: -1, with: compatible) {
                     if expected == 1 && actual < 1 {
                         return -2
                     } else if expected > 1 && actual < expected - 1 {
@@ -444,7 +448,7 @@ extension Exercise {
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
                 sets.append(set)
             }
-            for (i, reps) in info.workset.enumerated() {
+            for (i, s) in info.workset.enumerated() {
                 let k = PlanSet.Kind.workset(index: i, count: info.workset.count)
                 let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1, info.backoff.isEmpty {
                     nil     // don't use rest for the last set of the last exercise in a workout
@@ -453,11 +457,11 @@ extension Exercise {
                 }
 
                 let e = if i == info.workset.count - 1 {
-                    PlanSet.Amount.amrap(min: findMinAMRAP(model, program, reps, i))
+                    PlanSet.Amount.amrap(min: findMinAMRAP(model, program, s.reps, i))
                 } else {
-                    PlanSet.Amount.reps(min: reps, max: reps)
+                    PlanSet.Amount.reps(min: s.reps, max: s.reps)
                 }
-                let p = parentPercent
+                let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
                 sets.append(set)
@@ -746,6 +750,19 @@ fileprivate func parseOtherReps(_ text: String) -> Result<[OtherReps], MyError> 
             reps.append(r)
         } else {
             let err = MyError(err: "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'.")
+            return .failure(err)
+        }
+    }
+    return .success(reps)
+}
+
+fileprivate func parsePercentReps(_ text: String) -> Result<[PercentReps], MyError> {
+    var reps: [PercentReps] = []
+    for s in text.split(separator: " ") {
+        if let r = PercentReps(String(s)) {
+            reps.append(r)
+        } else {
+            let err = MyError(err: "Expected a number for reps and an optional percent, e.g. 5/80, not '\(s)'.")
             return .failure(err)
         }
     }

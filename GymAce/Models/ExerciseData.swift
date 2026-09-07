@@ -123,6 +123,41 @@ struct OtherReps: Codable {
     }
 }
 
+/// Used for worksets with amrap style.
+struct PercentReps: Codable {
+    var reps: Int
+    var percent: Int
+    
+    init(reps: Int, percent: Int) {
+        self.reps = reps
+        self.percent = percent
+    }
+
+    /// Parse a string formatted as "5" or "5/80".
+    init?(_ str: String) {
+        let parts = str.split(separator: "/")
+        if parts.count == 1 {
+            guard let reps = Int(str) else {return nil}
+            self.reps = reps
+            self.percent = 100
+        } else {
+            guard parts.count == 2 else {return nil}
+            guard let reps = Int(parts[0]) else {return nil}
+            guard let percent = Int(parts[1]) else {return nil}
+            self.reps = reps
+            self.percent = percent
+        }
+    }
+    
+    func asString() -> String {
+        if percent == 100 {
+            return "\(reps)"
+        } else {
+            return "\(reps)/\(percent)"
+        }
+    }
+}
+
 /// Used for work sets with variable style.
 struct VariableReps: Codable {
     var minReps: Int

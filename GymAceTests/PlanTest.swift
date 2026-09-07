@@ -8,7 +8,7 @@ class PlanTests {
     func amrap() {
         // Bench with AMRAP
         exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 226)
-        let plan = makePlan()
+        var plan = makePlan()
         #expect(plan.details(exercise) == "2x5, 5+ @ 225 lbs")
         
         var sets: [String] = []
@@ -22,7 +22,24 @@ class PlanTests {
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 225 lbs")
         
+        // GZCL style AMRAP
+        exercise = make("Squat", "Squat", "GZCL", weights: "Dual Plates", weight: 226)
+        plan = makePlan()
+        #expect(plan.details(exercise) == "3, 2, 1+ @ 205 lbs-225 lbs")
+        
+        sets = []
+        sets.append("Warmup 1 of 3/5 reps @ 135 lbs/45/-")
+        sets.append("Warmup 2 of 3/3 reps @ 180 lbs/45 + 10x2 + 2.5/-")
+        sets.append("Warmup 3 of 3/1 rep @ 205 lbs/45 + 25 + 10/-")
+        sets.append("Workset 1 of 3/3 reps @ 205 lbs/45 + 25 + 10/-")
+        sets.append("Workset 2 of 3/2 reps @ 215 lbs/45 + 25 + 10 + 5/-")
+        sets.append("Workset 3 of 3/1+ reps @ 225 lbs/45x2/-")
+        #expect(to_headers(plan) == sets.joined(separator: ", "))
+        #expect(completed() == "3 reps, 2 reps, 1 reps @ 205-225 lbs")
+        
         // Check progression
+        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 226)
+        plan = makePlan()
         setCompleted([])
         #expect(exercise.progress(program) == 0)    // no completed
         
@@ -343,8 +360,9 @@ class PlanTests {
 
         program = Program("Test Program")
         program.styles["Accessory"] = .variable(VariableInfo(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")!)
-        program.styles["AMRAP"] = .amrap(AMRAPInfo(warmup: "5/0 5/60 3/80 1/90", workset: [5, 5, 5], rest: "2m")!)
+        program.styles["AMRAP"] = .amrap(AMRAPInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "2m")!)
         program.styles["Beginner"] = .beginner(BeginnerInfo(warmup: "5/0 5/60 3/80 1/90", workset: [5, 5, 5], rest: "2m")!)
+        program.styles["GZCL"] = .amrap(AMRAPInfo(warmup: "5/60 3/80 1/90", workset: "3/90 2/95 1", rest: "2m")!)   // week 4 version
         program.styles["Light"] = .percent(PercentInfo(percent: 90, rest: "2m")!)
         program.styles["Main"] = .variable(VariableInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")!)
         program.styles["Stretch1"] = .durations(DurationsInfo(secs: "30s", targetSecs: "")!)
