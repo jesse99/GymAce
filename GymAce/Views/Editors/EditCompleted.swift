@@ -84,7 +84,7 @@ struct EditCompleted: View {
     
     private func repsTitle(_ program: Program) -> String {
         switch program.findStyle(exercise.styleName) {
-        case .amrap, .beginner, .variable, .missing, .percent: return "reps"
+        case .amrap, .beginner, .variable, .missing, .oneRepMax, .percent: return "reps"
         case .durations, .timed: return "seconds"
         }
     }

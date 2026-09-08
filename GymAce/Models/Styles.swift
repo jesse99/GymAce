@@ -19,6 +19,9 @@ enum Style: Codable {
     /// logic to be simplified.
     case missing
     
+    /// Used to compute a one rep max. This is usally used in conjunction with the percent and/or amrap styles.
+    case oneRepMax(OneRepMaxInfo)
+    
     /// Uses the exercise's formalName to find an exercise with that same formalName
     /// that also has a baseWeight. That exercise is used as the style except that an
     /// extra percentage is applied to weight. TODO validate needs to verify that there is one match
@@ -41,6 +44,8 @@ extension Style {
             return "The exercise is done for a specified time with an optional target time. If you hit the target you may want to switch to a harder version of the exercise, e.g. plants to foot elevated planks."
         case .missing:
             return "The style is missing from the program."
+        case .oneRepMax:
+            return "Used to compute a one rep max attached to an exercise's formal name. This is usally used in conjunction with the percent and/or amrap styles."
         case .percent:
             return "This is associated with another exercise using the exercise's formal name. This exercise is done like the other exercise but with a percentage of the other exercise's weight. Typically this is used to perform a light version of another exercise."
         case .timed:
@@ -93,6 +98,28 @@ struct BeginnerInfo: Codable {
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
     init?(warmup: String, workset: [Int], rest: String) {
+        switch parseOtherReps(warmup) {
+        case .success(let reps): self.warmup = reps
+        case .failure: return nil
+        }
+
+        self.workset = workset
+        
+        switch parseRest(rest) {
+        case .success(let secs): self.rest = secs
+        case .failure: return nil
+        }
+    }
+}
+
+struct OneRepMaxInfo: Codable {
+    var warmup: [OtherReps]
+    var workset: Int
+    var rest: Int?
+    
+    /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
+    /// rest is formatted as "2.5m", "150s", "150", or "2h"
+    init?(warmup: String, workset: Int, rest: String) {
         switch parseOtherReps(warmup) {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
@@ -270,6 +297,8 @@ extension Exercise {
                 }
             }
             return 0
+        case .oneRepMax:
+            return 0    // we adjust the weight in completedLast since this is handled a bit differently than the other styles
         case .variable(let info):
             if let b = self.baseWeight {
                 let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
@@ -371,6 +400,8 @@ extension Exercise {
             return info.secs.count
         case .missing:
             return 1
+        case .oneRepMax(let info):
+            return info.warmup.count + 1
         case .percent(_):
             if let (e, _) = findOtherExercise(program) {
                 return e.numSets(program)
@@ -398,7 +429,7 @@ extension Exercise {
                 let q = Float(p) / 100.0
                 return findActualWeight(model, program, q * percent)
             }
-        case .durations, .missing, .timed:
+        case .durations, .missing, .oneRepMax, .timed:
             return findActualWeight(model, program, percent)
         case .percent(let info):
             let p = Float(info.percent) / 100.0
@@ -425,7 +456,7 @@ extension Exercise {
                 let q = Float(p) / 100.0
                 return findActualWeight(model, program, q * percent)
             }
-        case .durations, .missing, .timed:
+        case .durations, .missing, .oneRepMax, .timed:
             return findActualWeight(model, program, percent)
         case .percent(let info):
             let p = Float(info.percent) / 100.0
@@ -502,6 +533,28 @@ extension Exercise {
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
+        case .oneRepMax(let info):
+            for (i, s) in info.warmup.enumerated() {
+                let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
+                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
+                let p = (Float(s.percent) / 100.0) * parentPercent
+                let w = findActualWeight(model, program, p)
+                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                sets.append(set)
+            }
+
+            let k = PlanSet.Kind.workset(index: 0, count: 1)
+            let r: Int? = if let last = workout.entries.last, last.name == name {
+                nil     // don't use rest for the last set of the last exercise in a workout
+            } else {
+                rest ?? self.rest(program, workout)
+            }
+
+            let e = PlanSet.Amount.reps(min: info.workset, max: info.workset)
+            let p = Float(1.0)
+            let w = findActualWeight(model, program, p)
+            let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+            sets.append(set)
         case .variable(let info):
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
@@ -594,6 +647,11 @@ extension Exercise {
             break
         case .missing:
             valid = false
+        case .oneRepMax:
+            if baseWeight == nil {
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's one rep max style)")
+                valid = false
+            }
         case .percent:
             if baseWeight != nil {
                 print("Program \(program.name) exercise \(name) should not have a base weight (it's percent style)")
@@ -627,14 +685,14 @@ extension Exercise {
     
     func usesOther(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .amrap, .beginner, .variable, .durations, .missing, .timed: return false
+        case .amrap, .beginner, .variable, .durations, .missing, .oneRepMax, .timed: return false
         case .percent: return true
         }
     }
     
     func usesPercents(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .amrap, .beginner, .durations, .missing, .timed: return false
+        case .amrap, .beginner, .durations, .missing, .oneRepMax, .timed: return false
         case .variable(let info):
             for s in info.workset {
                 if s.percent != 100 {return true}
@@ -672,6 +730,8 @@ extension Exercise {
             return nil
         case .missing:
             return nil
+        case .oneRepMax(let info):
+            return info.rest
         case .percent(let info):
             if let r = info.rest {
                 return r            // percent style rest can override other rest

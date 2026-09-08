@@ -1361,6 +1361,7 @@ fileprivate func previewProgram() -> Program {
         program.styles["Light"] = percentStyle(percent: 100, rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
         program.styles["Walk"] = Style.timed
+        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 5, rest: "2m")!)
     }
     
     func addExercises(_ program: Program) {
@@ -1377,6 +1378,9 @@ fileprivate func previewProgram() -> Program {
         program.exercises.append(exercise)
 
         exercise = make("Squat", "High bar Squat", "Main", weights: "Dual Plates", weight: 140)
+        program.exercises.append(exercise)
+
+        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Plates", weight: 140)
         program.exercises.append(exercise)
 
         exercise = make("Deadlift", "Deadlift", "Main", weights: "Dual Plates", weight: 230)
@@ -1425,6 +1429,7 @@ fileprivate func previewProgram() -> Program {
 
         workout.addExercise(name: "Quad Stretch")
         workout.addExercise(name: "Squat")
+        workout.addExercise(name: "Max Squat")
         workout.addExercise(name: "Deadlift")
 
         program.addWorkout(workout)
