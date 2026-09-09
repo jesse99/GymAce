@@ -272,7 +272,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             // History tab
             List {
                 if let w = entry.working, !w.values.isEmpty {
-                    workingView(model, exercise, w)
+                    workingView(model, program, exercise, w)
                 }
                 ForEach((0..<exercise.history.count).reversed().suffix(20), id: \.self) {
                     completedView(model, program, exercise, $0)
@@ -323,7 +323,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 issues += "There is no weight set named '\(wn)'. "
             }
         }
-        if case .percent = program.findStyle(exercise.styleName) {
+        if case .other = exercise.baseWeight {
             if exercise.findOtherExercise(program) == nil {
                 issues += "Couldn't find a base exercise named '\(exercise.formalName)'. "
             }
@@ -364,20 +364,20 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     }
     
     private func advanceWeight() {
-        if let w = exercise.baseWeight {
+        if case .weight(let w) = exercise.baseWeight {
             if let wn = exercise.weightSet {
                 if let ws = model.weightSets[wn] {
-                    exercise.baseWeight = ws.advance(target: w).value()
+                    exercise.baseWeight = .weight(ws.advance(target: w).value())
                 }
             }
         }
     }
 
     private func dropWeight() {
-        if let w = exercise.baseWeight {
+        if case .weight(let w) = exercise.baseWeight {
             if let wn = exercise.weightSet {
                 if let ws = model.weightSets[wn] {
-                    exercise.baseWeight = ws.lower(target: w - 0.001).value()
+                    exercise.baseWeight = .weight(ws.lower(target: w - 0.001).value())
                 }
             }
         }
@@ -473,7 +473,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
 
 // View for a line in the history tab.
 @ViewBuilder
-private func workingView(_ model: Model, _ exercise: Exercise,_ working: Working) -> some View {
+private func workingView(_ model: Model, _ program: Program, _ exercise: Exercise,_ working: Working) -> some View {
     VStack {
         HStack {
             // in progress
@@ -483,7 +483,8 @@ private func workingView(_ model: Model, _ exercise: Exercise,_ working: Working
             Text(Date().daysStr(0))
             
             // sets completed so far
-            let c = Completed(values: working.values, type: working.type, weights: working.weights, baseWeight: exercise.baseWeight, units: working.units)
+            let b = exercise.findBaseWeight(program)
+            let c = Completed(values: working.values, type: working.type, weights: working.weights, baseWeight: b, units: working.units)
             Text(c.details())
         }
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -1,5 +1,17 @@
 import Foundation
 
+enum BaseWeight: Codable {
+    /// The exercise has no weight associated with it.
+    case none
+    
+    /// The exercise uses the base weight from an "other" exercise. The other exercise is found using this
+        /// exercise's formal name.
+    case other
+    
+    /// The exercise does have a weight. Typically this will be mapped onto an actual weight using a weight set.
+    case weight(Float)
+}
+
 /// How to perform an exercise. These are added to workouts using ExerciseEntry.
 @Observable
 final class Exercise: Codable {
@@ -15,17 +27,15 @@ final class Exercise: Codable {
     /// Optional set of weights to use with the exercise.
     var weightSet: String?
 
-    /// The weight to use for an exercise before percentage modifiers are applied. This may be
-    /// nil for exercises like stretches or styles like percent or gzcl where the baseWeight of an
-    /// "other" exercise is used.
-    var baseWeight: Float?
+    /// The weight to use for an exercise before percentage modifiers are applied.
+    var baseWeight: BaseWeight
     
     /// Record of when and what the user did for a workout. Last is the most recent.
     var history: [Completed] = []
         
     var version: Int = 1
 
-    init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: Float? = nil) {
+    init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: BaseWeight = .none) {
         self.name = name
         self.formalName = formalName
         self.styleName = styleName

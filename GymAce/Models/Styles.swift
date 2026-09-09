@@ -21,12 +21,7 @@ enum Style: Codable {
     
     /// Used to compute a one rep max. This is usally used in conjunction with the percent and/or amrap styles.
     case oneRepMax(OneRepMaxInfo)
-    
-    /// Uses the exercise's formalName to find an exercise with that same formalName
-    /// that also has a baseWeight. That exercise is used as the style except that an
-    /// extra percentage is applied to weight. TODO validate needs to verify that there is one match
-    case percent(PercentInfo)
-    
+        
     /// Exercise is done for an arbitrary amount of time, e.g. jogging.
     case timed
 }
@@ -45,9 +40,7 @@ extension Style {
         case .missing:
             return "The style is missing from the program."
         case .oneRepMax:
-            return "Used to compute a one rep max attached to an exercise's formal name. This is usally used in conjunction with the percent option in the basic or amrap styles."
-        case .percent:
-            return "This is associated with another exercise using the exercise's formal name. This exercise is done like the other exercise but with a percentage of the other exercise's weight. Typically this is used to perform a light version of another exercise."
+            return "Used to compute a one rep max attached to an exercise's formal name. This is typically the 'other' exercise for exercises where the worksets use a percentage of the 1rm weight."
         case .timed:
             return "The exercise is done for an arbitrary amount of time, e.g. a walk."
         }
@@ -211,7 +204,7 @@ extension Exercise {
     func progress(_ program: Program) -> Int? {
         switch program.findStyle(self.styleName) {
         case .amrap(let info):
-            if let b = self.baseWeight {
+            if case .weight(let b) = self.baseWeight {
                 let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
                     if let oldBase = baseWeight {
                         if oldBase < b {
@@ -260,7 +253,7 @@ extension Exercise {
             }
             return 0
         case .basic(let info):
-            if let b = self.baseWeight {
+            if case .weight(let b) = self.baseWeight {
                 let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
                     if let oldBase = baseWeight {
                         if oldBase < b {
@@ -304,7 +297,7 @@ extension Exercise {
         case .oneRepMax:
             return 0    // we adjust the weight in completedLast since this is handled a bit differently than the other styles
         case .variable(let info):
-            if let b = self.baseWeight {
+            if case .weight(let b) = self.baseWeight {
                 let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
                     if let oldBase = baseWeight {
                         if oldBase < b {
@@ -347,7 +340,7 @@ extension Exercise {
                 }
             }
             return 0
-        case .durations, .missing, .percent, .timed:
+        case .durations, .missing, .timed:
             return nil
         }
     }
@@ -406,12 +399,6 @@ extension Exercise {
             return 1
         case .oneRepMax(let info):
             return info.warmup.count + 1
-        case .percent(_):
-            if let (e, _) = findOtherExercise(program) {
-                return e.numSets(program)
-            } else {
-                return 1
-            }
         case .timed:
             return 1
         }
@@ -435,11 +422,6 @@ extension Exercise {
             }
         case .durations, .missing, .oneRepMax, .timed:
             return findActualWeight(model, program, percent)
-        case .percent(let info):
-            let p = Float(info.percent) / 100.0
-            if let (e, _) = findOtherExercise(program), let w = e.bottomWeight(model, program, p * percent) {
-                return w
-            }
         }
         return nil
     }
@@ -462,11 +444,6 @@ extension Exercise {
             }
         case .durations, .missing, .oneRepMax, .timed:
             return findActualWeight(model, program, percent)
-        case .percent(let info):
-            let p = Float(info.percent) / 100.0
-            if let (e, _) = findOtherExercise(program), let w = e.topWeight(model, program, p * percent) {
-                return w
-            }
         }
         return nil
     }
@@ -475,12 +452,13 @@ extension Exercise {
         var sets: [PlanSet] = []
         switch program.findStyle(self.styleName) {
         case .amrap(let info):
+            let b = findBaseWeight(program)
             for (i, s) in info.warmup.enumerated() {        // TODO some duplication here
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: nil)
                 sets.append(set)
             }
             for (i, s) in info.workset.enumerated() {
@@ -498,7 +476,7 @@ extension Exercise {
                 }
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
             for (i, s) in info.backoff.enumerated() {
@@ -511,16 +489,17 @@ extension Exercise {
                 } else {
                     rest ?? self.rest(program, workout)
                 }
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
         case .basic(let info):
+            let b = findBaseWeight(program)
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: nil)
                 sets.append(set)
             }
             for (i, s) in info.workset.enumerated() {
@@ -534,16 +513,17 @@ extension Exercise {
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
         case .oneRepMax(let info):
+            let b = findBaseWeight(program)
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: nil)
                 sets.append(set)
             }
 
@@ -557,15 +537,16 @@ extension Exercise {
             let e = PlanSet.Amount.reps(min: info.workset, max: info.workset)
             let p = Float(1.0)
             let w = findActualWeight(model, program, p)
-            let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+            let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
             sets.append(set)
         case .variable(let info):
+            let b = findBaseWeight(program)
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: nil)
                 sets.append(set)
             }
             for (i, s) in info.workset.enumerated() {
@@ -579,7 +560,7 @@ extension Exercise {
                 let e = PlanSet.Amount.reps(min: m, max: s.maxReps)
                 let p = parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
             for (i, s) in info.backoff.enumerated() {
@@ -592,16 +573,17 @@ extension Exercise {
                 } else {
                     rest ?? self.rest(program, workout)
                 }
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
         case .durations(let info):
+            let b = findBaseWeight(program)
             for (i, s) in info.secs.enumerated() {
                 let k = PlanSet.Kind.workset(index: i, count: info.secs.count)
                 let e = PlanSet.Amount.duration
                 let p = parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: s)
+                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: s)
                 sets.append(set)
             }
         case .missing:
@@ -609,21 +591,16 @@ extension Exercise {
             let e = PlanSet.Amount.reps(min: 5, max: 5)
             let p = parentPercent
             let w = findActualWeight(model, program, p)
-            let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: rest)
+            let b = findBaseWeight(program)
+            let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: rest)
             sets.append(set)
-        case .percent(let info):
-            let p = Float(info.percent) / 100.0
-            if let (e, w) = findOtherExercise(program) {
-                return e.planSets(model, program, w, parentPercent: p * parentPercent, rest: info.rest)
-            } else {
-                return []   // validate will have complained
-            }
         case .timed:
             let k = PlanSet.Kind.timed
             let e = PlanSet.Amount.timed
             let p = parentPercent
             let w = findActualWeight(model, program, p)
-            let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
+            let b = findBaseWeight(program)
+            let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: nil)
             sets.append(set)
         }
         return sets
@@ -631,19 +608,20 @@ extension Exercise {
     
     func validateStyle(_ program: Program) -> Bool {
         var valid = true
+        let b = findBaseWeight(program)
         switch program.findStyle(self.styleName) {
         case .amrap:
-            if baseWeight == nil {
+            if b == nil { // other
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's AMRAP style)")
                 valid = false
             }
         case .basic:
-            if baseWeight == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's beginner style)")
+            if b == nil {
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's basic style)")
                 valid = false
             }
         case .variable:
-            if baseWeight == nil {
+            if b == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's variable style)")
                 valid = false
             }
@@ -652,28 +630,21 @@ extension Exercise {
         case .missing:
             valid = false
         case .oneRepMax:
-            if baseWeight == nil {
+            if b == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's one rep max style)")
                 valid = false
             }
-        case .percent:
-            if baseWeight != nil {
-                print("Program \(program.name) exercise \(name) should not have a base weight (it's percent style)")
-                valid = false
-            }
-            
+        case .timed:
+            break
+        }
+        if case .other = self.baseWeight {
             var count = 0
             for w in program.workouts { // logic needs to match findOtherExercise
                 for n in w.entries {
                     if let e = program.findExercise(n.name), e.formalName == formalName {
-                        let style = program.findStyle(e.styleName)
-                        if case .percent = style {
-                            continue
+                        if case .weight = e.baseWeight {
+                            count += 1
                         }
-                        if case .missing = style {
-                            continue
-                        }
-                        count += 1
                     }
                 }
             }
@@ -681,34 +652,41 @@ extension Exercise {
                 print("Program \(program.name) exercise \(name) has \(count) other exercises (expected 1)")
                 valid = false
             }
-        case .timed:
-            break
         }
         return valid
     }
     
     func usesOther(_ program: Program) -> Bool {
-        switch program.findStyle(self.styleName) {
-        case .amrap, .basic, .variable, .durations, .missing, .oneRepMax, .timed: return false
-        case .percent: return true
+        if case .other = self.baseWeight {
+            return true
         }
+        return false
     }
     
     func usesPercents(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .amrap, .basic, .durations, .missing, .oneRepMax, .timed: return false
+        case .amrap(let info):
+            for s in info.workset {
+                if s.percent != 100 {return true}
+            }
+            return false
+        case .basic(let info):
+            for s in info.workset {
+                if s.percent != 100 {return true}
+            }
+            return false
+        case .durations, .missing, .oneRepMax, .timed:
+            return false
         case .variable(let info):
             for s in info.workset {
                 if s.percent != 100 {return true}
             }
             return false
-        case .percent: return true
         }
     }
     
     private func findActualWeight(_ model: Model, _ program: Program, _ percent: Float) -> ActualWeight? {
-        assert(!usesOther(program))
-        if let b = baseWeight {
+        if let b = findBaseWeight(program) {
             if let wn = weightSet, let ws = model.weightSets[wn] {
                 if percent < 1.0 {
                     return ws.closest(target: percent*b)
@@ -736,17 +714,23 @@ extension Exercise {
             return nil
         case .oneRepMax(let info):
             return info.rest
-        case .percent(let info):
-            if let r = info.rest {
-                return r            // percent style rest can override other rest
-            }
-            if let (e, w) = findOtherExercise(program) {
-                return e.rest(program, w)
+        case .timed:
+            return nil
+        }
+    }
+    
+    func findBaseWeight(_ program: Program) -> Float? {
+        switch baseWeight {
+        case .none:
+            return nil
+        case .other:
+            if let (e, _) = findOtherExercise(program) {    // TODO validate should verify that there is only one match
+                return e.findBaseWeight(program)
             } else {
                 return nil
             }
-        case .timed:
-            return nil
+        case .weight(let w):
+            return w
         }
     }
 
@@ -755,14 +739,9 @@ extension Exercise {
         for w in program.workouts {
             for n in w.entries {
                 if let e = program.findExercise(n.name), e.formalName == formalName {
-                    let style = program.findStyle(e.styleName)
-                    if case .percent = style {
-                        continue
+                    if case .weight = e.baseWeight {
+                        return (e, w)
                     }
-                    if case .missing = style {
-                        continue
-                    }
-                    return (e, w)
                 }
             }
         }

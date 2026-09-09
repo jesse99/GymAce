@@ -969,7 +969,11 @@ struct EditExercise: View {
     private func getWeightLabels(_ ws: WeightSet) -> [(String, Int)] {
         var labels: [(String, Int)] = []
         
-        let w = exercise.baseWeight ?? 0.0
+        let w = if case .weight(let w) = exercise.baseWeight {
+            w
+        } else {
+            Float(0.0)
+        }
         var actual = ActualWeight(discrete: w, ws.units)
         for _ in 1...weightDelta {
             let old = actual.text()
@@ -1000,13 +1004,19 @@ struct EditExercise: View {
     private var weightBinding: Binding<String> {
         Binding(
             get: {
-                if let w = exercise.baseWeight, w > 0.0 {
+                if case .weight(let w) = exercise.baseWeight, w > 0.0 {
                     return formatWeight(w, .None)
                 } else {
                     return ""   // this will show the placeholder text
                 }
             },
-            set: {exercise.baseWeight = Float($0)}
+            set: {
+                if let w = Float($0) {
+                    exercise.baseWeight = .weight(w)
+                } else {
+                    exercise.baseWeight = .none
+                }
+            }
         )
     }
 
@@ -1014,10 +1024,14 @@ struct EditExercise: View {
         Binding(
             get: {
                 // Current value is always the current exercise weight.
-                let w = exercise.baseWeight ?? 0.0
+                let w = if case .weight(let w) = exercise.baseWeight {
+                    w
+                } else {
+                    Float(0.0)
+                }
                 return Int(1000*w)
             },
-            set: {exercise.baseWeight = Float($0)/1000.0}
+            set: {exercise.baseWeight = .weight(Float($0)/1000.0)}
         )
     }
 

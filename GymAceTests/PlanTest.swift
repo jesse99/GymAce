@@ -28,22 +28,22 @@ class PlanTests {
         #expect(plan.details(exercise) == "3, 2, 1+ @ 205 lbs-225 lbs")
         
         sets = []
-        sets.append("Warmup 1 of 3/5 reps @ 135 lbs/45/-")
-        sets.append("Warmup 2 of 3/3 reps @ 180 lbs/45 + 10x2 + 2.5/-")
-        sets.append("Warmup 3 of 3/1 rep @ 205 lbs/45 + 25 + 10/-")
-        sets.append("Workset 1 of 3/3 reps @ 205 lbs/45 + 25 + 10/-")
-        sets.append("Workset 2 of 3/2 reps @ 215 lbs/45 + 25 + 10 + 5/-")
-        sets.append("Workset 3 of 3/1+ reps @ 225 lbs/45x2/-")
+        sets.append("Warmup 1 of 3/5 reps @ 135 lbs/45/59% of 226 lbs")
+        sets.append("Warmup 2 of 3/3 reps @ 160 lbs/45 + 10 + 2.5/70% of 226 lbs")
+        sets.append("Warmup 3 of 3/1 rep @ 180 lbs/45 + 10x2 + 2.5/79% of 226 lbs")
+        sets.append("Workset 1 of 3/3 reps @ 205 lbs/45 + 25 + 10/90% of 226 lbs")
+        sets.append("Workset 2 of 3/2 reps @ 215 lbs/45 + 25 + 10 + 5/95% of 226 lbs")
+        sets.append("Workset 3 of 3/1+ reps @ 225 lbs/45x2/99% of 226 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "3 reps, 2 reps, 1 reps @ 205-225 lbs")
         
         // Check progression
-        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 226)
+        let b = Float(226.0)
+        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: b)
         plan = makePlan()
         setCompleted([])
         #expect(exercise.progress(program) == 0)    // no completed
         
-        let b = exercise.baseWeight!
         setCompleted([([5, 5, 2], nil)])
         #expect(exercise.progress(program) == -2)    // not enough reps
         
@@ -87,7 +87,8 @@ class PlanTests {
     @Test("BeginnerPlan")
     func beginner() {
         // Bench with AMRAP
-        exercise = make("Bench", "Bench Press", "Beginner", weights: "Dual Plates", weight: 225)
+        var b = Float(225.0)
+        exercise = make("Bench", "Bench Press", "Beginner", weights: "Dual Plates", weight: b)
         let plan = makePlan()
         #expect(plan.details(exercise) == "3x5 @ 225 lbs")
         
@@ -106,7 +107,11 @@ class PlanTests {
         setCompleted([])
         #expect(exercise.progress(program) == 0)    // no completed
         
-        let b = exercise.baseWeight!
+        b = if case .weight(let w) = exercise.baseWeight {
+            w
+        } else {
+            Float(-1.0)
+        }
         setCompleted([([5, 5, 4], nil)])
         #expect(exercise.progress(program) == 0)    // not enough reps
         
@@ -203,7 +208,11 @@ class PlanTests {
         setCompleted([])
         #expect(exercise.progress(program) == 0)    // no completed
         
-        let b = exercise.baseWeight!
+        let b = if case .weight(let w) = exercise.baseWeight {
+            w
+        } else {
+            Float(-1.0)
+        }
         setCompleted([([12, 12, 4], nil)])
         #expect(exercise.progress(program) == 0)    // not enough reps
         
@@ -242,42 +251,43 @@ class PlanTests {
         #expect(exercise.progress(program) == -2)    // did fewer than min reps
     }
     
-    @Test("PercentPlan")
-    func percent() {
+    @Test("BasicOtherPlan")
+    func other() {
         // No completed
-        exercise = make("Light Bench", "Bench Press", "Light")
+        exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates", base: .other)
         var plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 225))
         
         #expect(plan.details(exercise) == "3x5 @ 205 lbs")          // 0.9 * 225 = 202.5
         
         var sets: [String] = []
-        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225")               // 0.0 * 0.9 * 225 = 0.0% = 0.0
-        sets.append("Warmup 2 of 4/5 reps @ 120 lbs/25 + 10 + 2.5/53% of 225")  // 0.6 * 0.9 * 225 = 0.54% = 121.5
-        sets.append("Warmup 3 of 4/3 reps @ 160 lbs/45 + 10 + 2.5/71% of 225")  // 0.8 * 0.9 * 225 = 0.72% = 162.0
-        sets.append("Warmup 4 of 4/1 rep @ 180 lbs/45 + 10x2 + 2.5/80% of 225") // 0.9 * 0.9 * 225 = 0.81% = 182.25
-        sets.append("Workset 1 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
-        sets.append("Workset 2 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
-        sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225 lbs")                 // 0.0       = 45
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/60% of 225 lbs")               // 0.6 * 225 = 135.0.5
+        sets.append("Warmup 3 of 4/3 reps @ 160 lbs/45 + 10 + 2.5/71% of 225 lbs")    // 0.7 * 225 = 157.5
+        sets.append("Warmup 4 of 4/1 rep @ 180 lbs/45 + 10x2 + 2.5/80% of 225 lbs")   // 0.8 * 225 = 180.0
+        
+        sets.append("Workset 1 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")   // 0.9 * 225 = 202.5
+        sets.append("Workset 2 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
+        sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 205 lbs")   // TODO need to get weightset from other
         
         // Percent is based on other baseWeight, not other completed. It makes some sense to use completed
         // because the user may not be able to do a new baseWeight but we don't want to do that for gzcl
         // and keeping things simple and consistent seems like a good idea.
-        exercise = make("Light Bench", "Bench Press", "Light")
+        exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates", base: .other)
         plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 225),
                         daysAgo: 2, reps: [5, 5, 5], weights: [250, 250, 250])
         
         #expect(plan.details(exercise) == "3x5 @ 205 lbs")          // 0.9 * 225 = 202.5
         
         sets = []
-        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225")               // 0.0 * 0.9 * 225 = 0.0% = 0.0
-        sets.append("Warmup 2 of 4/5 reps @ 120 lbs/25 + 10 + 2.5/53% of 225")  // 0.6 * 0.9 * 225 = 0.54% = 121.5
-        sets.append("Warmup 3 of 4/3 reps @ 160 lbs/45 + 10 + 2.5/71% of 225")  // 0.8 * 0.9 * 225 = 0.72% = 162.0
-        sets.append("Warmup 4 of 4/1 rep @ 180 lbs/45 + 10x2 + 2.5/80% of 225") // 0.9 * 0.9 * 225 = 0.81% = 182.25
-        sets.append("Workset 1 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
-        sets.append("Workset 2 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
-        sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225")
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225 lbs")
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/60% of 225 lbs")
+        sets.append("Warmup 3 of 4/3 reps @ 160 lbs/45 + 10 + 2.5/71% of 225 lbs")
+        sets.append("Warmup 4 of 4/1 rep @ 180 lbs/45 + 10x2 + 2.5/80% of 225 lbs")
+        sets.append("Workset 1 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
+        sets.append("Workset 2 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
+        sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps x3 @ 205 lbs")
     }
@@ -378,8 +388,8 @@ class PlanTests {
         program.styles["Accessory"] = .variable(VariableInfo(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")!)
         program.styles["AMRAP"] = .amrap(AMRAPInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "2m")!)
         program.styles["Beginner"] = .basic(BasicInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "2m")!)
-        program.styles["GZCL"] = .amrap(AMRAPInfo(warmup: "5/60 3/80 1/90", workset: "3/90 2/95 1", rest: "2m")!)   // week 4 version
-        program.styles["Light"] = .percent(PercentInfo(percent: 90, rest: "2m")!)
+        program.styles["GZCL"] = .amrap(AMRAPInfo(warmup: "5/60 3/70 1/80", workset: "3/90 2/95 1", rest: "2m")!)   // week 4 version
+        program.styles["Light"] = .basic(BasicInfo(warmup: "5/0 5/60 3/70 1/80", workset: "5/90 5/90 5/90", rest: "2m")!)
         program.styles["Main"] = .variable(VariableInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")!)
         program.styles["Stretch1"] = .durations(DurationsInfo(secs: "30s", targetSecs: "")!)
         program.styles["Stretch3"] = .durations(DurationsInfo(secs: "30s 40s 50s", targetSecs: "")!)
@@ -404,11 +414,11 @@ class PlanTests {
         
         if let reps = reps {
             let e = other ?? exercise!
-            GymAce.addCompleted(e, daysAgo: daysAgo!, reps: reps, weights: weights)
+            GymAce.addCompleted(program, e, daysAgo: daysAgo!, reps: reps, weights: weights)
         }
         if let secs = secs {
             let e = other ?? exercise!
-            GymAce.addCompleted(e, daysAgo: daysAgo!, secs: secs, weights: weights)
+            GymAce.addCompleted(program, e, daysAgo: daysAgo!, secs: secs, weights: weights)
         }
 
         return ExercisePlan(model, program, workout, exercise)
@@ -419,7 +429,11 @@ class PlanTests {
         let c = repsAndWeight.enumerated().map {
             let daysAgo = repsAndWeight.count - $0
             let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-            let b = $1.1 ?? exercise.baseWeight
+            let b = if case .weight(let w) = exercise.baseWeight {
+                $1.1 ?? w
+            } else {
+                $1.1
+            }
             let weights: [Float]? = if let c = b {
                 Array(repeating: c, count: $1.0.count)    // values don't really matter for progression
             } else {

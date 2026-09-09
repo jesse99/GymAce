@@ -65,7 +65,7 @@ struct Working: Codable {
         self.started = Date()
         self.style = program.findStyle(exercise.styleName)
         switch self.style {
-        case .amrap, .basic, .variable, .missing, .oneRepMax, .percent:
+        case .amrap, .basic, .variable, .missing, .oneRepMax:
             self.type = .reps
         case .durations, .timed:
             self.type = .secs
@@ -109,13 +109,6 @@ struct Working: Codable {
             switch rhs {
             case .oneRepMax(let i2):
                 return i1.warmup.count == i2.warmup.count
-            default:
-                return false
-            }
-        case .percent:
-            switch rhs {
-            case .percent:
-                return true
             default:
                 return false
             }
@@ -299,7 +292,7 @@ final class ExerciseEntry: Codable {
             let style = program.findStyle(exercise.styleName)
             if case .oneRepMax = style, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
                 if let orm = compute1RM(weight: weight, reps: reps) {
-                    exercise.baseWeight = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
+                    exercise.baseWeight = .weight(orm.rounded()) // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
                 }
             }
             
@@ -308,10 +301,11 @@ final class ExerciseEntry: Codable {
                 workout.elapsed = e + elapsed
             }
             
+            let b = exercise.findBaseWeight(program)
             let c = if case .timed = style {
-                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weights: w.weights, baseWeight: exercise.baseWeight, units: w.units, distance: healthKit.enabled ? healthKit.distance : nil)
+                Completed(values: [Int(Date().timeIntervalSince(w.started))], type: w.type, weights: w.weights, baseWeight: b, units: w.units, distance: healthKit.enabled ? healthKit.distance : nil)
             } else {
-                Completed(values: w.values, type: w.type, weights: w.weights, baseWeight: exercise.baseWeight, units: w.units)
+                Completed(values: w.values, type: w.type, weights: w.weights, baseWeight: b, units: w.units)
             }
             exercise.history.append(c)
             w.values = []
@@ -425,12 +419,12 @@ func typeMatches(_ program: Program, _ completed: Completed, _ exercise: Exercis
     switch completed.type {
     case .reps:
         switch program.findStyle(exercise.styleName) {
-        case .amrap, .basic, .variable, .missing, .oneRepMax, .percent: return true
+        case .amrap, .basic, .variable, .missing, .oneRepMax: return true
         case .durations, .timed: return false
         }
     case .secs:
         switch program.findStyle(exercise.styleName) {
-        case .amrap, .basic, .variable, .missing, .oneRepMax, .percent: return false
+        case .amrap, .basic, .variable, .missing, .oneRepMax: return false
         case .durations, .timed: return true
         }
     }

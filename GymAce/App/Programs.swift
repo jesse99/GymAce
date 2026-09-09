@@ -1358,17 +1358,17 @@ fileprivate func previewProgram() -> Program {
     func addStyles(_ program: Program) {
         program.styles["Main"] = variableStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")
-        program.styles["Light"] = percentStyle(percent: 100, rest: "2m")
+        program.styles["Light"] = basicStyle(warmup: "5/0 5/40 3/50 1/70", workset: "5/80 5/80 5/80", rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
         program.styles["Walk"] = Style.timed
         program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 5, rest: "2m")!)
     }
     
     func addExercises(_ program: Program) {
-        var exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates")
-        addCompleted(exercise, daysAgo: 5, reps: [5, 5, 5], weights: [130], note: "So hard, nearly died")
-        addCompleted(exercise, daysAgo: 3, reps: [5, 5, 5], weights: [135], note: "Went up easy peasy")
-        addCompleted(exercise, daysAgo: 1, reps: [5, 5, 5], weights: [135])
+        var exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates", base: .other)
+        addCompleted(program, exercise, daysAgo: 5, reps: [5, 5, 5], weights: [130], note: "So hard, nearly died")
+        addCompleted(program, exercise, daysAgo: 3, reps: [5, 5, 5], weights: [135], note: "Went up easy peasy")
+        addCompleted(program, exercise, daysAgo: 1, reps: [5, 5, 5], weights: [135])
         program.exercises.append(exercise)
 
         exercise = make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 145)
@@ -1386,16 +1386,16 @@ fileprivate func previewProgram() -> Program {
         exercise = make("Deadlift", "Deadlift", "Main", weights: "Dual Plates", weight: 230)
         program.exercises.append(exercise)
 
-        exercise = make("Light Face Pulls", "Face Pull", "Light", weights: "Cable Machine")
+        exercise = make("Light Face Pulls", "Face Pull", "Light", weights: "Cable Machine", base: .other)
         program.exercises.append(exercise)
 
         exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 40.0)
         program.exercises.append(exercise)
 
         exercise = make("Quad Stretch", "Standing Quad Stretch", "Stretch")
-        addCompleted(exercise, daysAgo: 5, secs: [10, 10, 10])
-        addCompleted(exercise, daysAgo: 3, secs: [20, 20, 20])
-        addCompleted(exercise, daysAgo: 1, secs: [20, 20, 20])
+        addCompleted(program, exercise, daysAgo: 5, secs: [10, 10, 10])
+        addCompleted(program, exercise, daysAgo: 3, secs: [20, 20, 20])
+        addCompleted(program, exercise, daysAgo: 1, secs: [20, 20, 20])
         program.exercises.append(exercise)
 
         exercise = make("Third World Squat", "Third World Squat", "Accessory", weights: "Dumbbells", weight: 80.0)
@@ -2299,28 +2299,51 @@ fileprivate func previewProgram() -> Program {
 
 // Public for unit tests
 func make(_ name: String, _ formalName: String, _ styleName: String, weights: String? = nil, weight: Float? = nil) -> Exercise {
-    if let n = weights {
-        return Exercise(name: name, formalName: formalName, styleName: styleName, weights: n, weight: weight)
+    let w = if let x = weight {
+        BaseWeight.weight(x)
     } else {
-        return Exercise(name: name, formalName: formalName, styleName: styleName, weight: weight)
+        BaseWeight.none
+    }
+    if let n = weights {
+        return Exercise(name: name, formalName: formalName, styleName: styleName, weights: n, weight: w)
+    } else {
+        return Exercise(name: name, formalName: formalName, styleName: styleName, weight: w)
+    }
+}
+
+func make(_ name: String, _ formalName: String, _ styleName: String, weights: String? = nil, base: BaseWeight) -> Exercise {
+    if let n = weights {
+        return Exercise(name: name, formalName: formalName, styleName: styleName, weights: n, weight: base)
+    } else {
+        return Exercise(name: name, formalName: formalName, styleName: styleName, weight: base)
     }
 }
 
 // Public for unit tests
-func addCompleted(_ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Float]? = nil, note: String? = nil) {
+func addCompleted(_ program: Program, _ exercise: Exercise, daysAgo: Int, reps: [Int], weights: [Float]? = nil, note: String? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(reps: reps, weights: weights, baseWeight: exercise.baseWeight, units: .Imperial, completed: d!)
+    let b = exercise.findBaseWeight(program)
+    let c = Completed(reps: reps, weights: weights, baseWeight: b, units: .Imperial, completed: d!)
     c.note = note
     exercise.history.append(c)
 }
 
 // Public for unit tests
-func addCompleted(_ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Float]? = nil) {
+func addCompleted(_ program: Program, _ exercise: Exercise, daysAgo: Int, secs: [Int], weights: [Float]? = nil) {
     let calendar = Calendar.current
     let d = calendar.date(byAdding: .day, value: -daysAgo, to: Date())
-    let c = Completed(secs: secs, weights: weights, baseWeight: exercise.baseWeight, units: .Imperial, completed: d!)
+    let b = exercise.findBaseWeight(program)
+    let c = Completed(secs: secs, weights: weights, baseWeight: b, units: .Imperial, completed: d!)
     exercise.history.append(c)
+}
+
+fileprivate func basicStyle(warmup: String, workset: String, rest: String) -> Style {
+    if let i = BasicInfo(warmup: warmup, workset: workset, rest: rest) {
+        return .basic(i)
+    } else {
+        fatalError("bad args")
+    }
 }
 
 fileprivate func variableStyle(warmup: String, workset: String, backoff: String? = nil, rest: String) -> Style {
@@ -2338,13 +2361,4 @@ fileprivate func durationsStyle(secs: String, targetSecs: String) -> Style {
         fatalError("bad args")
     }
 }
-
-fileprivate func percentStyle(percent: Int, rest: String) -> Style {
-    if let i = PercentInfo(percent: percent, rest: rest) {
-        return .percent(i)
-    } else {
-        fatalError("bad args")
-    }
-}
-    
 
