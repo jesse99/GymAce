@@ -287,12 +287,28 @@ final class ExerciseEntry: Codable {
     }
     
     /// Called when the user completes an exercise. Adds current to Exercise.history.
-    func completedLast(_ program: Program, _ workout: Workout, _ exercise: Exercise) {
+    func completedLast(_ model: Model, _ program: Program, _ workout: Workout, _ exercise: Exercise) -> Int? {
+        var progressed: Int? = nil
         if var w = self.working {
             let style = program.findStyle(exercise.styleName)
             if case .oneRepMax = style, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
-                if let orm = compute1RM(weight: weight, reps: reps) {
-                    exercise.baseWeight = .weight(orm.rounded()) // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
+                if reps == 0 {
+                    if case .weight(let old) = exercise.baseWeight {
+                        if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                            exercise.baseWeight = .weight(ws.lower(target: old - 0.001).value())
+                            progressed = -1
+                        }
+                    }
+                } else if let orm = compute1RM(weight: weight, reps: reps) {
+                    let new = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
+                    if case .weight(let old) = exercise.baseWeight {
+                        if new > old {
+                            progressed = 1
+                        } else if new < old {
+                            progressed = -1
+                        }
+                    }
+                    exercise.baseWeight = .weight(new)
                 }
             }
             
@@ -311,6 +327,7 @@ final class ExerciseEntry: Codable {
             w.values = []
             self.working = w
         }
+        return progressed
     }
     
     func finishedExercise() {

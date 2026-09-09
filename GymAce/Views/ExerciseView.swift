@@ -451,7 +451,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     private func gotoFinished() {
         // We want to do this before the user presses the Finished button so that the user can
         // edit the Completed he just did.
-        entry.completedLast(program, workout, exercise)
+        let p1rm = entry.completedLast(model, program, workout, exercise)
         program.didExercise()
         entry.mode = .finished
         
@@ -467,6 +467,8 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     dropWeight()
                 }
             }
+        } else if let p = p1rm {
+            progressed = p          // special case for oneRepmax style
         }
     }
 }
