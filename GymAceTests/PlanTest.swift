@@ -377,7 +377,7 @@ class PlanTests {
         program = Program("Test Program")
         program.styles["Accessory"] = .variable(VariableInfo(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")!)
         program.styles["AMRAP"] = .amrap(AMRAPInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "2m")!)
-        program.styles["Beginner"] = .basic(BasicInfo(warmup: "5/0 5/60 3/80 1/90", workset: [5, 5, 5], rest: "2m")!)
+        program.styles["Beginner"] = .basic(BasicInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "2m")!)
         program.styles["GZCL"] = .amrap(AMRAPInfo(warmup: "5/60 3/80 1/90", workset: "3/90 2/95 1", rest: "2m")!)   // week 4 version
         program.styles["Light"] = .percent(PercentInfo(percent: 90, rest: "2m")!)
         program.styles["Main"] = .variable(VariableInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")!)

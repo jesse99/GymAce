@@ -92,19 +92,23 @@ struct AMRAPInfo: Codable {
 
 struct BasicInfo: Codable {
     var warmup: [OtherReps]
-    var workset: [Int]
+    var workset: [PercentReps]
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
+    /// workset is formatted as reps with an optional percent
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
-    init?(warmup: String, workset: [Int], rest: String) {
+    init?(warmup: String, workset: String, rest: String) {
         switch parseOtherReps(warmup) {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
         }
 
-        self.workset = workset
-        
+        switch parsePercentReps(workset) {
+        case .success(let reps): self.workset = reps
+        case .failure: return nil
+        }
+
         switch parseRest(rest) {
         case .success(let secs): self.rest = secs
         case .failure: return nil
@@ -269,12 +273,12 @@ extension Exercise {
                 }
                 let canProgress: ([Int], Float?) -> Bool = {reps, weights in
                     let actual = reps.reduce(0, +)
-                    let expected = info.workset.reduce(0, +)
+                    let expected = info.workset.reduce(0, {$0 + $1.reps})
                     return actual >= expected
                 }
                 let terrible: ([Int], Float?) -> Bool = {reps, weights in
                     let actual = reps.reduce(0, +)
-                    let expected = info.workset.reduce(0, +)
+                    let expected = info.workset.reduce(0, {$0 + $1.reps})
                     return expected > 3*reps.count && actual < 3*reps.count
                 }
                 // If the user was able to do all the reps then progress.
@@ -519,7 +523,7 @@ extension Exercise {
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: nil)
                 sets.append(set)
             }
-            for (i, reps) in info.workset.enumerated() {
+            for (i, s) in info.workset.enumerated() {
                 let k = PlanSet.Kind.workset(index: i, count: info.workset.count)
                 let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1 {
                     nil     // don't use rest for the last set of the last exercise in a workout
@@ -527,8 +531,8 @@ extension Exercise {
                     rest ?? self.rest(program, workout)
                 }
 
-                let e = PlanSet.Amount.reps(min: reps, max: reps)
-                let p = parentPercent
+                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
+                let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
                 sets.append(set)
