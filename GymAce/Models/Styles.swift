@@ -7,7 +7,7 @@ enum Style: Codable {
     case amrap(AMRAPInfo)
 
     /// Workset reps are fixed and progress happens if user hits requsted reps.
-    case beginner(BeginnerInfo)
+    case basic(BasicInfo)
     
     /// Reps increase to a max then weight increases and expected reps is set to min.
     case variable(VariableInfo)
@@ -36,8 +36,8 @@ extension Style {
         switch self {
         case .amrap:
             return "Worksets are for a fixed number of reps but the last set is As Many Reps As Possible. Weights increase based on the results of the AMRAP set."
-        case .beginner:
-            return "Worksets are for a fixed number of reps. Weights are increased if you were able to do all the requested reps. This generally should not be used for more than a few months."
+        case .basic:
+            return "Worksets are for a fixed number of reps. Weights are increased if you were able to do all the requested reps."
         case .variable:
             return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do the max reps."
         case .durations:
@@ -45,7 +45,7 @@ extension Style {
         case .missing:
             return "The style is missing from the program."
         case .oneRepMax:
-            return "Used to compute a one rep max attached to an exercise's formal name. This is usally used in conjunction with the percent and/or amrap styles."
+            return "Used to compute a one rep max attached to an exercise's formal name. This is usally used in conjunction with the percent option in the basic or amrap styles."
         case .percent:
             return "This is associated with another exercise using the exercise's formal name. This exercise is done like the other exercise but with a percentage of the other exercise's weight. Typically this is used to perform a light version of another exercise."
         case .timed:
@@ -90,7 +90,7 @@ struct AMRAPInfo: Codable {
     }
 }
 
-struct BeginnerInfo: Codable {
+struct BasicInfo: Codable {
     var warmup: [OtherReps]
     var workset: [Int]
     var rest: Int?
@@ -255,7 +255,7 @@ extension Exercise {
                 }
             }
             return 0
-        case .beginner(let info):
+        case .basic(let info):
             if let b = self.baseWeight {
                 let compatible: ([Int], Float?) -> Bool = {reps, baseWeight in
                     if let oldBase = baseWeight {
@@ -392,7 +392,7 @@ extension Exercise {
         switch program.findStyle(self.styleName) {
         case .amrap(let info):
             return info.warmup.count + info.workset.count + info.backoff.count
-        case .beginner(let info):
+        case .basic(let info):
             return info.warmup.count + info.workset.count
         case .variable(let info):
             return info.warmup.count + info.workset.count + info.backoff.count
@@ -418,7 +418,7 @@ extension Exercise {
         switch program.findStyle(self.styleName) {
         case .amrap:
             return findActualWeight(model, program, percent)
-        case .beginner:
+        case .basic:
             return findActualWeight(model, program, percent)
         case .variable(let info):
             var percents: [Int] = []
@@ -445,7 +445,7 @@ extension Exercise {
         switch program.findStyle(self.styleName) {
         case .amrap:
             return findActualWeight(model, program, percent)
-        case .beginner:
+        case .basic:
             return findActualWeight(model, program, percent)
         case .variable(let info):
             var percents: [Int] = []
@@ -510,7 +510,7 @@ extension Exercise {
                 let set = PlanSet(kind: k, expected: e, baseWeight: baseWeight, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
-        case .beginner(let info):
+        case .basic(let info):
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
                 let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
@@ -633,7 +633,7 @@ extension Exercise {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's AMRAP style)")
                 valid = false
             }
-        case .beginner:
+        case .basic:
             if baseWeight == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's beginner style)")
                 valid = false
@@ -685,14 +685,14 @@ extension Exercise {
     
     func usesOther(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .amrap, .beginner, .variable, .durations, .missing, .oneRepMax, .timed: return false
+        case .amrap, .basic, .variable, .durations, .missing, .oneRepMax, .timed: return false
         case .percent: return true
         }
     }
     
     func usesPercents(_ program: Program) -> Bool {
         switch program.findStyle(self.styleName) {
-        case .amrap, .beginner, .durations, .missing, .oneRepMax, .timed: return false
+        case .amrap, .basic, .durations, .missing, .oneRepMax, .timed: return false
         case .variable(let info):
             for s in info.workset {
                 if s.percent != 100 {return true}
@@ -722,7 +722,7 @@ extension Exercise {
         switch program.findStyle(self.styleName) {
         case .amrap(let info):
             return info.rest
-        case .beginner(let info):
+        case .basic(let info):
             return info.rest
         case .variable(let info):
             return info.rest
