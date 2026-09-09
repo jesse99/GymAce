@@ -26,7 +26,7 @@ func findDefaultWeightSet(_ name: String) -> WeightSet? {
         return WeightSet.discrete(kettlebells)
     } else if name == "Single Plates" {
         let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+        let single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
         return WeightSet.plates(single)
     } else if name == "Smith Machine" {
         let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
@@ -154,43 +154,89 @@ fileprivate func masterGZCL() -> Program {
     
     func addExercises(_ program: Program) {
         // one rep max
-        var exercise = make("Max Bench", "Bench Press", "1RM", weights: "Dual Plates", weight: 160)
+        var exercise = make("Max Bench", "Bench Press", "1RM", weights: "Dual Plates", weight: 165)
         program.exercises.append(exercise)
         
-        exercise = make("Max Deadlift", "Trap Bar Deadlift", "1RM", weights: "Trapbar", weight: 220)
+        exercise = make("Max Deadlift", "Trap Bar Deadlift", "1RM", weights: "Trapbar", weight: 250)
         program.exercises.append(exercise)
         
-        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Plates", weight: 180)
+        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Plates", weight: 160)
         program.exercises.append(exercise)
 
         for week in 1...4 {
             // T1
             exercise = make("T1.\(week) Squat", "High bar Squat", "T1.\(week)", weights: "Dual Plates", base: .other)
             program.exercises.append(exercise)
-            
+            if week == 1 {          // TODO get rid of these
+                addCompleted(program, exercise, daysAgo: 13, reps: [4, 4, 4], weights: [135, 135, 135])
+            } else if week == 2 {
+                addCompleted(program, exercise, daysAgo: 6, reps: [3, 3, 3], weights: [145, 145, 145])
+            }
+
             exercise = make("T1.\(week) Bench", "Bench Press", "T1.\(week)", weights: "Dual Plates", base: .other)
             program.exercises.append(exercise)
+            if week == 1 {          // TODO get rid of these
+                addCompleted(program, exercise, daysAgo: 22, reps: [4, 4, 4], weights: [140, 140, 140])
+            } else if week == 2 {
+                addCompleted(program, exercise, daysAgo: 8, reps: [3, 3, 3], weights: [150, 150, 150])
+            } else if week == 3 {
+                addCompleted(program, exercise, daysAgo: 2, reps: [3, 2, 2, 1], weights: [145, 150, 150, 160])
+            }
 
             exercise = make("T1.\(week) Deadlift", "Trap Bar Deadlift", "T1.\(week) (dead)", weights: "Trapbar", base: .other)
             program.exercises.append(exercise)
+            if week == 1 {          // TODO get rid of these
+                addCompleted(program, exercise, daysAgo: 23, reps: [4, 4, 4], weights: [210, 210, 210])
+            } else if week == 2 {
+                addCompleted(program, exercise, daysAgo: 10, reps: [3, 3, 3], weights: [230, 230, 230])
+            } else if week == 3 {
+                addCompleted(program, exercise, daysAgo: 4, reps: [3, 2, 2, 1], weights: [220, 230, 230, 240])
+            }
 
             // T2
             exercise = make("T2.\(week) Squat", "High bar Squat", "T2.\(week)", weights: "Dual Plates", base: .other)
             program.exercises.append(exercise)
-            
+            if week == 1 {          // TODO get rid of these
+                addCompleted(program, exercise, daysAgo: 22, reps: [6, 6, 6, 6], weights: [105, 105, 105, 105])
+            } else if week == 2 {
+                addCompleted(program, exercise, daysAgo: 8, reps: [6, 6, 6], weights: [110, 110, 110])
+            } else if week == 3 {
+                addCompleted(program, exercise, daysAgo: 2, reps: [5, 5, 5], weights: [120, 120, 120])
+            }
+
             exercise = make("T2.\(week) Bench", "Bench Press", "T2.\(week)", weights: "Dual Plates", base: .other)
             program.exercises.append(exercise)
+            if week == 1 {          // TODO get rid of these
+                addCompleted(program, exercise, daysAgo: 23, reps: [6, 6, 6, 6], weights: [105, 105, 105, 105])
+            } else if week == 2 {
+                addCompleted(program, exercise, daysAgo: 10, reps: [6, 6, 6], weights: [115, 115, 115])
+            } else if week == 3 {
+                addCompleted(program, exercise, daysAgo: 4, reps: [5, 5, 5], weights: [125, 125, 125])
+            }
 
             exercise = make("T2.\(week) Deadlift", "Trap Bar Deadlift", "T2.\(week) (dead)", weights: "Trapbar", base: .other)
             program.exercises.append(exercise)
+            if week == 1 {          // TODO get rid of these
+                addCompleted(program, exercise, daysAgo: 13, reps: [6, 6, 6, 6], weights: [160, 160, 160, 160])
+            } else if week == 2 {
+                addCompleted(program, exercise, daysAgo: 6, reps: [6, 6, 6], weights: [180, 180, 180])
+            }
         }
 
         // T3
         exercise = make("T3 Chin Ups", "Chin-up", "Chin Ups", weights: "Single Plates", weight: 5)
         program.exercises.append(exercise)
+        addCompleted(program, exercise, daysAgo: 22, reps: [7, 7], weights: [5, 5])
+        addCompleted(program, exercise, daysAgo: 13, reps: [5, 5], weights: [5, 5])
+        addCompleted(program, exercise, daysAgo:  8, reps: [6, 5], weights: [5, 5])
+        addCompleted(program, exercise, daysAgo:  4, reps: [6, 6], weights: [5, 5])
+        addCompleted(program, exercise, daysAgo:  2, reps: [7, 7], weights: [5, 5])
 
-        exercise = make("T3 Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 32.5)
+        exercise = make("T3 Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
         program.exercises.append(exercise)
+        addCompleted(program, exercise, daysAgo: 23, reps: [10, 10, 12], weights: [42.5, 42.5, 42.5])
+        addCompleted(program, exercise, daysAgo: 10, reps: [12, 12, 12], weights: [42.5, 42.5, 42.5])
+        addCompleted(program, exercise, daysAgo: 4, reps: [12, 12, 12], weights: [42.5, 42.5, 42.5])
 
         // Other
         exercise = make("Walk", "Walking", "Walk")

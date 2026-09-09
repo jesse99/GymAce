@@ -184,20 +184,6 @@ struct DurationsInfo: Codable {
     }
 }
 
-struct PercentInfo: Codable {
-    var percent: Int
-    var rest: Int?
-    
-    init?(percent: Int, rest: String) {
-        self.percent = percent
-
-        switch parseRest(rest) {
-        case .success(let secs): self.rest = secs
-        case .failure: return nil
-        }
-    }
-}
-
 extension Exercise {
     /// Looks at completed and returns 1 if weight should be bumped by one increment, 2 if by two increments, -1 if weight should be dropped, etc.
     /// Returns nil if the style doesn't handle progression.
