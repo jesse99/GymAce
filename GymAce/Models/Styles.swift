@@ -628,6 +628,7 @@ extension Exercise {
         case .durations:
             break
         case .missing:
+            print("Program \(program.name) exercise \(name) is the missing style)")
             valid = false
         case .oneRepMax:
             if b == nil {

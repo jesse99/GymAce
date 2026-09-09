@@ -1,7 +1,7 @@
 import Foundation
 
 // TODO when adding a new program verify that the links the exercises use all work
-let defaultPrograms: [Program] = [previewProgram()]
+let defaultPrograms: [Program] = [masterGZCL(), previewProgram()]
 
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
     if name == "Cable Machine" {
@@ -115,163 +115,158 @@ func previewModel() -> Model {
 //    return program
 //}
 //
-//fileprivate func masterGZCL() -> Program {
-//    func addExercises(_ program: Program) {
-//        let max_warmup = [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-//        let max_d_warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
-//        
-//        let t1_warmup = [
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 45), FixedReps(reps: 3, percent: 65), FixedReps(reps: 1, percent: 75)],
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 70), FixedReps(reps: 1, percent: 80)],
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 47), FixedReps(reps: 3, percent: 67), FixedReps(reps: 1, percent: 77)],
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 70), FixedReps(reps: 1, percent: 80)]
-//        ]
-//        let t1_d_warmup = [
-//            [FixedReps(reps: 5, percent: 45), FixedReps(reps: 3, percent: 65), FixedReps(reps: 1, percent: 75)],
-//            [FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 70), FixedReps(reps: 1, percent: 80)],
-//            [FixedReps(reps: 5, percent: 47), FixedReps(reps: 3, percent: 67), FixedReps(reps: 1, percent: 77)],
-//            [FixedReps(reps: 5, percent: 50), FixedReps(reps: 3, percent: 70), FixedReps(reps: 1, percent: 80)]
-//        ]
-//        let t1_sets: [[VariableReps]] = [
-//            [.fixed(4, 85), .fixed(4, 85), .fixed(4, 85)],                // 12 reps, want ~10 reps here
-//            [.fixed(3, 90), .fixed(3, 90), .fixed(3, 90)],                // 9 reps
-//            [.fixed(3, 87), .fixed(2, 92), .fixed(2, 92), .fixed(1, 97)], // 8 reps
-//            [.fixed(3, 90), .fixed(2, 95), .amrap(1, 100)]]               // 6+ reps
-//
-//        let t2_warmup = [
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 25), FixedReps(reps: 3, percent: 45), FixedReps(reps: 1, percent: 55)],
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 30), FixedReps(reps: 3, percent: 50), FixedReps(reps: 1, percent: 60)],
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 35), FixedReps(reps: 3, percent: 55), FixedReps(reps: 1, percent: 65)],
-//            [FixedReps(reps: 5, percent: 0), FixedReps(reps: 5, percent: 40), FixedReps(reps: 3, percent: 60), FixedReps(reps: 1, percent: 70)]
-//        ]
-//        let t2_d_warmup = [
-//            [FixedReps(reps: 5, percent: 25), FixedReps(reps: 3, percent: 45), FixedReps(reps: 1, percent: 55)],
-//            [FixedReps(reps: 5, percent: 30), FixedReps(reps: 3, percent: 50), FixedReps(reps: 1, percent: 60)],
-//            [FixedReps(reps: 5, percent: 35), FixedReps(reps: 3, percent: 55), FixedReps(reps: 1, percent: 65)],
-//            [FixedReps(reps: 5, percent: 40), FixedReps(reps: 3, percent: 60), FixedReps(reps: 1, percent: 70)]
-//        ]
-//        let t2_sets: [[VariableReps]] =
-//            [[.fixed(6, 65), .fixed(6, 65), .fixed(6, 65), .fixed(6, 65)],   // 24 reps, want 2x T1 reps here
-//             [.fixed(6, 70), .fixed(6, 70), .fixed(6, 70)],                  // 18 reps
-//             [.fixed(5, 75), .fixed(5, 75), .fixed(5, 75)],                  // 15 reps
-//             [.fixed(4, 80), .fixed(4, 80), .fixed(4, 80)]]                  // 12 reps
-//
-//        let creps: [VariableReps] = [.variable(3, 8), .variable(3, 8)]
-//        let t3: [VariableReps] = [.variable(8, 12), .variable(8, 12), .variable(8, 12)] // 24 reps, ideally want 3x T1 reps here
-//
-//        // one rep max
-//        var exercise = make("Max Bench", "Bench Press", warmups: max_warmup, oneRepMax: true, weights: "Dual Plates", weight: 160)
-//        program.exercises.append(exercise)
-//        
-//        exercise = make("Max Deadlift", "Trap Bar Deadlift", warmups: max_d_warmup, oneRepMax: true, weights: "Trapbar", weight: 220)
-//        program.exercises.append(exercise)
-//        
-//        exercise = make("Max Squat", "High bar Squat", warmups: max_warmup, oneRepMax: true, weights: "Dual Plates", weight: 180)
-//        program.exercises.append(exercise)
-//
-//        for week in 1...4 {
-//            // T1
-//            exercise = make("T1.\(week) Squat", "High bar Squat", "Max Squat", percent: 100, warmups: t1_warmup[week-1], worksets: t1_sets[week-1], weights: "Dual Plates", rest: 4*60)
-//            program.exercises.append(exercise)
-//            
-//            exercise = make("T1.\(week) Bench", "Bench Press", "Max Bench", percent: 100, warmups: t1_warmup[week-1], worksets: t1_sets[week-1], weights: "Dual Plates", rest: 3*60)
-//            program.exercises.append(exercise)
-//
-//            exercise = make("T1.\(week) Deadlift", "Trap Bar Deadlift", "Max Deadlift", percent: 100, warmups: t1_d_warmup[week-1], worksets: t1_sets[week-1], weights: "Trapbar", rest: 4*60)
-//            program.exercises.append(exercise)
-//
-//            // T2
-//            exercise = make("T2.\(week) Squat", "High bar Squat", "Max Squat", percent: 100, warmups: t2_warmup[week-1], worksets: t2_sets[week-1], weights: "Dual Plates", rest: 4*60)
-//            program.exercises.append(exercise)
-//            
-//            exercise = make("T2.\(week) Bench", "Bench Press", "Max Bench", percent: 100, warmups: t2_warmup[week-1], worksets: t2_sets[week-1], weights: "Dual Plates", rest: 3*60)
-//            program.exercises.append(exercise)
-//
-//            exercise = make("T2.\(week) Deadlift", "Trap Bar Deadlift", "Max Deadlift", percent: 100, warmups: t2_d_warmup[week-1], worksets: t2_sets[week-1], weights: "Trapbar", rest: 4*60)
-//            program.exercises.append(exercise)
-//        }
-//
-//        // T3
-//        exercise = make("T3 Chin Ups", "Chin-up", warmups: [], worksets: creps, weights: "Single Plates", weight: 5, rest: 3*60)
-//        program.exercises.append(exercise)
-//
-//        exercise = make("T3 Face Pulls", "Face Pull", warmups: [], worksets: t3, weights: "Cable Machine", weight: 32.5, rest: Int(2.5*60))
-//        program.exercises.append(exercise)
-//    }
-//
-//    func addMax(_ program: Program) {
-//        let schedule = Schedule.anyDay
-//        let workout = Workout("One Rep Max", schedule)
-//        
-//        workout.addExercise(name: "Max Squat")
-//        workout.addExercise(name: "Max Bench")
-//        workout.addExercise(name: "Max Deadlift")
-//
-//        program.addWorkout(workout)
-//    }
-//
-//    func addBench(_ program: Program, _ week: Int) {
-//        let schedule = Schedule.days(Weekdays([.tuesday]))
-//        let workout = Workout("Bench week \(week)", schedule)
-//        workout.weeks = week...week
-//
-//        workout.addExercise(name: "T1.\(week) Bench")
-//        workout.addExercise(name: "T2.\(week) Squat")
-//        workout.addExercise(name: "T3 Chin Ups")
-//        
-//        if week == 4 {
-//            workout.notes = "On the AMRAP set if you were able to do two reps then up the weight for the \"Max\" version of the exercise by one. If you were able to do three reps then up it by two."
-//        }
-//
-//        program.addWorkout(workout)
-//    }
-//
-//    func addSquat(_ program: Program, _ week: Int) {
-//        let schedule = Schedule.days(Weekdays([.thursday]))
-//        let workout = Workout("Squat week \(week)", schedule)
-//        workout.weeks = week...week
-//
-//        workout.addExercise(name: "T1.\(week) Squat")
-//        workout.addExercise(name: "T2.\(week) Deadlift")
-//        workout.addExercise(name: "T3 Chin Ups")
-//        
-//        if week == 4 {
-//            workout.notes = "On the AMRAP set if you were able to do two reps then up the weight for the \"Max\" version of the exercise by one. If you were able to do three reps then up it by two."
-//        }
-//
-//        program.addWorkout(workout)
-//    }
-//    
-//    func addDeadlift(_ program: Program, _ week: Int) {
-//        let schedule = Schedule.days(Weekdays([.sunday]))
-//        let workout = Workout("Deadlift week \(week)", schedule)
-//        workout.weeks = week...week
-//
-//        workout.addExercise(name: "T1.\(week) Deadlift")
-//        workout.addExercise(name: "T2.\(week) Bench")
-//        workout.addExercise(name: "T3 Face Pulls")
-//        
-//        if week == 4 {
-//            workout.notes = "On the AMRAP set if you were able to do two reps then up the weight for the \"Max\" version of the exercise by one. If you were able to do three reps then up it by two."
-//        }
-//
-//        program.addWorkout(workout)
-//    }
-//
-//    let program = Program("Masters GZCL")
-//    program.summary = "This is an intermediate program for older lifters inspired by the [GZCL program](https://swoleateveryheight.blogspot.com/2014/07/the-gzcl-method-simplified_13.html). The exercises use percentages based on your one rep max for the exercise (set these using Edit Exercise, e.g. for \"Max Bench\"). There are three workouts per week where the weight percentages increase but reps drop. On the fourth week your one rep max is tested and increased based on how many extra reps you were able to do. This program does require a gym."
-//    addExercises(program)
-//    
-//    addMax(program)
-//    for week in 1...4 {
-//        addBench(program, week)
-//        addSquat(program, week)
-//        addDeadlift(program, week)
-//    }
-//
-//    return program
-//}
-//
+fileprivate func masterGZCL() -> Program {
+    func addStyles(_ program: Program) {
+        program.styles["T1.1"] = basicStyle(warmup: "5/0 5/45 3/65 1/75",    workset: "4/85 4/85 4/85", rest: "3.5m")  // 12 reps, want about 10 here
+        program.styles["T1.1 (dead)"] = basicStyle(warmup: "5/55 3/65 1/75", workset: "4/85 4/85 4/85", rest: "4m")
+
+        program.styles["T1.2"] = basicStyle(warmup: "5/0 5/50 3/70 1/80",    workset: "3/90 3/90 3/90", rest: "3.5m")  // 9 reps
+        program.styles["T1.2 (dead)"] = basicStyle(warmup: "5/60 3/70 1/80", workset: "3/90 3/90 3/90", rest: "4m")
+
+        program.styles["T1.3"] = basicStyle(warmup: "5/0 5/47 3/67 1/77",    workset: "3/87 2/92 2/92 1/97", rest: "3.5m") // 8 reps
+        program.styles["T1.3 (dead)"] = basicStyle(warmup: "5/57 3/67 1/77", workset: "3/87 2/92 2/92 1/97", rest: "4m")
+
+        program.styles["T1.4"] = amrapStyle(warmup: "5/0 5/50 3/70 1/80",    workset: "3/90 2/95 1", rest: "3.5m")   // 6+ reps
+        program.styles["T1.4 (dead)"] = amrapStyle(warmup: "5/60 3/70 1/80", workset: "3/90 2/95 1", rest: "4m")
+
+        
+        program.styles["T2.1"] = basicStyle(warmup: "5/0 5/25 3/45 1/55",    workset: "6/65 6/65 6/65 6/65", rest: "3.5m")   // 24 reps, want 2x T1 reps here
+        program.styles["T2.1 (dead)"] = basicStyle(warmup: "5/35 3/45 1/55", workset: "6/65 6/65 6/65 6/65", rest: "4m")
+
+        program.styles["T2.2"] = basicStyle(warmup: "5/0 5/30 3/50 1/60",    workset: "6/70 6/70 6/70", rest: "3.5m")          // 18 reps
+        program.styles["T2.2 (dead)"] = basicStyle(warmup: "5/40 3/50 1/60", workset: "6/70 6/70 6/70", rest: "4m")
+
+        program.styles["T2.3"] = basicStyle(warmup: "5/0 5/35 3/55 1/65",    workset: "5/75 5/75 5/75", rest: "3.5m")          // 15 reps
+        program.styles["T2.3 (dead)"] = basicStyle(warmup: "5/45 3/55 1/65", workset: "5/75 5/75 5/75", rest: "4m")
+
+        program.styles["T2.4"] = basicStyle(warmup: "5/0 5/40 3/60 1/70",    workset: "4/75 4/75 4/75", rest: "3.5m")          // 12 reps
+        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/50 3/60 1/70", workset: "4/75 4/75 4/75", rest: "4m")
+
+
+        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 3, rest: "3.5m")!)
+        program.styles["1RM (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/60 3/80 1/90", workset: 3, rest: "4m")!)
+
+
+        program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2.5m")// 24 reps, ideally want 3x T1 reps here
+        program.styles["Chin Ups"] = variableStyle(warmup: "", workset: "3-8 3-8", rest: "3.5m")
+        program.styles["Walk"] = .timed
+    }
+    
+    func addExercises(_ program: Program) {
+        // one rep max
+        var exercise = make("Max Bench", "Bench Press", "1RM", weights: "Dual Plates", weight: 160)
+        program.exercises.append(exercise)
+        
+        exercise = make("Max Deadlift", "Trap Bar Deadlift", "1RM", weights: "Trapbar", weight: 220)
+        program.exercises.append(exercise)
+        
+        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Plates", weight: 180)
+        program.exercises.append(exercise)
+
+        for week in 1...4 {
+            // T1
+            exercise = make("T1.\(week) Squat", "High bar Squat", "T1.\(week)", weights: "Dual Plates", base: .other)
+            program.exercises.append(exercise)
+            
+            exercise = make("T1.\(week) Bench", "Bench Press", "T1.\(week)", weights: "Dual Plates", base: .other)
+            program.exercises.append(exercise)
+
+            exercise = make("T1.\(week) Deadlift", "Trap Bar Deadlift", "T1.\(week) (dead)", weights: "Trapbar", base: .other)
+            program.exercises.append(exercise)
+
+            // T2
+            exercise = make("T2.\(week) Squat", "High bar Squat", "T2.\(week)", weights: "Dual Plates", base: .other)
+            program.exercises.append(exercise)
+            
+            exercise = make("T2.\(week) Bench", "Bench Press", "T2.\(week)", weights: "Dual Plates", base: .other)
+            program.exercises.append(exercise)
+
+            exercise = make("T2.\(week) Deadlift", "Trap Bar Deadlift", "T2.\(week) (dead)", weights: "Trapbar", base: .other)
+            program.exercises.append(exercise)
+        }
+
+        // T3
+        exercise = make("T3 Chin Ups", "Chin-up", "Chin Ups", weights: "Single Plates", weight: 5)
+        program.exercises.append(exercise)
+
+        exercise = make("T3 Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 32.5)
+        program.exercises.append(exercise)
+
+        // Other
+        exercise = make("Walk", "Walking", "Walk")
+        program.exercises.append(exercise)
+    }
+
+    func addMax(_ program: Program) {
+        let schedule = Schedule.anyDay
+        let workout = Workout("One Rep Max", schedule)
+        
+        workout.addExercise(name: "Max Squat")
+        workout.addExercise(name: "Max Bench")
+        workout.addExercise(name: "Max Deadlift")
+
+        program.addWorkout(workout)
+    }
+
+    func addBench(_ program: Program, _ week: Int) {
+        let schedule = Schedule.days(Weekdays([.tuesday]))
+        let workout = Workout("Bench week \(week)", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "T1.\(week) Bench")
+        workout.addExercise(name: "T2.\(week) Squat")
+        workout.addExercise(name: "T3 Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+
+    func addSquat(_ program: Program, _ week: Int) {
+        let schedule = Schedule.days(Weekdays([.thursday]))
+        let workout = Workout("Squat week \(week)", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "T1.\(week) Squat")
+        workout.addExercise(name: "T2.\(week) Deadlift")
+        workout.addExercise(name: "T3 Chin Ups")
+        
+        program.addWorkout(workout)
+    }
+    
+    func addDeadlift(_ program: Program, _ week: Int) {
+        let schedule = Schedule.days(Weekdays([.sunday]))
+        let workout = Workout("Deadlift week \(week)", schedule)
+        workout.weeks = week...week
+
+        workout.addExercise(name: "T1.\(week) Deadlift")
+        workout.addExercise(name: "T2.\(week) Bench")
+        workout.addExercise(name: "T3 Face Pulls")
+        
+        program.addWorkout(workout)
+    }
+
+    func addWalk(_ program: Program) { // TODO remove this?
+        let schedule = Schedule.anyDay
+        let workout = Workout("Walk", schedule)
+        workout.addExercise(name: "Walk")
+        program.addWorkout(workout)
+    }
+
+    let program = Program("Masters GZCL")
+    program.summary = "This is an intermediate program for older lifters inspired by the [GZCL program](https://swoleateveryheight.blogspot.com/2014/07/the-gzcl-method-simplified_13.html). The exercises use percentages based on your one rep max for the exercise (set these using Edit Exercise, e.g. for \"Max Bench\"). There are three workouts per week where the weight percentages increase but reps drop. On the fourth week your one rep max is tested and increased based on how many extra reps you were able to do. This program does require a gym."
+    addStyles(program)
+    addExercises(program)
+    
+    addMax(program)
+    for week in 1...4 {
+        addBench(program, week)
+        addSquat(program, week)
+        addDeadlift(program, week)
+    }
+    addWalk(program)
+
+    return program
+}
+
 //fileprivate func GZCL() -> Program {
 //    func addExercises(_ program: Program) { // TODO review warmups
 //        let max_warmup = [FixedReps(reps: 5, percent: 60), FixedReps(reps: 3, percent: 80), FixedReps(reps: 1, percent: 90)]
@@ -2336,6 +2331,14 @@ func addCompleted(_ program: Program, _ exercise: Exercise, daysAgo: Int, secs: 
     let b = exercise.findBaseWeight(program)
     let c = Completed(secs: secs, weights: weights, baseWeight: b, units: .Imperial, completed: d!)
     exercise.history.append(c)
+}
+
+fileprivate func amrapStyle(warmup: String, workset: String, rest: String) -> Style {
+    if let i = AMRAPInfo(warmup: warmup, workset: workset, rest: rest) {
+        return .amrap(i)
+    } else {
+        fatalError("bad args")
+    }
 }
 
 fileprivate func basicStyle(warmup: String, workset: String, rest: String) -> Style {
