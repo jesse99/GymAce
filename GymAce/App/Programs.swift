@@ -117,39 +117,40 @@ func previewModel() -> Model {
 //
 fileprivate func masterGZCL() -> Program {
     func addStyles(_ program: Program) {
-        program.styles["T1.1"] = basicStyle(warmup: "5/0 5/45 3/65 1/75",    workset: "4/85 4/85 4/85", rest: "3.5m")  // 12 reps, want about 10 here
+        // T1
+        program.styles["T1.1"] =    basicStyle(warmup: "5/0 5/45 3/65 1/75", workset: "4/85 4/85 4/85", rest: "3.5m")  // 12 reps, want about 10 here
         program.styles["T1.1 (dead)"] = basicStyle(warmup: "5/55 3/65 1/75", workset: "4/85 4/85 4/85", rest: "4m")
 
-        program.styles["T1.2"] = basicStyle(warmup: "5/0 5/50 3/70 1/80",    workset: "3/90 3/90 3/90", rest: "3.5m")  // 9 reps
+        program.styles["T1.2"] =    basicStyle(warmup: "5/0 5/50 3/70 1/80", workset: "3/90 3/90 3/90", rest: "3.5m")  // 9 reps
         program.styles["T1.2 (dead)"] = basicStyle(warmup: "5/60 3/70 1/80", workset: "3/90 3/90 3/90", rest: "4m")
 
-        program.styles["T1.3"] = basicStyle(warmup: "5/0 5/47 3/67 1/77",    workset: "3/87 2/92 2/92 1/97", rest: "3.5m") // 8 reps
+        program.styles["T1.3"] =    basicStyle(warmup: "5/0 5/47 3/67 1/77", workset: "3/87 2/92 2/92 1/97", rest: "3.5m") // 8 reps
         program.styles["T1.3 (dead)"] = basicStyle(warmup: "5/57 3/67 1/77", workset: "3/87 2/92 2/92 1/97", rest: "4m")
 
-        program.styles["T1.4"] = amrapStyle(warmup: "5/0 5/50 3/70 1/80",    workset: "3/90 2/95 1", rest: "3.5m")   // 6+ reps
+        program.styles["T1.4"] =    amrapStyle(warmup: "5/0 5/50 3/70 1/80", workset: "3/90 2/95 1", rest: "3.5m")   // 6+ reps
         program.styles["T1.4 (dead)"] = amrapStyle(warmup: "5/60 3/70 1/80", workset: "3/90 2/95 1", rest: "4m")
 
-        
-        program.styles["T2.1"] = basicStyle(warmup: "5/0 5/25 3/45 1/55",    workset: "6/65 6/65 6/65 6/65", rest: "3.5m")   // 24 reps, want 2x T1 reps here
-        program.styles["T2.1 (dead)"] = basicStyle(warmup: "5/35 3/45 1/55", workset: "6/65 6/65 6/65 6/65", rest: "4m")
+        // T2
+        program.styles["T2.1"] =    basicStyle(warmup: "5/0 5/25 3/45", workset: "6/65 6/65 6/65 6/65", rest: "3.5m")   // 24 reps, want 2x T1 reps here
+        program.styles["T2.1 (dead)"] = basicStyle(warmup: "5/35 3/45", workset: "6/65 6/65 6/65 6/65", rest: "4m")
 
-        program.styles["T2.2"] = basicStyle(warmup: "5/0 5/30 3/50 1/60",    workset: "6/70 6/70 6/70", rest: "3.5m")          // 18 reps
-        program.styles["T2.2 (dead)"] = basicStyle(warmup: "5/40 3/50 1/60", workset: "6/70 6/70 6/70", rest: "4m")
+        program.styles["T2.2"] =    basicStyle(warmup: "5/0 5/30 3/50", workset: "6/70 6/70 6/70", rest: "3.5m")          // 18 reps
+        program.styles["T2.2 (dead)"] = basicStyle(warmup: "5/40 3/50", workset: "6/70 6/70 6/70", rest: "4m")
 
-        program.styles["T2.3"] = basicStyle(warmup: "5/0 5/35 3/55 1/65",    workset: "5/75 5/75 5/75", rest: "3.5m")          // 15 reps
-        program.styles["T2.3 (dead)"] = basicStyle(warmup: "5/45 3/55 1/65", workset: "5/75 5/75 5/75", rest: "4m")
+        program.styles["T2.3"] =    basicStyle(warmup: "5/0 5/35 3/55", workset: "5/75 5/75 5/75", rest: "3.5m")          // 15 reps
+        program.styles["T2.3 (dead)"] = basicStyle(warmup: "5/45 3/55", workset: "5/75 5/75 5/75", rest: "4m")
 
-        program.styles["T2.4"] = basicStyle(warmup: "5/0 5/40 3/60 1/70",    workset: "4/75 4/75 4/75", rest: "3.5m")          // 12 reps
-        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/50 3/60 1/70", workset: "4/75 4/75 4/75", rest: "4m")
+        program.styles["T2.4"] =    basicStyle(warmup: "5/0 5/45 3/55", workset: "4/75 4/75 4/75", rest: "3.5m")          // 12 reps
+        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/45 3/55", workset: "4/75 4/75 4/75", rest: "4m")
 
-
-        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 3, rest: "3.5m")!)
-        program.styles["1RM (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/60 3/80 1/90", workset: 3, rest: "4m")!)
-
-
+        // T3
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2.5m")// 24 reps, ideally want 3x T1 reps here
-        program.styles["Chin Ups"] = variableStyle(warmup: "", workset: "3-8 3-8", rest: "3.5m")
+        program.styles["Chin Ups"] =  variableStyle(warmup: "", workset: "3-8 3-8", rest: "3.5m")
         program.styles["Walk"] = .timed
+
+        // one rep max
+        program.styles["1RM"] =    .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 3, rest: "3.5m")!)
+        program.styles["1RM (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/60 3/80 1/90", workset: 3, rest: "4m")!)
     }
     
     func addExercises(_ program: Program) {

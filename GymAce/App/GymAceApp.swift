@@ -15,7 +15,7 @@ struct GymAceApp: App {
 //            model.programs.remove(at: i)
 //        }
         if model.activeProgram.isEmpty {
-            model.activeProgram = "Basic Beginner"
+            model.activeProgram = "Preview"
         }
         for p in defaultPrograms {
             if !model.programs.contains(where: {$0.name == p.name}) {

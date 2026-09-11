@@ -11,13 +11,8 @@ struct EditExercise: View {
     @Bindable var exercise: Exercise
     @State private var showNameHelp = false
     @State private var showFormalHelp = false
-    @State private var showWeightPickerHelp = false
-    @State private var showWeightHelp = false
-    @State private var showWeightSetHelp = false
 //    @State private var showTypePickerHelp = false
     @State private var formalNames: [MenuItem] = []
-    private let weightDelta = 10
-    private let weightSets: [String]
     private var workoutsLabel: String = ""
 
 //    @State private var durationsData: DurationsData
@@ -68,7 +63,6 @@ struct EditExercise: View {
         self.model = model
         self.program = program
         self.exercise = exercise
-        self.weightSets = model.weightSets.keys.sorted()
         
         var workouts: [String] = []
         for w in program.workouts {
@@ -212,80 +206,8 @@ struct EditExercise: View {
                     .font(.footnote)
             }
             
-            // Weight set
-            HStack {
-                Picker("Weight Set", selection: weightSetBinding) {
-                    Text("No Weight Set").tag(-1)
-                    ForEach(Array(weightSets.enumerated()), id: \.element) {tuple in
-                        Text(tuple.1).tag(tuple.0)
-                    }
-                }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                Spacer()
-                Button("", systemImage: "info.circle") {
-                    showWeightSetHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
-            }
-            if showWeightSetHelp {
-                if let n = exercise.weightSet {
-                    if let ws = model.weightSets[n] {
-                        Text(ws.description())
-                            .foregroundColor(.blue)
-                            .font(.footnote)
-                    } else {
-                        Text("\(n) has no associated weight set.")
-                            .foregroundColor(.blue)
-                            .font(.footnote)
-                    }
-                } else {
-                    Text("This exercise has no weights associated with it.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-            }
-            
-            // Weight
-            if let n = exercise.weightSet, let ws = model.weightSets[n] {
-                HStack {
-                    Picker("", selection: weightsBinding) {
-                        ForEach(getWeightLabels(ws), id: \.0) {tuple in
-                            Text(tuple.0).tag(tuple.1)  // TODO why is the selection dimmed?
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .labelsHidden()
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showWeightPickerHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showWeightPickerHelp {
-                    Text("The weight the user should do next using the \(n) weight set.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-            } else {
-                HStack {
-                    weightTextField("Weight", weightBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showWeightHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showWeightHelp {
-                    Text("The weight the user should do next (with no weight set).")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-            }
-            
+            WeightView(model: model, exercise: exercise)
+                        
             // Type picker
 //            HStack {
 //                Picker("", selection: typeBinding) {
@@ -933,25 +855,6 @@ struct EditExercise: View {
         )
     }
     
-    private var weightSetBinding: Binding<Int> {
-        Binding(
-            get: {
-                if let n = exercise.weightSet {
-                    return weightSets.firstIndex(of: n) ?? 0
-                } else {
-                    return -1
-                }
-            },
-            set: {
-                if $0 == -1 {
-                    exercise.weightSet = nil
-                } else {
-                    exercise.weightSet = weightSets[$0]
-                }
-            }
-        )
-    }
-
     private func formalColor(_ name: String) -> Color {
         if model.notes.defaults[name] != nil || model.notes.custom[name] != nil {
             return .black
@@ -963,76 +866,6 @@ struct EditExercise: View {
     private func setFormalName(_ name: String) {
         exercise.formalName = name
         formalNames = []
-    }
-
-    // Return a friendly label for the weight along with an arbitrary tag.
-    private func getWeightLabels(_ ws: WeightSet) -> [(String, Int)] {
-        var labels: [(String, Int)] = []
-        
-        let w = if case .weight(let w) = exercise.baseWeight {
-            w
-        } else {
-            Float(0.0)
-        }
-        var actual = ActualWeight(discrete: w, ws.units)
-        for _ in 1...weightDelta {
-            let old = actual.text()
-            actual = ws.lower(target: actual.value() - 0.001)
-            if actual.text() != old {
-                labels.append((actual.text(), Int(1000*actual.value())))
-            } else {
-                break
-            }
-        }
-        labels.reverse()
-
-        actual = ActualWeight(discrete: w, ws.units)
-        labels.append((actual.text(), Int(1000*actual.value())))
-
-        for _ in 1...weightDelta {
-            let old = actual.text()
-            actual = ws.advance(target: actual.value() + 0.001)
-            if actual.text() != old && actual.value() != Float.greatestFiniteMagnitude {    // TODO ugh
-                labels.append((actual.text(), Int(1000*actual.value())))
-            } else {
-                break
-            }
-        }
-        return labels
-    }
-    
-    private var weightBinding: Binding<String> {
-        Binding(
-            get: {
-                if case .weight(let w) = exercise.baseWeight, w > 0.0 {
-                    return formatWeight(w, .None)
-                } else {
-                    return ""   // this will show the placeholder text
-                }
-            },
-            set: {
-                if let w = Float($0) {
-                    exercise.baseWeight = .weight(w)
-                } else {
-                    exercise.baseWeight = .none
-                }
-            }
-        )
-    }
-
-    private var weightsBinding: Binding<Int> {
-        Binding(
-            get: {
-                // Current value is always the current exercise weight.
-                let w = if case .weight(let w) = exercise.baseWeight {
-                    w
-                } else {
-                    Float(0.0)
-                }
-                return Int(1000*w)
-            },
-            set: {exercise.baseWeight = .weight(Float($0)/1000.0)}
-        )
     }
 
     private var isNameEmpty: Bool {
