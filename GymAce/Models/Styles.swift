@@ -27,7 +27,7 @@ enum Style: Codable {
 }
 
 extension Style {
-    func description() -> String {  // TODO include this somewhere
+    func description() -> String {
         switch self {
         case .amrap:
             return "Worksets are for a fixed number of reps but the last set is As Many Reps As Possible. Weights increase based on the results of the AMRAP set."
@@ -43,6 +43,18 @@ extension Style {
             return "Used to compute a one rep max attached to an exercise's formal name. This is typically the 'other' exercise for exercises where the worksets use a percentage of the 1rm weight."
         case .timed:
             return "The exercise is done for an arbitrary amount of time, e.g. a walk."
+        }
+    }
+
+    func summary() -> [String] {
+        switch self {
+        case .amrap(let info): return info.summary()
+        case .basic(let info): return info.summary()
+        case .variable(let info): return info.summary()
+        case .durations(let info): return info.summary()
+        case .missing: return []
+        case .oneRepMax(let info): return info.summary()
+        case .timed: return []
         }
     }
 }
@@ -81,6 +93,18 @@ struct AMRAPInfo: Codable {
         case .failure: return nil
         }
     }
+    
+    func summary() -> [String] {
+        var result: [String] = []
+        if !warmup.isEmpty {
+            result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
+        }
+        result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " ") + "+")
+        if !backoff.isEmpty {
+            result.append("Backoff: " + backoff.map({$0.asString()}).joined(separator: " "))
+        }
+        return result
+    }
 }
 
 struct BasicInfo: Codable {
@@ -107,6 +131,15 @@ struct BasicInfo: Codable {
         case .failure: return nil
         }
     }
+    
+    func summary() -> [String] {
+        var result: [String] = []
+        if !warmup.isEmpty {
+            result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
+        }
+        result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " "))
+        return result
+    }
 }
 
 struct OneRepMaxInfo: Codable {
@@ -121,13 +154,22 @@ struct OneRepMaxInfo: Codable {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
         }
-
+        
         self.workset = workset
         
         switch parseRest(rest) {
         case .success(let secs): self.rest = secs
         case .failure: return nil
         }
+    }
+    
+    func summary() -> [String] {
+        var result: [String] = []
+        if !warmup.isEmpty {
+            result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
+        }
+        result.append("Workset: \(workset)+")
+        return result
     }
 }
 
@@ -165,6 +207,18 @@ struct VariableInfo: Codable {
         case .failure: return nil
         }
     }
+    
+    func summary() -> [String] {
+        var result: [String] = []
+        if !warmup.isEmpty {
+            result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
+        }
+        result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " "))
+        if !backoff.isEmpty {
+            result.append("Backoff: " + backoff.map({$0.asString()}).joined(separator: " "))
+        }
+        return result
+    }
 }
 
 struct DurationsInfo: Codable {
@@ -181,6 +235,12 @@ struct DurationsInfo: Codable {
         case .success(let secs): self.targetSecs = secs
         case .failure: return nil
         }
+    }
+    
+    func summary() -> [String] {
+        var result: [String] = []
+        result.append("Durations: " + secs.map({secsToShortStr($0)}).joined(separator: " "))
+        return result
     }
 }
 

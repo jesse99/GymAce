@@ -200,9 +200,17 @@ struct VariableReps: Codable {
     
     func asString() -> String {
         if minReps == maxReps {
-            return "\(minReps)/\(percent)"
+            if percent == 100 {
+                return "\(minReps)"
+            } else {
+                return "\(minReps)/\(percent)"
+            }
         } else {
-            return "\(minReps)-\(maxReps)/\(percent)"
+            if percent == 100 {
+                return "\(minReps)-\(maxReps)"
+            } else {
+                return "\(minReps)-\(maxReps)/\(percent)"
+            }
         }
     }
 }
