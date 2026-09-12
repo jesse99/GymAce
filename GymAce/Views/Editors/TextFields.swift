@@ -45,12 +45,12 @@ func rangeTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
-/// 5 5 5
+/// 5 5 5 or 5/80 3/90
 @ViewBuilder
 func repsTextField(_ title: String, _ text: Binding<String>) -> some View {
     TextField(title, text: text)
         .textFieldStyle(.roundedBorder)
-        .keyboardType(.numbersAndPunctuation)   // need numbers and space
+        .keyboardType(.numbersAndPunctuation)   // need numbers and space and /
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled(true)
 }

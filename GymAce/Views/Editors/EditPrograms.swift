@@ -1,10 +1,10 @@
 import SwiftUI
 
-func findName(_ has: (String) -> Bool) -> String {
-    var candidate = "Untitled"
+func findName(_ has: (String) -> Bool, prefix: String = "Untitled") -> String {
+    var candidate = prefix
     var n = 2
     while has(candidate) {
-        candidate = "Untitled \(n)"
+        candidate = "\(prefix) \(n)"
         n += 1
     }
     return candidate

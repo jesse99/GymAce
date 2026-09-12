@@ -1404,6 +1404,7 @@ fileprivate func previewProgram() -> Program {
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
         program.styles["Walk"] = Style.timed
         program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 5, rest: "2m")!)
+        program.styles["AMRAP"] = amrapStyle(warmup: "5/40 3/50 1/70", workset: "3", rest: "3m")
     }
     
     func addExercises(_ program: Program) {

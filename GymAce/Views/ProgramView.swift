@@ -84,6 +84,11 @@ struct ProgramView: View {
                             NavigationLink(destination: EditPrograms(model: model)) {
                                 Text("Edit Programs")
                             }
+                            if let program = model.active() {
+                                NavigationLink(destination: EditStyles(model: model, program: program)) {
+                                    Text("Edit Styles")
+                                }
+                            }
                             NavigationLink(destination: EditWeightSets(model: model)) {
                                 Text("Edit Weight Sets")
                             }

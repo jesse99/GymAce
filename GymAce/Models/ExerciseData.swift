@@ -123,7 +123,7 @@ struct OtherReps: Codable {
     }
 }
 
-/// Used for worksets with amrap style.
+/// Similar to OtherReps except that the reps string can omit the percent.
 struct PercentReps: Codable {
     var reps: Int
     var percent: Int
