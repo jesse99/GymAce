@@ -1429,6 +1429,9 @@ fileprivate func previewProgram() -> Program {
         exercise = make("Deadlift", "Deadlift", "Main", weights: "Dual Plates", weight: 230)
         program.exercises.append(exercise)
 
+        exercise = make("OHP (amrap)", "Overhead Press", "AMRAP", weights: "Dual Plates", weight: 80)
+        program.exercises.append(exercise)
+
         exercise = make("Light Face Pulls", "Face Pull", "Light", weights: "Cable Machine", base: .other)
         program.exercises.append(exercise)
 
@@ -1459,6 +1462,7 @@ fileprivate func previewProgram() -> Program {
         workout.addExercise(name: "Light Bench")
         workout.addExercise(name: "Heavy Bench")
         workout.addExercise(name: "OHP")
+        workout.addExercise(name: "OHP (amrap)")
         workout.addExercise(name: "Light Face Pulls")
         workout.addExercise(name: "Face Pulls")
         

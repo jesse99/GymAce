@@ -110,6 +110,7 @@ struct AMRAPInfo: Codable {
 struct BasicInfo: Codable {
     var warmup: [OtherReps]
     var workset: [PercentReps]
+    // TODO should support backoff sets, would have to make this an optional
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
@@ -580,8 +581,8 @@ extension Exercise {
                 rest ?? self.rest(program, workout)
             }
 
-            let e = PlanSet.Amount.reps(min: info.workset, max: info.workset)
-            let p = Float(1.0)
+            let e = PlanSet.Amount.amrap(min: info.workset)
+            let p = computePercent(reps: info.workset) ?? 1.0
             let w = findActualWeight(model, program, p)
             let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
             sets.append(set)
@@ -709,29 +710,7 @@ extension Exercise {
         }
         return false
     }
-    
-    func usesPercents(_ program: Program) -> Bool {
-        switch program.findStyle(self.styleName) {
-        case .amrap(let info):
-            for s in info.workset {
-                if s.percent != 100 {return true}
-            }
-            return false
-        case .basic(let info):
-            for s in info.workset {
-                if s.percent != 100 {return true}
-            }
-            return false
-        case .durations, .missing, .oneRepMax, .timed:
-            return false
-        case .variable(let info):
-            for s in info.workset {
-                if s.percent != 100 {return true}
-            }
-            return false
-        }
-    }
-    
+        
     private func findActualWeight(_ model: Model, _ program: Program, _ percent: Float) -> ActualWeight? {
         if let b = findBaseWeight(program) {
             if let wn = weightSet, let ws = model.weightSets[wn] {

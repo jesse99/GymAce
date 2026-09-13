@@ -414,15 +414,13 @@ extension ExerciseEntry {
             return nil
         }
 
-        if exercise.usesPercents(program) {
-            if let base = plan.sets[setIndex].baseWeight, base > 0.0, let actual = plan.sets[setIndex].weight {
-                let percent = Int(100.0 * actual.value() / base)
-                if percent != 100 {
-                    if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                        return "\(percent)% of \(formatWeight(base, ws.units))"
-                    } else {
-                        return "\(percent)% of \(formatWeight(base, .None))"
-                    }
+        if let base = plan.sets[setIndex].baseWeight, base > 0.0, let actual = plan.sets[setIndex].weight {
+            let percent = Int(100.0 * actual.value() / base)
+            if percent != 100 {
+                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                    return "\(percent)% of \(formatWeight(base, ws.units))"
+                } else {
+                    return "\(percent)% of \(formatWeight(base, .None))"
                 }
             }
         }
@@ -450,12 +448,20 @@ func typeMatches(_ program: Program, _ completed: Completed, _ exercise: Exercis
 // References:
 // https://www.nsca.com/contentassets/61d813865e264c6e852cadfe247eae52/nsca_training_load_chart.pdf?srsltid=AfmBOopfqWIOmJzGNEuYohCPYo-13gCVBjb6Nh6t9rKbfprUXsSeY6E6
 // https://theathletesphysique.com/wp-content/uploads/2020/08/1RM-500-600-Max-Tables.pdf
+//                                   0    1    2     3     4     5     6     7     8     9     10    11    12 reps
+fileprivate let percents: [Float] = [0.0, 1.0, 0.95, 0.93, 0.90, 0.87, 0.85, 0.83, 0.80, 0.77, 0.75, 0.70, 0.67]
+
 func compute1RM(weight: Float, reps: Int) -> Float? {
-    //                       0    1    2     3     4     5     6     7     8     9     10    11    12 reps
-    let percents: [Float] = [0.0, 1.0, 0.95, 0.93, 0.90, 0.87, 0.85, 0.83, 0.80, 0.77, 0.75, 0.70, 0.67]
-    
     if reps >= 1 && reps < percents.count {
         return weight / percents[reps]
+    } else {
+        return nil
+    }
+}
+
+func computePercent(reps: Int) -> Float? {
+    if reps >= 1 && reps < percents.count {
+        return percents[reps]
     } else {
         return nil
     }
