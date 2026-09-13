@@ -16,15 +16,15 @@ struct EditStyles: View {
                                 case .amrap:
                                     EditAMRAP(model: model, program: program, name: key)
                                 case .durations:
-                                    Text("TODO durations")
+                                    EditDurations(model: model, program: program, name: key)
                                 case .oneRepMax:
-                                    Text("TODO oneRepMax")
+                                    EditOneRepMax(model: model, program: program, name: key)
                                 case .timed:
-                                    Text("TOD timed")
+                                    Text("timed exercises have no settings")
                                 case .variable:
-                                    Text("TODO variable")
+                                    EditVariable(model: model, program: program, name: key)
                                 case .missing:
-                                    Text("TODO missing")
+                                    Text("the \(key) style is missing from the program")
                             }
                         } label: {
                             Text(key)

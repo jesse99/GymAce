@@ -34,9 +34,9 @@ extension Style {
         case .basic:
             return "Worksets are for a fixed number of reps. Weights are increased if you were able to do all the requested reps."
         case .variable:
-            return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do the max reps."
+            return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do all sets at the max reps."
         case .durations:
-            return "The exercise is done for a specified time with an optional target time. If you hit the target you may want to switch to a harder version of the exercise, e.g. plants to foot elevated planks."
+            return "The exercise is done for a specified time with an optional target time. If you hit the target you may want to switch to a harder version of the exercise, e.g. planks to foot elevated planks."
         case .missing:
             return "The style is missing from the program."
         case .oneRepMax:
