@@ -140,8 +140,8 @@ fileprivate func masterGZCL() -> Program {
         program.styles["T2.3"] =    basicStyle(warmup: "5/0 5/35 3/55", workset: "5/75 5/75 5/75", rest: "3.5m")          // 15 reps
         program.styles["T2.3 (dead)"] = basicStyle(warmup: "5/45 3/55", workset: "5/75 5/75 5/75", rest: "4m")
 
-        program.styles["T2.4"] =    basicStyle(warmup: "5/0 5/45 3/55", workset: "4/75 4/75 4/75", rest: "3.5m")          // 12 reps
-        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/45 3/55", workset: "4/75 4/75 4/75", rest: "4m")
+        program.styles["T2.4"] =    basicStyle(warmup: "5/0 5/40 3/60", workset: "4/80 4/80 4/80", rest: "3.5m")          // 12 reps
+        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/50 3/60", workset: "4/80 4/80 4/80", rest: "4m")
 
         // T3
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2.5m")// 24 reps, ideally want 3x T1 reps here
