@@ -127,8 +127,8 @@ fileprivate func masterGZCL() -> Program {
         program.styles["T1.3"] =    basicStyle(warmup: "5/0 5/47 3/67 1/77", workset: "3/87 2/92 2/92 1/97", rest: "3.5m") // 8 reps
         program.styles["T1.3 (dead)"] = basicStyle(warmup: "5/57 3/67 1/77", workset: "3/87 2/92 2/92 1/97", rest: "4m")
 
-        program.styles["T1.4"] =    amrapStyle(warmup: "5/0 5/50 3/70 1/80", workset: "3/90 2/95 1", rest: "3.5m")   // 6+ reps
-        program.styles["T1.4 (dead)"] = amrapStyle(warmup: "5/60 3/70 1/80", workset: "3/90 2/95 1", rest: "4m")
+        program.styles["T1.4"] =    .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/50 3/70 1/80  3/90 2/95", workset: 1, rest: "3.5m")!) // 6+ reps
+        program.styles["T1.4 (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/60 3/70 1/80  3/90 2/95", workset: 1, rest: "4m")!)
 
         // T2
         program.styles["T2.1"] =    basicStyle(warmup: "5/0 5/25 3/45", workset: "6/65 6/65 6/65 6/65", rest: "3.5m")   // 24 reps, want 2x T1 reps here

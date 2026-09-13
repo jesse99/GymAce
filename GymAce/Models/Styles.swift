@@ -392,6 +392,49 @@ extension Exercise {
         }
     }
     
+    func progress1RM(_ model: Model, _ program: Program, actualWeight: Float, actualReps: Int) -> Int? {
+        var progressed: Int? = nil
+        if actualWeight > 0.0 {
+            if actualReps == 0 {
+                if let wn = self.weightSet, let ws = model.weightSets[wn] {
+                    if case .weight(let old) = self.baseWeight {
+                        self.baseWeight = .weight(ws.lower(target: old - 0.001).value())
+                        progressed = -1
+                    } else if case .other = self.baseWeight {
+                        if let (other, _) = findOtherExercise(program) {
+                            if let old = other.findBaseWeight(program) {
+                                other.baseWeight = .weight(ws.lower(target: old - 0.001).value())
+                                progressed = -1
+                            }
+                        }
+                    }
+                }
+            } else if let orm = compute1RM(weight: actualWeight, reps: actualReps) {
+                let new = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
+                if case .weight(let old) = self.baseWeight {
+                    if new > old {
+                        progressed = 1
+                    } else if new < old {
+                        progressed = -1
+                    }
+                    self.baseWeight = .weight(new)
+                } else if case .other = self.baseWeight {
+                    if let (other, _) = findOtherExercise(program) {
+                        if let old = other.findBaseWeight(program) {
+                            if new > old {
+                                progressed = 1
+                            } else if new < old {
+                                progressed = -1
+                            }
+                            other.baseWeight = .weight(new)
+                        }
+                    }
+                }
+            }
+        }
+        return progressed
+    }
+    
     private func getLastReps(n: Int) -> Int? {
         if self.history.count + n >= 0 {
             let c = self.history[self.history.count + n]

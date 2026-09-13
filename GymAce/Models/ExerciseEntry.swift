@@ -291,25 +291,8 @@ final class ExerciseEntry: Codable {
         var progressed: Int? = nil
         if var w = self.working {
             let style = program.findStyle(exercise.styleName)
-            if case .oneRepMax = style, let weight = w.weights?.last, weight > 0.0, let reps = w.values.last {
-                if reps == 0 {
-                    if case .weight(let old) = exercise.baseWeight {
-                        if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
-                            exercise.baseWeight = .weight(ws.lower(target: old - 0.001).value())
-                            progressed = -1
-                        }
-                    }
-                } else if let orm = compute1RM(weight: weight, reps: reps) {
-                    let new = orm.rounded() // looks a lot nicer if we round and no one cares about a tenth of a pound or kilogram here
-                    if case .weight(let old) = exercise.baseWeight {
-                        if new > old {
-                            progressed = 1
-                        } else if new < old {
-                            progressed = -1
-                        }
-                    }
-                    exercise.baseWeight = .weight(new)
-                }
+            if case .oneRepMax = style, let weight = w.weights?.last, let reps = w.values.last {
+                progressed = exercise.progress1RM(model, program, actualWeight: weight, actualReps: reps)
             }
             
             if let e = workout.elapsed {
