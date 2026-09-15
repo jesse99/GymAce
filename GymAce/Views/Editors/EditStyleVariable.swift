@@ -3,27 +3,52 @@ import SwiftUI
 struct EditVariable: View {
     var model: Model
     var program: Program
-    var name: String
 
+    @State private var name = ""
+    @State private var showNameHelp = false
     @State private var showWarmupHelp = false
     @State private var showWorksetHelp = false
     @State private var showBackoffHelp = false
     @State private var showRestHelp = false
 
+    @State private var nameErr: String? = nil
     @State private var warmupErr: String? = nil
     @State private var worksetErr: String? = nil
     @State private var backoffErr: String? = nil
     @State private var restErr: String? = nil
-    
+    private let badNames: [String]
+
     init(model: Model, program: Program, name: String) {
         self.model = model
         self.program = program
-        self.name = name
+        self.badNames = program.styles.filter {$0.key != name}.map {$0.key}
+        _name = State(initialValue: name)
     }
     
     var body: some View {
         VStack {
             Form {
+                // Name
+                HStack {
+                    nameTextField("Name", nameBinding)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showNameHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showNameHelp {
+                    Text("Edit Exercise uses this to pick a style for the exercise.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = nameErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
+                
                 // Warmup
                 HStack {
                     repsTextField("Warmups", warmupBinding)
@@ -109,14 +134,34 @@ struct EditVariable: View {
                 }
             }
             Spacer()
-            Text("Variable: " + Style.variable(findInfo()).description())
+            Text(Style.variable(findInfo()).description())
                 .padding(.leading, 10)
         }
-        .navigationTitle("Edit \(name)")
+        .navigationTitle("Edit Variable")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(!isValid)
     }
 
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {
+                return name
+            },
+            set: {
+                if $0.isBlankOrEmpty {
+                    nameErr = "The name cannot be empty."
+                } else if badNames.contains($0) {
+                    nameErr = "Another style is already using that name."
+                } else {
+                    let oldName = name
+                    name = $0
+                    program.setStyleName(oldName: oldName, newName: $0)
+                    nameErr = nil
+                }
+            }
+        )
+    }
+    
     private var warmupBinding: Binding<String> {
         Binding(
             get: {
@@ -226,7 +271,7 @@ struct EditVariable: View {
     }
     
     private var isValid: Bool {
-        return warmupErr == nil && worksetErr == nil && backoffErr == nil && restErr == nil
+        return nameErr == nil && warmupErr == nil && worksetErr == nil && backoffErr == nil && restErr == nil
     }
 }
 

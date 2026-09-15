@@ -3,23 +3,49 @@ import SwiftUI
 struct EditDurations: View {
     var model: Model
     var program: Program
-    var name: String
 
+    @State private var name = ""
+    @State private var showNameHelp = false
     @State private var showSecsHelp = false
     @State private var showTargetHelp = false
 
+    @State private var nameErr: String? = nil
     @State private var secsErr: String? = nil
     @State private var targetErr: String? = nil
-    
+    private let badNames: [String]
+
     init(model: Model, program: Program, name: String) {
         self.model = model
         self.program = program
         self.name = name
+        self.badNames = program.styles.filter {$0.key != name}.map {$0.key}
+        _name = State(initialValue: name)
     }
     
     var body: some View {
         VStack {
             Form {
+                // Name
+                HStack {
+                    nameTextField("Name", nameBinding)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showNameHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
+                }
+                if showNameHelp {
+                    Text("Edit Exercise uses this to pick a style for the exercise.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
+                if let e = nameErr {
+                    Text(e)
+                        .foregroundColor(.red)
+                        .font(.footnote)
+                }
+                
                 // Durations
                 HStack {
                     durationsTextField("Durations", durationsBinding)
@@ -63,14 +89,34 @@ struct EditDurations: View {
                 }
             }
             Spacer()
-            Text("Durations: " + Style.durations(findInfo()).description())
+            Text(Style.durations(findInfo()).description())
                 .padding(.leading, 10)
         }
-        .navigationTitle("Edit \(name)")
+        .navigationTitle("Edit Durations")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(!isValid)
     }
 
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {
+                return name
+            },
+            set: {
+                if $0.isBlankOrEmpty {
+                    nameErr = "The name cannot be empty."
+                } else if badNames.contains($0) {
+                    nameErr = "Another style is already using that name."
+                } else {
+                    let oldName = name
+                    name = $0
+                    program.setStyleName(oldName: oldName, newName: $0)
+                    nameErr = nil
+                }
+            }
+        )
+    }
+    
     private var durationsBinding: Binding<String> {
         Binding(
             get: {
@@ -133,7 +179,7 @@ struct EditDurations: View {
     }
     
     private var isValid: Bool {
-        return secsErr == nil && targetErr == nil
+        return nameErr == nil && secsErr == nil && targetErr == nil
     }
 }
 
