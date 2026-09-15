@@ -70,7 +70,7 @@ struct EditOneRepMax: View {
                 
                 // Workset
                 HStack {
-                    intTextField("Workset", worksetBinding)
+                    repsTextField("Worksets", worksetBinding)
                     Spacer()
                     Button("", systemImage: "info.circle") {
                         showWorksetHelp.toggle()
@@ -79,7 +79,7 @@ struct EditOneRepMax: View {
                     .padding(.leading, 5)
                 }
                 if showWorksetHelp {
-                    Text("The number of reps you're expected to do. If you can do more reps than this then the base weight is increased. If you do fewer the base weight is reduced.")
+                    Text("Sets to do after warming up. Formatted as \"5 5\" for two sets of five reps or \"5/80 3/90\" for two sets at an increasing percentage of the exercise's base weight. The last set must be at 100% (when you do the exercise the percent will be adjusted so that the weight corresponds to your current 1RM for that number of reps).")
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
@@ -167,18 +167,26 @@ struct EditOneRepMax: View {
         Binding(
             get: {
                 let info = findInfo()
-                return "\(info.workset)"
+                return info.workset.map {$0.asString()}.joined(separator: " ")
             },
             set: {
-                if let r = Int($0) {
-                    var info = findInfo()
-                    info.workset = r
-                    program.styles[name] = .oneRepMax(info)
-                    worksetErr = nil
-                } else {
-                    worksetErr = "Expected a number, not '\($0)'."
+                var a: [PercentReps] = []
+                for s in $0.split(separator: " ") {
+                    if let r = PercentReps(String(s)) {
+                        a.append(r)
+                    } else {
+                        worksetErr = "Expected a number for reps with an optional percent, e.g. 5 or 5/80, not '\(s)'."
+                        return
+                    }
+                }
+                if let s = a.last, s.percent != 100 {
+                    worksetErr = "The last set must be at 100%."
                     return
                 }
+                var info = findInfo()
+                info.workset = a
+                program.styles[name] = .oneRepMax(info)
+                worksetErr = nil
             }
         )
     }

@@ -77,7 +77,7 @@ struct EditStyles: View {
     
     private func addOneRepMax() {
         let name = findName(hasName, prefix: "One Rep Max")
-        self.program.styles[name] = Style.oneRepMax(OneRepMaxInfo(warmup: "5/60 3/80 1/90", workset: 3, rest: "3m")!)
+        self.program.styles[name] = Style.oneRepMax(OneRepMaxInfo(warmup: "5/60 3/80 1/90", workset: "3", rest: "3m")!)
     }
     
     private func addTimed() {
