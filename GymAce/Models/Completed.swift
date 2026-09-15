@@ -155,14 +155,23 @@ class Completed: Codable, Comparable, Equatable {
 }
 
 func weightSuffix(_ weights: [Float]?, _ units: Units) -> String {
-    if let min = weights?.min(), let max = weights?.max(), max > 0.0 {
-        if min.sameWeight(max) {
-            let smin = formatWeight(min, units)
-            return " @ \(smin)"
-        } else {
-            let smin = formatWeight(min, .None)
-            let smax = formatWeight(max, units)
-            return " @ \(smin)-\(smax)"
+    if let weights = weights, let first = weights.first {
+        if weights.allSatisfy({$0.sameWeight(first)}) {
+            return formatWeight(first, units)
+        }
+        
+        var a: [String] = []
+        for (i, w) in weights.enumerated() {
+            if w > 0.0 {
+                if i < weights.count - 1 {
+                    a.append(formatWeight(w, .None))
+                } else {
+                    a.append(formatWeight(w, units))
+                }
+            }
+        }
+        if !a.isEmpty {
+            return joinLabels(a)
         }
     }
     return ""
@@ -173,6 +182,9 @@ func completedDetails(_ values: [Int], _ type: ValueType, _ weights: [Float]?, _
         return ""
     }
     var trailer = weightSuffix(weights, units)
+    if !trailer.isEmpty {
+        trailer = " @ " + trailer
+    }
     if let distance = distance {
         let s = String(format: "%.2f", distance*0.000621371)   // TODO use meters if metric
         trailer += " \(s) miles"
@@ -180,8 +192,8 @@ func completedDetails(_ values: [Int], _ type: ValueType, _ weights: [Float]?, _
 
     switch type {
     case .reps:
-        let labels = values.map {"\($0) reps"}
-        return joinLabels(labels) + trailer
+        let labels = values.map {"\($0)"}
+        return joinLabels(labels) + " reps" + trailer
     case .secs:
         let labels = values.map {secsToLongStr($0)}
         return joinLabels(labels) + trailer

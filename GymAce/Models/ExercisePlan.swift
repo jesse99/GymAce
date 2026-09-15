@@ -66,17 +66,15 @@ final class ExercisePlan {
                 break
             }
         }
-
-        if let min = weights.min(by: {$0.value() < $1.value()}), min.value() > 0.0 {
-            if let max = weights.max(by: {$0.value() < $1.value()}) {
-                if min.value() < max.value() && !amounts.isEmpty {
-                    return "\(joinReps(amounts)) @ \(min.text())-\(max.text())"
+        
+        if let first = weights.first {
+            let suffix = weightSuffix(weights.map {$0.value()}, first.units())
+            if !suffix.isEmpty {
+                if !amounts.isEmpty {
+                    return joinReps(amounts) + " @ " + suffix
+                } else {
+                    return suffix
                 }
-            }
-            if !amounts.isEmpty {
-                return "\(joinReps(amounts)) @ \(min.text())"
-            } else {
-                return min.text()
             }
         }
         if amounts.count == 1 && hasReps {
