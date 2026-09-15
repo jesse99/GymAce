@@ -78,7 +78,7 @@ struct Working: Codable {
         case .amrap(let i1):
             switch rhs {
             case .amrap(let i2):
-                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count && i1.backoff.count == i2.backoff.count
+                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count
             default:
                 return false
             }
@@ -92,7 +92,7 @@ struct Working: Codable {
         case .variable(let i1):
             switch rhs {
             case .variable(let i2):
-                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count && i1.backoff.count == i2.backoff.count
+                return i1.warmup.count == i2.warmup.count && i1.workset.count == i2.workset.count
             default:
                 return false
             }
@@ -331,8 +331,6 @@ extension ExerciseEntry {
             return "Warmup \(index + 1) of \(count)"
         case .workset(index: let index, count: let count):
             return "Workset \(index + 1) of \(count)"
-        case .backoff(index: let index, count: let count):
-            return "Backoff \(index + 1) of \(count)"
         case .timed:
             return "Set 1 of 1"
         }

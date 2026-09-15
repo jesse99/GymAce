@@ -2401,8 +2401,8 @@ fileprivate func basicStyle(warmup: String, workset: String, rest: String) -> St
     }
 }
 
-fileprivate func variableStyle(warmup: String, workset: String, backoff: String? = nil, rest: String) -> Style {
-    if let i = VariableInfo(warmup: warmup, workset: workset, backoff: backoff, rest: rest) {
+fileprivate func variableStyle(warmup: String, workset: String, rest: String) -> Style {
+    if let i = VariableInfo(warmup: warmup, workset: workset, rest: rest) {
         return .variable(i)
     } else {
         fatalError("bad args")

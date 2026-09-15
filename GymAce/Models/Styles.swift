@@ -62,13 +62,12 @@ extension Style {
 struct AMRAPInfo: Codable {
     var warmup: [OtherReps]
     var workset: [PercentReps]
-    var backoff: [OtherReps]
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80"
     /// workset is formatted as reps with an optional percent
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
-    init?(warmup: String, workset: String, backoff: String? = nil, rest: String) {
+    init?(warmup: String, workset: String, rest: String) {
         switch parseOtherReps(warmup) {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
@@ -77,15 +76,6 @@ struct AMRAPInfo: Codable {
         switch parsePercentReps(workset) {
         case .success(let reps): self.workset = reps
         case .failure: return nil
-        }
-
-        if let b = backoff {
-            switch parseOtherReps(b) {
-            case .success(let reps): self.backoff = reps
-            case .failure: return nil
-            }
-        } else {
-            self.backoff = []
         }
 
         switch parseRest(rest) {
@@ -100,9 +90,6 @@ struct AMRAPInfo: Codable {
             result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
         }
         result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " ") + "+")
-        if !backoff.isEmpty {
-            result.append("Backoff: " + backoff.map({$0.asString()}).joined(separator: " "))
-        }
         return result
     }
 }
@@ -110,7 +97,6 @@ struct AMRAPInfo: Codable {
 struct BasicInfo: Codable {
     var warmup: [OtherReps]
     var workset: [PercentReps]
-    // TODO should support backoff sets, would have to make this an optional
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
@@ -177,13 +163,12 @@ struct OneRepMaxInfo: Codable {
 struct VariableInfo: Codable {
     var warmup: [OtherReps]
     var workset: [VariableReps]
-    var backoff: [OtherReps]
     var rest: Int?
     
     /// warmup is formatted as reps/percent, e.g. "5/60 8/80".
     /// workset entries are formatted as "5" or "8-12" followed by an optional "/90"
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
-    init?(warmup: String, workset: String, backoff: String? = nil, rest: String) {
+    init?(warmup: String, workset: String, rest: String) {
         switch parseOtherReps(warmup) {
         case .success(let reps): self.warmup = reps
         case .failure: return nil
@@ -194,15 +179,6 @@ struct VariableInfo: Codable {
         case .failure: return nil
         }
         
-        if let b = backoff {
-            switch parseOtherReps(b) {
-            case .success(let reps): self.backoff = reps
-            case .failure: return nil
-            }
-        } else {
-            self.backoff = []
-        }
-
         switch parseRest(rest) {
         case .success(let secs): self.rest = secs
         case .failure: return nil
@@ -215,9 +191,6 @@ struct VariableInfo: Codable {
             result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
         }
         result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " "))
-        if !backoff.isEmpty {
-            result.append("Backoff: " + backoff.map({$0.asString()}).joined(separator: " "))
-        }
         return result
     }
 }
@@ -478,11 +451,11 @@ extension Exercise {
     func numSets(_ program: Program) -> Int {
         switch program.findStyle(self.styleName) {
         case .amrap(let info):
-            return info.warmup.count + info.workset.count + info.backoff.count
+            return info.warmup.count + info.workset.count
         case .basic(let info):
             return info.warmup.count + info.workset.count
         case .variable(let info):
-            return info.warmup.count + info.workset.count + info.backoff.count
+            return info.warmup.count + info.workset.count
         case .durations(let info):
             return info.secs.count
         case .missing:
@@ -553,7 +526,7 @@ extension Exercise {
             }
             for (i, s) in info.workset.enumerated() {
                 let k = PlanSet.Kind.workset(index: i, count: info.workset.count)
-                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1, info.backoff.isEmpty {
+                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1 {
                     nil     // don't use rest for the last set of the last exercise in a workout
                 } else {
                     rest ?? self.rest(program, workout)
@@ -566,19 +539,6 @@ extension Exercise {
                 }
                 let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
-                sets.append(set)
-            }
-            for (i, s) in info.backoff.enumerated() {
-                let k = PlanSet.Kind.backoff(index: i, count: info.warmup.count)
-                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
-                let p = (Float(s.percent) / 100.0) * parentPercent
-                let w = findActualWeight(model, program, p)
-                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.backoff.count - 1 {
-                    nil     // don't use rest for the last set of the last exercise in a workout
-                } else {
-                    rest ?? self.rest(program, workout)
-                }
                 let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
@@ -641,7 +601,7 @@ extension Exercise {
             }
             for (i, s) in info.workset.enumerated() {
                 let k = PlanSet.Kind.workset(index: i, count: info.workset.count)
-                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1, info.backoff.isEmpty {
+                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.workset.count - 1 {
                     nil     // don't use rest for the last set of the last exercise in a workout
                 } else {
                     rest ?? self.rest(program, workout)
@@ -650,19 +610,6 @@ extension Exercise {
                 let e = PlanSet.Amount.reps(min: m, max: s.maxReps)
                 let p = parentPercent
                 let w = findActualWeight(model, program, p)
-                let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
-                sets.append(set)
-            }
-            for (i, s) in info.backoff.enumerated() {
-                let k = PlanSet.Kind.backoff(index: i, count: info.warmup.count)
-                let e = PlanSet.Amount.reps(min: s.reps, max: s.reps)
-                let p = (Float(s.percent) / 100.0) * parentPercent
-                let w = findActualWeight(model, program, p)
-                let r: Int? = if let last = workout.entries.last, last.name == name, i == info.backoff.count - 1 {
-                    nil     // don't use rest for the last set of the last exercise in a workout
-                } else {
-                    rest ?? self.rest(program, workout)
-                }
                 let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }

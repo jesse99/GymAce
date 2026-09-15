@@ -8,13 +8,11 @@ struct EditAMRAP: View {
     @State private var showNameHelp = false
     @State private var showWarmupHelp = false
     @State private var showWorksetHelp = false
-    @State private var showBackoffHelp = false
     @State private var showRestHelp = false
 
     @State private var nameErr: String? = nil
     @State private var warmupErr: String? = nil
     @State private var worksetErr: String? = nil
-    @State private var backoffErr: String? = nil
     @State private var restErr: String? = nil
     private let badNames: [String]
 
@@ -86,27 +84,6 @@ struct EditAMRAP: View {
                         .font(.footnote)
                 }
                 if let e = worksetErr {
-                    Text(e)
-                        .foregroundColor(.red)
-                        .font(.footnote)
-                }
-                
-                // Backoff
-                HStack {
-                    repsTextField("Backoff", backoffBinding)
-                    Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showBackoffHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
-                }
-                if showBackoffHelp {
-                    Text("Sets to do after the work sets. Formated as 5/80, i.e. 5 reps at 80% of the base weight.")
-                        .foregroundColor(.blue)
-                        .font(.footnote)
-                }
-                if let e = backoffErr {
                     Text(e)
                         .foregroundColor(.red)
                         .font(.footnote)
@@ -210,30 +187,6 @@ struct EditAMRAP: View {
         )
     }
 
-    private var backoffBinding: Binding<String> {
-        Binding(
-            get: {
-                let info = findInfo()
-                return info.backoff.map {$0.asString()}.joined(separator: " ")
-            },
-            set: {
-                var a: [OtherReps] = []
-                for s in $0.split(separator: " ") {
-                    if let r = OtherReps(String(s)) {
-                        a.append(r)
-                    } else {
-                        warmupErr = "Expected a number for reps and a percent, e.g. 5/80, not '\(s)'."
-                        return
-                    }
-                }
-                var info = findInfo()
-                info.backoff = a
-                program.styles[name] = .amrap(info)
-                warmupErr = nil
-            }
-        )
-    }
-
     private var restBinding: Binding<String> {
         Binding(
             get: {
@@ -271,7 +224,7 @@ struct EditAMRAP: View {
     }
     
     private var isValid: Bool {
-        return nameErr == nil && warmupErr == nil && worksetErr == nil && backoffErr == nil && restErr == nil
+        return nameErr == nil && warmupErr == nil && worksetErr == nil && restErr == nil
     }
 }
 

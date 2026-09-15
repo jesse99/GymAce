@@ -91,7 +91,6 @@ struct PlanSet {
     enum Kind {
         case warmup(index: Int, count: Int)
         case workset(index: Int, count: Int)
-        case backoff(index: Int, count: Int)
         case timed
     }
 
