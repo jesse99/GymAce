@@ -9,16 +9,19 @@ struct EditExercise: View {
     var model: Model
     var program: Program
     @Bindable var exercise: Exercise
+    @State private var nameErr: String? = nil
     @State private var showNameHelp = false
     @State private var showFormalHelp = false
     @State private var formalNames: [MenuItem] = []
     @State private var showStylePickerHelp = false
     private var workoutsLabel: String = ""
+    private let badNames: [String]
 
     init(model: Model, program: Program, exercise: Exercise) {
         self.model = model
         self.program = program
         self.exercise = exercise
+        self.badNames = program.exercises.filter {$0 !== exercise}.map {$0.name}
         
         var workouts: [String] = []
         for w in program.workouts {
@@ -53,12 +56,8 @@ struct EditExercise: View {
                     .foregroundColor(.blue)
                     .font(.footnote)
             }
-            if isNameEmpty {
-                Text("Exercise name cannot be empty.")
-                    .foregroundColor(.red)
-                    .font(.footnote)
-            } else if dupeName {
-                Text("There is already a exercise with that name.")
+            if let e = nameErr {
+                Text(e)
                     .foregroundColor(.red)
                     .font(.footnote)
             }
@@ -129,7 +128,16 @@ struct EditExercise: View {
     private var nameBinding: Binding<String> {
         Binding(
             get: {return exercise.name},
-            set: {program.setExerciseName(exercise, $0)}
+            set: {
+                if $0.isBlankOrEmpty {
+                    nameErr = "The name cannot be empty."
+                } else if badNames.contains($0) {
+                    nameErr = "Another exercise is already using that name."
+                } else {
+                    program.setExerciseName(exercise, $0)
+                    nameErr = nil
+                }
+            }
         )
     }
 
@@ -184,21 +192,8 @@ struct EditExercise: View {
         formalNames = []
     }
 
-    private var isNameEmpty: Bool {
-        self.exercise.name.isEmpty
-    }
-
-    private var dupeName: Bool {
-        self.program.exercises.count(where: {
-            $0 !== self.exercise && $0.name == self.exercise.name
-        }) > 0
-    }
-
     private var isValid: Bool {
-        guard !isNameEmpty && !dupeName else {
-            return false
-        }
-        return true
+        return nameErr == nil
     }
 }
 

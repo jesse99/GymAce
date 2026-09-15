@@ -176,6 +176,17 @@ final class Program: Codable, Identifiable {
         exercise.name = name
     }
     
+    func setStyleName(oldName: String, newName: String) {
+        for e in exercises {
+            if e.styleName == oldName {
+                e.styleName = newName
+            }
+        }
+        let old = styles[oldName]
+        styles[oldName] = nil
+        styles[newName] = old
+    }
+    
     private func oldestWorkout() -> Date {
         var candidate = Date()  // we'll go ahead and use today if the user hasn't actually finished anything
         for e in exercises {

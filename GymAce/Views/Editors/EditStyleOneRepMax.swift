@@ -3,8 +3,9 @@ import SwiftUI
 struct EditOneRepMax: View {
     var model: Model
     var program: Program
-    var name: String
 
+    @State var name: String
+    @State private var showNameHelp = false
     @State private var showWarmupHelp = false
     @State private var showWorksetHelp = false
     @State private var showRestHelp = false
@@ -93,7 +94,7 @@ struct EditOneRepMax: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(!isValid)
     }
-
+    
     private var warmupBinding: Binding<String> {
         Binding(
             get: {
