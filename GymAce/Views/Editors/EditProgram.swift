@@ -3,11 +3,19 @@ import SwiftUI
 struct EditProgram: View {
     @Bindable var model: Model
     @Bindable var program: Program
+    @State private var nameErr: String? = nil
     @State private var showNameHelp = false
     @State private var showSummaryHelp = false
     @State private var showCurrentWeekHelp = false
     @State private var malformedCurrentWeek: String? = nil
+    private let badNames: [String]
 
+    init(model: Model, program: Program) {
+        self.model = model
+        self.program = program
+        self.badNames = model.programs.filter {$0 !== program}.map {$0.name}
+    }
+    
     var body: some View {
         VStack {
             Form {
@@ -30,8 +38,8 @@ struct EditProgram: View {
                         .foregroundColor(.blue)
                         .font(.footnote)
                 }
-                if model.activeProgram.isEmpty {
-                    Text("Program name cannot be empty.")
+                if let e = nameErr {
+                    Text(e)
                         .foregroundColor(.red)
                         .font(.footnote)
                 }
@@ -121,12 +129,21 @@ struct EditProgram: View {
     private var nameBinding: Binding<String> {
         Binding(
             get: {return model.activeProgram},
-            set: {model.renameProgram(program, $0)}
+            set: {
+                if $0.isBlankOrEmpty {
+                    nameErr = "The name cannot be empty."
+                } else if badNames.contains($0) {
+                    nameErr = "Another program is already using that name."
+                } else {
+                    model.renameProgram(program, $0)
+                    nameErr = nil
+                }
+            }
         )
     }
 
     private var isValid: Bool {
-        !model.activeProgram.isEmpty
+        return nameErr == nil
     }
 
     private var summaryBinding: Binding<String> {

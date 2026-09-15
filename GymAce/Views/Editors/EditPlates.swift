@@ -23,9 +23,11 @@ struct EditPlates: View {
     @State private var nameErr: String? = nil
     @State private var addErr: String? = nil
     @State var name: String
+    private let badNames: [String]
 
     init(model: Model, name: String) {
         self.model = model
+        self.badNames = model.weightSets.keys.filter {$0 != name}
         _name = State(initialValue: name)
         _items = State(initialValue: getItems())
     }
@@ -151,13 +153,12 @@ struct EditPlates: View {
                 if $0.isBlankOrEmpty {
                     nameErr = "The name cannot be empty."
                     return
+                } else if badNames.contains($0) {
+                    nameErr = "Another weight set is already using that name."
+                    return
                 }
                 if $0 == name {
                     self.nameErr = nil
-                    return
-                }
-                if model.weightSets[$0] != nil {
-                    nameErr = "There is already a weight set named \($0)."
                     return
                 }
                 let oldName = self.name

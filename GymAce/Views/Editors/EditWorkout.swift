@@ -5,6 +5,7 @@ struct EditWorkout: View {
     var model: Model
     @Bindable var program: Program
     @Bindable var workout: Workout
+    @State private var nameErr: String? = nil
     @State private var showNameHelp = false
     @State private var showNotesHelp = false
     @State private var showTypeHelp = false
@@ -12,6 +13,7 @@ struct EditWorkout: View {
     @State private var showWeeksHelp = false
     @State private var showEntriesHelp = false
     @State private var malformedWeeks: String? = nil
+    private let badNames: [String]
 
     @State private var anySchedule = Schedule.anyDay
     @State private var cyclicSchedule = Schedule.cyclic
@@ -21,6 +23,7 @@ struct EditWorkout: View {
         self.model = model
         self.program = program
         self.workout = workout
+        self.badNames = program.workouts.filter {$0 !== workout}.map {$0.name}
         
         // Save the original schedule state so when the user switches the
         // type back to the original type they don't lose the original
@@ -38,18 +41,8 @@ struct EditWorkout: View {
         }
     }
     
-    private var isNameEmpty: Bool {
-        self.workout.name.isEmpty
-    }
-
-    private var doesNameExist: Bool {
-        self.program.workouts.count(where: {
-            $0.id != self.workout.id && $0.name == self.workout.name
-        }) > 0
-    }
-
     private var isValid: Bool {
-        !isNameEmpty && !doesNameExist
+        return nameErr == nil
     }
 
     private func toWeekdays(_ bools: [Bool]) -> Weekdays {
@@ -229,12 +222,28 @@ struct EditWorkout: View {
         }
     }
 
+    private var nameBinding: Binding<String> {
+        Binding(
+            get: {return workout.name},
+            set: {
+                if $0.isBlankOrEmpty {
+                    nameErr = "The name cannot be empty."
+                } else if badNames.contains($0) {
+                    nameErr = "Another workout is already using that name."
+                } else {
+                    workout.name = $0
+                    nameErr = nil
+                }
+            }
+        )
+    }
+
     // TODO use onAppear to make the name textbox the focus?
     var body: some View {
         Form {
             // Name
             HStack {
-                nameTextField("Name", $workout.name)
+                nameTextField("Name", nameBinding)
                 Spacer()
                 Button("", systemImage: "info.circle") {
                     showNameHelp.toggle()
@@ -247,12 +256,8 @@ struct EditWorkout: View {
                     .foregroundColor(.blue)
                     .font(.footnote)
             }
-            if isNameEmpty {
-                Text("Workout name cannot be empty.")
-                    .foregroundColor(.red)
-                    .font(.footnote)
-            } else if doesNameExist {
-                Text("There is already a workout with that name.")
+            if let e = nameErr {
+                Text(e)
                     .foregroundColor(.red)
                     .font(.footnote)
             }
