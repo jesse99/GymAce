@@ -2385,7 +2385,8 @@ func addCompleted(_ program: Program, _ exercise: Exercise, daysAgo: Int, secs: 
     exercise.history.append(c)
 }
 
-fileprivate func amrapStyle(warmup: String, workset: String, rest: String) -> Style {
+// TODO may want to move these to wizard
+func amrapStyle(warmup: String, workset: String, rest: String) -> Style {
     if let i = AMRAPInfo(warmup: warmup, workset: workset, rest: rest) {
         return .amrap(i)
     } else {
@@ -2393,7 +2394,7 @@ fileprivate func amrapStyle(warmup: String, workset: String, rest: String) -> St
     }
 }
 
-fileprivate func basicStyle(warmup: String, workset: String, rest: String) -> Style {
+func basicStyle(warmup: String, workset: String, rest: String) -> Style {
     if let i = BasicInfo(warmup: warmup, workset: workset, rest: rest) {
         return .basic(i)
     } else {
@@ -2401,7 +2402,7 @@ fileprivate func basicStyle(warmup: String, workset: String, rest: String) -> St
     }
 }
 
-fileprivate func variableStyle(warmup: String, workset: String, rest: String) -> Style {
+func variableStyle(warmup: String, workset: String, rest: String) -> Style {
     if let i = VariableInfo(warmup: warmup, workset: workset, rest: rest) {
         return .variable(i)
     } else {
@@ -2409,7 +2410,7 @@ fileprivate func variableStyle(warmup: String, workset: String, rest: String) ->
     }
 }
 
-fileprivate func durationsStyle(secs: String, targetSecs: String) -> Style {
+func durationsStyle(secs: String, targetSecs: String) -> Style {
     if let i = DurationsInfo(secs: secs, targetSecs: targetSecs) {
         return .durations(i)
     } else {
