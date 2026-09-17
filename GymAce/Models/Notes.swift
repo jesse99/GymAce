@@ -650,6 +650,14 @@ extension Notes {
             [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")],
         )
         
+        add("Chest Press machine",
+            ["Adjust the seat so that your arms are horizontal when extended.",
+                "Keep your wrists inline with your forearms.",
+                "Push out but don't fully lock out your elbows.",
+            ],
+            [("Link", "https://www.verywellfit.com/how-to-do-the-seated-machine-chest-press-3498292")],
+        )
+        
         add("Chest Supported Row",
             ["Lay face down on a bench inclined to a 45 degree angle.",
              "Use a neutral grip and pull the dumbbells upwards.",
@@ -1014,32 +1022,22 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/bent-over-two-dumbbell-row")],
         )
         
-        add(
-            "Dumbbell Deadlift",
-            [
-                "Hands shoulder width or a bit narrower.",
+        add("Dumbbell Deadlift",
+            ["Hands shoulder width or a bit narrower.",
                 "Grasp dumbbells so that palms face backwards.",
                 "Lower dumbbells to top of feet and then straighten back up.",
                 "Keep back and knees straight the entire time.",
                 "Keep dumbbells close to legs.",
             ],
-            [(
-                "Link",
-                "https://www.fitandwell.com/how-to/deadlift-with-dumbbells-at-home",
-            )],
+            [("Link", "https://www.fitandwell.com/how-to/deadlift-with-dumbbells-at-home")],
         )
         
-        add(
-            "Dumbbell Floor Press",
-            [
-                "Lay flat on your back with knees raised.",
+        add("Dumbbell Floor Press",
+            ["Lay flat on your back with knees raised.",
                 "Grasp dumbbells so that palms are facing forward.",
                 "Raise dumbbells so that they touch above chest.",
             ],
-            [(
-                "Link",
-                "https://www.youtube.com/watch?feature=player_embedded&v=XtEzJpPR2Zg",
-            )],
+            [("Link", "https://www.youtube.com/watch?feature=player_embedded&v=XtEzJpPR2Zg")],
         )
         
         add("Dumbbell Flyes",
@@ -1173,32 +1171,22 @@ extension Notes {
             [("Link", "https://weighttraining.guide/exercises/dumbbell-one-leg-split-squat/")],
         )
         
-        add(
-            "Elliptical",
-            [
-                "Keep your feet parallel with the edges of the pedals.",
+        add("Elliptical",
+            ["Keep your feet parallel with the edges of the pedals.",
                 "Straighten your back.",
                 "Bend your knees slightly.",
             ],
-            [(
-                "Link",
-                "https://www.ellipticalreviews.com/blog/how-to-use-an-elliptical-trainer/",
-            )],
+            [("Link", "https://www.ellipticalreviews.com/blog/how-to-use-an-elliptical-trainer/")],
         )
         
-        add(
-            "Exercise Ball Back Extension",
-            [
-                "Lie on your stomach onto an exercise ball.",
+        add("Exercise Ball Back Extension",
+            ["Lie on your stomach onto an exercise ball.",
                 "Shift your position until the ball is just above your hips.",
                 "Cross your arms across your chest.",
                 "Raise your torso upwards.",
                 "Difficulty can be increased by placing your hands behind your head (like a prisoner).",
             ],
-            [(
-                "Link",
-                "https://gethealthyu.com/exercise/stability-ball-back-extension/",
-            )],
+            [("Link", "https://gethealthyu.com/exercise/stability-ball-back-extension/")],
         )
         
         add(
@@ -1497,16 +1485,6 @@ extension Notes {
                 "Using only your forearms curl both dumbbells.",
             ],
             [("Link", "https://www.muscleandstrength.com/exercises/standing-hammer-curl.html")],
-        )
-        
-        add("Hammer Strength Chest Press",
-            ["Adjust the seat so that the handles are just below shoulder level.",
-                "Grip the handles with palms down and with a width that keeps your arms straight.",
-                "Don't allow your wrist to bend backwards.",
-                "Retract your shoulder blades by pinching them together.",
-                "Keep your shoulder blades retracted and extend your arms out.",
-            ],
-            [("Link", "https://www.regularityfitness.com/hammer-strength-chest-press/")],
         )
         
         add("Hamstring Lunge Stretch",
@@ -2009,14 +1987,6 @@ extension Notes {
                 "**P** Position arms so that they and your torso form a W. Bring elbows back. Pinkies up.",
                 "Keep weights light typically three pounds or less."],
             [("Video", "https://www.youtube.com/watch?v=VyBJQQz3eok")],
-        )
-        
-        add("Machine Bench Press",
-            ["Palms down grip.",
-                "Lift arms so that upper arms are parallel to the floor.",
-                "Push handles out.",
-            ],
-            [("Link", "https://www.muscleandstrength.com/exercises/hammer-strength-bench-press.html")],
         )
         
         add("Machine Incline Press",
@@ -2922,6 +2892,15 @@ extension Notes {
                 "Pull your knee up and lean your chest forward slightly.",
                 "Back should remain straight."],
             [("Video", "https://www.youtube.com/watch?v=DE-GGsRtb6k"), ("Gallery", "https://imgur.com/gallery/iEsaS"), ("Notes", "https://www.bodybuilding.com/fun/limber-11-the-only-lower-body-warm-up-youll-ever-need.html")],
+        )
+        
+        add("Seated Smith Machine Press",
+            ["Position a bench under the machine at a 75-85 degree incline.",
+                "Typically the bar should be positioned at your clavicle.",
+                "Use a grip that is a bit wider than shoulder grip.",
+                "Engage your core and lift the bar, then slowly bring it back down.",
+            ],
+            [("Link", "https://www.majorfitness.com/blogs/wiki/how-to-shoulder-press-on-smith-machine-a-comprehensive-guide")],
         )
         
         add("Seated Triceps Press",
