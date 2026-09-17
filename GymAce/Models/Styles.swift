@@ -9,21 +9,24 @@ enum Style: Codable {
     /// Workset reps are fixed and progress happens if user hits requsted reps.
     case basic(BasicInfo)
     
-    /// Reps increase to a max then weight increases and expected reps is set to min.
-    case variable(VariableInfo)
-    
     /// Exercise is done for a specified number of seconds up to a target value.
     case durations(DurationsInfo)
 
+    /// Like variabl;e except weights only change via the user..
+    case manual(VariableInfo)
+    
     /// Used for exercises that have a styleName that isn't in the program. This allows the
     /// logic to be simplified.
     case missing
     
     /// Used to compute a one rep max. This is usally used in conjunction with the percent and/or amrap styles.
     case oneRepMax(OneRepMaxInfo)
-        
+    
     /// Exercise is done for an arbitrary amount of time, e.g. jogging.
     case timed
+
+    /// Reps increase to a max then weight increases and expected reps is set to min.
+    case variable(VariableInfo)
 }
 
 extension Style {
@@ -33,16 +36,18 @@ extension Style {
             return "Worksets are for a fixed number of reps but the last set is As Many Reps As Possible. Weights increase based on the results of the AMRAP set."
         case .basic:
             return "Worksets are for a fixed number of reps. Weights are increased if you were able to do all the requested reps."
-        case .variable:
-            return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do all sets at the max reps."
         case .durations:
             return "The exercise is done for a specified time with an optional target time. If you hit the target you may want to switch to a harder version of the exercise, e.g. planks to foot elevated planks."
+        case .manual:
+            return "Worksets are for a range of reps, e.g. 8-12. Weights are increased only via the user."
         case .missing:
             return "The style is missing from the program."
         case .oneRepMax:
             return "Used to compute a one rep max attached to an exercise's formal name. This is typically the 'other' exercise for exercises where the worksets use a percentage of the 1rm weight."
         case .timed:
             return "The exercise is done for an arbitrary amount of time, e.g. a walk."
+        case .variable:
+            return "Worksets are for a range of reps, e.g. 8-12. Weights are increased when you are able to do all sets at the max reps."
         }
     }
     
@@ -50,11 +55,12 @@ extension Style {
         switch self {
         case .amrap(let info): return info.summary()
         case .basic(let info): return info.summary()
-        case .variable(let info): return info.summary()
         case .durations(let info): return info.summary()
+        case .manual(let info): return info.summary()
         case .missing: return []
         case .oneRepMax(let info): return info.summary()
         case .timed: return []
+        case .variable(let info): return info.summary()
         }
     }
     
@@ -71,14 +77,14 @@ extension Style {
                 result += "\(prefix)basic\n"
             }
             result += info.dump(prefix)
-        case .variable(let info):
-            if includeType {
-                result += "\(prefix)variable\n"
-            }
-            result += info.dump(prefix)
         case .durations(let info):
             if includeType {
                 result += "\(prefix)durations\n"
+            }
+            result += info.dump(prefix)
+        case .manual(let info):
+            if includeType {
+                result += "\(prefix)manual\n"
             }
             result += info.dump(prefix)
         case .missing:
@@ -90,6 +96,11 @@ extension Style {
             result += info.dump(prefix)
         case .timed:
             result += "\(prefix)timed\n"
+        case .variable(let info):
+            if includeType {
+                result += "\(prefix)variable\n"
+            }
+            result += info.dump(prefix)
         }
         return result
     }
@@ -442,6 +453,8 @@ extension Exercise {
                 }
             }
             return 0
+        case .manual:
+            return nil
         case .oneRepMax:
             return 0    // we adjust the weight in completedLast since this is handled a bit differently than the other styles
         case .variable(let info):
@@ -582,16 +595,18 @@ extension Exercise {
             return info.warmup.count + info.workset.count
         case .basic(let info):
             return info.warmup.count + info.workset.count
-        case .variable(let info):
-            return info.warmup.count + info.workset.count
         case .durations(let info):
             return info.secs.count
+        case .manual(let info):
+            return info.warmup.count + info.workset.count
         case .missing:
             return 1
         case .oneRepMax(let info):
             return info.warmup.count + info.workset.count
         case .timed:
             return 1
+        case .variable(let info):
+            return info.warmup.count + info.workset.count
         }
     }
 
@@ -602,7 +617,7 @@ extension Exercise {
             return findActualWeight(model, program, percent)
         case .basic:
             return findActualWeight(model, program, percent)
-        case .variable(let info):
+        case .manual(let info), .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
                 percents.append(s.percent)
@@ -624,7 +639,7 @@ extension Exercise {
             return findActualWeight(model, program, percent)
         case .basic:
             return findActualWeight(model, program, percent)
-        case .variable(let info):
+        case .manual(let info), .variable(let info):
             var percents: [Int] = []
             for s in info.workset {
                 percents.append(s.percent)
@@ -727,7 +742,7 @@ extension Exercise {
                 let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)
             }
-        case .variable(let info):
+        case .manual(let info), .variable(let info):
             let b = findBaseWeight(program)
             for (i, s) in info.warmup.enumerated() {
                 let k = PlanSet.Kind.warmup(index: i, count: info.warmup.count)
@@ -795,13 +810,13 @@ extension Exercise {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's basic style)")
                 valid = false
             }
-        case .variable:
-            if b == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's variable style)")
-                valid = false
-            }
         case .durations:
             break
+        case .manual:
+            if b == nil {
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's manual style)")
+                valid = false
+            }
         case .missing:
             print("Program \(program.name) exercise \(name) is the missing style)")
             valid = false
@@ -812,6 +827,11 @@ extension Exercise {
             }
         case .timed:
             break
+        case .variable:
+            if b == nil {
+                print("Program \(program.name) exercise \(name) is missing a base weight (it's variable style)")
+                valid = false
+            }
         }
         if case .other = self.baseWeight {
             var count = 0
@@ -860,16 +880,18 @@ extension Exercise {
             return info.rest
         case .basic(let info):
             return info.rest
-        case .variable(let info):
-            return info.rest
         case .durations:
             return nil
+        case .manual(let info):
+            return info.rest
         case .missing:
             return nil
         case .oneRepMax(let info):
             return info.rest
         case .timed:
             return nil
+        case .variable(let info):
+            return info.rest
         }
     }
     

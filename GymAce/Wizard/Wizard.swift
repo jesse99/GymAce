@@ -74,7 +74,7 @@ final class Wizard {
         let program = Program(name)
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
     
-        program.styles["Complex"] = basicStyle(warmup: "", workset: "1 1 1", rest: "90s")  // TODO add a manual style
+        program.styles["Complex"] = manualStyle(warmup: "", workset: "1 1 1", rest: "90s")  
 
         let exercise = if case .beginner = fitness {
             make("Complex", "Complex - beginner", "Complex", weights: "Dumbbells", weight: 5)

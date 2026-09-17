@@ -1399,6 +1399,7 @@ fileprivate func masterGZCL() -> Program {
 fileprivate func previewProgram() -> Program {
     func addStyles(_ program: Program) {
         program.styles["Main"] = variableStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")
+        program.styles["Manual"] = manualStyle(warmup: "5/0 5/60 3/80 1/90", workset: "5 5 5", rest: "3m")
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2m")
         program.styles["Light"] = basicStyle(warmup: "5/0 5/40 3/50 1/70", workset: "5/80 5/80 5/80", rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
@@ -1418,6 +1419,9 @@ fileprivate func previewProgram() -> Program {
         program.exercises.append(exercise)
         
         exercise = make("OHP", "Overhead Press", "Main", weights: "Dual Plates", weight: 80)
+        program.exercises.append(exercise)
+
+        exercise = make("Manual OHP", "Overhead Press", "Manual", weights: "Dual Plates", weight: 80)
         program.exercises.append(exercise)
 
         exercise = make("Squat", "High bar Squat", "Main", weights: "Dual Plates", weight: 140)
@@ -1462,6 +1466,7 @@ fileprivate func previewProgram() -> Program {
         workout.addExercise(name: "Light Bench")
         workout.addExercise(name: "Heavy Bench")
         workout.addExercise(name: "OHP")
+        workout.addExercise(name: "Manual OHP")
         workout.addExercise(name: "OHP (amrap)")
         workout.addExercise(name: "Light Face Pulls")
         workout.addExercise(name: "Face Pulls")
@@ -2397,6 +2402,14 @@ func amrapStyle(warmup: String, workset: String, rest: String) -> Style {
 func basicStyle(warmup: String, workset: String, rest: String) -> Style {
     if let i = BasicInfo(warmup: warmup, workset: workset, rest: rest) {
         return .basic(i)
+    } else {
+        fatalError("bad args")
+    }
+}
+
+func manualStyle(warmup: String, workset: String, rest: String) -> Style {
+    if let i = VariableInfo(warmup: warmup, workset: workset, rest: rest) {
+        return .manual(i)
     } else {
         fatalError("bad args")
     }

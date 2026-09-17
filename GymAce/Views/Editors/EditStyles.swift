@@ -17,14 +17,16 @@ struct EditStyles: View {
                                     EditAMRAP(model: model, program: program, name: key)
                                 case .durations:
                                     EditDurations(model: model, program: program, name: key)
+                                case .manual:
+                                    EditManual(model: model, program: program, name: key)
+                                case .missing:
+                                    Text("the \(key) style is missing from the program")
                                 case .oneRepMax:
                                     EditOneRepMax(model: model, program: program, name: key)
                                 case .timed:
                                     Text("timed exercises have no settings")
                                 case .variable:
                                     EditVariable(model: model, program: program, name: key)
-                                case .missing:
-                                    Text("the \(key) style is missing from the program")
                             }
                         } label: {
                             Text(key)
