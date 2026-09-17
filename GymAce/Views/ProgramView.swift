@@ -93,7 +93,9 @@ struct ProgramView: View {
                             NavigationLink(destination: EditWeightSets(model: model)) {
                                 Text("Edit Weight Sets")
                             }
-                            Button("Email Program", action: sendEmail)
+                            if model.active() != nil {
+                                Button("Email Program", action: sendEmail)  // TODO add an option to email completed, maybe as json
+                            }
                         } label: {
                             Image(systemName: "line.horizontal.3")
                                 .foregroundColor(.blue)
@@ -113,7 +115,7 @@ struct ProgramView: View {
     }
     
     private func createProgram() {
-        var wizard = Wizard(model)
+        let wizard = Wizard(model)
         wizard.numWorkouts = 3
         wizard.goal = .conditioning
         wizard.generate()
@@ -121,27 +123,14 @@ struct ProgramView: View {
     
     private func sendEmail() {
         if let program = model.active() {
-            do {
-                // TODO might want to use yaml, or even a custom human readable format
-                let encoder = JSONEncoder()
-                encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
-                encoder.dateEncodingStrategy = .iso8601
-
-                let data = try encoder.encode(program)
-                if let str = String(data: data, encoding: .utf8) {
-                    if let body = str.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                        let urlString = "mailto:?subject=\(program.name)%20Program&body=\(body)"
-                        guard let url = URL(string: urlString) else { return }
-                        
-                        openUrl(url) { accepted in
-                            if !accepted {
-                                // TODO Handle the error, e.g., show an alert
-                            }
-                        }
-                    }
+            let body = model.dump()
+            let urlString = "mailto:?subject=\(program.name) Program&body=\(body)"
+            guard let url = URL(string: urlString) else { return }
+            
+            openUrl(url) {accepted in
+                if !accepted {
+                    // TODO Handle the error, e.g., show an alert
                 }
-            } catch {
-                print("Encoding failed")    // TODO do a better job with this
             }
         }
     }

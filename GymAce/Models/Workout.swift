@@ -54,6 +54,16 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         return valid
     }
 
+    func dump(_ model: Model, _ program: Program) -> String {
+        var result = ""
+        result += "   schedule: " + schedule.dump()
+        for entry in entries {
+            result += entry.dump(model, program)
+            result += "\n"
+        }
+        return result
+    }
+        
     var isStale: Bool {
         if let s = started {
             let delta = s.distance(to: Date.now)

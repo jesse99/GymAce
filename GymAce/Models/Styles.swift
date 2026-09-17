@@ -45,7 +45,7 @@ extension Style {
             return "The exercise is done for an arbitrary amount of time, e.g. a walk."
         }
     }
-
+    
     func summary() -> [String] {
         switch self {
         case .amrap(let info): return info.summary()
@@ -56,6 +56,42 @@ extension Style {
         case .oneRepMax(let info): return info.summary()
         case .timed: return []
         }
+    }
+    
+    func dump(includeType: Bool, prefix: String = "") -> String {
+        var result = ""
+        switch self {
+        case .amrap(let info):
+            if includeType {
+                result += "\(prefix)amrap\n"
+            }
+            result += info.dump(prefix)
+        case .basic(let info):
+            if includeType {
+                result += "\(prefix)basic\n"
+            }
+            result += info.dump(prefix)
+        case .variable(let info):
+            if includeType {
+                result += "\(prefix)variable\n"
+            }
+            result += info.dump(prefix)
+        case .durations(let info):
+            if includeType {
+                result += "\(prefix)durations\n"
+            }
+            result += info.dump(prefix)
+        case .missing:
+            result += "\(prefix)missing\n"
+        case .oneRepMax(let info):
+            if includeType {
+                result += "\(prefix)one rep max\n"
+            }
+            result += info.dump(prefix)
+        case .timed:
+            result += "\(prefix)timed\n"
+        }
+        return result
     }
 }
 
@@ -92,6 +128,20 @@ struct AMRAPInfo: Codable {
         result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " ") + "+")
         return result
     }
+    
+    func dump(_ prefix: String) -> String {
+        var result = ""
+        if !warmup.isEmpty {
+            result += "\(prefix)warmup: " + warmup.map({$0.asString()}).joined(separator: " ") + "\n"
+        }
+        result += "\(prefix)workset: " + workset.map({$0.asString()}).joined(separator: " ") + "\n"
+        if let r = rest {
+            result += "\(prefix)rest: " + secsToShortStr(r) + "\n"
+        } else {
+            result += "\(prefix)rest: none\n"
+        }
+        return result
+    }
 }
 
 struct BasicInfo: Codable {
@@ -125,6 +175,20 @@ struct BasicInfo: Codable {
             result.append("Warmup: " + warmup.map({$0.asString()}).joined(separator: " "))
         }
         result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " "))
+        return result
+    }
+    
+    func dump(_ prefix: String) -> String {
+        var result = ""
+        if !warmup.isEmpty {
+            result += "\(prefix)warmup: " + warmup.map({$0.asString()}).joined(separator: " ") + "\n"
+        }
+        result += "\(prefix)workset: " + workset.map({$0.asString()}).joined(separator: " ") + "\n"
+        if let r = rest {
+            result += "\(prefix)rest: " + secsToShortStr(r) + "\n"
+        } else {
+            result += "\(prefix)rest: none\n"
+        }
         return result
     }
 }
@@ -183,6 +247,20 @@ struct OneRepMaxInfo: Codable {
         result.append("Workset: \(workset)+")
         return result
     }
+    
+    func dump(_ prefix: String) -> String {
+        var result = ""
+        if !warmup.isEmpty {
+            result += "\(prefix)warmup: " + warmup.map({$0.asString()}).joined(separator: " ") + "\n"
+        }
+        result += "\(prefix)workset: " + workset.map({$0.asString()}).joined(separator: " ") + "\n"
+        if let r = rest {
+            result += "\(prefix)rest: " + secsToShortStr(r) + "\n"
+        } else {
+            result += "\(prefix)rest: none\n"
+        }
+        return result
+    }
 }
 
 struct VariableInfo: Codable {
@@ -218,6 +296,20 @@ struct VariableInfo: Codable {
         result.append("Workset: " + workset.map({$0.asString()}).joined(separator: " "))
         return result
     }
+    
+    func dump(_ prefix: String) -> String {
+        var result = ""
+        if !warmup.isEmpty {
+            result += "\(prefix)warmup: " + warmup.map({$0.asString()}).joined(separator: " ") + "\n"
+        }
+        result += "\(prefix)workset: " + workset.map({$0.asString()}).joined(separator: " ") + "\n"
+        if let r = rest {
+            result += "\(prefix)rest: " + secsToShortStr(r) + "\n"
+        } else {
+            result += "\(prefix)rest: none\n"
+        }
+        return result
+    }
 }
 
 struct DurationsInfo: Codable {
@@ -239,6 +331,17 @@ struct DurationsInfo: Codable {
     func summary() -> [String] {
         var result: [String] = []
         result.append("Durations: " + secs.map({secsToShortStr($0)}).joined(separator: " "))
+        return result
+    }
+    
+    func dump(_ prefix: String) -> String {
+        var result = ""
+        result += "\(prefix)secs: " + secs.map({secsToShortStr($0)}).joined(separator: " ") + "\n"
+        if let t = targetSecs {
+            result += "\(prefix)target: " + secsToShortStr(t) + "\n"
+        } else {
+            result += "\(prefix)target: none\n"
+        }
         return result
     }
 }

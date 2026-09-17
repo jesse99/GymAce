@@ -73,6 +73,23 @@ final class Model: Codable {
         }
         assert(valid)   // TODO these need to be shown to the user
     }
+    
+    /// Human readable copy of the model. Used for emailing the current program.
+    func dump() -> String { // TODO may want to support a json form of this
+        var result = ""
+        if let p = active() {
+            result += p.dump(self)
+            let names = weightSets.keys.sorted()
+            for name in names {
+                let ws = weightSets[name]!
+                result += "Weight Set \(name)\n" + ws.dump()
+                result += "\n"
+            }
+        } else {
+            result += "no active program"
+        }
+        return result
+    }
         
     func active() -> Program? {
         return programs.first(where: {$0.name == activeProgram})

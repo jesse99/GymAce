@@ -83,6 +83,7 @@ final class Wizard {
         }
         program.exercises.append(exercise)
     
+        // TODO would be nice to support cycle, eg every pther day
         let schedule = if numWorkouts == 1 {    // UI restricts numWorkouts to 1, 2, or 3 for complexes
             Schedule.days(Weekdays([.monday]))
         } else if numWorkouts == 2 {
@@ -99,10 +100,10 @@ final class Wizard {
         return program
     }
         
+    // TODO get rid of this once we handle all the cases
     private func makeStub() -> Program {
         let name = findName(hasName, prefix: "Stub")
         let program = Program(name)
-        // TODO do something better for this case
         return program
     }
         

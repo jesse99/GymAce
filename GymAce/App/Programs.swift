@@ -131,17 +131,17 @@ fileprivate func masterGZCL() -> Program {
         program.styles["T1.4 (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/60 3/70 1/80", workset: "3/90 2/95 1", rest: "4m")!)
 
         // T2
-        program.styles["T2.1"] =    basicStyle(warmup: "5/0 5/25 3/45", workset: "6/65 6/65 6/65 6/65", rest: "3.5m")   // 24 reps, want 2x T1 reps here
-        program.styles["T2.1 (dead)"] = basicStyle(warmup: "5/35 3/45", workset: "6/65 6/65 6/65 6/65", rest: "4m")
+        program.styles["T2.1"] =        basicStyle(warmup: "5/0 5/25 3/45",  workset: "6/65 6/65 6/65 6/65", rest: "3.5m")   // 24 reps, want 2x T1 reps here
+        program.styles["T2.1 (dead)"] = basicStyle(warmup: "5/35 3/45 1/55", workset: "6/65 6/65 6/65 6/65", rest: "4m")
 
-        program.styles["T2.2"] =    basicStyle(warmup: "5/0 5/30 3/50", workset: "6/70 6/70 6/70", rest: "3.5m")          // 18 reps
-        program.styles["T2.2 (dead)"] = basicStyle(warmup: "5/40 3/50", workset: "6/70 6/70 6/70", rest: "4m")
+        program.styles["T2.2"] =        basicStyle(warmup: "5/0 5/30 3/50",  workset: "6/70 6/70 6/70", rest: "3.5m")          // 18 reps
+        program.styles["T2.2 (dead)"] = basicStyle(warmup: "5/40 3/50 1/60", workset: "6/70 6/70 6/70", rest: "4m")
 
-        program.styles["T2.3"] =    basicStyle(warmup: "5/0 5/35 3/55", workset: "5/75 5/75 5/75", rest: "3.5m")          // 15 reps
-        program.styles["T2.3 (dead)"] = basicStyle(warmup: "5/45 3/55", workset: "5/75 5/75 5/75", rest: "4m")
+        program.styles["T2.3"] =        basicStyle(warmup: "5/0 5/35 3/55",  workset: "5/75 5/75 5/75", rest: "3.5m")          // 15 reps
+        program.styles["T2.3 (dead)"] = basicStyle(warmup: "5/45 3/55 1/65", workset: "5/75 5/75 5/75", rest: "4m")
 
-        program.styles["T2.4"] =    basicStyle(warmup: "5/0 5/40 3/60", workset: "4/80 4/80 4/80", rest: "3.5m")          // 12 reps
-        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/50 3/60", workset: "4/80 4/80 4/80", rest: "4m")
+        program.styles["T2.4"] =        basicStyle(warmup: "5/0 5/40 3/60",  workset: "4/80 4/80 4/80", rest: "3.5m")          // 12 reps
+        program.styles["T2.4 (dead)"] = basicStyle(warmup: "5/50 3/60 1/70", workset: "4/80 4/80 4/80", rest: "4m")
 
         // T3
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "2.5m")// 24 reps, ideally want 3x T1 reps here
@@ -149,8 +149,8 @@ fileprivate func masterGZCL() -> Program {
         program.styles["Walk"] = .timed
 
         // one rep max
-        program.styles["1RM"] =    .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: "3", rest: "3.5m")!)
-        program.styles["1RM (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/60 3/80 1/90", workset: "3", rest: "4m")!)
+        program.styles["1RM"] =    .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/53 3/73 1/83", workset: "3", rest: "4m")!) // 3 reps = 93%
+        program.styles["1RM (dead)"] = .oneRepMax(OneRepMaxInfo(warmup: "5/53 3/73 1/83", workset: "3", rest: "4m")!)
     }
     
     func addExercises(_ program: Program) {

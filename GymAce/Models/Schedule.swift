@@ -21,6 +21,38 @@ extension Schedule {
         case .days(_): return 2
         }
     }
+    
+    func dump() -> String {
+        var result = ""
+        switch self {
+        case .anyDay: result = "any day\n"
+        case .cyclic: result = "cyclic"
+        case .days(let days):
+            if days.includes(1) {
+                result += "sun "
+            }
+            if days.includes(2) {
+                result += "mon "
+            }
+            if days.includes(3) {
+                result += "tue "
+            }
+            if days.includes(4) {
+                result += "wed "
+            }
+            if days.includes(5) {
+                result += "thu "
+            }
+            if days.includes(6) {
+                result += "fri "
+            }
+            if days.includes(7) {
+                result += "sat "
+            }
+            result += "\n"
+        }
+        return result
+    }
 }
 
 // It'd be simpler if Schedule.days simply had an [Int], but SwiftData is still flaky in

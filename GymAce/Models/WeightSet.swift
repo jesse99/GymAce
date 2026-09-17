@@ -158,14 +158,23 @@ final class PlateWeights: Codable {
         let b = if plates.isEmpty {
             "no plates"
         } else {
-            plates.reversed().map {$0.description(units)}.joined(separator: ", ")
+            plates.reversed().map {$0.description(.None)}.joined(separator: ", ")
         }
-        let prefix = dual ? "Dual " : "Single"
-        if let r = bar {
-            return "\(prefix) plates with \(b) and a \(formatWeight(r, units)) bar."
+        let u = switch units {
+            case .Imperial: " lbs"
+            case .Metric: " kg"
+            case .None: ""
+        }
+        let prefix = dual ? "dual " : "single"
+        if let r = bar, r > 0.0 {
+            return "\(prefix) plates with \(b)\(u) and a \(formatWeight(r, units)) bar"
         } else {
-            return "\(prefix) plates with \(b)."
+            return "\(prefix) plates with \(b)\(u)"
         }
+    }
+    
+    func dump() -> String {
+        return description() + "\n"
     }
     
     /// Smallest total weight to largest. Typically this should be used instead of the plates field.
@@ -201,11 +210,20 @@ class DiscreteWeights: Codable {
         let b = if weights.isEmpty {
             "no weights"
         } else {
-            weights.map {formatWeight($0, units)}.joined(separator: ", ")
+            weights.map {formatWeight($0, .None)}.joined(separator: ", ")
         }
-        return "Discrete weights with \(b)."
+        let u = switch units {
+            case .Imperial: " lbs"
+            case .Metric: " kg"
+            case .None: ""
+        }
+        return "discrete with \(b)\(u)"
     }
         
+    func dump() -> String {
+        return description() + "\n"
+    }
+    
     /// Smallest to largest. Typically this should be used instead of the weights field.
     func findCombos() -> [Float] {
         if combos == nil {
@@ -256,12 +274,21 @@ extension WeightSet {
     func description() -> String {
         switch self {
             case .discrete(let d):
-            return d.description()
+                return d.description()
             case .plates(let d):
-            return d.description()
+                return d.description()
         }
     }
     
+    func dump() -> String {
+        switch self {
+            case .discrete(let d):
+                return d.dump()
+            case .plates(let d):
+                return d.dump()
+        }
+    }
+
     /// Return the next weight larger than target.
     func advance(target: Float) -> ActualWeight {
         switch self {

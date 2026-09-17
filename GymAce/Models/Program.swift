@@ -70,6 +70,23 @@ final class Program: Codable, Identifiable {
         return valid
     }
     
+    func dump(_ model: Model) -> String {
+        var result = ""
+        for workout in workouts {
+            result += "Workout \(workout.name):\n"
+            result += workout.dump(model, self)
+        }
+        
+        let names = styles.keys.sorted()
+        for name in names {
+            let style = styles[name]!
+            result += "Style \(name):\n"
+            result += style.dump(includeType: true, prefix: "   ")
+            result += "\n"
+        }
+        return result
+    }
+        
     func didExercise() {
         if started == nil {
             started = Date()

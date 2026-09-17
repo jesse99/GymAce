@@ -12,6 +12,29 @@ enum BaseWeight: Codable {
     case weight(Float)
 }
 
+extension BaseWeight {
+    func dump(_ model: Model, _ program: Program, _ exercise: Exercise) -> String {
+        var result: String
+        switch self {
+            case .none:
+                result = "none\n"
+            case .other:
+            if let (other, _) = exercise.findOtherExercise(program) {
+                result = "other (\(other.name))\n"
+            } else {
+                result = "other (missing)\n"
+            }
+            case .weight(let w):
+                if let wn = exercise.weightSet, let ws = model.weightSets[wn] {
+                    result = ws.closest(target: w).text() + "\n"
+                } else {
+                    result = formatWeight(w, .None) + " (missing weight set)\n"
+                }
+        }
+        return result
+    }
+}
+
 /// How to perform an exercise. These are added to workouts using ExerciseEntry.
 @Observable
 final class Exercise: Codable {
@@ -69,6 +92,22 @@ final class Exercise: Codable {
             valid = false
         }
         return valid
+    }
+
+    func dump(_ model: Model, _ program: Program) -> String {   // TODO include history?
+        var result = ""
+        let style = program.findStyle(styleName)
+        if case .missing = style {
+        } else {
+            result += style.dump(includeType: false, prefix: "      ") // redundant but makes result look a lot better
+        }
+        result += "      base weight: " + baseWeight.dump(model, program, self)
+        result += "      formal name: \(formalName)\n"
+        result += "      style: \(styleName)\n"
+        if let ws = weightSet {
+            result += "      weight set: \(ws)\n"
+        }
+        return result
     }
 
     func latestCompleted() -> Completed? {

@@ -164,6 +164,21 @@ final class ExerciseEntry: Codable {
 //        }
     }
         
+    func dump(_ model: Model, _ program: Program) -> String {
+        var result = ""
+        if let exercise = program.findExercise(name) {
+            if enabled {
+                result += "   Exercise \(name):\n"
+                result += exercise.dump(model, program)
+            } else {
+                result += "   Exercise \(name): disabled\n"
+            }
+        } else {
+            result += "   Exercise \(name): not found in program\n"
+        }
+        return result
+    }
+
     func isFinished(_ program: Program, _ exercise: Exercise) -> Bool {
         return setIndex >= exercise.numSets(program)
     }
