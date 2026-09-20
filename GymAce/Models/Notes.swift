@@ -231,33 +231,21 @@ extension Notes {
             [("Link", "https://www.saintlukeskc.org/health-library/bent-knee-calf-stretch#:~:text=Stand%20an%20arm's%20length%20away,both%20knees%20and%20lean%20forward.")],
         )
         
-        add(
-            "Bar Pullover",
-            [
-                "Do a pull-up and as you come up bring your legs up and spin around the bar.",
+        add("Bar Pullover",
+            ["Do a pull-up and as you come up bring your legs up and spin around the bar.",
                 "From the top roll forward, lower your legs, and no a negative pull-up.",
             ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=saLtuweg8As"),
-                (
-                    "Pullups",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup",
-                ),
-            ],
+            [("Link", "https://www.youtube.com/watch?v=saLtuweg8As"),
+                ("Pullups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup")],
         )
         
-        add(
-            "Barbell Curl",
-            [
-                "Use an EZ bar or a regular barbell.",
+        add("Barbell Curl",
+            ["Use an EZ bar or a regular barbell.",
                 "Grip bar at shoulder width with palms facing out.",
                 "Pull upwards until forearms are vertical.",
                 "Lower until arms are straightened out.",
             ],
-            [(
-                "Link",
-                "https://www.coachweb.com/exercises/arm-exercises/151/barbell-curl",
-            )],
+            [("Link", "https://www.coachweb.com/exercises/arm-exercises/151/barbell-curl")],
         )
         
         add("Barbell Lunge",
