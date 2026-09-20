@@ -116,7 +116,6 @@ struct ProgramView: View {
     
     private func createProgram() {
         let wizard = Wizard(model)
-        wizard.numWorkouts = 3
         wizard.goal = .conditioning
         wizard.generate()
     }

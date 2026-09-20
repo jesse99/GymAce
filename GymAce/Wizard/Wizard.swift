@@ -13,6 +13,17 @@ final class Wizard {
         case advanced
     }
     
+    enum Schedule {
+        /// Number of days per week to do the program.
+        case weekly(Int)
+
+        /// Number of days in a row to do the workouts before repeating (some of the workouts will be rest days).
+        case cycle(Int)
+
+        /// Workouts are done as part of an N week block of workouts, e.g. weight percents may ramp up during the block.
+        case block(Int)
+    }
+    
     var goal: Goal              // these affect the program type, eg basic or gzcl
     var fitness: Fitness
     
@@ -22,7 +33,7 @@ final class Wizard {
     var smith: Bool
     
     var age: Int                // can affect volume
-    var numWorkouts: Int        // per week
+    var schedule: Schedule      // set after we create a program but before we populate it with workouts
     let model: Model
     
     init(_ model: Model) {
@@ -34,7 +45,7 @@ final class Wizard {
         self.smith = true
         self.goal = .strength
         self.fitness = .beginner
-        self.numWorkouts = 3
+        self.schedule = .weekly(3)
     }
     
     func generate() {
@@ -88,6 +99,7 @@ final class Wizard {
 
         let name = findName(hasName, prefix: builder.name)
         let program = Program(name)
+        schedule = builder.schedules[0] // TODO user needs to select this
         builder.build(program)
         model.addMissingWeightsets()
 

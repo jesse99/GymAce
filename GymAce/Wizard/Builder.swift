@@ -1,5 +1,3 @@
-// TODO add final classes for basic dumbbell, and machine
-
 class Builder {
     fileprivate let wizard: Wizard
     
@@ -7,7 +5,11 @@ class Builder {
         self.wizard = wizard
     }
     
+    /// The name of the program. A suffix may be appended by the wizard to make the name unique.
     var name: String {fatalError("override this")}
+
+    /// The schedules supported by the program. The user will pick one of these before the program is populated.
+    var schedules: [Wizard.Schedule] {fatalError("override this")}
     
     func build(_ program: Program) {
         fatalError("override this")
@@ -27,12 +29,11 @@ class BaseBasic: Builder {
     
     override var name: String {return "Basic"}
     
-    // TODO also
-    // Squat Rest Deadlift Rest
-    // Squat Rest Rest Deadlift Rest Rest
-    // for others allow days to be chosen? tho that can be edited pretty easily
+    override var schedules: [Wizard.Schedule] {return [.weekly(2), .weekly(3), .weekly(4), .cycle(4), .cycle(6)]}
+
     fileprivate func scheduleWorkouts(_ program: Program) {
-        if wizard.numWorkouts == 2 {    // UI restricts numWorkouts to 2, 3, or 4 for basic
+        switch wizard.schedule {
+        case .weekly(let days) where days == 2:
             var schedule = Schedule.days(Weekdays([.monday]))
             var workout = Workout(workout1Name, schedule)
             addWorkout1Exercises(workout)
@@ -42,8 +43,7 @@ class BaseBasic: Builder {
             workout = Workout(workout2Name, schedule)
             addWorkout2Exercises(workout)
             program.addWorkout(workout)
-            
-        } else if wizard.numWorkouts == 3 {
+        case .weekly(let days) where days == 3:
             var schedule = Schedule.days(Weekdays([.monday]))
             var workout = Workout("\(workout1Name) 1a", schedule)
             addWorkout1Exercises(workout)
@@ -79,8 +79,7 @@ class BaseBasic: Builder {
             addWorkout2Exercises(workout)
             workout.weeks = 2...2
             program.addWorkout(workout)
-            
-        } else {
+        case .weekly(let days) where days == 4:
             var schedule = Schedule.days(Weekdays([.monday]))
             var workout = Workout("\(workout1Name) 1", schedule)
             addWorkout1Exercises(workout)
@@ -100,6 +99,46 @@ class BaseBasic: Builder {
             workout = Workout("\(workout2Name) 2", schedule)
             addWorkout2Exercises(workout)
             program.addWorkout(workout)
+            // TODO also
+            // Squat Rest Deadlift Rest
+            // Squat Rest Rest Deadlift Rest Rest
+            // for others allow days to be chosen? tho that can be edited pretty easily
+        case .cycle(let days) where days == 4:
+            let schedule = Schedule.cyclic
+            var workout = Workout(workout1Name, schedule)
+            addWorkout1Exercises(workout)
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 1", schedule)
+            program.addWorkout(workout)
+
+            workout = Workout(workout2Name, schedule)
+            addWorkout2Exercises(workout)
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 2", schedule)
+            program.addWorkout(workout)
+        case .cycle(let days) where days == 6:
+            let schedule = Schedule.cyclic
+            var workout = Workout(workout1Name, schedule)
+            addWorkout1Exercises(workout)
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 1a", schedule)
+            program.addWorkout(workout)
+            workout = Workout("Rest 1b", schedule)
+            program.addWorkout(workout)
+
+            workout = Workout(workout2Name, schedule)
+            addWorkout2Exercises(workout)
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 2a", schedule)
+            program.addWorkout(workout)
+            workout = Workout("Rest 2b", schedule)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
         }
     }
     
@@ -280,6 +319,8 @@ final class BasicPPLDBBuilder: Builder {
         
     override var name: String {return "PPL"}
     
+    override var schedules: [Wizard.Schedule] {return [.weekly(3), .weekly(6), .cycle(4), .cycle(5)]}
+
     override func build(_ program: Program) {
         program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment."
         
@@ -311,10 +352,8 @@ final class BasicPPLDBBuilder: Builder {
     }
     
     private func scheduleWorkouts(_ program: Program) {
-        // TODO
-        // 4 day cycle? p, p, l, rest
-        // 5 day cycle? p, p, l, rest, rest
-        if wizard.numWorkouts == 3 {    // UI restricts numWorkouts to 3 or 6 days
+        switch wizard.schedule {
+        case .weekly(let days) where days == 3:
             var schedule = Schedule.days(Weekdays([.monday]))
             var workout = Workout("Push", schedule)
             addPushExercises(workout)
@@ -329,8 +368,7 @@ final class BasicPPLDBBuilder: Builder {
             workout = Workout("Legs", schedule)
             addLegExercises(workout)
             program.addWorkout(workout)
-            
-        } else {
+        case .weekly(let days) where days == 6:
             var schedule = Schedule.days(Weekdays([.monday]))
             var workout = Workout("Push 1", schedule)
             addPushExercises(workout)
@@ -360,6 +398,42 @@ final class BasicPPLDBBuilder: Builder {
             workout = Workout("Legs 2", schedule)
             addLegExercises(workout)
             program.addWorkout(workout)
+        case .cycle(let days) where days == 4:
+            var schedule = Schedule.cyclic
+            var workout = Workout("Push", schedule)
+            addPushExercises(workout)
+            program.addWorkout(workout)
+            
+            workout = Workout("Pull", schedule)
+            addPullExercises(workout)
+            program.addWorkout(workout)
+            
+            workout = Workout("Legs", schedule)
+            addLegExercises(workout)
+            program.addWorkout(workout)
+            
+            workout = Workout("Rest", schedule)
+            program.addWorkout(workout)
+        case .cycle(let days) where days == 5:
+            var schedule = Schedule.cyclic
+            var workout = Workout("Push", schedule)
+            addPushExercises(workout)
+            program.addWorkout(workout)
+            
+            workout = Workout("Pull", schedule)
+            addPullExercises(workout)
+            program.addWorkout(workout)
+            
+            workout = Workout("Legs", schedule)
+            addLegExercises(workout)
+            program.addWorkout(workout)
+            
+            workout = Workout("Rest 1", schedule)
+            program.addWorkout(workout)
+            workout = Workout("Rest 2", schedule)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
         }
     }
     
@@ -447,6 +521,8 @@ final class BasicMachineBuilder: BaseBasic {
 final class ComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
+    override var schedules: [Wizard.Schedule] {return [.weekly(1), .weekly(2), .weekly(3), .weekly(4), .cycle(2), .cycle(3)]}
+
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
     
@@ -461,22 +537,43 @@ final class ComplexBuilder: Builder {
         }
         program.exercises.append(exercise)
     
-        // Schedule
-        // TODO also
-        // Workout Rest
-        // Workout Rest Rest
-        let schedule = if wizard.numWorkouts == 1 {    // UI restricts numWorkouts to 1, 2, or 3 for complexes
-            Schedule.days(Weekdays([.monday]))
-        } else if wizard.numWorkouts == 2 {
-            Schedule.days(Weekdays([.monday, .thursday]))
-        } else {
-            Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+        switch wizard.schedule {
+        case .weekly(let days) where days == 1:
+            let schedule = Schedule.days(Weekdays([.monday]))
+            let workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 2:
+            let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            let workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 3:
+            let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+            let workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+        case .cycle(let days) where days == 2:
+            let schedule = Schedule.cyclic
+            var workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+
+            workout = Workout("Rest", schedule)
+            program.addWorkout(workout)
+        case .cycle(let days) where days == 3:
+            let schedule = Schedule.cyclic
+            var workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 1", schedule)
+            program.addWorkout(workout)
+            workout = Workout("Rest 2", schedule)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
         }
-        
-        // Workouts
-        let workout = Workout("Complex", schedule)
-        workout.addExercise(name: "Complex")
-        program.addWorkout(workout)
     }
 }
 
