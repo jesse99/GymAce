@@ -12,20 +12,20 @@ class PlanTests {
         #expect(plan.details(exercise) == "2x5, 5+ @ 225 lbs")
         
         var sets: [String] = []
-        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/-")                // 0.0 * 225 = 0.0
-        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/-")              // 0.6 * 225 = 135.0
-        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/-") // 0.8 * 225 = 180.0
-        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/-")     // 0.9 * 225 = 202.5
-        sets.append("Workset 1 of 3/5 reps @ 225 lbs/45x2/-")
-        sets.append("Workset 2 of 3/5 reps @ 225 lbs/45x2/-")
-        sets.append("Workset 3 of 3/5+ reps @ 225 lbs/45x2/-")
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/19% of 226 lbs")                // 0.0 * 225 = 0.0
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/59% of 226 lbs")              // 0.6 * 225 = 135.0
+        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/79% of 226 lbs") // 0.8 * 225 = 180.0
+        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/90% of 226 lbs")     // 0.9 * 225 = 202.5
+        sets.append("Workset 1 of 3/5 reps @ 225 lbs/45x2/99% of 226 lbs")
+        sets.append("Workset 2 of 3/5 reps @ 225 lbs/45x2/99% of 226 lbs")
+        sets.append("Workset 3 of 3/5+ reps @ 225 lbs/45x2/99% of 226 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "5 reps x3 @ 225 lbs")
+        #expect(completed() == "5 x3 reps @ 225 lbs")
         
         // GZCL style AMRAP
         exercise = make("Squat", "Squat", "GZCL", weights: "Dual Plates", weight: 226)
         plan = makePlan()
-        #expect(plan.details(exercise) == "3, 2, 1+ @ 205 lbs-225 lbs")
+        #expect(plan.details(exercise) == "3, 2, 1+ @ 205, 215, 225 lbs")
         
         sets = []
         sets.append("Warmup 1 of 3/5 reps @ 135 lbs/45/59% of 226 lbs")
@@ -35,7 +35,7 @@ class PlanTests {
         sets.append("Workset 2 of 3/2 reps @ 215 lbs/45 + 25 + 10 + 5/95% of 226 lbs")
         sets.append("Workset 3 of 3/1+ reps @ 225 lbs/45x2/99% of 226 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "3 reps, 2 reps, 1 reps @ 205-225 lbs")
+        #expect(completed() == "3, 2, 1 reps @ 205, 215, 225 lbs")
         
         // Check progression
         let b = Float(226.0)
@@ -93,15 +93,15 @@ class PlanTests {
         #expect(plan.details(exercise) == "3x5 @ 225 lbs")
         
         var sets: [String] = []
-        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/-")                // 0.0 * 225 = 0.0
-        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/-")              // 0.6 * 225 = 135.0
-        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/-") // 0.8 * 225 = 180.0
-        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/-")     // 0.9 * 225 = 202.5
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225 lbs")                // 0.0 * 225 = 0.0
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/60% of 225 lbs")              // 0.6 * 225 = 135.0
+        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/80% of 225 lbs") // 0.8 * 225 = 180.0
+        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/91% of 225 lbs")     // 0.9 * 225 = 202.5
         sets.append("Workset 1 of 3/5 reps @ 225 lbs/45x2/-")
         sets.append("Workset 2 of 3/5 reps @ 225 lbs/45x2/-")
         sets.append("Workset 3 of 3/5 reps @ 225 lbs/45x2/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "5 reps x3 @ 225 lbs")
+        #expect(completed() == "5 x3 reps @ 225 lbs")
         
         // Check progression
         setCompleted([])
@@ -154,16 +154,16 @@ class PlanTests {
     func oneRepMax() {
         exercise = make("Bench", "Bench Press", "1RM", weights: "Dual Plates", weight: 225)
         let plan = makePlan()
-        #expect(plan.details(exercise) == "5 @ 225 lbs")
+        #expect(plan.details(exercise) == "5+ @ 195 lbs")
         
         var sets: [String] = []
-        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/-")                // 0.0 * 225 = 0.0
-        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/-")              // 0.6 * 225 = 135.0
-        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/-") // 0.8 * 225 = 180.0
-        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/-")     // 0.9 * 225 = 202.5
-        sets.append("Workset 1 of 1/5 reps @ 225 lbs/45x2/-")
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225 lbs")                // 0.0 * 225 = 0.0
+        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/60% of 225 lbs")              // 0.6 * 225 = 135.0
+        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/80% of 225 lbs") // 0.8 * 225 = 180.0
+        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/91% of 225 lbs")     // 0.9 * 225 = 202.5
+        sets.append("Workset 1 of 1/5+ reps @ 195 lbs/45 + 25 + 5/86% of 225 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "5 reps @ 225 lbs")        
+        #expect(completed() == "5 reps @ 195 lbs")
     }
     
     @Test("VariablePlan")
@@ -174,11 +174,11 @@ class PlanTests {
         #expect(plan.details(exercise) == "3x8-12 @ 42.5 lbs")
         
         var sets: [String] = []
-        sets.append("Workset 1 of 3/8-12 reps @ 42.5 lbs/-/-")
-        sets.append("Workset 2 of 3/8-12 reps @ 42.5 lbs/-/-")
-        sets.append("Workset 3 of 3/8-12 reps @ 42.5 lbs/-/-")
+        sets.append("Workset 1 of 3/8-12 reps @ 42.5 lbs/-/99% of 42.6 lbs")
+        sets.append("Workset 2 of 3/8-12 reps @ 42.5 lbs/-/99% of 42.6 lbs")
+        sets.append("Workset 3 of 3/8-12 reps @ 42.5 lbs/-/99% of 42.6 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "8 reps x3 @ 42.5 lbs")
+        #expect(completed() == "8 x3 reps @ 42.5 lbs")
         
         // Variable reps with an old completed
         exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
@@ -190,7 +190,7 @@ class PlanTests {
         sets.append("Workset 2 of 3/10-12 reps @ 42.5 lbs/-/-")
         sets.append("Workset 3 of 3/9-12 reps @ 42.5 lbs/-/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "10 reps x2, 9 reps @ 42.5 lbs, 10 reps x2, 9 reps @ 42.5 lbs")
+        #expect(completed() == "10 x2, 9 reps @ 42.5 lbs, 10 x2, 9 reps @ 42.5 lbs")
         
         // Variable reps with another old completed
         exercise = make("Face Pulls", "Face Pull", "Accessory", weights: "Cable Machine", weight: 42.5)
@@ -202,7 +202,7 @@ class PlanTests {
         sets.append("Workset 2 of 3/12 reps @ 42.5 lbs/-/-")
         sets.append("Workset 3 of 3/12 reps @ 42.5 lbs/-/-")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "12 reps x3 @ 42.5 lbs, 12 reps x3 @ 42.5 lbs")
+        #expect(completed() == "12 x3 reps @ 42.5 lbs, 12 x3 reps @ 42.5 lbs")
         
         // Check progression
         setCompleted([])
@@ -269,7 +269,7 @@ class PlanTests {
         sets.append("Workset 2 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
         sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "5 reps x3 @ 205 lbs")   // TODO need to get weightset from other
+        #expect(completed() == "5 x3 reps @ 205 lbs")   // TODO need to get weightset from other
         
         // Percent is based on other baseWeight, not other completed. It makes some sense to use completed
         // because the user may not be able to do a new baseWeight but we don't want to do that for gzcl
@@ -289,7 +289,7 @@ class PlanTests {
         sets.append("Workset 2 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
         sets.append("Workset 3 of 3/5 reps @ 205 lbs/45 + 25 + 10/91% of 225 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
-        #expect(completed() == "5 reps x3 @ 205 lbs")
+        #expect(completed() == "5 x3 reps @ 205 lbs")
     }
     
     @Test("DurationsPlan")
@@ -336,7 +336,7 @@ class PlanTests {
         exercise = make("Walk", "Walking", "Bad", weights: "Dumbbells", weight: 28)
         plan = makePlan()
         #expect(plan.details(exercise) == "5 @ 25 lbs") // work sets use lower (unless the percent is under 100)
-        #expect(to_headers(plan) == "Workset 1 of 1/5 reps @ 25 lbs/-/-")
+        #expect(to_headers(plan) == "Workset 1 of 1/5 reps @ 25 lbs/-/89% of 28 lbs")
         #expect(completed() == "5 reps @ 25 lbs")
         
         exercise = make("Walk", "Walking", "Bad")
@@ -367,7 +367,7 @@ class PlanTests {
         exercise = make("Walk", "Walking", "Walk", weights: "Dumbbells", weight: 28)
         plan = makePlan()
         #expect(plan.details(exercise) == "25 lbs") // work sets use lower (unless the percent is under 100)
-        #expect(to_headers(plan) == "Set 1 of 1/25 lbs/-/-")
+        #expect(to_headers(plan) == "Set 1 of 1/25 lbs/-/89% of 28 lbs")
         #expect(completed() == "0 secs")
         
         exercise = make("Walk", "Walking", "Walk")
@@ -395,7 +395,7 @@ class PlanTests {
         program.styles["Stretch3"] = .durations(DurationsInfo(secs: "30s 40s 50s", targetSecs: "")!)
         program.styles["Stretch3b"] = .durations(DurationsInfo(secs: "30s 30s 30s", targetSecs: "60s")!)
         program.styles["Walk"] = Style.timed
-        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: 5, rest: "2m")!)
+        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5", rest: "2m")!)
 
         let schedule = Schedule.days(Weekdays([.monday]))
         workout = Workout("Test Workout", schedule)
@@ -454,7 +454,7 @@ class PlanTests {
         while !entry.isFinished(program, exercise) {
             entry.completedSet(plan)
             if entry.isFinished(program, exercise) {
-                entry.completedLast(program, workout, exercise)
+                entry.completedLast(model, program, workout, exercise)
                 entry.mode = .finished
             } else {
                 entry.mode = .performing
