@@ -157,6 +157,10 @@ struct EditBasic: View {
                     }
                 }
                 var info = findInfo()
+                if !validateWarmups(a, info.workset.first?.percent) {
+                    warmupErr = "Warmup percents must increase and be less than the first workset percent."
+                    return
+                }
                 info.warmup = a
                 program.styles[name] = .basic(info)
                 warmupErr = nil
@@ -181,6 +185,10 @@ struct EditBasic: View {
                     }
                 }
                 var info = findInfo()
+                if !validateWarmups(info.warmup, a.first?.percent) {
+                    worksetErr = "Warmup percents must increase and be less than the first workset percent."
+                    return
+                }
                 info.workset = a
                 program.styles[name] = .basic(info)
                 worksetErr = nil

@@ -106,6 +106,23 @@ extension Style {
     }
 }
 
+// Warmup percents must be increasing, and less than the first workset.
+func validateWarmups(_ warmup: [OtherReps], _ workset: Int?) -> Bool {
+    var prior = -1
+    for s in warmup {
+        if s.percent <= prior {
+            return false
+        }
+        prior = s.percent
+    }
+    if let p = workset {
+        if p <= prior {
+            return false
+        }
+    }
+    return true
+}
+
 struct AMRAPInfo: Codable {
     var warmup: [OtherReps]
     var workset: [PercentReps]
@@ -115,8 +132,8 @@ struct AMRAPInfo: Codable {
     /// workset is formatted as reps with an optional percent
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
     init?(warmup: String, workset: String, rest: String) {
-        switch parseOtherReps(warmup) {
-        case .success(let reps): self.warmup = reps
+        switch parseOtherReps(warmup) {     // TODO should verify that these all increase and last is less than workset
+        case .success(let reps): self.warmup = reps // TODO some below need to do the same thing
         case .failure: return nil
         }
 
@@ -128,6 +145,9 @@ struct AMRAPInfo: Codable {
         switch parseRest(rest) {
         case .success(let secs): self.rest = secs
         case .failure: return nil
+        }
+        if !validateWarmups(self.warmup, self.workset.first?.percent) {
+            return nil
         }
     }
     
@@ -178,6 +198,9 @@ struct BasicInfo: Codable {
         case .success(let secs): self.rest = secs
         case .failure: return nil
         }
+        if !validateWarmups(self.warmup, self.workset.first?.percent) {
+            return nil
+        }
     }
     
     func summary() -> [String] {
@@ -204,6 +227,46 @@ struct BasicInfo: Codable {
     }
 }
 
+func validate1RMWarmups(_ warmup: [OtherReps], _ workset: [PercentReps]) -> Bool {
+    if workset.count == 1 {
+        // Warmups must all increase and be less than the first workset percent
+        // (which is computed for the 1rm style when there is only one workset).
+        let p = computePercent(reps: workset[0].reps) ?? 1.0
+        if !validateWarmups(warmup, Int(100*p)) {
+            return false
+        }
+    } else if let first = workset.first {
+        // Warmups must all increase and be less than the first workset percent.
+        if !validateWarmups(warmup, first.percent) {
+            return false
+        }
+    } else {
+        if !validateWarmups(warmup, nil) {
+            return false
+        }
+    }
+    return true
+}
+
+func validate1RMWorksets(_ warmup: [OtherReps], _ workset: [PercentReps]) -> Bool {
+    // Last workset percent is computed
+    if let s = workset.last, s.percent != 100 {
+        return false
+    }
+
+    if workset.count > 1, let last = workset.last {
+        // Workset percents must all be less than the last computed percent (they
+        // should normally be increasing but that isn't a hard requirement).
+        let p = Int(100.0 * (computePercent(reps: last.reps) ?? 1.0))
+        for s in workset.dropLast() {
+            if s.percent > p {
+                return false
+            }
+        }
+    }
+    return true
+}
+
 struct OneRepMaxInfo: Codable {
     var warmup: [OtherReps]
     var workset: [PercentReps]
@@ -222,13 +285,17 @@ struct OneRepMaxInfo: Codable {
         case .success(let reps): self.workset = reps
         case .failure: return nil
         }
-        if let s = self.workset.last, s.percent != 100 {
-            return nil
-        }
 
         switch parseRest(rest) {
         case .success(let secs): self.rest = secs
         case .failure: return nil
+        }
+        
+        if !validate1RMWarmups(self.warmup, self.workset) {
+            return nil
+        }
+        if !validate1RMWorksets(self.warmup, self.workset) {
+            return nil
         }
     }
     
@@ -296,6 +363,9 @@ struct VariableInfo: Codable {
         switch parseRest(rest) {
         case .success(let secs): self.rest = secs
         case .failure: return nil
+        }
+        if !validateWarmups(self.warmup, self.workset.first?.percent) {
+            return nil
         }
     }
     
@@ -793,7 +863,30 @@ extension Exercise {
             let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: nil)
             sets.append(set)
         }
-        return sets
+        
+        var filtered: [PlanSet] = []
+        for s in sets {
+            if case .warmup = s.kind {
+                // When the weights are low warmup weights for different sets can be the same. It doesn't make
+                // much sense to warmup with the same weight multiple times so we'll strip these out.
+                if let newWeight = s.weight, let last = filtered.last, let priorWeight = last.weight {
+                    if priorWeight.value() < newWeight.value() {
+                        filtered.append(s)
+                    }
+                } else {
+                    filtered.append(s)
+                }
+            } else if case .workset = s.kind, let last = filtered.last, case .warmup = last.kind, let newWeight = s.weight, let priorWeight = last.weight {
+                // Similarly if the last warmup is larger than the first workset we'll drop the warmup.
+                if priorWeight.value() >= newWeight.value() {
+                    filtered = filtered.dropLast()
+                }
+                filtered.append(s)
+            } else {
+                filtered.append(s)
+            }
+        }
+        return filtered
     }
     
     func validateStyle(_ program: Program) -> Bool {

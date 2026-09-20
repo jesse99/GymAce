@@ -1404,7 +1404,7 @@ fileprivate func previewProgram() -> Program {
         program.styles["Light"] = basicStyle(warmup: "5/0 5/40 3/50 1/70", workset: "5/80 5/80 5/80", rest: "2m")
         program.styles["Stretch"] = durationsStyle(secs: "30s 30s 30s", targetSecs: "")
         program.styles["Walk"] = Style.timed
-        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5", rest: "2m")!)
+        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/57 3/67 1/77", workset: "5", rest: "2m")!)  // workset is at 87%
         program.styles["AMRAP"] = amrapStyle(warmup: "5/40 3/50 1/70", workset: "3", rest: "3m")
     }
     

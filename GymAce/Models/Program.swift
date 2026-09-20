@@ -63,7 +63,7 @@ final class Program: Codable, Identifiable {
             }
         }
         for workout in workouts {
-            if !workout.valid() {
+            if !workout.valid(model, self) {
                 valid = false
             }
         }

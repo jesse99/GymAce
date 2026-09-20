@@ -157,10 +157,10 @@ class PlanTests {
         #expect(plan.details(exercise) == "5+ @ 195 lbs")
         
         var sets: [String] = []
-        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225 lbs")                // 0.0 * 225 = 0.0
-        sets.append("Warmup 2 of 4/5 reps @ 135 lbs/45/60% of 225 lbs")              // 0.6 * 225 = 135.0
-        sets.append("Warmup 3 of 4/3 reps @ 180 lbs/45 + 10x2 + 2.5/80% of 225 lbs") // 0.8 * 225 = 180.0
-        sets.append("Warmup 4 of 4/1 rep @ 205 lbs/45 + 25 + 10/91% of 225 lbs")     // 0.9 * 225 = 202.5
+        sets.append("Warmup 1 of 4/5 reps @ 45 lbs/-/20% of 225 lbs")
+        sets.append("Warmup 2 of 4/5 reps @ 105 lbs/25 + 5/46% of 225 lbs")
+        sets.append("Warmup 3 of 4/3 reps @ 150 lbs/25x2 + 2.5/66% of 225 lbs")
+        sets.append("Warmup 4 of 4/1 rep @ 175 lbs/45 + 10x2/77% of 225 lbs")
         sets.append("Workset 1 of 1/5+ reps @ 195 lbs/45 + 25 + 5/86% of 225 lbs")
         #expect(to_headers(plan) == sets.joined(separator: ", "))
         #expect(completed() == "5 reps @ 195 lbs")
@@ -395,7 +395,7 @@ class PlanTests {
         program.styles["Stretch3"] = .durations(DurationsInfo(secs: "30s 40s 50s", targetSecs: "")!)
         program.styles["Stretch3b"] = .durations(DurationsInfo(secs: "30s 30s 30s", targetSecs: "60s")!)
         program.styles["Walk"] = Style.timed
-        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/60 3/80 1/90", workset: "5", rest: "2m")!)
+        program.styles["1RM"] = .oneRepMax(OneRepMaxInfo(warmup: "5/0 5/47 3/67 1/77", workset: "5", rest: "2m")!)  // 5 reps is 87%
 
         let schedule = Schedule.days(Weekdays([.monday]))
         workout = Workout("Test Workout", schedule)

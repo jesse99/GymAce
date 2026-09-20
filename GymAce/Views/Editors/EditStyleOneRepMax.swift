@@ -138,7 +138,7 @@ struct EditOneRepMax: View {
             }
         )
     }
-
+    
     private var warmupBinding: Binding<String> {
         Binding(
             get: {
@@ -156,6 +156,16 @@ struct EditOneRepMax: View {
                     }
                 }
                 var info = findInfo()
+                if !validate1RMWarmups(a, info.workset) {
+                    if info.workset.count == 1, let last = info.workset.last {
+                        let p = Int(100.0 * (computePercent(reps: last.reps) ?? 1.0))
+                        warmupErr = "Warmup percents must increase and be less than the first workset percent (\(p)%)."
+                        return
+                    } else {
+                        warmupErr = "Warmup percents must increase and be less than the first workset percent."
+                        return
+                    }
+                }
                 info.warmup = a
                 program.styles[name] = .oneRepMax(info)
                 warmupErr = nil
@@ -180,10 +190,23 @@ struct EditOneRepMax: View {
                     }
                 }
                 if let s = a.last, s.percent != 100 {
-                    worksetErr = "The last set must be at 100%."
+                    worksetErr = "The last set must be 100%."
                     return
                 }
                 var info = findInfo()
+                if !validate1RMWarmups(info.warmup, a) {
+                    worksetErr = "Warmup percents must increase and be less than the first workset percent."
+                    return
+                }
+                if !validate1RMWorksets(info.warmup, a) {
+                    if let last = info.workset.last {
+                        let p = Int(100.0 * (computePercent(reps: last.reps) ?? 1.0))
+                        worksetErr = "Workset percents must be less than the last computed percent (\(p)%)."
+                    } else {
+                        worksetErr = "Workset percents must be less than the last computed percent."
+                    }
+                    return
+                }
                 info.workset = a
                 program.styles[name] = .oneRepMax(info)
                 worksetErr = nil

@@ -45,11 +45,57 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         }
     }
         
-    func valid() -> Bool {
+    func valid(_ model: Model, _ program: Program) -> Bool {
+        func badWeight(_ plan: ExercisePlan, _ workout: String, _ exercise: Exercise, _ index: Int?) {
+            let warmups = plan.sets.filter({if case .warmup = $0.kind {$0.weight != nil} else {false}})
+            let workset = plan.sets.filter({if case .workset = $0.kind {$0.weight != nil} else {false}})
+
+            if let index = index {
+                print("Warmup \(index) in workout \(workout) for exercise \(exercise.name) with style \(exercise.styleName) doesn't increase weight:")
+            } else {
+                print("Workset 0 in workout \(workout) for exercise \(exercise.name) with style \(exercise.styleName) doesn't increase weight:")
+            }
+            for (i, s) in warmups.enumerated() {
+                print("   warmup \(i) weight: \(s.weight!.text()) percent: \(s.percent)")
+            }
+            
+            if let s = workset.first {    // note that timed exercises don't have work sets
+                print("   workset 0 weight: \(s.weight!.text()) percent: \(s.percent)")
+            }
+        }
+        
         var valid = true
         for name in entries.findDupes(using: {$0.name}) {   // technically OK but shouldn't normally happen
             print("There's already an exercise named \(name) in \(self.name)")
             valid = false
+        }
+        for entry in entries {
+            if let exercise = program.findExercise(entry.name) {
+                let plan = ExercisePlan(model, program, self, exercise)
+                let warmups = plan.sets.filter({if case .warmup = $0.kind {$0.weight != nil} else {false}})
+                let workset = plan.sets.filter({if case .workset = $0.kind {$0.weight != nil} else {false}})
+                
+                // Warmup weights must increase
+                var priorWeight = Float(-1.0)
+                for (i, s) in warmups.enumerated() {
+                    if s.weight!.value() <= priorWeight {
+                        badWeight(plan, name, exercise, i)
+                        valid = false
+                    }
+                    priorWeight = s.weight!.value()
+                }
+                
+                // Last warmup weight must be less than first workset weight
+                if let s = workset.first {    // note that timed exercises don't have work sets
+                    if s.weight!.value() <= priorWeight {
+                        badWeight(plan, name, exercise, nil)
+                        valid = false
+                    }
+                }
+            } else {
+                print("Couldn't find exercise \(entry.name) from workout \(name)")
+                valid = false
+            }
         }
         return valid
     }
