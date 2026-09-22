@@ -1,5 +1,13 @@
 /// Used to generate a new program according to user input.
 final class Wizard {
+    enum Apparatus {
+        /// User has barbells
+        case barbells
+        case dumbbels(Int)
+        case machines
+        case smith
+    }
+    
     enum Goal {
         case strength
         case hypertrophy
@@ -48,7 +56,7 @@ final class Wizard {
         self.schedule = .weekly(3)
     }
     
-    func generate() {
+    func build() -> Builder {
         var builder: Builder
         let enoughDumbbells = numDumbbells > 5
         if barbells || enoughDumbbells || machines {
@@ -96,18 +104,23 @@ final class Wizard {
             // User has no equipment, so we will generate a bodyweight program.
             builder = StubBuilder(self)   // TODO
         }
+        
+        return builder
+    }
 
+    func generate(_ builder: Builder) {
         let name = findName(hasName, prefix: builder.name)
         let program = Program(name)
         schedule = builder.schedules[0] // TODO user needs to select this
         builder.build(program)
+        
+        model.programs.append(program)
+        model.activeProgram = program.name
         model.addMissingWeightsets()
 
         if !program.valid(model) {      // TODO this should probably check links
             fatalError("bad program")   // TODO handle this better, e.g. show an error message
         }
-        model.programs.append(program)
-        model.activeProgram = program.name
     }
     
     private func hasName(_ name: String) -> Bool {

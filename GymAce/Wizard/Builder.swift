@@ -7,12 +7,20 @@ class Builder {
     
     /// The name of the program. A suffix may be appended by the wizard to make the name unique.
     var name: String {fatalError("override this")}
-
+    
     /// The schedules supported by the program. The user will pick one of these before the program is populated.
     var schedules: [Wizard.Schedule] {fatalError("override this")}
     
     func build(_ program: Program) {
         fatalError("override this")
+    }
+    
+    fileprivate func appendExercises(_ program: Program, _ exercises: [Exercise]) {
+        for exercise in exercises {
+            if program.findExercise(exercise.name) == nil {
+                program.exercises.append(exercise)
+            }
+        }
     }
 }
 
@@ -99,10 +107,6 @@ class BaseBasic: Builder {
             workout = Workout("\(workout2Name) 2", schedule)
             addWorkout2Exercises(workout)
             program.addWorkout(workout)
-            // TODO also
-            // Squat Rest Deadlift Rest
-            // Squat Rest Rest Deadlift Rest Rest
-            // for others allow days to be chosen? tho that can be edited pretty easily
         case .cycle(let days) where days == 4:
             let schedule = Schedule.cyclic
             var workout = Workout(workout1Name, schedule)
@@ -143,12 +147,12 @@ class BaseBasic: Builder {
     }
     
     fileprivate func appendWorkout1Exercises(_ program: Program, _ exercises: [Exercise]) {
-        program.exercises.append(contentsOf: exercises)
+        appendExercises(program, exercises)
         workout1Exercises.append(contentsOf: exercises.map {$0.name})
     }
 
     fileprivate func appendWorkout2Exercises(_ program: Program, _ exercises: [Exercise]) {
-        program.exercises.append(contentsOf: exercises)
+        appendExercises(program, exercises)
         workout2Exercises.append(contentsOf: exercises.map {$0.name})
     }
 
@@ -169,6 +173,9 @@ class BaseBasic: Builder {
 
 final class BasicBarbellBuilder: BaseBasic {
     override func build(_ program: Program) {
+        workout1Exercises = []
+        workout2Exercises = []
+        
         program.summary = "A simple [program](https://thefitness.wiki/routines/r-fitness-basic-beginner-routine) for beginners. It's meant to be run for about three months after which you should switch to an intermediate program. For the last sets do as many reps as you can but try to stop when you have 1-2 reps left."
     
         switch wizard.goal {
@@ -184,8 +191,6 @@ final class BasicBarbellBuilder: BaseBasic {
             fatalError("should be complex")
         }
 
-        // For barbell we don't make any assumptions about what else they might have available.
-        // For example they might just have a home gym with barbells and a power rack.
         if case .glute = wizard.goal {
             appendWorkout1Exercises(program, [
                 make("Squat", "High bar Squat", "Primary", weights: "Dual Plates", weight: 85),
@@ -196,10 +201,20 @@ final class BasicBarbellBuilder: BaseBasic {
             appendWorkout2Exercises(program, [
                 make("Deadlift", "Deadlift", "Secondary", weights: "Dual Plates", weight: 95),
                 make("OHP", "Overhead Press", "Primary", weights: "Dual Plates", weight: 55),
-                make("Landmines", "Landmine 180's", "Tertiary", weights: "Dual Plates", weight: 10),
-                make("Chin Ups", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),
             ])
-            disabled.append(contentsOf: ["Row", "Chin Ups"])
+            if wizard.machines {
+                appendWorkout2Exercises(program, [
+                    make("Cable Crunch", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 20),
+                    make("Lat Pulldown", "Lat Pulldown", "Tertiary", weights: "Cable Machine", weight: 20),
+                ])
+                disabled.append(contentsOf: ["Row", "Lat Pulldown"])
+            } else {
+                appendWorkout2Exercises(program, [
+                    make("Landmines", "Landmine 180's", "Tertiary", weights: "Dual Plates", weight: 10),
+                    make("Chin Ups", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),
+                ])
+                disabled.append(contentsOf: ["Row", "Chin Ups"])
+            }
         } else {
             appendWorkout1Exercises(program, [
                 make("Row", "Pendlay Row", "Secondary", weights: "Dual Plates", weight: 65),
@@ -211,9 +226,18 @@ final class BasicBarbellBuilder: BaseBasic {
                 make("Chin Ups", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),
                 make("OHP", "Overhead Press", "Primary", weights: "Dual Plates", weight: 55),
                 make("Deadlift", "Deadlift", "Secondary", weights: "Dual Plates", weight: 95),
-                make("Landmines", "Landmine 180's", "Tertiary", weights: "Dual Plates", weight: 10),
             ])
-            disabled.append(contentsOf: ["Curls", "Landmines"])
+            if wizard.machines {
+                appendWorkout2Exercises(program, [
+                    make("Cable Crunch", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 20),
+                ])
+                disabled.append(contentsOf: ["Curls", "Cable Crunch"])
+            } else {
+                appendWorkout2Exercises(program, [
+                    make("Landmines", "Landmine 180's", "Tertiary", weights: "Dual Plates", weight: 10),
+                ])
+                disabled.append(contentsOf: ["Curls", "Landmines"])
+            }
         }
         
         scheduleWorkouts(program)
@@ -222,6 +246,9 @@ final class BasicBarbellBuilder: BaseBasic {
 
 final class BasicSmithBuilder: BaseBasic {
     override func build(_ program: Program) {
+        workout1Exercises = []
+        workout2Exercises = []
+        
         program.summary = "A simple [program](https://thefitness.wiki/routines/r-fitness-basic-beginner-routine) for beginners. It's meant to be run for about three months after which you should switch to an intermediate program. For the last sets do as many reps as you can but try to stop when you have 1-2 reps left."
     
         switch wizard.goal {
@@ -235,35 +262,87 @@ final class BasicSmithBuilder: BaseBasic {
             fatalError("should be complex")
         }
 
-        // if they have a smith machine we assume they also have cable machines available.
         if case .glute = wizard.goal {
-            appendWorkout1Exercises(program, [
-                make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
-                make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
-                make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85),
-                make("Hip Abduction", "Cable Hip Abduction", "Tertiary", weights: "Cable Machine", weight: 10),
-            ])
-            appendWorkout2Exercises(program, [
-                make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
-                make("Lat Pulldown", "Lat Pulldown", "Tertiary", weights: "Cable Machine", weight: 20),
-                make("Cable Kickback", "One-Legged Cable Kickback", "Tertiary", weights: "Cable Machine", weight: 20),
-                make("Crunches", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 10),
-            ])
-            disabled.append(contentsOf: ["Hip Abduction", "Crunches"])
+            if wizard.machines {
+                appendWorkout1Exercises(program, [
+                    make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
+                    make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85),
+                    make("Hip Abduction", "Cable Hip Abduction", "Tertiary", weights: "Cable Machine", weight: 10),
+                ])
+                appendWorkout2Exercises(program, [
+                    make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
+                    make("Lat Pulldown", "Lat Pulldown", "Tertiary", weights: "Cable Machine", weight: 20),
+                    make("Cable Kickback", "One-Legged Cable Kickback", "Tertiary", weights: "Cable Machine", weight: 20),
+                    make("Crunches", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 10),
+                ])
+                disabled.append(contentsOf: ["Hip Abduction", "Crunches"])
+            } else if wizard.numDumbbells > 5 {
+                appendWorkout1Exercises(program, [
+                    make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
+                    make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85),
+                    make("Hanging Leg Raises", "Hanging Leg Raise", "Secondary"),
+                ])
+                appendWorkout2Exercises(program, [
+                    make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
+                    make("DB Rows", "Kroc Row", "Primary", weights: "Dumbbells", weight: 30),
+                    make("Step-ups", "Step-ups", "Secondary", weights: "Dumbbells", weight: 10),
+                ])
+                disabled.append(contentsOf: ["Hanging Leg Raises"])
+            } else {
+                appendWorkout1Exercises(program, [
+                    make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
+                    make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85),
+                ])
+                appendWorkout2Exercises(program, [
+                    make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
+                    make("OHP", "Seated Smith Machine Press", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Hanging Leg Raises", "Hanging Leg Raise", "Secondary"),
+                ])
+            }
         } else {
-            appendWorkout1Exercises(program, [
-                make("Row", "Seated Cable Row", "Primary", weights: "Cable Machine", weight: 25),   // Hip Thrust
-                make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
-                make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
-                make("Curls", "Cable Hammer Curls", "Tertiary", weights: "Cable Machine", weight: 10),
-            ])
-            appendWorkout2Exercises(program, [
-                make("Chin Ups", "Chin-up", "Tertiary"),   // lat pulldown
-                make("OHP", "Seated Smith Machine Press", "Primary", weights: "Dual Plates", weight: 20),
-                make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
-                make("Crunches", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 20),
-            ])
-            disabled.append(contentsOf: ["Curls", "Crunches"])
+            if wizard.machines {
+                appendWorkout1Exercises(program, [
+                    make("Row", "Seated Cable Row", "Primary", weights: "Cable Machine", weight: 25),   // Hip Thrust
+                    make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
+                    make("Curls", "Cable Hammer Curls", "Tertiary", weights: "Cable Machine", weight: 10),
+                ])
+                appendWorkout2Exercises(program, [
+                    make("Chin Ups", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),   // lat pulldown
+                    make("OHP", "Seated Smith Machine Press", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
+                    make("Crunches", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 20),
+                ])
+                disabled.append(contentsOf: ["Curls", "Crunches"])
+            } else if wizard.numDumbbells > 5 {
+                appendWorkout1Exercises(program, [
+                    make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
+                    make("DB Rows", "Kroc Row", "Primary", weights: "Dumbbells", weight: 30),
+                    make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
+                    make("Curls", "Concentration Curls", "Tertiary", weights: "Dumbbells", weight: 10),
+                ])
+                appendWorkout2Exercises(program, [
+                    make("OHP", "Seated Smith Machine Press", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Chin Ups", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),
+                    make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
+                    make("Flyes", "Dumbbell Flyes", "Tertiary", weights: "Dumbbells", weight: 10),
+                ])
+                disabled.append(contentsOf: ["Curls", "Flyes"])
+            } else {
+                appendWorkout1Exercises(program, [
+                    make("Row", "Seated Cable Row", "Primary", weights: "Cable Machine", weight: 25),
+                    make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
+                ])
+                appendWorkout2Exercises(program, [
+                    make("Chin Ups", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),
+                    make("OHP", "Seated Smith Machine Press", "Primary", weights: "Dual Plates", weight: 20),
+                    make("Deadlift", "Smith Machine Deadlift", "Primary", weights: "Dual Plates", weight: 40),
+                ])
+            }
         }
 
         scheduleWorkouts(program)
@@ -279,6 +358,9 @@ final class BasicStopgapDBBuilder: BaseBasic {
     }
     
     override func build(_ program: Program) {
+        workout1Exercises = []
+        workout2Exercises = []
+        
         program.summary = "[Designed](https://thefitness.wiki/reddit-archive/dumbbell-stopgap/) for home workouts with a small set of dummbells (or adjustable dumbbells) though it can also be used at a gym."
     
         program.styles["Primary"] =   variableStyle(warmup: "5/60 3/80 1/90", workset: "5-10 5-10 5-10", rest: "60s")
@@ -322,6 +404,10 @@ final class BasicPPLDBBuilder: Builder {
     override var schedules: [Wizard.Schedule] {return [.weekly(3), .weekly(6), .cycle(4), .cycle(5)]}
 
     override func build(_ program: Program) {
+        pushExercises = []
+        pullExercises = []
+        legExercises = []
+        
         program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment."
         
         program.styles["Primary"] =   variableStyle(warmup: "5/60 3/80 1/90", workset: "6-12 6-12 6-12", rest: "90s")
@@ -399,7 +485,7 @@ final class BasicPPLDBBuilder: Builder {
             addLegExercises(workout)
             program.addWorkout(workout)
         case .cycle(let days) where days == 4:
-            var schedule = Schedule.cyclic
+            let schedule = Schedule.cyclic
             var workout = Workout("Push", schedule)
             addPushExercises(workout)
             program.addWorkout(workout)
@@ -415,7 +501,7 @@ final class BasicPPLDBBuilder: Builder {
             workout = Workout("Rest", schedule)
             program.addWorkout(workout)
         case .cycle(let days) where days == 5:
-            var schedule = Schedule.cyclic
+            let schedule = Schedule.cyclic
             var workout = Workout("Push", schedule)
             addPushExercises(workout)
             program.addWorkout(workout)
@@ -438,17 +524,17 @@ final class BasicPPLDBBuilder: Builder {
     }
     
     private func appendPushExercises(_ program: Program, _ exercises: [Exercise]) {
-        program.exercises.append(contentsOf: exercises)
+        appendExercises(program, exercises)
         pushExercises.append(contentsOf: exercises.map {$0.name})
     }
     
     private func appendPullExercises(_ program: Program, _ exercises: [Exercise]) {
-        program.exercises.append(contentsOf: exercises)
+        appendExercises(program, exercises)
         pullExercises.append(contentsOf: exercises.map {$0.name})
     }
     
     private func appendLegExercises(_ program: Program, _ exercises: [Exercise]) {
-        program.exercises.append(contentsOf: exercises)
+        appendExercises(program, exercises)
         legExercises.append(contentsOf: exercises.map {$0.name})
     }
     
@@ -479,11 +565,15 @@ final class BasicMachineBuilder: BaseBasic {
     }
     
     override func build(_ program: Program) {
+        workout1Exercises = []
+        workout2Exercises = []
+        
         program.summary = "Beginner machine centric program."
     
         program.styles["Primary"] =   variableStyle(warmup: "5/60 3/80 1/90", workset: "5-10 5-10 5-10", rest: "2m")
         program.styles["Secondary"] = variableStyle(warmup: "", workset: "5-10 5-10 5-10", rest: "2m")
 
+        // This is used if there is no other apparatus so all these exercises should be restricted to machines.
         if case .glute = wizard.goal {
             appendWorkout1Exercises(program, [
                 make("Leg Press", "Leg Press", "Primary", weights: "Dual Plates", weight: 35),
@@ -493,7 +583,7 @@ final class BasicMachineBuilder: BaseBasic {
             ])
             appendWorkout2Exercises(program, [
                 make("Pull-Through", "Pull Through", "Primary", weights: "Cable Machine", weight: 15),
-                make("Shoulder Press", "Shoulder Press Machine", "Primary", weights: "Dual Plates", weight: 10),
+                make("Shoulder Press", "Machine Shoulder Press", "Primary", weights: "Dual Plates", weight: 10),
                 make("Cable Kickback", "One-Legged Cable Kickback", "Secondary", weights: "Cable Machine", weight: 20),
                 make("Seated Row", "Seated Cable Row", "Secondary", weights: "Cable Machine", weight: 20),
             ])
@@ -507,7 +597,7 @@ final class BasicMachineBuilder: BaseBasic {
             ])
             appendWorkout2Exercises(program, [
                 make("Pull-Through", "Pull Through", "Primary", weights: "Cable Machine", weight: 15),
-                make("Shoulder Press", "Shoulder Press Machine", "Primary", weights: "Dual Plates", weight: 10),
+                make("Shoulder Press", "Machine Shoulder Press", "Primary", weights: "Dual Plates", weight: 10),
                 make("Chin Ups", "Chin-up", "Secondary", weights: "Dumbbells", weight: 0),
                 make("Crunches", "Cable Crunch", "Secondary", weights: "Cable Machine", weight: 20),
             ])
@@ -521,7 +611,7 @@ final class BasicMachineBuilder: BaseBasic {
 final class ComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(1), .weekly(2), .weekly(3), .weekly(4), .cycle(2), .cycle(3)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(1), .weekly(2), .weekly(3), .cycle(2), .cycle(3)]}
 
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
@@ -585,6 +675,8 @@ final class ComplexBuilder: Builder {
 final class StubBuilder: Builder {
     override var name: String {return "Not implemented"}
     
+    override var schedules: [Wizard.Schedule] {return []}
+
     override func build(_ program: Program) {
         program.summary = "Place holder until we can handle this case."
         let workout = Workout("Workout", Schedule.days(Weekdays([.monday])))

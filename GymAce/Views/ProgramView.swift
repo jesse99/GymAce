@@ -117,7 +117,8 @@ struct ProgramView: View {
     private func createProgram() {
         let wizard = Wizard(model)
         wizard.goal = .conditioning
-        wizard.generate()
+        let builder = wizard.build()
+        wizard.generate(builder)
     }
     
     private func sendEmail() {
