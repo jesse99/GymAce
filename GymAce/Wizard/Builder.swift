@@ -277,7 +277,7 @@ final class BasicSmithBuilder: BaseBasic {
                     make("Crunches", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 10),
                 ])
                 disabled.append(contentsOf: ["Hip Abduction", "Crunches"])
-            } else if wizard.numDumbbells > 5 {
+            } else if wizard.fullDumbbells {
                 appendWorkout1Exercises(program, [
                     make("Squat", "Smith Machine Squat", "Primary", weights: "Dual Plates", weight: 35),
                     make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
@@ -317,7 +317,7 @@ final class BasicSmithBuilder: BaseBasic {
                     make("Crunches", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 20),
                 ])
                 disabled.append(contentsOf: ["Curls", "Crunches"])
-            } else if wizard.numDumbbells > 5 {
+            } else if wizard.fullDumbbells {
                 appendWorkout1Exercises(program, [
                     make("Bench Press", "Smith Machine Bench", "Primary", weights: "Dual Plates", weight: 20),
                     make("DB Rows", "Kroc Row", "Primary", weights: "Dumbbells", weight: 30),

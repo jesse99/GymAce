@@ -1,7 +1,22 @@
+import Foundation
+import SwiftUI
+
 /// Used to generate a new program according to user input.
+@Observable
 final class Wizard {
+    enum Stage: Int, Comparable, CaseIterable {    // used by views to show one page of the wizard
+        case apparatus = 1
+        case goals = 2
+        case fitness = 3
+        case schedule = 4
+        case exercises = 5
+        
+        static func < (lhs: Stage, rhs: Stage) -> Bool {
+            return lhs.rawValue < rhs.rawValue
+        }
+    }
+    
     enum Apparatus {
-        /// User has barbells
         case barbells
         case dumbbels(Int)
         case machines
@@ -36,7 +51,8 @@ final class Wizard {
     var fitness: Fitness
     
     var barbells: Bool          // for the most part these just affect exercise selection
-    var numDumbbells: Int       // but if all they have are one or two dumbbells then we'll just use a complex
+    var fullDumbbells: Bool     // user has plenty of dumbbells
+    var partialDumbbells: Bool  // user has a limited selection of dumbbells
     var machines: Bool
     var smith: Bool
     
@@ -48,7 +64,8 @@ final class Wizard {
         self.model = model
         self.age = 20
         self.barbells = true
-        self.numDumbbells = 10  // exact number doesn't really matter, just whether they have only a few or quite a lot
+        self.fullDumbbells = true
+        self.partialDumbbells = false
         self.machines = true
         self.smith = true
         self.goal = .strength
@@ -58,8 +75,7 @@ final class Wizard {
     
     func build() -> Builder {
         var builder: Builder
-        let enoughDumbbells = numDumbbells > 5
-        if barbells || enoughDumbbells || machines {
+        if barbells || fullDumbbells || machines {
             // User has equipment, so we can generate a program with weights.
             switch fitness {
             case .beginner:
@@ -67,7 +83,7 @@ final class Wizard {
                 case .strength, .hypertrophy, .glute:
                     if barbells {
                         builder = BasicBarbellBuilder(self)
-                    } else if enoughDumbbells {
+                    } else if fullDumbbells {
                         if case .hypertrophy = goal {
                             builder = BasicPPLDBBuilder(self)
                         } else {
@@ -79,7 +95,7 @@ final class Wizard {
                         builder = BasicMachineBuilder(self)
                     }
                 case .conditioning:
-                    if numDumbbells > 0 {
+                    if fullDumbbells {
                         builder = ComplexBuilder(self)
                     } else {
                         builder = StubBuilder(self)   // TODO use one of A8, B8, or F8?
@@ -97,7 +113,7 @@ final class Wizard {
                     builder = ComplexBuilder(self)
                 }
             }
-        } else if numDumbbells > 0 {
+        } else if partialDumbbells {
             // User has only a few dumbbells, so we will generate a complex program.
             builder = ComplexBuilder(self)
         } else {
@@ -128,4 +144,3 @@ final class Wizard {
     }
 }
 
-// TODO may want a unit test to verify that each combo results in the right program name and that it validates
