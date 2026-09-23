@@ -6,10 +6,9 @@ import SwiftUI
 final class Wizard {
     enum Stage: Int, Comparable, CaseIterable {    // used by views to show one page of the wizard
         case apparatus = 1
-        case goals = 2
-        case fitness = 3
-        case schedule = 4
-        case exercises = 5
+        case goal = 2
+        case schedule = 3
+        case exercises = 4
         
         static func < (lhs: Stage, rhs: Stage) -> Bool {
             return lhs.rawValue < rhs.rawValue
@@ -36,7 +35,7 @@ final class Wizard {
         case advanced
     }
     
-    enum Schedule {
+    enum Schedule: Comparable {
         /// Number of days per week to do the program.
         case weekly(Int)
 
@@ -45,6 +44,14 @@ final class Wizard {
 
         /// Workouts are done as part of an N week block of workouts, e.g. weight percents may ramp up during the block.
         case block(Int)
+        
+        func toString() -> String {
+            switch self{
+            case .weekly(let days): "\(days) days/week"
+            case .cycle(let days): "\(days) day cycle"
+            case .block(let weeks): "\(weeks) week block"
+            }
+        }
     }
     
     var goal: Goal              // these affect the program type, eg basic or gzcl

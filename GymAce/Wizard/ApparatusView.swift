@@ -115,6 +115,8 @@ struct ApparatusView: View {
                     .padding(.leading, 15)
             }
             
+            // TODO add a toggle for metric units (init based on current locale)
+            
             Spacer()
             Text("Toggle on the equipment that you have available and that you want to use. For example, if you have access to a full gym but only want to use dumbbells and machines then only enable those two.")
                 .font(.footnote)
@@ -149,5 +151,13 @@ struct ApparatusView: View {
                 }
             }
         )
+    }
+}
+
+#Preview {
+    let model = previewModel()
+    let wizard = Wizard(model)
+    NavigationView {
+        ApparatusView(wizard: wizard)
     }
 }

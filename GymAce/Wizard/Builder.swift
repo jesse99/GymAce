@@ -577,7 +577,7 @@ final class BasicMachineBuilder: BaseBasic {
         if case .glute = wizard.goal {
             appendWorkout1Exercises(program, [
                 make("Leg Press", "Leg Press", "Primary", weights: "Dual Plates", weight: 35),
-                make("Chest Press", "Chest Press machine", "Primary", weights: "Dual Plates", weight: 20),
+                make("Chest Press", "Chest Press Machine", "Primary", weights: "Dual Plates", weight: 20),
                 make("Leg Curl", "Seated Leg Curl", "Secondary", weights: "Cable Machine", weight: 20),
                 make("Hip Abduction", "Cable Hip Abduction", "Secondary", weights: "Cable Machine", weight: 10),
             ])
@@ -591,7 +591,7 @@ final class BasicMachineBuilder: BaseBasic {
         } else {
             appendWorkout1Exercises(program, [
                 make("Leg Press", "Leg Press", "Primary", weights: "Dual Plates", weight: 35),
-                make("Chest Press", "Chest Press machine", "Primary", weights: "Dual Plates", weight: 20),
+                make("Chest Press", "Chest Press Machine", "Primary", weights: "Dual Plates", weight: 20),
                 make("Seated Row", "Seated Cable Row", "Secondary", weights: "Cable Machine", weight: 20),
                 make("Curls", "Cable Hammer Curls", "Secondary", weights: "Cable Machine", weight: 10),
             ])
@@ -666,6 +666,8 @@ final class ComplexBuilder: Builder {
         }
     }
 }
+
+// TODO for intermediate and advanced need to account for age
 
 // TODO for bodyweight use
 // https://www.reddit.com/r/bodyweightfitness/wiki/index/?utm_source=reddit&utm_medium=usertext&utm_name=bodyweightfitness&utm_content=t5_2tf0a

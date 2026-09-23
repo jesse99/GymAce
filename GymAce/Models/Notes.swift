@@ -638,7 +638,7 @@ extension Notes {
             [("Link", "https://www.youtube.com/watch?v=8lDC4Ri9zAQ&feature=youtu.be&t=4m22s")],
         )
         
-        add("Chest Press machine",
+        add("Chest Press Machine",
             ["Adjust the seat so that your arms are horizontal when extended.",
                 "Keep your wrists inline with your forearms.",
                 "Push out but don't fully lock out your elbows.",
