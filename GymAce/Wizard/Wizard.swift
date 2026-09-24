@@ -8,7 +8,7 @@ final class Wizard {
         case apparatus = 1
         case goal = 2
         case schedule = 3
-        case exercises = 4
+        case mappings = 4
         
         static func < (lhs: Stage, rhs: Stage) -> Bool {
             return lhs.rawValue < rhs.rawValue
@@ -54,6 +54,11 @@ final class Wizard {
         }
     }
     
+    struct ExerciseMapping {
+        let formalNames: [String]   // family of exercises, eg high and low bar squat
+        let activeName: String      // the version the user wants to use
+    }
+    
     var goal: Goal              // these affect the program type, eg basic or gzcl
     var fitness: Fitness
     
@@ -64,7 +69,8 @@ final class Wizard {
     var smith: Bool
     
     var age: Int                // can affect volume
-    var schedule: Schedule      // set after we create a program but before we populate it with workouts
+    var schedule: Schedule      // set after we can create a program
+    var mappings: [ExerciseMapping]
     let model: Model
     
     init(_ model: Model) {
@@ -78,6 +84,7 @@ final class Wizard {
         self.goal = .strength
         self.fitness = .beginner
         self.schedule = .weekly(3)
+        self.mappings = []
     }
     
     func build() -> Builder {

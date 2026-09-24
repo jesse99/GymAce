@@ -862,7 +862,7 @@ fileprivate func masterGZCL() -> Program {
 //        program.exercises.append(exercise)
 //
 //        
-//        exercise = make("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+//        exercise = make("Split Squat", "Dumbbell Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
 //        program.exercises.append(exercise)
 //
 //        exercise = make("Bent-over Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
@@ -1515,7 +1515,7 @@ fileprivate func previewProgram() -> Program {
 //        let reps: [VariableReps] = [.variable(3, 10), .variable(3, 10), .variable(3, 10)]
 //        let areps: [VariableReps] = [.amrap(3), .amrap(3), .amrap(3)]
 //
-//        var exercise = make("Split Squat", "Dumbbell Single Leg Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+//        var exercise = make("Split Squat", "Dumbbell Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
 //        program.exercises.append(exercise)
 //
 //        exercise = make("Floor Press", "Dumbbell Floor Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
@@ -2152,7 +2152,7 @@ fileprivate func previewProgram() -> Program {
 //        exercise = make("Weighted Pull-up", "Pull-up", workstr: "1-3 1-3 1-3", weights: "Dumbbells", weight: 5, rest: 90)
 //        program.exercises.append(exercise)
 //
-//        exercise = make("Bulgarian Split Squat", "Dumbbell Single Leg Split Squat", workstr: "5-10 5-10 5-10", weights: "Dumbbells", weight: 20, rest: 90)
+//        exercise = make("Bulgarian Split Squat", "Dumbbell Split Squat", workstr: "5-10 5-10 5-10", weights: "Dumbbells", weight: 20, rest: 90)
 //        program.exercises.append(exercise)
 //
 //        exercise = make("Incline Press", "Incline Bench Press", workstr: "6-10 6-10 6-10", weights: "Dual Plates", weight: 55, rest: 90)

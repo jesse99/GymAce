@@ -13,7 +13,7 @@ struct WizardView: View {
             case .apparatus: ApparatusView(wizard: wizard)
             case .goal: GoalView(wizard: wizard)
             case .schedule: ScheduleView(wizard: wizard)
-            case .exercises: Text("exercises")
+            case .mappings: MappingsView(wizard: wizard)
             }
             Spacer()
             HStack {
@@ -42,7 +42,7 @@ struct WizardView: View {
         case .apparatus: fatalError("should be disabled")
         case .goal: stage = .apparatus
         case .schedule: stage = .goal
-        case .exercises: stage = .schedule
+        case .mappings: stage = .schedule
         }
     }
 
@@ -50,8 +50,8 @@ struct WizardView: View {
         switch stage {
         case .apparatus: stage = .goal
         case .goal: stage = .schedule
-        case .schedule: stage = .exercises
-        case .exercises: addProgram()
+        case .schedule: stage = .mappings
+        case .mappings: addProgram()
         }
     }
     

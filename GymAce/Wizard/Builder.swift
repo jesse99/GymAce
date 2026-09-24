@@ -368,21 +368,21 @@ final class BasicStopgapDBBuilder: BaseBasic {
         program.styles["Durations"] = durationsStyle(secs: "30 30 30", targetSecs: "")
 
         appendWorkout1Exercises(program, [
-            make("Split Squat", "Dumbbell Single Leg Split Squat", "Primary", weights: "Dumbbells", weight: 15),
+            make("Split Squat", "Dumbbell Split Squat", "Primary", weights: "Dumbbells", weight: 15),
             make("Bench Press", "Dumbbell Bench Press", "Primary", weights: "Dumbbells", weight: 20),
             make("Deadlift", "Dumbbell Deadlift", "Primary", weights: "Dumbbells", weight: 20),
             make("Plank", "Plank", "Durations"),
         ])
         if case .glute = wizard.goal {
             appendWorkout2Exercises(program, [
-                make("Split Squat", "Dumbbell Single Leg Split Squat", "Primary", weights: "Dumbbells", weight: 15),
+                make("Split Squat", "Dumbbell Split Squat", "Primary", weights: "Dumbbells", weight: 15),
                 make("OHP", "Dumbbell Shoulder Press", "Primary", weights: "Dumbbells", weight: 10),
                 make("Step-ups", "Step-ups", "Secondary", weights: "Dumbbells", weight: 10),
                 make("Plank", "Plank", "Durations"),
             ])
         } else {
             appendWorkout2Exercises(program, [
-                make("Split Squat", "Dumbbell Single Leg Split Squat", "Primary", weights: "Dumbbells", weight: 15),
+                make("Split Squat", "Dumbbell Split Squat", "Primary", weights: "Dumbbells", weight: 15),
                 make("OHP", "Dumbbell Shoulder Press", "Primary", weights: "Dumbbells", weight: 10),
                 make("Row", "Bent Over Dumbbell Row", "Secondary", weights: "Dumbbells", weight: 20),
                 make("Plank", "Plank", "Durations"),

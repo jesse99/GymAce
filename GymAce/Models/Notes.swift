@@ -1150,7 +1150,7 @@ extension Notes {
             [("Link", "https://www.muscleandstrength.com/exercises/dumbbell-side-bends.html")],
         )
         
-        add("Dumbbell Single Leg Split Squat",
+        add("Dumbbell Split Squat",
             ["Grasp dumbbells so that palms are facing inward.",
                 "Extend leg backwards and rest foot on a bench or chair.",
                 "Squat down until rear knee is almost in contact with the floor.",
