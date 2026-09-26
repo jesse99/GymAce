@@ -250,7 +250,7 @@ class BaseBasic: Builder {
     
     override var name: String {return "Basic"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(2), .weekly(3), .weekly(4), .cycle(count: 2, rest: 2), .cycle(count: 2, rest: 4)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3), .weekly(count: 4), .cycle(count: 2, rest: 2), .cycle(count: 2, rest: 4)]}
 
     override func build(_ program: Program) {
         setup(program)
@@ -544,7 +544,7 @@ final class BasicStopgapDBBuilder: BaseBasic {
 final class BasicPPLDBBuilder: Builder {
     override var name: String {return "PPL"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(3), .weekly(6), .cycle(count: 3, rest: 1), .cycle(count: 3, rest: 2)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 3), .weekly(count: 6), .cycle(count: 3, rest: 1), .cycle(count: 3, rest: 2)]}
 
     override func build(_ program: Program) {
         program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment."
@@ -715,7 +715,7 @@ final class BasicMachineBuilder: BaseBasic {
 final class ComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(1), .weekly(2), .weekly(3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
 
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."

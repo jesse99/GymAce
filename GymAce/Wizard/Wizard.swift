@@ -37,7 +37,7 @@ final class Wizard {
     
     enum Schedule: Comparable {
         /// Number of days per week to do the program.
-        case weekly(Int)
+        case weekly(count: Int)
 
         /// Number of days in a row to do the workouts before repeating (some of the workouts will be rest days).
         case cycle(count: Int, rest: Int)
@@ -47,11 +47,11 @@ final class Wizard {
         
         func toString() -> String {
             switch self{
-            case .weekly(let days): 
-                if days == 1 {
+            case .weekly(let count):
+                if count == 1 {
                     "1 day/week"
                 } else {
-                    "\(days) days/week"
+                    "\(count) days/week"
                 }
             case .cycle(let count, let rest):
                 if rest == 1 {
@@ -94,7 +94,7 @@ final class Wizard {
         self.goal = .strength
         self.fitness = .beginner
         self.male = true
-        self.schedule = .weekly(3)
+        self.schedule = .weekly(count: 3)
     }
     
     func build() -> Builder {
@@ -151,7 +151,6 @@ final class Wizard {
     func make(_ builder: Builder) -> Program {
         let name = findName(hasName, prefix: builder.name)
         let program = Program(name)
-        schedule = builder.schedules[0] // TODO user needs to select this
         builder.build(program)
         return program
     }
