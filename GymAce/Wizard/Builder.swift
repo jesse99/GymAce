@@ -250,7 +250,7 @@ class BaseBasic: Builder {
     
     override var name: String {return "Basic"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(2), .weekly(3), .weekly(4), .cycle(4), .cycle(6)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(2), .weekly(3), .weekly(4), .cycle(count: 2, rest: 2), .cycle(count: 2, rest: 4)]}
 
     override func build(_ program: Program) {
         setup(program)
@@ -338,7 +338,7 @@ class BaseBasic: Builder {
             workout = Workout("\(workout2Name) 2", schedule)
             buildWorkout2(program, workout)
             program.addWorkout(workout)
-        case .cycle(let days) where days == 4:
+        case .cycle(let count, let rest) where count == 2 && rest == 2:
             let schedule = Schedule.cyclic
             var workout = Workout(workout1Name, schedule)
             buildWorkout1(program, workout)
@@ -353,7 +353,7 @@ class BaseBasic: Builder {
 
             workout = Workout("Rest 2", schedule)
             program.addWorkout(workout)
-        case .cycle(let days) where days == 6:
+        case .cycle(let count, let rest) where count == 2 && rest == 4:
             let schedule = Schedule.cyclic
             var workout = Workout(workout1Name, schedule)
             buildWorkout1(program, workout)
@@ -544,7 +544,7 @@ final class BasicStopgapDBBuilder: BaseBasic {
 final class BasicPPLDBBuilder: Builder {
     override var name: String {return "PPL"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(3), .weekly(6), .cycle(4), .cycle(5)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(3), .weekly(6), .cycle(count: 3, rest: 1), .cycle(count: 3, rest: 2)]}
 
     override func build(_ program: Program) {
         program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment."
@@ -604,7 +604,7 @@ final class BasicPPLDBBuilder: Builder {
             workout = Workout("Legs 2", schedule)
             buildLegWorkout(program, workout)
             program.addWorkout(workout)
-        case .cycle(let days) where days == 4:
+        case .cycle(let count, let rest) where count == 3 && rest == 1:
             let schedule = Schedule.cyclic
             var workout = Workout("Push", schedule)
             buildPushWorkout(program, workout)
@@ -620,7 +620,7 @@ final class BasicPPLDBBuilder: Builder {
             
             workout = Workout("Rest", schedule)
             program.addWorkout(workout)
-        case .cycle(let days) where days == 5:
+        case .cycle(let count, let rest) where count == 3 && rest == 2:
             let schedule = Schedule.cyclic
             var workout = Workout("Push", schedule)
             buildPushWorkout(program, workout)
@@ -715,7 +715,7 @@ final class BasicMachineBuilder: BaseBasic {
 final class ComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(1), .weekly(2), .weekly(3), .cycle(2), .cycle(3)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(1), .weekly(2), .weekly(3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
 
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
@@ -747,7 +747,7 @@ final class ComplexBuilder: Builder {
             let workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")
             program.addWorkout(workout)
-        case .cycle(let days) where days == 2:
+        case .cycle(let count, let rest) where count == 1 && rest == 1:
             let schedule = Schedule.cyclic
             var workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")
@@ -755,7 +755,7 @@ final class ComplexBuilder: Builder {
 
             workout = Workout("Rest", schedule)
             program.addWorkout(workout)
-        case .cycle(let days) where days == 3:
+        case .cycle(let count, let rest) where count == 1 && rest == 2:
             let schedule = Schedule.cyclic
             var workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")

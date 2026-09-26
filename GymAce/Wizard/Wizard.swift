@@ -40,16 +40,31 @@ final class Wizard {
         case weekly(Int)
 
         /// Number of days in a row to do the workouts before repeating (some of the workouts will be rest days).
-        case cycle(Int)
+        case cycle(count: Int, rest: Int)
 
         /// Workouts are done as part of an N week block of workouts, e.g. weight percents may ramp up during the block.
-        case block(Int)
+        case block(weeks: Int, count: Int)
         
         func toString() -> String {
             switch self{
-            case .weekly(let days): "\(days) days/week"
-            case .cycle(let days): "\(days) day cycle"
-            case .block(let weeks): "\(weeks) week block"
+            case .weekly(let days): 
+                if days == 1 {
+                    "1 day/week"
+                } else {
+                    "\(days) days/week"
+                }
+            case .cycle(let count, let rest):
+                if rest == 1 {
+                    "\(count + rest) day cycle with 1 rest day"
+                } else {
+                    "\(count + rest) day cycle with \(rest) rest days"
+                }
+            case .block(let weeks, let count):
+                if count == 1 {
+                    "\(weeks) week block with 1 workout/week"
+                } else {
+                    "\(weeks) week block with \(count) workouts/week"
+                }
             }
         }
     }
