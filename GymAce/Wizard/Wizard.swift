@@ -68,6 +68,21 @@ final class Wizard {
             }
         }
     }
+    
+    final class Group {
+        var exercises: [String]
+        var active: String
+        
+        init() {
+            self.exercises = []
+            self.active = ""
+        }
+
+        init(exercises: [String], active: String) {
+            self.exercises = exercises
+            self.active = active
+        }
+    }
         
     var goal: Goal              // these affect the program type, eg basic or gzcl
     var fitness: Fitness
@@ -81,6 +96,7 @@ final class Wizard {
     
     var age: Int                // can affect volume
     var schedule: Schedule      // set after we can create a program
+    var groups: [String: Group]
     let model: Model
     
     init(_ model: Model) {
@@ -95,6 +111,7 @@ final class Wizard {
         self.fitness = .beginner
         self.male = true
         self.schedule = .weekly(count: 3)
+        self.groups = [:]
     }
     
     func build() -> Builder {

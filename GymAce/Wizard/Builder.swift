@@ -42,24 +42,25 @@ class Builder {
     }
 
     fileprivate func initGroups(_ program: Program) {
-        var groups: [String: [String]] = [:]
-        
-        for w in program.workouts {
-            for e in w.entries {
-                if let group = e.group {
-                    var a = groups[group, default: []]
-                    if !a.contains(e.name) {
-                        a.append(e.name)
-                        groups[group] = a
-                    }
-                }
+        if !wizard.groups.isEmpty {
+            var groups: [String: [String]] = [:]
+            for (groupName, group) in wizard.groups {
+                groups[groupName] = group.exercises
+                enableGroup(program, groupName, group.active)
             }
-        }
-        
-        if !groups.isEmpty {
             program.groups = groups
         } else {
             program.groups = nil
+        }
+    }
+    
+    fileprivate func enableGroup(_ program: Program, _ groupName: String, _ activeName: String) {
+        for w in program.workouts {
+            for e in w.entries {
+                if e.group == groupName {
+                    e.enabled = e.name == activeName
+                }
+            }
         }
     }
         

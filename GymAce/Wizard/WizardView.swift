@@ -37,7 +37,7 @@ struct WizardView: View {
                     .padding(.top, 20)
             }
         }
-        .navigationTitle("Program Wizard \(stage.rawValue) of \(numStages)")
+        .navigationTitle("Create Program \(stage.rawValue) of \(numStages)")
         .navigationBarTitleDisplayMode(.inline)
     }
     

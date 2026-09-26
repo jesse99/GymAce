@@ -2,41 +2,29 @@ import SwiftUI
 
 struct GroupView: View {
     @Bindable var wizard: Wizard
-    @State private var builder: Builder
-    @State private var program: Program
     @State private var showScheduleHelp = false
-    
-    init(wizard: Wizard) {
-        self.wizard = wizard
-        
-        let builder = wizard.build()
-        _builder = State(initialValue: builder)
-        _program = State(initialValue: wizard.make(builder))
-    }
     
     var body: some View {
         VStack {
-            if let groups = program.groups {
-                Grid(horizontalSpacing: 20, verticalSpacing: 10) {
-                    ForEach(groups.keys.sorted(), id: \.self) {group in
-                        if let exercises = groups[group], isActive(group) {
-                            GridRow {
-                                Text(group)
-                                    .gridColumnAlignment(.leading)
-                                Picker("", selection: binding(for: group)) {
-                                    ForEach(Array(exercises).enumerated(), id: \.element) {tuple in
-                                        Text(tuple.1).tag(tuple.0)
-                                    }
-                                }
-                                .labelsHidden()
+            Grid(horizontalSpacing: 20, verticalSpacing: 10) {
+                ForEach(wizard.groups.keys.sorted(), id: \.self) {groupName in
+                    if let group = wizard.groups[groupName], !group.active.isEmpty {
+                        GridRow {
+                            Text(groupName)
                                 .gridColumnAlignment(.leading)
+                            Picker("", selection: binding(for: groupName)) {
+                                ForEach(Array(group.exercises).enumerated(), id: \.element) {tuple in
+                                    Text(tuple.1).tag(tuple.0)
+                                }
                             }
+                            .labelsHidden()
+                            .gridColumnAlignment(.leading)
                         }
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(10)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(10)
                 
             Spacer()
             Text("You can select alternatives for the defaults for many exercises here. Usually the default is a good choice but if you have an injury or a personal preference you may want to swap in a different exercise. Note that you can also do this later via Edit Program.")
@@ -45,56 +33,71 @@ struct GroupView: View {
                 .padding(.trailing, 20)
         }
         .onAppear {
+            let builder = wizard.build()
+            let program = wizard.make(builder)
+            updateGroups(program)
         }
     }
     
-    private func binding(for group: String) -> Binding<Int> {
+    private func binding(for groupName: String) -> Binding<Int> {
         Binding(
             get: {
-                if let groups = program.groups, let exercises = groups[group] {
-                    for (i, e) in exercises.enumerated() {
-                        if isEnabled(group, e) {
-                            return i
-                        }
+                if let group = wizard.groups[groupName] {
+                    if let i = group.exercises.firstIndex(where: {$0 == group.active}) {
+                        return i
                     }
                 }
                 assert(false)
                 return 0
             },
             set: {
-                if let groups = program.groups, let exercises = groups[group] {
-                    for w in program.workouts {
-                        for e in w.entries {
-                            if e.group == group {
-                                e.enabled = e.name == exercises[$0]
-                            }
-                        }
-                    }
+                if let group = wizard.groups[groupName] {
+                    group.active = group.exercises[$0]
+                    wizard.groups[groupName] = group
                 }
             }
         )
     }
     
-    private func isActive(_ group: String) -> Bool {
+    private func updateGroups(_ program: Program) {
+        var groups: [String: Wizard.Group] = [:]
+        
+        // Build new groups
         for w in program.workouts {
             for e in w.entries {
-                if e.group == group && e.enabled {
-                    return true
+                if let groupName = e.group {
+                    let g = groups[groupName, default: Wizard.Group()]
+                    if !g.exercises.contains(e.name) {
+                        g.exercises.append(e.name)
+                        groups[groupName] = g
+                    }
+                    if e.enabled {
+                        g.active = e.name
+                        groups[groupName] = g
+                    }
                 }
             }
         }
-        return false
-    }
-
-    private func isEnabled(_ group: String, _ exercise: String) -> Bool {
-        for w in program.workouts {
-            for e in w.entries {
-                if e.group == group && e.enabled && e.name == exercise {
-                    return true
+                        
+        // If the group is in the wizard but not the current program then it'll be dropped
+        // when we overwrite the wizard. Ditto if the group is in the current program but
+        // not the wizard. But if the group is in both we need to preserve the old state
+        // where possible.
+        let wizardNames = Set(wizard.groups.keys)
+        let programNames = Set(groups.keys)
+        let commonNames = programNames.intersection(wizardNames)
+        for groupName in commonNames {
+            if let oldGroup = wizard.groups[groupName], let newGroup = groups[groupName] {
+                if oldGroup.exercises == newGroup.exercises {
+                    if newGroup.exercises.contains(where: {$0 == oldGroup.active}) {
+                        newGroup.active = oldGroup.active
+                        groups[groupName] = newGroup
+                    }
                 }
             }
         }
-        return false
+        
+        wizard.groups = groups
     }
 }
 
