@@ -142,6 +142,9 @@ final class ExerciseEntry: Codable {
     /// The name of the actual exercise.
     var name: String
 
+    /// Set if the exercise is part of a family of related exercises.
+    var group: String? = nil
+    
     /// The set the user is currently performing in an exercise screen (this doesn't
     /// belong to the view because we want the user to be able to go to another
     /// exercise to super set or goto settings without losing their place). Note that

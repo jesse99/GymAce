@@ -19,7 +19,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = false
-                    wizard.numDumbbells = 0
+                    wizard.fullDumbbells = false
+                    wizard.partialDumbbells = false
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
@@ -28,7 +29,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = true
-                    wizard.numDumbbells = 0
+                    wizard.fullDumbbells = false
+                    wizard.partialDumbbells = false
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
@@ -36,7 +38,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = false
-                    wizard.numDumbbells = 1
+                    wizard.fullDumbbells = false
+                    wizard.partialDumbbells = true
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
@@ -44,7 +47,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = false
-                    wizard.numDumbbells = 10
+                    wizard.fullDumbbells = true
+                    wizard.partialDumbbells = false
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
@@ -52,7 +56,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = false
-                    wizard.numDumbbells = 0
+                    wizard.fullDumbbells = false
+                    wizard.partialDumbbells = false
                     wizard.machines = true
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
@@ -60,7 +65,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = false
-                    wizard.numDumbbells = 0
+                    wizard.fullDumbbells = false
+                    wizard.partialDumbbells = false
                     wizard.machines = false
                     wizard.smith = true
                     #expect(validProgram(model, wizard))
@@ -69,7 +75,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = true
-                    wizard.numDumbbells = 10
+                    wizard.fullDumbbells = true
+                    wizard.partialDumbbells = false
                     wizard.machines = true
                     wizard.smith = true
                     #expect(validProgram(model, wizard))
@@ -77,7 +84,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = true
-                    wizard.numDumbbells = 10
+                    wizard.fullDumbbells = true
+                    wizard.partialDumbbells = false
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
@@ -85,7 +93,8 @@ struct WizardTests {
                     model = Model()
                     wizard = Wizard(model)
                     wizard.barbells = false
-                    wizard.numDumbbells = 00
+                    wizard.fullDumbbells = false
+                    wizard.partialDumbbells = false
                     wizard.machines = true
                     wizard.smith = true
                     #expect(validProgram(model, wizard))

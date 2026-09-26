@@ -142,7 +142,7 @@ extension Notes {
             [("Link", "https://sweat.com/exercises/side-plank-with-arm-leg-extension")],
         )
         
-        add("Arnold Press",
+        add("Dumbbell Arnold Press",
             ["Sit on a bench with back support.",
                 "Hold two dumbbells in front of you at about shoulder height with palms facing inward.",
                 "Raise the dumbbells while rotating them so that your palms face outward.",
@@ -1150,7 +1150,7 @@ extension Notes {
             [("Link", "https://www.muscleandstrength.com/exercises/dumbbell-side-bends.html")],
         )
         
-        add("Dumbbell Split Squat",
+        add("DB Split Squat",
             ["Grasp dumbbells so that palms are facing inward.",
                 "Extend leg backwards and rest foot on a bench or chair.",
                 "Squat down until rear knee is almost in contact with the floor.",
@@ -1419,7 +1419,7 @@ extension Notes {
             [("Link", "https://bretcontreras.com/the-glute-march/")],
         )
         
-        add("Goblet Squat",
+        add("DB Goblet Squat",
             ["Hold a dumbbell or kettlebell close to your chest.",
                 "Squat down until your thighs touch your calves.",
                 "Keep your chest up and your back straight.",
@@ -1843,6 +1843,14 @@ extension Notes {
                 "Keep your arms extended throughout.",
             ],
             [("Link", "https://loadmuscle.com/exercises/landmine-180"), ("Video", "https://www.myworkouts.io/exercise/landmine-180s/92643")],
+        )
+        
+        add("Landmine Press",
+             ["Position a barbell into a landmine or a corner.",
+              "Take a staggered stance and place the bar on the shoulder with the outthrust leg.",
+                 "Take a deep breath and press the bar out and up.",
+             ],
+            [("Link", "https://www.muscleandstrength.com/exercises/single-arm-landmine-press")],
         )
         
         add("Lat Pulldown",
@@ -2295,7 +2303,7 @@ extension Notes {
                 ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
                 ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")])
         
-        add("Pull Through",
+        add("Cable Pull Through",
             ["Attach a rope handle to a low pulley.",
                 "Face away from the pulley straddling the cable.",
                 "Bend at the hips so that the handle moves behind your butt.",

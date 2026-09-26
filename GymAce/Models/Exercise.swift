@@ -56,9 +56,7 @@ final class Exercise: Codable {
     /// Record of when and what the user did for a workout. Last is the most recent.
     var history: [Completed] = []
         
-    var version: Int = 1
-
-    init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: BaseWeight = .none) {
+    init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: BaseWeight = .none, group: String? = nil) {
         self.name = name
         self.formalName = formalName
         self.styleName = styleName

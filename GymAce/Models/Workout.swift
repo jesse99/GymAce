@@ -29,8 +29,6 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
     /// If it's nil then HealthKit recording is disabled.
     var type: UInt? = nil
     
-    var version: Int = 1
-
     var id = UUID()
 
     init(_ name: String, _ schedule: Schedule) {
@@ -95,6 +93,19 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
             } else {
                 print("Couldn't find exercise \(entry.name) from workout \(name)")
                 valid = false
+            }
+            
+            // Group must be present
+            if let group = entry.group {
+                if let groups = program.groups {
+                    if groups[group] == nil {
+                        print("Exercise \(entry.name) has group \(group) but the program has no group with that name")
+                        valid = false
+                    }
+                } else {
+                    print("Exercise \(entry.name) has group \(group) but the program has no groups")
+                    valid = false
+                }
             }
         }
         return valid

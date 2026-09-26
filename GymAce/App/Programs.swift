@@ -32,6 +32,10 @@ func findDefaultWeightSet(_ name: String) -> WeightSet? {
         let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
         return WeightSet.plates(dual)
+    } else if name == "Dual Plates Machine" {
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+        return WeightSet.plates(dual)
     } else if name == "Trapbar" {
         let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
@@ -862,7 +866,7 @@ fileprivate func masterGZCL() -> Program {
 //        program.exercises.append(exercise)
 //
 //        
-//        exercise = make("Split Squat", "Dumbbell Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
+//        exercise = make("Split Squat", "DB Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
 //        program.exercises.append(exercise)
 //
 //        exercise = make("Bent-over Row", "Bent Over Dumbbell Row", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 90)
@@ -1515,7 +1519,7 @@ fileprivate func previewProgram() -> Program {
 //        let reps: [VariableReps] = [.variable(3, 10), .variable(3, 10), .variable(3, 10)]
 //        let areps: [VariableReps] = [.amrap(3), .amrap(3), .amrap(3)]
 //
-//        var exercise = make("Split Squat", "Dumbbell Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
+//        var exercise = make("Split Squat", "DB Split Squat", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
 //        program.exercises.append(exercise)
 //
 //        exercise = make("Floor Press", "Dumbbell Floor Press", warmups: [], worksets: reps, weights: "Home Dumbbells", weight: 5, rest: 60)
@@ -2152,7 +2156,7 @@ fileprivate func previewProgram() -> Program {
 //        exercise = make("Weighted Pull-up", "Pull-up", workstr: "1-3 1-3 1-3", weights: "Dumbbells", weight: 5, rest: 90)
 //        program.exercises.append(exercise)
 //
-//        exercise = make("Bulgarian Split Squat", "Dumbbell Split Squat", workstr: "5-10 5-10 5-10", weights: "Dumbbells", weight: 20, rest: 90)
+//        exercise = make("Bulgarian Split Squat", "DB Split Squat", workstr: "5-10 5-10 5-10", weights: "Dumbbells", weight: 20, rest: 90)
 //        program.exercises.append(exercise)
 //
 //        exercise = make("Incline Press", "Incline Bench Press", workstr: "6-10 6-10 6-10", weights: "Dual Plates", weight: 55, rest: 90)

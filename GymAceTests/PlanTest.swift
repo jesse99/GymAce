@@ -454,7 +454,7 @@ class PlanTests {
         while !entry.isFinished(program, exercise) {
             entry.completedSet(plan)
             if entry.isFinished(program, exercise) {
-                entry.completedLast(model, program, workout, exercise)
+                _ = entry.completedLast(model, program, workout, exercise)
                 entry.mode = .finished
             } else {
                 entry.mode = .performing

@@ -5,6 +5,7 @@ struct GoalView: View {
     @State private var showGoalHelp = false
     @State private var showFitnessHelp = false
     @State private var showAgeHelp = false
+    @State private var showSexHelp = false
     
     var body: some View {
         VStack {
@@ -90,6 +91,27 @@ struct GoalView: View {
             .padding(.trailing, 5)
             if showAgeHelp {
                 Text("Some programs (especially intermediate and advanced) will make changes to ease recovery for older lifters. For example they may reduce exercise volume or add additional rest days.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 15)
+            }
+
+            // Male/Female toggle
+            HStack {
+                Toggle("Male", isOn: $wizard.male)
+                    .padding()
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showSexHelp.toggle()
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.top, 5)
+            .padding(.leading, 5)
+            .padding(.trailing, 5)
+            if showSexHelp {
+                Text("Initial weights for males will be somewhat higher though, in general, most users will want to use Edit Exercise to adjust the weights.")
                     .foregroundColor(.blue)
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
