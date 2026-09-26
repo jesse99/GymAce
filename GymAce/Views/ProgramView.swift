@@ -70,7 +70,9 @@ struct ProgramView: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Menu {
-                            Button("Create Program", action: createProgram)
+                            NavigationLink(destination: WizardView(model)) {
+                                Text("Create Program")
+                            }
                             if let program = model.active() {
                                 NavigationLink(destination: EditExercises(model: model, program: program)) {
                                     Text("Edit Exercises")
@@ -113,14 +115,7 @@ struct ProgramView: View {
     private func workoutName(_ workout: Workout) -> String {
         return workout.name
     }
-    
-    private func createProgram() {
-        let wizard = Wizard(model)
-        wizard.goal = .conditioning
-        let builder = wizard.build()
-        wizard.generate(builder)
-    }
-    
+        
     private func sendEmail() {
         if let program = model.active() {
             let body = model.dump()

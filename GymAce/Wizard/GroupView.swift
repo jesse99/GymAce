@@ -3,76 +3,98 @@ import SwiftUI
 struct GroupView: View {
     @Bindable var wizard: Wizard
     @State private var builder: Builder
+    @State private var program: Program
     @State private var showScheduleHelp = false
-    let scheduleNames: [String]
     
     init(wizard: Wizard) {
         self.wizard = wizard
         
         let builder = wizard.build()
         _builder = State(initialValue: builder)
-        scheduleNames = builder.schedules.map {$0.toString()}
+        _program = State(initialValue: wizard.make(builder))
     }
     
     var body: some View {
         VStack {
-            // Schedule picker
-            HStack {
-                Picker("", selection: scheduleBinding) {
-                    ForEach(Array(scheduleNames.enumerated()), id: \.element) {tuple in
-                        Text(tuple.1).tag(tuple.0)
+            if let groups = program.groups {
+                Grid(horizontalSpacing: 20, verticalSpacing: 10) {
+                    ForEach(groups.keys.sorted(), id: \.self) {group in
+                        if let exercises = groups[group], isActive(group) {
+                            GridRow {
+                                Text(group)
+                                    .gridColumnAlignment(.leading)
+                                Picker("", selection: binding(for: group)) {
+                                    ForEach(Array(exercises).enumerated(), id: \.element) {tuple in
+                                        Text(tuple.1).tag(tuple.0)
+                                    }
+                                }
+                                .labelsHidden()
+                                .gridColumnAlignment(.leading)
+                            }
+                        }
                     }
                 }
-                .labelsHidden()
-                Spacer()
-                Button("", systemImage: "info.circle") {
-                    showScheduleHelp.toggle()
-                }
-                .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
             }
-            .padding(.top, 5)
-            .padding(.leading, 5)
-            .padding(.trailing, 5)
-            if showScheduleHelp {
-                let s = switch wizard.schedule {
-                case .weekly: "Workouts are scheduled on specific week days."
-                case .cycle: "Workouts are done one after another and then repeated. Typically this includes explicit rest day workouts."
-                case .block: "Workouts are arranged into weekly blocks, e.g. an intermediate program might start with low weights but high volume and then ramp up to high weights with low volume."
-                }
-                Text(s)
-                    .foregroundColor(.blue)
-                    .font(.footnote)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 15)
-            }
-            
+                
             Spacer()
-            Text("Select how you want to schedule your workouts. Note that you can change this later by using Edit Program.")
+            Text("You can select alternatives for the defaults for many exercises here. Usually the default is a good choice but if you have an injury or a personal preference you may want to swap in a different exercise. Note that you can also do this later via Edit Program.")
                 .font(.footnote)
                 .padding(.leading, 20)
                 .padding(.trailing, 20)
         }
         .onAppear {
-            let schedules = builder.schedules
-            if !schedules.contains(wizard.schedule) && !schedules.isEmpty {
-                wizard.schedule = schedules[0]
-            }
         }
     }
     
-    private var scheduleBinding: Binding<Int> {
+    private func binding(for group: String) -> Binding<Int> {
         Binding(
             get: {
-                let name = wizard.schedule.toString()
-                return builder.schedules.firstIndex(where: {$0.toString() == name}) ?? 0
+                if let groups = program.groups, let exercises = groups[group] {
+                    for (i, e) in exercises.enumerated() {
+                        if isEnabled(group, e) {
+                            return i
+                        }
+                    }
+                }
+                assert(false)
+                return 0
             },
             set: {
-                let name = scheduleNames[$0]
-                let schedules = builder.schedules
-                let index = schedules.firstIndex(where: {$0.toString() == name}) ?? 0
-                wizard.schedule = schedules[index]
+                if let groups = program.groups, let exercises = groups[group] {
+                    for w in program.workouts {
+                        for e in w.entries {
+                            if e.group == group {
+                                e.enabled = e.name == exercises[$0]
+                            }
+                        }
+                    }
+                }
             }
         )
+    }
+    
+    private func isActive(_ group: String) -> Bool {
+        for w in program.workouts {
+            for e in w.entries {
+                if e.group == group && e.enabled {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    private func isEnabled(_ group: String, _ exercise: String) -> Bool {
+        for w in program.workouts {
+            for e in w.entries {
+                if e.group == group && e.enabled && e.name == exercise {
+                    return true
+                }
+            }
+        }
+        return false
     }
 }
 

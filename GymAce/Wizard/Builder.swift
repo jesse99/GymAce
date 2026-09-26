@@ -30,12 +30,13 @@ class Builder {
         workout.addExercise(name: exercise.name, enabled: enabled)
     }
     
-    fileprivate func addGroup(_ program: Program, _ workout: Workout, _ inExercises: (String, [Exercise]), enabled: Bool = true) {
+    fileprivate func addGroup(_ program: Program, _ workout: Workout, _ inExercises: (String, Int, [Exercise]), enabled: Bool = true) {
         let group = inExercises.0
-        let exercises = inExercises.1
+        let enabledIndex = inExercises.1
+        let exercises = inExercises.2
         for (i, e) in exercises.enumerated() {
             assert(exercises.count(where: {$0.name == e.name}) == 1)    // names in a group must be unique
-            addExercise(program, workout, e, enabled: enabled && i == 0)
+            addExercise(program, workout, e, enabled: enabled && i == enabledIndex)
             workout.entries.last!.group = group
         }
     }
@@ -62,7 +63,7 @@ class Builder {
         }
     }
         
-    fileprivate func makeSquat(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makeSquat(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {
             [make("High Bar Squat", "High bar Squat", "Primary", weights: "Dual Plates", weight: 45 + 2*10),
              make("Low Bar Squat", "Low bar Squat", "Primary", weights: "Dual Plates", weight: 45 + 2*10),
@@ -80,11 +81,12 @@ class Builder {
              make("Goblet Squat", "DB Goblet Squat", "Primary", weights: "Dumbbells", weight: 40),
              make("Leg Press", "Leg Press", "Primary", weights: "Dual Plates", weight: 2*45)]
         }
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Squat", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Squat", enabledIndex, r)
     }
     
-    fileprivate func makeDeadlift(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makeDeadlift(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {[
             make("American Deadlift", "Deadlift", "Secondary", weights: "Dual Plates", weight: 45 + 2*25),
             make("Romanian Deadlift", "Romanian Deadlift", "Secondary", weights: "Dual Plates", weight: 45 + 2*25),
@@ -112,11 +114,12 @@ class Builder {
             make("Smith Romanian Deadlift", "Smith Machine Romanian Deadlift", "Secondary", weights: "Smith Machine", weight: 2*45),
             make("Back Extension", "Back Extension", "Tertiary", weights: "Single Plates", weight: 10),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Deadlift", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Deadlift", enabledIndex, r)
     }
     
-    fileprivate func makeBench(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makeBench(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {[
             make("Bench Press", "Incline Bench Press", "Primary", weights: "Dual Plates", weight: 45 + 2*5),
             make("Incline Bench Press", "Incline Bench Press", "Primary", weights: "Dual Plates", weight: 45 + 2*5),
@@ -134,11 +137,12 @@ class Builder {
             make("Smith Bench", "Smith Machine Bench", "Secondary", weights: "Smith Machine", weight: 2*20),
             make("Dumbbell Flyes", "Dumbbell Flyes", "Tertiary", weights: "Dumbbells", weight: 5),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Bench", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Bench", enabledIndex, r)
     }
     
-    fileprivate func makeOHP(_ primary: String) -> (String, [Exercise]) {   //
+    fileprivate func makeOHP(_ primary: String) -> (String, Int, [Exercise]) {   //
         let exercises = if !wizard.male {[
             make("Overhead Press", "Overhead Press", "Primary", weights: "Dual Plates", weight: 45 + 2*0),
             make("Dumbbell Shoulder Press", "Dumbbell Shoulder Press", "Secondary", weights: "Dumbbells", weight: 10),
@@ -154,11 +158,12 @@ class Builder {
             make("Seated Smith Press", "Seated Smith Machine Press", "Secondary", weights: "Smith Machine", weight: 2*20),
             make("Landmine Press", "Landmine Press", "Secondary", weights: "Single Plates", weight: 20),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("OHP", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("OHP", enabledIndex, r)
     }
     
-    fileprivate func makeRow(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makeRow(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {[
             make("Pendlay Row", "Pendlay Row", "Secondary", weights: "Dual Plates", weight: 45 + 2*5),
             make("Chest Supported Row", "Chest Supported Row", "Secondary", weights: "Dumbbells", weight: 15),
@@ -178,11 +183,12 @@ class Builder {
             make("Smith Bent-Over Row", "Smith Machine Bent-Over Row", "Secondary", weights: "Smith Machine", weight: 2*20),
             make("T-Bar Row", "T-Bar Row", "Secondary", weights: "Single Plates", weight: 30),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Row", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Row", enabledIndex, r)
     }
 
-    fileprivate func makeAbs(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makeAbs(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {[
             make("Cable Crunch", "Cable Crunch", "Tertiary", weights: "Cable Machine", weight: 10),
             make("Ab Wheel Rollout", "Ab Wheel Rollout", "Tertiary", weights: "Single Plates", weight: 0),  // variable style so need a weight...
@@ -198,11 +204,12 @@ class Builder {
             make("Hanging Leg Raise", "Hanging Leg Raise", "Tertiary", weights: "Single Plates", weight: 0),
             make("Landmine 180's", "Landmine 180's", "Tertiary", weights: "Single Plates", weight: 20),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Abs", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Abs", enabledIndex, r)
     }
 
-    fileprivate func makePullup(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makePullup(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {[
             make("Chin-up", "Chin-up", "Tertiary", weights: "Single Plates", weight: 0),
             make("Pull-up", "Pull-up", "Tertiary", weights: "Single Plates", weight: 0),
@@ -212,11 +219,12 @@ class Builder {
             make("Pull-up", "Pull-up", "Tertiary", weights: "Single Plates", weight: 0),
             make("Lat Pulldown", "Lat Pulldown", "Tertiary", weights: "Cable Machine", weight: 40),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Pullup", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Pullup", enabledIndex, r)
     }
 
-    fileprivate func makeCurl(_ primary: String) -> (String, [Exercise]) {
+    fileprivate func makeCurl(_ primary: String) -> (String, Int, [Exercise]) {
         let exercises = if !wizard.male {[
             make("Barbell Curl", "Barbell Curl", "Tertiary", weights: "Dual Plates", weight: 0),
             make("Concentration Curls", "Concentration Curls", "Tertiary", weights: "Dumbbells", weight: 10),
@@ -226,8 +234,9 @@ class Builder {
             make("Concentration Curls", "Concentration Curls", "Tertiary", weights: "Dumbbells", weight: 20),
             make("Cable Hammer Curls", "Cable Hammer Curls", "Tertiary", weights: "Cable Machine", weight: 20),
         ]}
-        assert(exercises.contains(where: {$0.name == primary}))
-        return ("Curl", exercises.sorted(by: {$0.name == primary || $0.name < $1.name}))
+        let r = exercises.sorted(by: {$0.name < $1.name})
+        let enabledIndex = r.firstIndex(where: {$0.name == primary})!
+        return ("Curl", enabledIndex, r)
     }
 }
 

@@ -3,10 +3,14 @@ import SwiftUI
 let numStages = Wizard.Stage.allCases.max()!.rawValue
 
 struct WizardView: View {
-    @Bindable var wizard: Wizard
+    @State var wizard: Wizard
     @State var stage: Wizard.Stage = .apparatus
     @Environment(\.dismiss) var dismiss
 
+    init(_ model: Model) {
+        _wizard = State(initialValue: Wizard(model))
+    }
+    
     var body: some View {
         VStack {
             switch stage {
@@ -65,15 +69,15 @@ struct WizardView: View {
     
     private func addProgram() {
         let builder = wizard.build()
-        wizard.generate(builder)
+        let program = wizard.make(builder)
+        wizard.activate(program)
         dismiss()
     }
 }
 
 #Preview {
     let model = previewModel()
-    let wizard = Wizard(model)
     NavigationView {
-        WizardView(wizard: wizard)
+        WizardView(model)
     }
 }

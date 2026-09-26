@@ -133,12 +133,15 @@ final class Wizard {
         return builder
     }
 
-    func generate(_ builder: Builder) {
+    func make(_ builder: Builder) -> Program {
         let name = findName(hasName, prefix: builder.name)
         let program = Program(name)
         schedule = builder.schedules[0] // TODO user needs to select this
         builder.build(program)
-        
+        return program
+    }
+
+    func activate(_ program: Program) {
         model.programs.append(program)
         model.activeProgram = program.name
         model.addMissingWeightsets()
