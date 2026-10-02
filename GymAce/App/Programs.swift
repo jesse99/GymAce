@@ -2427,6 +2427,14 @@ func variableStyle(warmup: String, workset: String, rest: String) -> Style {
     }
 }
 
+func oneRepMaxStyle(warmup: String, workset: String, rest: String) -> Style {
+    if let i = OneRepMaxInfo(warmup: warmup, workset: workset, rest: rest) {
+        return .oneRepMax(i)
+    } else {
+        fatalError("bad args")
+    }
+}
+
 func durationsStyle(secs: String, targetSecs: String) -> Style {
     if let i = DurationsInfo(secs: secs, targetSecs: targetSecs) {
         return .durations(i)

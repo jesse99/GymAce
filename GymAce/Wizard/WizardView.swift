@@ -39,6 +39,7 @@ struct WizardView: View {
         }
         .navigationTitle("Create Program \(stage.rawValue) of \(numStages)")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
     }
     
     private func previousStage() {
@@ -70,7 +71,7 @@ struct WizardView: View {
     private func addProgram() {
         let builder = wizard.build()
         let program = wizard.make(builder)
-        wizard.activate(program)
+        wizard.activate(program, builder)
         dismiss()
     }
 }

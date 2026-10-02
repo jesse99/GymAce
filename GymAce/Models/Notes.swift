@@ -925,16 +925,10 @@ extension Notes {
                 ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat")],
         )
         
-        add(
-            "Deficit Deadlift",
-            [
-                "Stand on a platform or a plate or two, typically 1-4 inches off the ground.",
-                "Deadlift as usual.",
-            ],
-            [(
-                "Link",
-                "https://www.t-nation.com/training/in-defense-of-deficit-deadlifts",
-            )],
+        add("Deficit Deadlift",
+            ["Stand on a platform or a plate or two, typically 1-4 inches off the ground.",
+                "Deadlift as usual."],
+            [("Link", "https://www.t-nation.com/training/in-defense-of-deficit-deadlifts")],
         )
         
         add("Diamond Pushup",
@@ -1209,7 +1203,7 @@ extension Notes {
                 "[Front Squat](https://www.verywellfit.com/how-to-do-a-barbell-front-squat-4842368)",
                 "[Rows](https://stronglifts.com/barbell-row)",
                 "[Deadlift](https://stronglifts.com/deadlift)"],
-            [("Link", "https://www.t-nation.com/training/rebuild-yourself-with-complexes")],
+            [("Link", "https://dumbbellsdirect.com/blogs/barbell-programming-styles/barbell-complexes-for-conditioning")],
         )
         
         add("Face Pull",

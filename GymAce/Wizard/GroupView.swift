@@ -6,26 +6,30 @@ struct GroupView: View {
     
     var body: some View {
         VStack {
-            Grid(horizontalSpacing: 20, verticalSpacing: 10) {
-                ForEach(wizard.groups.keys.sorted(), id: \.self) {groupName in
-                    if let group = wizard.groups[groupName], !group.active.isEmpty {
-                        GridRow {
-                            Text(groupName)
-                                .gridColumnAlignment(.leading)
-                            Picker("", selection: binding(for: groupName)) {
-                                ForEach(Array(group.exercises).enumerated(), id: \.element) {tuple in
-                                    Text(tuple.1).tag(tuple.0)
+            if !wizard.groups.isEmpty {
+                Grid(horizontalSpacing: 20, verticalSpacing: 10) {
+                    ForEach(wizard.groups.keys.sorted(), id: \.self) {groupName in
+                        if let group = wizard.groups[groupName], !group.active.isEmpty {
+                            GridRow {
+                                Text(groupName)
+                                    .gridColumnAlignment(.leading)
+                                Picker("", selection: binding(for: groupName)) {
+                                    ForEach(Array(group.exercises).enumerated(), id: \.element) {tuple in
+                                        Text(tuple.1).tag(tuple.0)
+                                    }
                                 }
+                                .labelsHidden()
+                                .gridColumnAlignment(.leading)
                             }
-                            .labelsHidden()
-                            .gridColumnAlignment(.leading)
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(10)
+            } else {
+                Text("This program has no exercise groups.")
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(10)
-                
+            
             Spacer()
             Text("You can select alternatives for the defaults for many exercises here. Usually the default is a good choice but if you have an injury or a personal preference you may want to swap in a different exercise. Note that you can also do this later via Edit Program.")
                 .font(.footnote)

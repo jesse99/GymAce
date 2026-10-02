@@ -5,7 +5,7 @@ enum BaseWeight: Codable {
     case none
     
     /// The exercise uses the base weight from an "other" exercise. The other exercise is found using this
-        /// exercise's formal name.
+    /// exercise's formal name.
     case other
     
     /// The exercise does have a weight. Typically this will be mapped onto an actual weight using a weight set.
@@ -90,6 +90,13 @@ final class Exercise: Codable {
             valid = false
         }
         return valid
+    }
+
+    func clone() throws -> Self {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(self)
+        let decoder = JSONDecoder()
+        return try decoder.decode(Self.self, from: data)
     }
 
     func dump(_ model: Model, _ program: Program) -> String {   // TODO include history?

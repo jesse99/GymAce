@@ -145,7 +145,7 @@ final class Wizard {
             case .intermediate, .advanced:  // TODO for now we handle advanced like intermediate
                 switch goal {
                 case .strength:
-                    builder = StubBuilder(self)   // TODO gzcl style, may want to allow them to select between different base routines
+                    builder = BasicGzclBuilder(self)
                 case .hypertrophy:
                     builder = StubBuilder(self)   // TODO ppl style? or boring but big? or PHAT? may want to allow them to select between different base routines
                 case .glute:
@@ -172,7 +172,9 @@ final class Wizard {
         return program
     }
 
-    func activate(_ program: Program) {
+    func activate(_ program: Program, _ builder: Builder) {
+        builder.fixup(program)
+
         model.programs.append(program)
         model.activeProgram = program.name
         model.addMissingWeightsets()

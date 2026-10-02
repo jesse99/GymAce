@@ -67,7 +67,7 @@ final class ExercisePlan {
             }
         }
         
-        if let first = weights.first {
+        if let first = weights.first, first.value() > 0.0 {
             let suffix = weightSuffix(weights.map {$0.value()}, first.units())
             if !suffix.isEmpty {
                 if !amounts.isEmpty {
