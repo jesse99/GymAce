@@ -13,8 +13,8 @@ struct GoalView: View {
             HStack {
                 Picker("", selection: goalBinding) {
                     Text("Strength").tag(0)
-                    Text("Hypertrophy").tag(1)
-                    Text("Glute Focused").tag(2)
+                    Text("Bodybuilding").tag(1)
+                    Text("Aesthetic").tag(2)
                     Text("Conditioning").tag(3)
                 }
                 .labelsHidden()
@@ -30,8 +30,8 @@ struct GoalView: View {
             if showGoalHelp {
                 let s = switch wizard.goal {
                 case .strength: "Will build a program with a focus on gaining strength."
-                case .hypertrophy: "Will build a program with more of a bodybuilding emphasis."
-                case .glute: "Will build a program with more of an emphasis on lower body and glute exercises."
+                case .bodybuilding: "Will build a program with more of a bodybuilding emphasis."
+                case .aesthetic: "For males this will focus on upper body, for females lower body."
                 case .conditioning: "Will build a program with a focus on endurance."
                 }
                 Text(s)
@@ -127,16 +127,16 @@ struct GoalView: View {
             get: {
                 switch wizard.goal {
                 case .strength: return 0
-                case .hypertrophy: return 1
-                case .glute: return 2
+                case .bodybuilding: return 1
+                case .aesthetic: return 2
                 case .conditioning: return 3
                 }
             },
             set: {
                 switch $0 {
                 case 0: wizard.goal = .strength
-                case 1: wizard.goal = .hypertrophy
-                case 2: wizard.goal = .glute
+                case 1: wizard.goal = .bodybuilding
+                case 2: wizard.goal = .aesthetic
                 case 3: wizard.goal = .conditioning
                 default: fatalError("bad goal")
                 }

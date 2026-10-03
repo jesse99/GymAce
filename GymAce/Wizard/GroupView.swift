@@ -39,7 +39,7 @@ struct GroupView: View {
         .onAppear {
             let builder = wizard.build()
             let program = wizard.make(builder)
-            updateGroups(program)
+            updateGroups(program, wizard)
         }
     }
     
@@ -62,47 +62,47 @@ struct GroupView: View {
             }
         )
     }
+}
+
+func updateGroups(_ program: Program, _ wizard: Wizard) {
+    var groups: [String: Wizard.Group] = [:]
     
-    private func updateGroups(_ program: Program) {
-        var groups: [String: Wizard.Group] = [:]
-        
-        // Build new groups
-        for w in program.workouts {
-            for e in w.entries {
-                if let groupName = e.group {
-                    let g = groups[groupName, default: Wizard.Group()]
-                    if !g.exercises.contains(e.name) {
-                        g.exercises.append(e.name)
-                        groups[groupName] = g
-                    }
-                    if e.enabled {
-                        g.active = e.name
-                        groups[groupName] = g
-                    }
+    // Build new groups
+    for w in program.workouts {
+        for e in w.entries {
+            if let groupName = e.group {
+                let g = groups[groupName, default: Wizard.Group()]
+                if !g.exercises.contains(e.name) {
+                    g.exercises.append(e.name)
+                    groups[groupName] = g
+                }
+                if e.enabled {
+                    g.active = e.name
+                    groups[groupName] = g
                 }
             }
         }
-                        
-        // If the group is in the wizard but not the current program then it'll be dropped
-        // when we overwrite the wizard. Ditto if the group is in the current program but
-        // not the wizard. But if the group is in both we need to preserve the old state
-        // where possible.
-        let wizardNames = Set(wizard.groups.keys)
-        let programNames = Set(groups.keys)
-        let commonNames = programNames.intersection(wizardNames)
-        for groupName in commonNames {
-            if let oldGroup = wizard.groups[groupName], let newGroup = groups[groupName] {
-                if oldGroup.exercises == newGroup.exercises {
-                    if newGroup.exercises.contains(where: {$0 == oldGroup.active}) {
-                        newGroup.active = oldGroup.active
-                        groups[groupName] = newGroup
-                    }
-                }
-            }
-        }
-        
-        wizard.groups = groups
     }
+                    
+    // If the group is in the wizard but not the current program then it'll be dropped
+    // when we overwrite the wizard. Ditto if the group is in the current program but
+    // not the wizard. But if the group is in both we need to preserve the old state
+    // where possible.
+    let wizardNames = Set(wizard.groups.keys)
+    let programNames = Set(groups.keys)
+    let commonNames = programNames.intersection(wizardNames)
+    for groupName in commonNames {
+        if let oldGroup = wizard.groups[groupName], let newGroup = groups[groupName] {
+            if oldGroup.exercises == newGroup.exercises {
+                if newGroup.exercises.contains(where: {$0 == oldGroup.active}) {
+                    newGroup.active = oldGroup.active
+                    groups[groupName] = newGroup
+                }
+            }
+        }
+    }
+    
+    wizard.groups = groups
 }
 
 #Preview {

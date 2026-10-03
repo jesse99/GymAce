@@ -959,7 +959,7 @@ extension Notes {
                 "Knees should remain straight but not locked.",
                 "Raise heels as high as possible.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/donkey-calf-raises")])
+            [("Link", "https://www.muscleandstrength.com/exercises/donkey-calf-raise.html")])
         
         add("Doorway Chest Stretch",
             ["Stand in front of a doorway.",
@@ -1402,7 +1402,7 @@ extension Notes {
         
         add("Glute Ham Raise",
             ["Similar to a back extension except feet are placed between rollers and braced against a plate."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/glute-ham-raise")],
+            [("Link", "https://exrx.net/WeightExercises/Hamstrings/BWGluteHamRaiseHips")],
         )
         
         add("Glute March",
@@ -1642,7 +1642,7 @@ extension Notes {
                 "Lower your hands until you feel a stretch in your chest.",
                 "Keep elbows slightly bent.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/incline-cable-flye")],
+            [("Link", "https://www.acefitness.org/resources/everyone/exercise-library/163/standing-incline-cable-flyes/")],
         )
         
         add("Incline Dumbbell Bench Press",
@@ -2392,25 +2392,18 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=1HrzisfjpBw")],
         )
         
-        add(
-            "Quadruped Thoracic Extension",
-            [
-                "Crouch down on all fours.",
+        add("Quadruped Thoracic Extension",
+            ["Crouch down on all fours.",
                 "Place one hand behind your head.",
                 "Rotate that arm inwards so that the elbow is pointed to the opposite knee.",
                 "Pause and then rotate the arm up as far as possible.",
                 "Keep your lower back straight.",
             ],
-            [(
-                "Link",
-                "https://www.exercise.com/exercises/quadruped-extension-and-rotation",
-            )],
+            [("Link", "https://www.exercise.com/exercises/quadruped-extension-and-rotation")],
         )
         
-        add(
-            "Rack Chin-up",
-            [
-                "Use a smith machine or squat rack.",
+        add("Rack Chin-up",
+            ["Use a smith machine or squat rack.",
                 "Prop feet on a bench or chair.",
                 "Using a wide grip do chin-ups.",
                 "Difficulty can be increased by resting a dumbbell on hips.",
@@ -2419,27 +2412,22 @@ extension Notes {
         )
         
         add("Rack Pulls",
-            [
-                "Setup inside a power rack with the pins either just below knees, at knees, or just above knees.",
+            ["Setup inside a power rack with the pins either just below knees, at knees, or just above knees.",
                 "Lift the bar off the pins just as if you were doing a deadlift.",
                 "Weight should be even heavier than a deadlift so a mixed grip or straps are helpful."],
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/rack-pulls")],
         )
         
-        add(
-            "Rear Delt Band Pull Apart",
-            [
-                "Start by holding a band overhead and pulling it apart to create some tension.",
+        add("Rear Delt Band Pull Apart",
+            ["Start by holding a band overhead and pulling it apart to create some tension.",
                 "Slowly lower your arms until you notice that it is harder to hold the band apart.",
                 "Pull the band far apart and finish by pinching your shoulder blades together.",
             ],
             [("Video", "https://www.youtube.com/watch?v=yLJhWWX9YT0")],
         )
         
-        add(
-            "Rear-foot-elevated Hip Flexor Stretch",
-            [
-                "Get on your knees.",
+        add("Rear-foot-elevated Hip Flexor Stretch",
+            ["Get on your knees.",
                 "Prop one foot on a low support.",
                 "Extend the other foot out in front of you.",
                 "Keep your back straight and lean back slightly.",
@@ -2851,7 +2839,7 @@ extension Notes {
             ["Sit on the machine, place toes on the lower portion of the platform with heels extending off.",
                 "Place thighs under lever pad.",
                 "Raise and lower heels."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/seated-calf-raise")],
+            [("Link", "https://www.muscleandstrength.com/exercises/seated-calf-raise.html")],
         )
         
         add("Seated Hip Abduction",
@@ -2899,7 +2887,7 @@ extension Notes {
                 "Lower the weight behind your head until your forearms touch your biceps.",
                 "Keep elbows in and upper arms stationary.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/seated-triceps-press")],
+            [("Link", "https://www.muscleandstrength.com/exercises/two-arm-dumbbell-extension.html")],
         )
         
         add("Shoulder Dislocate",
@@ -3042,7 +3030,7 @@ extension Notes {
                 "Bring bar to a position above forehead.",
                 "Keep upper arms stationary.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/ez-bar-skullcrusher")],
+            [("Link", "https://www.muscleandstrength.com/exercises/ez-bar-skullcrusher.html")],
         )
         
         add("Sleeper Stretch",
@@ -3154,8 +3142,7 @@ extension Notes {
         )
         
         add("Spell Caster",
-            [
-                "Grab a pair of dumbbells with your palms facing backwards.",
+            ["Grab a pair of dumbbells with your palms facing backwards.",
                 "Shift the weights to one side of your hips, rotating your torso as you go.",
                 "Keeping your arms straight rotate your torso the other way so that the weights move to your other side.",
                 "As you move the weights to the other side raise them to chest height."],
@@ -3163,33 +3150,25 @@ extension Notes {
         )
         
         add("Spider Curls",
-            [
-                "Sit at the preacher bench and scoot forward so that your stomach is on the bench and your upper arms are against the sides of the bench.",
+            ["Sit at the preacher bench and scoot forward so that your stomach is on the bench and your upper arms are against the sides of the bench.",
                 "Grab an EZ bar at about shoulder width.",
                 "Curl the bar."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/spider-curl")],
+            [("Link", "https://www.puregym.com/exercises/arms-and-shoulders/bicep-curl/spider-curls/")],
         )
         
-        add(
-            "Squat Jumps",
-            [
-                "Stand straight up.",
+        add("Squat Jumps",
+            ["Stand straight up.",
                 "Drop down into a squat.",
                 "Jump into the air as high as possible.",
             ],
             [("Link", "https://www.youtube.com/watch?v=CVaEhXotL7M")],
         )
         
-        add(
-            "Squat Sky Reaches",
-            [
-                "Squat down with your arms on your knees.",
+        add("Squat Sky Reaches",
+            ["Squat down with your arms on your knees.",
                 "Grab an ankle with one hand, clench the other arm and bring that elbow straight overhead.",
                 "Once the elbow is overhead extend the arm straight up."],
-            [(
-                "Video",
-                "https://www.youtube.com/watch?v=lbozu0DPcYI&feature=youtu.be&t=42s",
-            )],
+            [("Video", "https://www.youtube.com/watch?v=lbozu0DPcYI&feature=youtu.be&t=42s")],
         )
         
         add("Squat to Stand",
@@ -3311,7 +3290,7 @@ extension Notes {
         
         add("Stiff-Legged Deadlift",
             ["Like a normal deadlift except that the knees are only slightly bent and remain stationary."],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/stiff-legged-barbell-deadlift")],
+            [("Link", "https://www.muscleandstrength.com/exercises/dumbbell-stiff-leg-deadlift.html")],
         )
         
         add("Stomach to Wall Handstand",
@@ -3461,7 +3440,7 @@ extension Notes {
                 "Start with forearms parallel to the ground.",
                 "Using only your forearms bring the attachment down to your thighs.",
                 "At the end your arms should be fully extended."],
-            [("Link", "https://www.acefitness.org/resources/everyone/exercise-library/185/triceps-pushdowns/?srsltid=AfmBOooC74y-vXKGSNbfVbh3UZ-aGOrmv1v8BYhKiwSoht3ejea6_ENC")],
+            [("Link", "https://www.acefitness.org/resources/everyone/exercise-library/185/triceps-pushdowns")],
         )
         
         add("Tuck Front Lever",
@@ -3520,7 +3499,7 @@ extension Notes {
                 "Stick your chest out and lean back about thirty degrees.",
                 "Pull the bar to your upper chest keeping elbows in tight.",
             ],
-            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/underhand-cable-pulldowns")],
+            [("Link", "https://exrx.net/WeightExercises/LatissimusDorsi/CBUnderhandPulldown")],
         )
         
         add("Upper Trapezius Stretch",
@@ -3539,7 +3518,7 @@ extension Notes {
                 "Raise bar to chin keeping elbows higher than forearms.",
                 "Lower bar back to thighs.",
                 "Note that many people discourage performing this exercise because it can cause shoulder impingement."],
-            [("Link", "https://www.muscleandstrength.com/exercises/upright-row.html"), ("Dangers", "https://www.t-nation.com/training/five-exercises-you-should-stop-doing-forever")],
+            [("Link", "https://www.muscleandstrength.com/exercises/upright-row.html")],
         )
         
         add("Vertical Pushup",

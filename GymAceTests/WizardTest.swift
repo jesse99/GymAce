@@ -6,7 +6,7 @@ import Testing
 struct WizardTests {
     @Test("Valid")
     func valid() {
-        for goal in [Wizard.Goal.strength, Wizard.Goal.hypertrophy, Wizard.Goal.glute, Wizard.Goal.conditioning] {
+        for goal in [Wizard.Goal.strength, Wizard.Goal.bodybuilding, Wizard.Goal.aesthetic, Wizard.Goal.conditioning] {
             for fitness in [Wizard.Fitness.beginner, Wizard.Fitness.intermediate, Wizard.Fitness.advanced] {
                 for age in [20, 50, 60, 80] {
                     var model = Model()
@@ -106,10 +106,12 @@ struct WizardTests {
     private func validProgram(_ model: Model, _ wizard: Wizard) -> Bool {
         let builder = wizard.build()
         for schedule in builder.schedules {
-            let program = Program("test")
+            let program = Program(builder.name)
             wizard.schedule = schedule
             builder.build(program)
-            
+            updateGroups(program, wizard)
+            builder.initGroups(program)
+
             model.programs.append(program)
             model.activeProgram = program.name
             model.addMissingWeightsets()

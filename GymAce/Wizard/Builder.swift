@@ -18,7 +18,6 @@ class Builder {
     
     /// Used to update the program after the user has had a chance to switch around exercises using GroupView.
     func fixup(_ program: Program) {
-        fatalError("override this")
     }
 
     fileprivate func addExercise(_ program: Program, _ workout: Workout, _ exercise: Exercise, enabled: Bool = true) {
@@ -47,7 +46,7 @@ class Builder {
         }
     }
 
-    fileprivate func initGroups(_ program: Program) {
+    func initGroups(_ program: Program) {
         if !wizard.groups.isEmpty {
             var groups: [String: [String]] = [:]
             for (groupName, group) in wizard.groups {
@@ -110,18 +109,19 @@ class Builder {
         return Float(max(multiplier * weight, floor))
     }
     
-    fileprivate func makeSquat(_ primary: String, style: String, prefix: String = "", group: String = "Squat") -> (String, Int, [Exercise]) {
+    fileprivate func makeSquat(_ primary: String, style: String, prefix: String = "", suffix: String = "", group: String = "Squat") -> (String, Int, [Exercise]) {
         let exercises = [
-             make("\(prefix)High Bar Squat", "High bar Squat", style, weights: "Dual Plates", weight: lower(45 + 2*5)),
-             make("\(prefix)Low Bar Squat", "Low bar Squat", style, weights: "Dual Plates", weight: lower(45 + 2*5)),
-             make("\(prefix)Front Squat", "Front Squat", style, weights: "Dual Plates", weight: lower(45)),
-             make("\(prefix)Smith Squat", "Smith Machine Squat", style, weights: "Smith Machine", weight: lower(45 + 2*5)),
-             make("\(prefix)Split Squat", "DB Split Squat", style, weights: "Dumbbells", weight: lower(15)),
-             make("\(prefix)Goblet Squat", "DB Goblet Squat", style, weights: "Dumbbells", weight: lower(25)),
-             make("\(prefix)Leg Press", "Leg Press", style, weights: "Dual Plates Machine", weight: lower(2*35)),
+             make("\(prefix)High Bar Squat\(suffix)", "High bar Squat", style, weights: "Dual Plates", weight: lower(45 + 2*5)),
+             make("\(prefix)Low Bar Squat\(suffix)", "Low bar Squat", style, weights: "Dual Plates", weight: lower(45 + 2*5)),
+             make("\(prefix)Front Squat\(suffix)", "Front Squat", style, weights: "Dual Plates", weight: lower(45)),
+             make("\(prefix)Hack Squat\(suffix)", "Hack Squat", style, weights: "Dual Plates", weight: lower(45 + 2*5)),
+             make("\(prefix)Smith Squat\(suffix)", "Smith Machine Squat", style, weights: "Smith Machine", weight: lower(45 + 2*5)),
+             make("\(prefix)Split Squat\(suffix)", "DB Split Squat", style, weights: "Dumbbells", weight: lower(15)),
+             make("\(prefix)Goblet Squat\(suffix)", "DB Goblet Squat", style, weights: "Dumbbells", weight: lower(25)),
+             make("\(prefix)Leg Press\(suffix)", "Leg Press", style, weights: "Dual Plates Machine", weight: lower(2*35)),
         ]
         let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
+        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary + suffix})!
         return (group, enabledIndex, r)
     }
     
@@ -371,11 +371,11 @@ final class BasicBarbellBuilder: BaseBasic {
     
         switch wizard.goal {
         case .strength:
-            program.styles["Primary"]   =  amrapStyle(warmup: "5/60 3/80 1/90", workset: "5 5 5", rest: "2m")
-            program.styles["Accessory"] =  variableStyle(warmup: "", workset: "4-8 4-8 4-8", rest: "2m")
-        case .glute, .hypertrophy:
-            program.styles["Primary"]   =  amrapStyle(warmup: "5/60 3/80 1/90", workset: "8 8 8", rest: "90s")
-            program.styles["Accessory"] =  variableStyle(warmup: "", workset: "6-12 6-12 6-12", rest: "90s")
+            program.styles["Primary"]   = amrapStyle(warmup: "5/60 3/80 1/90", workset: "5 5 5", rest: "2m")
+            program.styles["Accessory"] = variableStyle(warmup: "", workset: "4-8 4-8 4-8", rest: "2m")
+        case .bodybuilding, .aesthetic:
+            program.styles["Primary"]   = amrapStyle(warmup: "5/60 3/80 1/90", workset: "8 8 8", rest: "90s")
+            program.styles["Accessory"] = variableStyle(warmup: "", workset: "6-12 6-12 6-12", rest: "90s")
         case .conditioning:
             fatalError("should be complex")
         }
@@ -385,33 +385,62 @@ final class BasicBarbellBuilder: BaseBasic {
     override func buildWorkout1(_ p: Program, _ w: Workout) {
         addGroup(p, w, makeSquat("High Bar Squat", style: "Primary"))
         addGroup(p, w, makeBench("Bench Press", style: "Primary"))
-        if case .glute = wizard.goal {
-            addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85))
-            addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"), enabled: false)
-        } else {
+        switch wizard.goal {
+        case .strength:
             addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"))
             addGroup(p, w, makeCurl("Barbell Curl", style: "Accessory"), enabled: false)
+        case .bodybuilding:
+            addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"))
+            addGroup(p, w, makeCurl("Barbell Curl", style: "Accessory"))
+        case .aesthetic:
+            if wizard.male {
+                addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"))
+                addGroup(p, w, makeCurl("Barbell Curl", style: "Accessory"))
+            } else {
+                addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85))
+                addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"), enabled: false)
+            }
+        case .conditioning:
+            fatalError("should be complex")
         }
     }
     
     override func buildWorkout2(_ p: Program, _ w: Workout) {
         addGroup(p, w, makeDeadlift("American Deadlift", style: "Primary"))
         addGroup(p, w, makeOHP("Overhead Press", style: "Primary"))
-        if case .glute = wizard.goal {
-            if wizard.machines {
-                addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"))
-                addGroup(p, w, makePullup("Lat Pulldown", style: "Accessory"), enabled: false)
-            } else {
-                addGroup(p, w, makeAbs("Landmine 180's", style: "Accessory"))
-                addGroup(p, w, makePullup("Chin-up", style: "Accessory"), enabled: false)
-            }
-        } else {
+        switch wizard.goal {
+        case .strength:
             addGroup(p, w, makePullup("Chin-up", style: "Accessory"))
             if wizard.machines {
                 addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"), enabled: false)
             } else {
-                addGroup(p, w, makeAbs("Landmine 180's", style: "Accessory"), enabled: false)
+                addGroup(p, w, makeAbs("Landmines", style: "Accessory"), enabled: false)
             }
+        case .bodybuilding:
+            addGroup(p, w, makePullup("Chin-up", style: "Accessory"))
+            if wizard.machines {
+                addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"))
+            } else {
+                addGroup(p, w, makeAbs("Landmines", style: "Accessory"))
+            }
+        case .aesthetic:
+            if wizard.male {
+                addGroup(p, w, makePullup("Chin-up", style: "Accessory"))
+                if wizard.machines {
+                    addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"))
+                } else {
+                    addGroup(p, w, makeAbs("Landmines", style: "Accessory"))
+                }
+            } else {
+                addGroup(p, w, makePullup("Chin-up", style: "Accessory"), enabled: false)
+                if wizard.machines {
+                    addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"))
+                } else {
+                    addGroup(p, w, makeAbs("Landmines", style: "Accessory"))
+                }
+            }
+        case .conditioning:
+            fatalError("should be complex")
         }
     }
 }
@@ -424,26 +453,30 @@ final class BasicSmithBuilder: BaseBasic {
         case .strength:
             program.styles["Primary"]   = amrapStyle(warmup: "5/60 3/80 1/90", workset: "5 5 5", rest: "2m")
             program.styles["Accessory"] = variableStyle(warmup: "", workset: "4-8 4-8 4-8", rest: "2m")
-        case .glute, .hypertrophy:
+        case .bodybuilding, .aesthetic:
             program.styles["Primary"]   =  amrapStyle(warmup: "5/0 5/60 3/80 1/90", workset: "8 8 8", rest: "90s")
             program.styles["Accessory"] = variableStyle(warmup: "", workset: "6-12 6-12 6-12", rest: "90s")
         case .conditioning:
             fatalError("should be complex")
         }
-        program.styles["Plank"]     = durationsStyle(secs: "30 30 30", targetSecs: "")
+        program.styles["Plank"] = durationsStyle(secs: "30 30 30", targetSecs: "")
     }
 
     override func buildWorkout1(_ p: Program, _ w: Workout) {
         addGroup(p, w, makeSquat("Smith Squat", style: "Primary"))
         addGroup(p, w, makeBench("Smith Bench", style: "Primary"))
-        if case .glute = wizard.goal {
-            addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85))
+        switch wizard.goal {
+        case .strength:
             if wizard.machines {
-                addExercise(p, w, make("Hip Abduction", "Cable Hip Abduction", "Accessory", weights: "Cable Machine", weight: 10))
+                addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
+                addGroup(p, w, makeCurl("Cable Hammer Curls", style: "Accessory"), enabled: false)
+            } else if wizard.fullDumbbells {
+                addGroup(p, w, makeRow("DB Kroc Row", style: "Accessory"))
+                addGroup(p, w, makeCurl("Concentration Curls", style: "Accessory"), enabled: false)
             } else {
-                addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"))
+                addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
             }
-        } else {
+        case .bodybuilding:
             if wizard.machines {
                 addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
                 addGroup(p, w, makeCurl("Cable Hammer Curls", style: "Accessory"))
@@ -453,25 +486,33 @@ final class BasicSmithBuilder: BaseBasic {
             } else {
                 addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
             }
+        case .aesthetic:
+            if wizard.male {
+                if wizard.machines {
+                    addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
+                    addGroup(p, w, makeCurl("Cable Hammer Curls", style: "Accessory"))
+                } else if wizard.fullDumbbells {
+                    addGroup(p, w, makeRow("DB Kroc Row", style: "Accessory"))
+                    addGroup(p, w, makeCurl("Concentration Curls", style: "Accessory"))
+                } else {
+                    addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
+                }
+            } else {
+                addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Plates", weight: 85))
+                if wizard.machines {
+                    addExercise(p, w, make("Hip Abduction", "Cable Hip Abduction", "Accessory", weights: "Cable Machine", weight: 10))
+                } else {
+                    addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"))
+                }
+            }
+        case .conditioning:
+            fatalError("should be complex")
         }
     }
     
     override func buildWorkout2(_ p: Program, _ w: Workout) {
-        if case .glute = wizard.goal {
-            addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
-            if wizard.machines {
-                addGroup(p, w, makePullup("Lat Pulldown", style: "Accessory"))
-                addExercise(p, w, make("Cable Kickback", "One-Legged Cable Kickback", "Accessory", weights: "Cable Machine", weight: 20))
-                addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"), enabled: false)
-            } else if wizard.fullDumbbells {
-                addGroup(p, w, makeRow("Kroc Row", style: "Accessory"))
-                addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 10))
-                addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"), enabled: false)
-            } else {
-                addGroup(p, w, makeOHP("Seated Smith Press", style: "Primary"))
-                addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"))
-            }
-        } else {
+        switch wizard.goal {
+        case .strength:
             addGroup(p, w, makePullup("Chin-up", style: "Accessory"))
             addGroup(p, w, makeOHP("Seated Smith Press", style: "Primary"))
             addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
@@ -480,6 +521,42 @@ final class BasicSmithBuilder: BaseBasic {
             } else if wizard.fullDumbbells {
                 addExercise(p, w, make("Dumbbell Flyes", "Dumbbell Flyes", "Accessory", weights: "Dumbbells", weight: 5), enabled: false)
             }
+        case .bodybuilding:
+            addGroup(p, w, makePullup("Chin-up", style: "Accessory"))
+            addGroup(p, w, makeOHP("Seated Smith Press", style: "Primary"))
+            addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+            if wizard.machines {
+                addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"))
+            } else if wizard.fullDumbbells {
+                addExercise(p, w, make("Dumbbell Flyes", "Dumbbell Flyes", "Accessory", weights: "Dumbbells", weight: 5))
+            }
+        case .aesthetic:
+            if wizard.male {
+                addGroup(p, w, makePullup("Chin-up", style: "Accessory"))
+                addGroup(p, w, makeOHP("Seated Smith Press", style: "Primary"))
+                addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+                if wizard.machines {
+                    addGroup(p, w, makeAbs("Cable Crunch", style: "Accessory"))
+                } else if wizard.fullDumbbells {
+                    addExercise(p, w, make("Dumbbell Flyes", "Dumbbell Flyes", "Accessory", weights: "Dumbbells", weight: 5))
+                }
+            } else {
+                addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+                if wizard.machines {
+                    addGroup(p, w, makePullup("Lat Pulldown", style: "Accessory"))
+                    addExercise(p, w, make("Cable Kickback", "One-Legged Cable Kickback", "Accessory", weights: "Cable Machine", weight: 20))
+                    addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"), enabled: false)
+                } else if wizard.fullDumbbells {
+                    addGroup(p, w, makeRow("Kroc Row", style: "Accessory"))
+                    addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 10))
+                    addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"), enabled: false)
+                } else {
+                    addGroup(p, w, makeOHP("Seated Smith Press", style: "Primary"))
+                    addGroup(p, w, makeAbs("Hanging Leg Raise", style: "Accessory"))
+                }
+            }
+        case .conditioning:
+            fatalError("should be complex")
         }
     }
 }
@@ -508,7 +585,7 @@ final class BasicStopgapDBBuilder: BaseBasic {
     }
     
     override func buildWorkout2(_ p: Program, _ w: Workout) {
-        if case .glute = wizard.goal {
+        if case .aesthetic = wizard.goal, !wizard.male {
             addGroup(p, w, makeSquat("Split Squat", style: "Primary"))
             addGroup(p, w, makeOHP("Dumbbell Shoulder Press", style: "Primary"))
             addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 10))
@@ -522,7 +599,6 @@ final class BasicStopgapDBBuilder: BaseBasic {
     }
 }
 
-/// Used for hypertrophy
 final class BasicPPLDBBuilder: Builder {
     override var name: String {return "PPL"}
     
@@ -624,6 +700,7 @@ final class BasicPPLDBBuilder: Builder {
         }
     }
     
+    // Note that this is bodybuilding only.
     private func buildPushWorkout(_ p: Program, _ w: Workout) {
         addGroup(p, w, makeBench("Dumbbell Bench Press", style: "Primary"))
         addExercise(p, w, make("Incline Fly", "Dumbbell Incline Flyes", "Accessory", weights: "Dumbbells", weight: 10))
@@ -658,13 +735,13 @@ final class BasicMachineBuilder: BaseBasic {
     override func setup(_ program: Program) {
         program.summary = "Beginner machine centric program."
     
-        program.styles["Primary"]   =   variableStyle(warmup: "5/60 3/80 1/90", workset: "5-10 5-10 5-10", rest: "2m")
+        program.styles["Primary"]   = variableStyle(warmup: "5/60 3/80 1/90", workset: "5-10 5-10 5-10", rest: "2m")
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "6-12 6-12 6-12", rest: "90s")
         program.styles["Plank"]     = durationsStyle(secs: "30 30 30", targetSecs: "")
     }
 
     override func buildWorkout1(_ p: Program, _ w: Workout) {
-        if case .glute = wizard.goal {
+        if case .aesthetic = wizard.goal, !wizard.male {
             addGroup(p, w, makeSquat("Leg Press", style: "Primary"))
             addGroup(p, w, makeBench("Chest Press Machine", style: "Primary"))
             addExercise(p, w, make("Leg Curl", "Seated Leg Curl", "Accessory", weights: "Cable Machine", weight: 20))
@@ -678,7 +755,7 @@ final class BasicMachineBuilder: BaseBasic {
     }
     
     override func buildWorkout2(_ p: Program, _ w: Workout) {
-        if case .glute = wizard.goal {
+        if case .aesthetic = wizard.goal, !wizard.male {
             addExercise(p, w, make("Cable Pull Through", "Cable Pull Through", "Accessory", weights: "Cable Machine", weight: 20))
             addGroup(p, w, makeOHP("Machine Shoulder Press", style: "Primary"))
             addExercise(p, w, make("Cable Kickback", "One-Legged Cable Kickback", "Accessory", weights: "Cable Machine", weight: 20))
@@ -773,7 +850,7 @@ final class StubBuilder: Builder {
 }
 
 /// Intermediate and advanced strength program
-final class BasicGzclBuilder: Builder {
+final class GzclBuilder: Builder {
     override var name: String {return "GZCL"}
     
     override var schedules: [Wizard.Schedule] {return [.block(weeks: 3, count: 3), .block(weeks: 3, count: 4), .block(weeks: 4, count: 3), .block(weeks: 4, count: 4)]}
@@ -1064,5 +1141,123 @@ final class BasicGzclBuilder: Builder {
     }
 }
 
+/// Intermediate and advanced bodybuilding program
+final class PHATBuilder: Builder {
+    override var name: String {return "PHAT"}
+    
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 5)]}
 
+    override func build(_ program: Program) {
+        program.summary = "Five day a week bodybuilding [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/)."
+        
+        program.styles["Power"] = variableStyle(warmup: "5/60 3/80 1/90", workset: "3-5 3-5 3-5", rest: "4m")
+        program.styles["Speed"] = manualStyle(warmup: "5/35 3/55", workset: "3/65 3/65 3/65 3/65 3/65 3/65", rest: "60s")
+        
+        program.styles["2x6-10"]  = variableStyle(warmup: "", workset: "6-10 6-10", rest: "90s")
+        program.styles["2x12-15"] = variableStyle(warmup: "", workset: "12-15 12-15", rest: "90s")
+        program.styles["3x5-8"]   = variableStyle(warmup: "", workset: "5-8 5-8 5-8", rest: "90s")
+        program.styles["3x6-10"]  = variableStyle(warmup: "", workset: "6-10 6-10 6-10", rest: "90s")
+        program.styles["3x8-12"]  = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "90s")
+        program.styles["3x12-20"] = variableStyle(warmup: "", workset: "12-20 12-20 12-20", rest: "90s")
+        program.styles["3x15-20"] = variableStyle(warmup: "", workset: "15-20 15-20 15-20", rest: "90s")
+        program.styles["4x10-15"] = variableStyle(warmup: "", workset: "10-15 10-15 10-15 10-15", rest: "90s")
+
+        scheduleWorkouts(program)
+        initGroups(program)
+    }
+    
+    private func scheduleWorkouts(_ program: Program) {
+        switch wizard.schedule {
+        case .weekly(let days) where days == 5:
+            var schedule = Schedule.days(Weekdays([.monday]))
+            var workout = Workout("Upper Power", schedule)
+            buildUpperPowerWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.tuesday]))
+            workout = Workout("Lower Power", schedule)
+            buildLowerPowerWorkout(program, workout)
+            program.addWorkout(workout)
+                        
+            schedule = Schedule.days(Weekdays([.thursday]))
+            workout = Workout("Back and Shoulders Hypertrophy", schedule)
+            buildBackWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.friday]))
+            workout = Workout("Lower Body Hypertrophy", schedule)
+            buildLowerWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.saturday]))
+            workout = Workout("Chest and Arms Hypertrophy", schedule)
+            buildChestWorkout(program, workout)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
+        }
+    }
+    
+    private func buildUpperPowerWorkout(_ p: Program, _ w: Workout) {
+        addExercise(p, w, make("Power Pendlay Row", "Pendlay Row",                    "Power", weights: "Dual Plates", weight: 135))
+        addExercise(p, w, make("Pull-up",           "Pull-up",                        "2x6-10", weights: "Single Plates", weight: 10))
+        addExercise(p, w, make("Rack Chin-up",      "Rack Chin-up",                   "2x6-10", weights: "Single Plates", weight: 0))
+        addExercise(p, w, make("Power DB Bench",    "Dumbbell Bench Press",           "Power", weights: "Dumbbells", weight: 60))
+        addExercise(p, w, make("Dips",              "Dips",                           "2x6-10", weights: "Single Plates", weight: 20))
+        addExercise(p, w, make("DB Shoulder Press", "Dumbbell Seated Shoulder Press", "3x6-10", weights: "Dumbbells", weight: 40))
+        addExercise(p, w, make("Preacher Curl",     "Preacher Curl",                  "3x6-10", weights: "Dual Plates", weight: 10))
+        addExercise(p, w, make("Skull Crushers",    "Skull Crushers",                 "3x6-10", weights: "Dumbbells", weight: 10))
+    }
+    
+    private func buildLowerPowerWorkout(_ p: Program, _ w: Workout) {
+        addExercise(p, w, make("Power Squat", "Low bar Squat", "Power", weights: "Dual Plates", weight: 165))
+        
+        // In general we don't want to mess with groups here because there's just too much
+        // and they get annoying with other exercises. But hack squat machiness are relatively
+        // uncommon so we'll allow users to swap those out.
+        addGroup(p, w, makeSquat("Hack Squat", style: "2x6-10", suffix: " 1"))
+
+        addExercise(p, w, make("Leg Extensions",           "Leg Extensions",        "2x6-10", weights: "Cable Machine", weight: 30))
+        addExercise(p, w, make("Power Stiff-Leg Deadlift", "Stiff-Legged Deadlift", "Power", weights: "Dual Plates", weight: 250))
+        addExercise(p, w, make("Glute Ham Raise",          "Glute Ham Raise",       "2x6-10", weights: "Single Plates", weight: 10))
+        addExercise(p, w, make("Standing Calf Raises",     "Standing Calf Raises",  "3x6-10", weights: "Dual Plates", weight: 135))
+        addExercise(p, w, make("Seated Calf Raises",       "Seated Calf Raises",    "2x6-10", weights: "Dual Plates", weight: 80))
+    }
+
+    private func buildBackWorkout(_ p: Program, _ w: Workout) {
+        addExercise(p, w, make("Speed Pendlay Row", "Pendlay Row",                    "Speed", weights: "Dual Plates", base: .other))
+        addExercise(p, w, make("Rack Chin-up",      "Rack Chin-up",                   "3x8-12", weights: "Single Plates", weight: 0))
+        addExercise(p, w, make("Cable Row",         "Seated Cable Row",               "3x8-12", weights: "Cable Machine", weight: 50))
+        addExercise(p, w, make("Kroc Row",          "Kroc Row",                       "2x12-15", weights: "Dumbbells", weight: 70))
+        addExercise(p, w, make("Cable Pulldowns",   "Underhand Cable Pulldowns",      "2x15-20", weights: "Cable Machine", weight: 30))
+        addExercise(p, w, make("DB Shoulder Press", "Dumbbell Seated Shoulder Press", "3x8-12", weights: "Dumbbells", weight: 40))
+        addExercise(p, w, make("Upright Row",       "Upright Row",                    "2x12-15", weights: "Dual Plates", weight: 20))
+        addExercise(p, w, make("Lateral Raise",     "Side Lateral Raise",             "3x12-20", weights: "Dumbbells", weight: 10))
+    }
+
+    private func buildLowerWorkout(_ p: Program, _ w: Workout) {
+        addExercise(p, w, make("Speed Squat",        "Low bar Squat",     "Speed", weights: "Dual Plates", base: .other))
+        addGroup(p, w, makeSquat("Hack Squat", style: "3x8-12", suffix: " 1"))
+        addExercise(p, w, make("Leg Press",          "Leg Press",          "2x12-15", weights: "Dual Plates", base: .other))
+        addExercise(p, w, make("Leg Extensions",     "Leg Extensions",     "3x15-20", weights: "Cable Machine", weight: 40))
+        addExercise(p, w, make("Romanian Deadlift",  "Romanian Deadlift",  "3x8-12", weights: "Dual Plates", weight: 250))
+        addExercise(p, w, make("Lying Leg Curls",    "Lying Leg Curls",    "2x12-15", weights: "Cable Machine", weight: 40))
+        addExercise(p, w, make("Seated Leg Curl",    "Seated Leg Curl",    "2x15-20", weights: "Cable Machine", weight: 40))
+        addExercise(p, w, make("Donkey Calf Raises", "Donkey Calf Raises", "4x10-25", weights: "Single Plates", weight: 0))
+        addExercise(p, w, make("Seated Calf Raises", "Seated Calf Raises", "3x15-20", weights: "Cable Machine", weight: 50))
+    }
+
+    private func buildChestWorkout(_ p: Program, _ w: Workout) {
+        addExercise(p, w, make("Speed DB Bench",       "Dumbbell Bench Press",      "Speed", weights: "Dumbbells", base: .other))
+        addExercise(p, w, make("DB Incline Press",     "Dumbbell Incline Press",    "3x8-12", weights: "Dumbbells", weight: 40))
+        addExercise(p, w, make("Chest Press Machine",  "Chest Press Machine",       "3x12-15", weights: "Dual Plates Machine", weight: 50))
+        addExercise(p, w, make("Incline Cable Flye",   "Incline Cable Flye",        "2x15-20", weights: "Cable Machine", weight: 20))
+        addExercise(p, w, make("Preacher Curl",        "Preacher Curl",             "3x8-12", weights: "Dual Plates", weight: 10))
+        addExercise(p, w, make("Concentration Curls",  "Concentration Curls",       "2x12-15", weights: "Dumbbells", weight: 10))
+        addExercise(p, w, make("Spider Curls",         "Spider Curls",              "2x15-20", weights: "Dumbbells", weight: 10))
+        addExercise(p, w, make("Seated Triceps Press", "Seated Triceps Press",      "3x8-12", weights: "Dumbbells", weight: 20))
+        addExercise(p, w, make("Triceps Pushdown",     "Triceps Pushdown (rope)",   "2x12-15", weights: "Cable Machine", weight: 40))
+        addExercise(p, w, make("Cable Kickback",       "One-Legged Cable Kickback", "2x15-20", weights: "Cable Machine", weight: 30))
+    }
+}
 

@@ -24,8 +24,8 @@ final class Wizard {
     
     enum Goal {
         case strength
-        case hypertrophy
-        case glute
+        case bodybuilding
+        case aesthetic
         case conditioning
     }
     
@@ -121,11 +121,11 @@ final class Wizard {
             switch fitness {
             case .beginner:
                 switch goal {
-                case .strength, .hypertrophy, .glute:
+                case .strength, .bodybuilding, .aesthetic:
                     if barbells {
                         builder = BasicBarbellBuilder(self)
                     } else if fullDumbbells {
-                        if case .hypertrophy = goal {
+                        if case .bodybuilding = goal {
                             builder = BasicPPLDBBuilder(self)
                         } else {
                             builder = BasicStopgapDBBuilder(self)
@@ -145,11 +145,11 @@ final class Wizard {
             case .intermediate, .advanced:  // TODO for now we handle advanced like intermediate
                 switch goal {
                 case .strength:
-                    builder = BasicGzclBuilder(self)
-                case .hypertrophy:
-                    builder = StubBuilder(self)   // TODO ppl style? or boring but big? or PHAT? may want to allow them to select between different base routines
-                case .glute:
-                    builder = StubBuilder(self)   // TODO gzcl style (tweak exercises)
+                    builder = GzclBuilder(self)
+                case .bodybuilding:
+                    builder = PHATBuilder(self)
+                case .aesthetic:
+                    builder = StubBuilder(self)   // TODO probably PHAT style but tweak exercises
                 case .conditioning:
                     builder = ComplexBuilder(self)
                 }

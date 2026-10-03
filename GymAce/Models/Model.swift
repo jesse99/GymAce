@@ -153,7 +153,7 @@ final class Model: Codable {
                         if weightSets[n] == nil {
                             if let ws = findDefaultWeightSet(n) {
                                 weightSets[n] = ws
-                                print("added weight set \(n)")
+//                                print("added weight set \(n)")
                             } else {
                                 print("couldn't find weight set \(n)")  // TODO probably should have a warning somewhere for this
                             }

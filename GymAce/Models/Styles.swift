@@ -12,7 +12,7 @@ enum Style: Codable {
     /// Exercise is done for a specified number of seconds up to a target value.
     case durations(DurationsInfo)
 
-    /// Like variabl;e except weights only change via the user..
+    /// Like variable except weights only change via the user..
     case manual(VariableInfo)
     
     /// Used for exercises that have a styleName that isn't in the program. This allows the
