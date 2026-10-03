@@ -146,20 +146,9 @@ final class Model: Codable {
     }
     
     func addMissingWeightsets() {
-        if let p = active() {
-            for w in p.workouts {
-                for entry in w.entries {
-                    if let e = p.findExercise(entry.name), let n = e.weightSet {
-                        if weightSets[n] == nil {
-                            if let ws = findDefaultWeightSet(n) {
-                                weightSets[n] = ws
-//                                print("added weight set \(n)")
-                            } else {
-                                print("couldn't find weight set \(n)")  // TODO probably should have a warning somewhere for this
-                            }
-                        }
-                    }
-                }
+        for (name, ws) in defaultWeightSets() {
+            if weightSets[name] == nil {
+                weightSets[name] = ws
             }
         }
     }

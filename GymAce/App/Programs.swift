@@ -3,61 +3,58 @@ import Foundation
 // TODO when adding a new program verify that the links the exercises use all work
 let defaultPrograms: [Program] = [masterGZCL(), previewProgram()]
 
-// TODO might want to just add these all to every program
-func findDefaultWeightSet(_ name: String) -> WeightSet? {
-    if name == "Dual Lower Plates" {        // Deadlift
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Dual Upper Plates" { // Dual Plates
-        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Single Lower Plates" {
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
-        return WeightSet.plates(single)
-    } else if name == "Single Upper Plates" {
-        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
-        return WeightSet.plates(single)
+func defaultWeightSets() -> [String: WeightSet] {
+    var sets: [String: WeightSet] = [:]
+    
+    var plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    var dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
+    sets["Dual Lower Plates"] = WeightSet.plates(dual)
 
-    } else if name == "Dual Lower Plates no bar" {   // Dual Plates Machine, Smith Machine
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Dual Upper Plates no bar" {
-        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Single Lower Plates no bar" {
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(single)
-    } else if name == "Single Upper Plates no bar" { // Single Plates
-        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(single)
+    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
+    sets["Dual Upper Plates"] = WeightSet.plates(dual)
+    
+    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    var single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+    sets["Single Lower Plates"] = WeightSet.plates(single)
+    
+    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+    sets["Single Upper Plates"] = WeightSet.plates(single)
 
-    } else if name == "Trapbar" {
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Cable Machine" {
-        let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
-        return WeightSet.discrete(cable)
-    } else if name == "Dumbbells" {
-        let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
-        return WeightSet.discrete(dumbbells)
-    } else if name == "Home Dumbbells" {
-        let dumbbells = DiscreteWeights(weights: [5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 30.0, 40.0, 45.0, 52.5], units: .Imperial)
-        return WeightSet.discrete(dumbbells)
-    } else if name == "Kettlebells" {
-        let kettlebells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50], units: .Imperial)
-        return WeightSet.discrete(kettlebells)
-    } else {
-        return nil
-    }
+    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+    sets["Dual Lower Plates no bar"] = WeightSet.plates(dual)
+
+    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+    sets["Dual Upper Plates no bar"] = WeightSet.plates(dual)
+
+    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
+    sets["Single Lower Plates no bar"] = WeightSet.plates(single)
+
+    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
+    sets["Single Upper Plates no bar"] = WeightSet.plates(single)
+    
+    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
+    sets["Trapbar"] = WeightSet.plates(dual)
+
+    let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
+    sets["Cable Machine"] = WeightSet.discrete(cable)
+
+    var dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
+    sets["Dumbbells"] = WeightSet.discrete(dumbbells)
+
+    dumbbells = DiscreteWeights(weights: [5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 30.0, 40.0, 45.0, 52.5], units: .Imperial)
+    sets["Home Dumbbells"] = WeightSet.discrete(dumbbells)
+
+    let kettlebells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50], units: .Imperial)
+    sets["Kettlebells"] = WeightSet.discrete(kettlebells)
+    
+    return sets
 }
 
 /// For previews, TODO don't include this in program list?
