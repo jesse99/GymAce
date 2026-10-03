@@ -3,43 +3,58 @@ import Foundation
 // TODO when adding a new program verify that the links the exercises use all work
 let defaultPrograms: [Program] = [masterGZCL(), previewProgram()]
 
+// TODO might want to just add these all to every program
 func findDefaultWeightSet(_ name: String) -> WeightSet? {
-    if name == "Cable Machine" {
-        let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
-        return WeightSet.discrete(cable)
-    } else if name == "Deadlift" {
+    if name == "Dual Lower Plates" {        // Deadlift
         let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
         return WeightSet.plates(dual)
-    } else if name == "Dumbbells" {
-        let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
-        return WeightSet.discrete(dumbbells)
-    } else if name == "Dual Plates" {
+    } else if name == "Dual Upper Plates" { // Dual Plates
         let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
         let dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
         return WeightSet.plates(dual)
+    } else if name == "Single Lower Plates" {
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+        return WeightSet.plates(single)
+    } else if name == "Single Upper Plates" {
+        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+        return WeightSet.plates(single)
+
+    } else if name == "Dual Lower Plates no bar" {   // Dual Plates Machine, Smith Machine
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+        return WeightSet.plates(dual)
+    } else if name == "Dual Upper Plates no bar" {
+        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+        return WeightSet.plates(dual)
+    } else if name == "Single Lower Plates no bar" {
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
+        return WeightSet.plates(single)
+    } else if name == "Single Upper Plates no bar" { // Single Plates
+        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
+        return WeightSet.plates(single)
+
+    } else if name == "Trapbar" {
+        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+        let dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
+        return WeightSet.plates(dual)
+    } else if name == "Cable Machine" {
+        let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
+        return WeightSet.discrete(cable)
+    } else if name == "Dumbbells" {
+        let dumbbells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0], units: .Imperial)
+        return WeightSet.discrete(dumbbells)
     } else if name == "Home Dumbbells" {
         let dumbbells = DiscreteWeights(weights: [5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 30.0, 40.0, 45.0, 52.5], units: .Imperial)
         return WeightSet.discrete(dumbbells)
     } else if name == "Kettlebells" {
         let kettlebells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50], units: .Imperial)
         return WeightSet.discrete(kettlebells)
-    } else if name == "Single Plates" {
-        let plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(single)
-    } else if name == "Smith Machine" {
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Dual Plates Machine" {
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
-        return WeightSet.plates(dual)
-    } else if name == "Trapbar" {
-        let plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-        let dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
-        return WeightSet.plates(dual)
     } else {
         return nil
     }
@@ -159,18 +174,18 @@ fileprivate func masterGZCL() -> Program {
     
     func addExercises(_ program: Program) {
         // one rep max
-        var exercise = make("Max Bench", "Bench Press", "1RM", weights: "Dual Plates", weight: 165)
+        var exercise = make("Max Bench", "Bench Press", "1RM", weights: "Dual Upper Plates", weight: 165)
         program.exercises.append(exercise)
         
         exercise = make("Max Deadlift", "Trap Bar Deadlift", "1RM", weights: "Trapbar", weight: 250)
         program.exercises.append(exercise)
         
-        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Plates", weight: 160)
+        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Lower Plates", weight: 160)
         program.exercises.append(exercise)
 
         for week in 1...4 {
             // T1
-            exercise = make("T1.\(week) Squat", "High bar Squat", "T1.\(week)", weights: "Dual Plates", base: .other)
+            exercise = make("T1.\(week) Squat", "High bar Squat", "T1.\(week)", weights: "Dual Lower Plates", base: .other)
             program.exercises.append(exercise)
             if week == 1 {          // TODO get rid of these
                 addCompleted(program, exercise, daysAgo: 13, reps: [4, 4, 4], weights: [135, 135, 135])
@@ -178,7 +193,7 @@ fileprivate func masterGZCL() -> Program {
                 addCompleted(program, exercise, daysAgo: 6, reps: [3, 3, 3], weights: [145, 145, 145])
             }
 
-            exercise = make("T1.\(week) Bench", "Bench Press", "T1.\(week)", weights: "Dual Plates", base: .other)
+            exercise = make("T1.\(week) Bench", "Bench Press", "T1.\(week)", weights: "Dual Upper Plates", base: .other)
             program.exercises.append(exercise)
             if week == 1 {          // TODO get rid of these
                 addCompleted(program, exercise, daysAgo: 22, reps: [4, 4, 4], weights: [140, 140, 140])
@@ -199,7 +214,7 @@ fileprivate func masterGZCL() -> Program {
             }
 
             // T2
-            exercise = make("T2.\(week) Squat", "High bar Squat", "T2.\(week)", weights: "Dual Plates", base: .other)
+            exercise = make("T2.\(week) Squat", "High bar Squat", "T2.\(week)", weights: "Dual Lower Plates", base: .other)
             program.exercises.append(exercise)
             if week == 1 {          // TODO get rid of these
                 addCompleted(program, exercise, daysAgo: 22, reps: [6, 6, 6, 6], weights: [105, 105, 105, 105])
@@ -209,7 +224,7 @@ fileprivate func masterGZCL() -> Program {
                 addCompleted(program, exercise, daysAgo: 2, reps: [5, 5, 5], weights: [120, 120, 120])
             }
 
-            exercise = make("T2.\(week) Bench", "Bench Press", "T2.\(week)", weights: "Dual Plates", base: .other)
+            exercise = make("T2.\(week) Bench", "Bench Press", "T2.\(week)", weights: "Dual Upper Plates", base: .other)
             program.exercises.append(exercise)
             if week == 1 {          // TODO get rid of these
                 addCompleted(program, exercise, daysAgo: 23, reps: [6, 6, 6, 6], weights: [105, 105, 105, 105])
@@ -229,7 +244,7 @@ fileprivate func masterGZCL() -> Program {
         }
 
         // T3
-        exercise = make("T3 Chin Ups", "Chin-up", "Chin Ups", weights: "Single Plates", weight: 5)
+        exercise = make("T3 Chin Ups", "Chin-up", "Chin Ups", weights: "Single Lower Plates no bar", weight: 5)
         program.exercises.append(exercise)
         addCompleted(program, exercise, daysAgo: 22, reps: [7, 7], weights: [5, 5])
         addCompleted(program, exercise, daysAgo: 13, reps: [5, 5], weights: [5, 5])
@@ -1413,31 +1428,31 @@ fileprivate func previewProgram() -> Program {
     }
     
     func addExercises(_ program: Program) {
-        var exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates", base: .other)
+        var exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Upper Plates", base: .other)
         addCompleted(program, exercise, daysAgo: 5, reps: [5, 5, 5], weights: [130], note: "So hard, nearly died")
         addCompleted(program, exercise, daysAgo: 3, reps: [5, 5, 5], weights: [135], note: "Went up easy peasy")
         addCompleted(program, exercise, daysAgo: 1, reps: [5, 5, 5], weights: [135])
         program.exercises.append(exercise)
 
-        exercise = make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 145)
+        exercise = make("Heavy Bench", "Bench Press", "Main", weights: "Dual Upper Plates", weight: 145)
         program.exercises.append(exercise)
         
-        exercise = make("OHP", "Overhead Press", "Main", weights: "Dual Plates", weight: 80)
+        exercise = make("OHP", "Overhead Press", "Main", weights: "Dual Upper Plates", weight: 80)
         program.exercises.append(exercise)
 
-        exercise = make("Manual OHP", "Overhead Press", "Manual", weights: "Dual Plates", weight: 80)
+        exercise = make("Manual OHP", "Overhead Press", "Manual", weights: "Dual Upper Plates", weight: 80)
         program.exercises.append(exercise)
 
-        exercise = make("Squat", "High bar Squat", "Main", weights: "Dual Plates", weight: 140)
+        exercise = make("Squat", "High bar Squat", "Main", weights: "Dual Lower Plates", weight: 140)
         program.exercises.append(exercise)
 
-        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Plates", weight: 140)
+        exercise = make("Max Squat", "High bar Squat", "1RM", weights: "Dual Lower Plates", weight: 140)
         program.exercises.append(exercise)
 
-        exercise = make("Deadlift", "Deadlift", "Main", weights: "Dual Plates", weight: 230)
+        exercise = make("Deadlift", "Deadlift", "Main", weights: "Dual Lower Plates", weight: 230)
         program.exercises.append(exercise)
 
-        exercise = make("OHP (amrap)", "Overhead Press", "AMRAP", weights: "Dual Plates", weight: 80)
+        exercise = make("OHP (amrap)", "Overhead Press", "AMRAP", weights: "Dual Upper Plates", weight: 80)
         program.exercises.append(exercise)
 
         exercise = make("Light Face Pulls", "Face Pull", "Light", weights: "Cable Machine", base: .other)

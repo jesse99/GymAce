@@ -7,7 +7,7 @@ class PlanTests {
     @Test("AMRAPPlan")
     func amrap() {
         // Bench with AMRAP
-        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: 226)
+        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Upper Plates", weight: 226)
         var plan = makePlan()
         #expect(plan.details(exercise) == "2x5, 5+ @ 225 lbs")
         
@@ -23,7 +23,7 @@ class PlanTests {
         #expect(completed() == "5 x3 reps @ 225 lbs")
         
         // GZCL style AMRAP
-        exercise = make("Squat", "Squat", "GZCL", weights: "Dual Plates", weight: 226)
+        exercise = make("Squat", "Squat", "GZCL", weights: "Dual Upper Plates", weight: 226)
         plan = makePlan()
         #expect(plan.details(exercise) == "3, 2, 1+ @ 205, 215, 225 lbs")
         
@@ -39,7 +39,7 @@ class PlanTests {
         
         // Check progression
         let b = Float(226.0)
-        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Plates", weight: b)
+        exercise = make("Bench", "Bench Press", "AMRAP", weights: "Dual Upper Plates", weight: b)
         plan = makePlan()
         setCompleted([])
         #expect(exercise.progress(program) == 0)    // no completed
@@ -88,7 +88,7 @@ class PlanTests {
     func beginner() {
         // Bench with AMRAP
         var b = Float(225.0)
-        exercise = make("Bench", "Bench Press", "Beginner", weights: "Dual Plates", weight: b)
+        exercise = make("Bench", "Bench Press", "Beginner", weights: "Dual Upper Plates", weight: b)
         let plan = makePlan()
         #expect(plan.details(exercise) == "3x5 @ 225 lbs")
         
@@ -152,7 +152,7 @@ class PlanTests {
     
     @Test("OneRepMaxPlan")
     func oneRepMax() {
-        exercise = make("Bench", "Bench Press", "1RM", weights: "Dual Plates", weight: 225)
+        exercise = make("Bench", "Bench Press", "1RM", weights: "Dual Upper Plates", weight: 225)
         let plan = makePlan()
         #expect(plan.details(exercise) == "5+ @ 195 lbs")
         
@@ -254,8 +254,8 @@ class PlanTests {
     @Test("BasicOtherPlan")
     func other() {
         // No completed
-        exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates", base: .other)
-        var plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 225))
+        exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Upper Plates", base: .other)
+        var plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Upper Plates", weight: 225))
         
         #expect(plan.details(exercise) == "3x5 @ 205 lbs")          // 0.9 * 225 = 202.5
         
@@ -274,8 +274,8 @@ class PlanTests {
         // Percent is based on other baseWeight, not other completed. It makes some sense to use completed
         // because the user may not be able to do a new baseWeight but we don't want to do that for gzcl
         // and keeping things simple and consistent seems like a good idea.
-        exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Plates", base: .other)
-        plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Plates", weight: 225),
+        exercise = make("Light Bench", "Bench Press", "Light", weights: "Dual Upper Plates", base: .other)
+        plan = makePlan(other: make("Heavy Bench", "Bench Press", "Main", weights: "Dual Upper Plates", weight: 225),
                         daysAgo: 2, reps: [5, 5, 5], weights: [250, 250, 250])
         
         #expect(plan.details(exercise) == "3x5 @ 205 lbs")          // 0.9 * 225 = 202.5

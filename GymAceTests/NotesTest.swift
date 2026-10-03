@@ -14,14 +14,14 @@ struct NotesTests {
     }
     
     private func validateNote(_ name: String, _ lines: [String], _ links: [(String, String)]) {
-        for (_, url) in links {
-            Task {
-                if let code = await validateURL(url) {
-                    print("\(name) \(url) returned status code \(code)")
-                    valid = false
-                }
-            }
-        }
+//        for (_, url) in links {
+//            Task {
+//                if let code = await validateURL(url) {  // TODO this doesn't work too well, I think some of the sites may be rate limiting requests
+//                    print("\(name) \(url) returned status code \(code)")
+//                    valid = false
+//                }
+//            }
+//        }
 
         let checker = UITextChecker()
         UITextChecker.learnWord("barbend.com")
