@@ -894,37 +894,20 @@ extension Exercise {
         let b = findBaseWeight(program)
         switch program.findStyle(self.styleName) {
         case .amrap:
-            if b == nil { // other
+            if b == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's AMRAP style)")
                 valid = false
             }
-        case .basic:
-            if b == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's basic style)")
-                valid = false
-            }
-        case .durations:
-            break
-        case .manual:
-            if b == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's manual style)")
-                valid = false
-            }
-        case .missing:
-            print("Program \(program.name) exercise \(name) is the missing style)")
-            valid = false
         case .oneRepMax:
             if b == nil {
                 print("Program \(program.name) exercise \(name) is missing a base weight (it's one rep max style)")
                 valid = false
             }
-        case .timed:
+        case .basic, .durations, .manual, .timed, .variable:
             break
-        case .variable:
-            if b == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's variable style)")
-                valid = false
-            }
+        case .missing:
+            print("Program \(program.name) exercise \(name) is the missing style)")
+            valid = false
         }
         if case .other = self.baseWeight {
             var count = 0

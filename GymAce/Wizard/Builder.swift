@@ -191,9 +191,9 @@ class Builder {
     fileprivate func makeAbs(_ primary: String, style: String, prefix: String = "", group: String = "Abs") -> (String, Int, [Exercise]) {
         var exercises = [
             make("\(prefix)Cable Crunch", "Cable Crunch", style, weights: "Cable Machine", weight: upper(10)),
-            make("\(prefix)Ab Wheel Rollout", "Ab Wheel Rollout", style, weights: "Single Upper Plates no bar", weight: 0),  // variable style so need a weight...
+            make("\(prefix)Ab Wheel Rollout", "Ab Wheel Rollout", style),
             make("\(prefix)Decline Situp", "Decline Situp", style, weights: "Single Lower Plates no bar", weight: 0),
-            make("\(prefix)Hanging Leg Raise", "Hanging Leg Raise", style, weights: "Single Lower Plates no bar", weight: 0),
+            make("\(prefix)Hanging Leg Raise", "Hanging Leg Raise", style),
             make("\(prefix)Landmines", "Landmine 180's", style, weights: "Single Upper Plates no bar", weight: upper(10)),
         ]
         if style != "T3" {
@@ -1202,7 +1202,7 @@ final class PHATBuilder: Builder {
     private func buildUpperPowerWorkout(_ p: Program, _ w: Workout) {
         addExercise(p, w, make("Power Pendlay Row", "Pendlay Row",                    "Power", weights: "Dual Lower Plates", weight: 135))
         addExercise(p, w, make("Pull-up",           "Pull-up",                        "2x6-10", weights: "Single Lower Plates no bar", weight: 10))
-        addExercise(p, w, make("Rack Chin-up",      "Rack Chin-up",                   "2x6-10", weights: "Single Lower Plates no bar", weight: 0))
+        addExercise(p, w, make("Rack Chin-up",      "Rack Chin-up",                   "2x6-10"))
         addExercise(p, w, make("Power DB Bench",    "Dumbbell Bench Press",           "Power", weights: "Dumbbells", weight: 60))
         addExercise(p, w, make("Dips",              "Dips",                           "2x6-10", weights: "Single Lower Plates no bar", weight: 20))
         addExercise(p, w, make("DB Shoulder Press", "Dumbbell Seated Shoulder Press", "3x6-10", weights: "Dumbbells", weight: 40))
@@ -1227,7 +1227,7 @@ final class PHATBuilder: Builder {
 
     private func buildBackWorkout(_ p: Program, _ w: Workout) {
         addExercise(p, w, make("Speed Pendlay Row", "Pendlay Row",                    "Speed", weights: "Dual Lower Plates", base: .other))
-        addExercise(p, w, make("Rack Chin-up",      "Rack Chin-up",                   "3x8-12", weights: "Single Lower Plates no bar", weight: 0))
+        addExercise(p, w, make("Rack Chin-up",      "Rack Chin-up",                   "3x8-12"))
         addExercise(p, w, make("Cable Row",         "Seated Cable Row",               "3x8-12", weights: "Cable Machine", weight: 50))
         addExercise(p, w, make("Kroc Row",          "Kroc Row",                       "2x12-15", weights: "Dumbbells", weight: 70))
         addExercise(p, w, make("Cable Pulldowns",   "Underhand Cable Pulldowns",      "2x15-20", weights: "Cable Machine", weight: 30))
@@ -1244,7 +1244,7 @@ final class PHATBuilder: Builder {
         addExercise(p, w, make("Romanian Deadlift",  "Romanian Deadlift",  "3x8-12", weights: "Dual Lower Plates", weight: 250))
         addExercise(p, w, make("Lying Leg Curls",    "Lying Leg Curls",    "2x12-15", weights: "Cable Machine", weight: 40))
         addExercise(p, w, make("Seated Leg Curl",    "Seated Leg Curl",    "2x15-20", weights: "Cable Machine", weight: 40))
-        addExercise(p, w, make("Donkey Calf Raises", "Donkey Calf Raises", "4x10-25", weights: "Single Lower Plates no bar", weight: 0))
+        addExercise(p, w, make("Donkey Calf Raises", "Donkey Calf Raises", "4x10-25"))
         addExercise(p, w, make("Seated Calf Raises", "Seated Calf Raises", "3x15-20", weights: "Cable Machine", weight: 50))
     }
 
@@ -1501,7 +1501,7 @@ final class FemaleAestheticBuilder: Builder {
         } else if wizard.fullDumbbells {
             addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 20))
         } else {
-            addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 0))
+            addExercise(p, w, make("Step-ups", "Step-ups", "Accessory"))
         }
     }
     
@@ -1550,13 +1550,13 @@ final class FemaleAestheticBuilder: Builder {
         } else if wizard.fullDumbbells {
             addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 20))
         } else {
-            addExercise(p, w, make("Step-ups", "Step-ups", "Accessory", weights: "Dumbbells", weight: 0)) // need a weight
+            addExercise(p, w, make("Step-ups", "Step-ups", "Accessory"))
         }
 
         if wizard.machines {
             addExercise(p, w, make("Cable Kickback", "One-Legged Cable Kickback", "Accessory", weights: "Cable Machine", weight: 20))
         } else {
-            addExercise(p, w, make("Lying Leg Curls", "Lying Leg Curls", "Accessory", weights: "Dumbbells", weight: 0)) // need a weight
+            addExercise(p, w, make("Lying Leg Curls", "Lying Leg Curls", "Accessory"))
         }
     }
 }
