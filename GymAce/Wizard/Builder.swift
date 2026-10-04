@@ -214,11 +214,12 @@ class Builder {
         let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
         return (group, enabledIndex, r)
     }
-
+    
     fileprivate func makeCurl(_ primary: String, style: String, prefix: String = "", group: String = "Curl") -> (String, Int, [Exercise]) {
         let exercises = [
             make("\(prefix)Barbell Curl", "Barbell Curl", style, weights: "Dual Upper Plates", weight: upper(10, floor: 45)),
             make("\(prefix)Concentration Curls", "Concentration Curls", style, weights: "Dumbbells", weight: upper(10)),
+            make("\(prefix)Spider Curls", "Spider Curls", style, weights: "Dumbbells", weight: upper(10)),
             make("\(prefix)Cable Hammer Curls", "Cable Hammer Curls", style, weights: "Cable Machine", weight: upper(10)),
         ]
         let r = exercises.sorted(by: {$0.name < $1.name})
@@ -1258,6 +1259,178 @@ final class PHATBuilder: Builder {
         addExercise(p, w, make("Seated Triceps Press", "Seated Triceps Press",      "3x8-12", weights: "Dumbbells", weight: 20))
         addExercise(p, w, make("Triceps Pushdown",     "Triceps Pushdown (rope)",   "2x12-15", weights: "Cable Machine", weight: 40))
         addExercise(p, w, make("Cable Kickback",       "One-Legged Cable Kickback", "2x15-20", weights: "Cable Machine", weight: 30))
+    }
+}
+
+final class MaleAestheticBuilder: Builder {
+    override var name: String {return "Aesthetic"}
+    
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 4), .weekly(count: 3), .weekly(count: 6)]}
+
+    override func build(_ program: Program) {
+        program.summary = "Push/Pull/Leg program with an emphasis on upper body. The 2 and 4 day/week versions omit leg day."
+        
+        program.styles["Primary"]   = variableStyle(warmup: "5/60 3/80 1/90", workset: "4-8 4-8 4-8", rest: "3m")
+        program.styles["Accessory"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "90s")
+        program.styles["Plank"]     = durationsStyle(secs: "60 60 60", targetSecs: "") 
+
+        scheduleWorkouts(program)
+        initGroups(program)
+    }
+    
+    private func scheduleWorkouts(_ program: Program) {
+        switch wizard.schedule {
+        case .weekly(let days) where days == 2:
+            var schedule = Schedule.days(Weekdays([.monday]))
+            var workout = Workout("Push", schedule)
+            buildPushWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.thursday]))
+            workout = Workout("Pull", schedule)
+            buildPullWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 3:
+            var schedule = Schedule.days(Weekdays([.monday]))
+            var workout = Workout("Push", schedule)
+            buildPushWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.wednesday]))
+            workout = Workout("Pull", schedule)
+            buildPullWorkout(program, workout)
+            program.addWorkout(workout)
+                        
+            schedule = Schedule.days(Weekdays([.friday]))
+            workout = Workout("Legs", schedule)
+            buildLegWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 4:
+            var schedule = Schedule.days(Weekdays([.monday]))
+            var workout = Workout("Push", schedule)
+            buildPushWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.tuesday]))
+            workout = Workout("Pull", schedule)
+            buildPullWorkout(program, workout)
+            program.addWorkout(workout)
+
+            schedule = Schedule.days(Weekdays([.thursday]))
+            workout = Workout("Push", schedule)
+            buildPushWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.friday]))
+            workout = Workout("Pull", schedule)
+            buildPullWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 6:
+            var schedule = Schedule.days(Weekdays([.monday]))
+            var workout = Workout("Push", schedule)
+            buildPushWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.tuesday]))
+            workout = Workout("Pull", schedule)
+            buildPullWorkout(program, workout)
+            program.addWorkout(workout)
+                        
+            schedule = Schedule.days(Weekdays([.wednesday]))
+            workout = Workout("Legs", schedule)
+            buildLegWorkout(program, workout)
+
+            schedule = Schedule.days(Weekdays([.thursday]))
+            workout = Workout("Push", schedule)
+            buildPushWorkout(program, workout)
+            program.addWorkout(workout)
+            
+            schedule = Schedule.days(Weekdays([.friday]))
+            workout = Workout("Pull", schedule)
+            buildPullWorkout(program, workout)
+            program.addWorkout(workout)
+                        
+            schedule = Schedule.days(Weekdays([.saturday]))
+            workout = Workout("Legs", schedule)
+            buildLegWorkout(program, workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
+        }
+    }
+    
+    private func buildPushWorkout(_ p: Program, _ w: Workout) {
+        if wizard.barbells {
+            addGroup(p, w, makeBench("Bench Press", style: "Primary"))
+            addGroup(p, w, makeOHP("Overhead Press", style: "Primary"))
+        } else if wizard.fullDumbbells {
+            addGroup(p, w, makeBench("Dumbbell Bench Press", style: "Primary"))
+            addGroup(p, w, makeOHP("Dumbbell Shoulder Press", style: "Primary"))
+        } else {
+            addGroup(p, w, makeBench("Chest Press Machine", style: "Primary"))
+            addGroup(p, w, makeOHP("Machine Shoulder Press", style: "Primary"))
+        }
+
+        if wizard.fullDumbbells {
+            addGroup(p, w, makeCurl("Concentration Curls", style: "Accessory"))
+        } else if wizard.machines {
+            addGroup(p, w, makeCurl("Cable Hammer Curls", style: "Accessory"))
+        } else {
+            addGroup(p, w, makeCurl("Barbell Curl", style: "Accessory"))
+        }
+        addExercise(p, w, make("Dips", "Dips", "Accessory", weights: "Single Upper Plates no bar", weight: 0))
+    }
+    
+    private func buildPullWorkout(_ p: Program, _ w: Workout) {
+        if wizard.fullDumbbells {
+            addGroup(p, w, makeRow("Kroc Row", style: "Primary"))
+        } else if wizard.barbells {
+            addGroup(p, w, makeRow("Pendlay Row", style: "Primary"))
+        } else {
+            addGroup(p, w, makeRow("Seated Cable Row", style: "Primary"))
+        }
+        
+        addGroup(p, w, makePullup("Pull-up", style: "Accessory"))
+
+        if wizard.fullDumbbells {
+            addGroup(p, w, makeCurl("Spider Curls", style: "Accessory"))
+        } else if wizard.machines {
+            addGroup(p, w, makeCurl("Cable Hammer Curls", style: "Accessory"))
+        } else {
+            addGroup(p, w, makeCurl("Barbell Curl", style: "Accessory"))
+        }
+
+        if wizard.fullDumbbells {
+            addExercise(p, w, make("Lateral Raise", "Side Lateral Raise", "Accessory", weights: "Dumbbells", weight: 5))
+        } else if wizard.machines {
+            addExercise(p, w, make("Cable Wood Chop", "Cable Wood Chop", "Accessory", weights: "Cable Machine", weight: 135))
+        }
+
+        if wizard.barbells {
+            addExercise(p, w, make("Shrug", "Barbell Shrug", "Accessory", weights: "Dual Upper Plates", weight: 45 + 2*25))
+        } else if wizard.fullDumbbells {
+            addExercise(p, w, make("DB Shrug", "Dumbbell Shrug", "Accessory", weights: "Dumbbells", weight: 30))
+        } else {
+            addExercise(p, w, make("Pec Deck Fly", "Pec Deck Fly", "Accessory", weights: "Cable Machine", weight: 40))
+        }
+    }
+
+    private func buildLegWorkout(_ p: Program, _ w: Workout) {
+        if wizard.barbells {
+            addGroup(p, w, makeDeadlift("American Deadlift", style: "Primary"))
+        } else if wizard.fullDumbbells {
+            addGroup(p, w, makeDeadlift("Dumbbell Deadlift", style: "Primary"))
+        } else {
+            addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+        }
+        
+        if wizard.machines {
+            addGroup(p, w, makeSquat("Leg Press", style: "Primary"))
+        } else {
+            addExercise(p, w, make("Back Extension", "Back Extension", "Accessory", weights: "Single Lower Plates no bar", weight: 25))
+        }
+
+        addGroup(p, w, makeAbs("Ab Wheel Rollout", style: "Accessory"))
+        addGroup(p, w, makePullup("Pull-up", style: "Accessory"))
     }
 }
 

@@ -149,7 +149,11 @@ final class Wizard {
                 case .bodybuilding:
                     builder = PHATBuilder(self)
                 case .aesthetic:
-                    builder = StubBuilder(self)   // TODO probably PHAT style but tweak exercises
+                    if male {
+                        builder = MaleAestheticBuilder(self)
+                    } else {
+                        builder = StubBuilder(self)
+                    }
                 case .conditioning:
                     builder = ComplexBuilder(self)
                 }
