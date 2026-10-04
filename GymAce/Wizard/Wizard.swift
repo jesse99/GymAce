@@ -152,7 +152,7 @@ final class Wizard {
                     if male {
                         builder = MaleAestheticBuilder(self)
                     } else {
-                        builder = StubBuilder(self)
+                        builder = FemaleAestheticBuilder(self)
                     }
                 case .conditioning:
                     builder = ComplexBuilder(self)
