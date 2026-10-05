@@ -9,8 +9,10 @@ class Builder {
     var name: String {fatalError("override this")}
     
     /// The schedules supported by the program. The user will pick one of these before the program is populated.
-    /// The default schedule is the first one listed.
     var schedules: [Wizard.Schedule] {fatalError("override this")}
+
+    /// Index of the default schedule.
+    var defaultSchedule: Int {fatalError("override this")}
     
     func build(_ program: Program) {
         fatalError("override this")
@@ -239,6 +241,8 @@ class BaseBasic: Builder {
     override var name: String {return "Basic"}
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3), .weekly(count: 4), .cycle(count: 2, rest: 2), .cycle(count: 2, rest: 4)]}
+
+    override var defaultSchedule: Int {return 1}
 
     override func build(_ program: Program) {
         setup(program)
@@ -605,6 +609,8 @@ final class BasicPPLDBBuilder: Builder {
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 3), .weekly(count: 6), .cycle(count: 3, rest: 1), .cycle(count: 3, rest: 2)]}
 
+    override var defaultSchedule: Int {return 0}
+
     override func build(_ program: Program) {
         program.summary = "A Push/Pull/Legs beginner [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/) that requires minimal equipment."
         
@@ -775,6 +781,8 @@ final class ComplexBuilder: Builder {
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
 
+    override var defaultSchedule: Int {return 2}
+
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
     
@@ -842,6 +850,8 @@ final class StubBuilder: Builder {
     
     override var schedules: [Wizard.Schedule] {return []}
 
+    override var defaultSchedule: Int {return 0}
+
     override func build(_ program: Program) {
         program.summary = "Place holder until we can handle this case."
         let workout = Workout("Workout", Schedule.days(Weekdays([.monday])))
@@ -856,6 +866,8 @@ final class GzclBuilder: Builder {
     
     override var schedules: [Wizard.Schedule] {return [.block(weeks: 3, count: 3), .block(weeks: 3, count: 4), .block(weeks: 4, count: 3), .block(weeks: 4, count: 4)]}
     
+    override var defaultSchedule: Int {return 1}
+
     override func build(_ program: Program) {
         // Also see
         // https://swoleateveryheight.blogspot.com/2016/02/gzcl-applications-adaptations.html
@@ -1148,6 +1160,8 @@ final class PHATBuilder: Builder {
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 5)]}
 
+    override var defaultSchedule: Int {return 0}
+
     override func build(_ program: Program) {
         program.summary = "Five day a week bodybuilding [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/)."
         
@@ -1265,7 +1279,9 @@ final class PHATBuilder: Builder {
 final class MaleAestheticBuilder: Builder {
     override var name: String {return "Aesthetic"}
     
-    override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 4), .weekly(count: 3), .weekly(count: 6)]}
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3), .weekly(count: 4), .weekly(count: 6)]}
+
+    override var defaultSchedule: Int {return 1}
 
     override func build(_ program: Program) {
         program.summary = "Push/Pull/Leg program with an emphasis on upper body. The 2 and 4 day/week versions omit leg day."
@@ -1438,6 +1454,8 @@ final class FemaleAestheticBuilder: Builder {
     override var name: String {return "Aesthetic"}
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3)]}
+
+    override var defaultSchedule: Int {return 1}
 
     override func build(_ program: Program) {
         program.summary = "A program with a focus on lower body exercises. The two day version omits upper body work."

@@ -55,7 +55,7 @@ struct ScheduleView: View {
         .onAppear {
             let schedules = builder.schedules
             if !schedules.contains(wizard.schedule) && !schedules.isEmpty {
-                wizard.schedule = schedules[0]
+                wizard.schedule = schedules[builder.defaultSchedule]
             }
         }
     }
@@ -64,12 +64,12 @@ struct ScheduleView: View {
         Binding(
             get: {
                 let name = wizard.schedule.toString()
-                return builder.schedules.firstIndex(where: {$0.toString() == name}) ?? 0
+                return builder.schedules.firstIndex(where: {$0.toString() == name}) ?? builder.defaultSchedule
             },
             set: {
                 let name = scheduleNames[$0]
                 let schedules = builder.schedules
-                let index = schedules.firstIndex(where: {$0.toString() == name}) ?? 0
+                let index = schedules.firstIndex(where: {$0.toString() == name}) ?? builder.defaultSchedule
                 wizard.schedule = schedules[index]
             }
         )

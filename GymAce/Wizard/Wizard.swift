@@ -110,7 +110,7 @@ final class Wizard {
         self.goal = .strength
         self.fitness = .beginner
         self.male = true
-        self.schedule = .weekly(count: 3)
+        self.schedule = .weekly(count: 8)   // so we wind up using defaultSchedule
         self.groups = [:]
     }
     
