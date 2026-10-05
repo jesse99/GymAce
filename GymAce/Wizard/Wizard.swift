@@ -137,9 +137,11 @@ final class Wizard {
                     }
                 case .conditioning:
                     if fullDumbbells {
-                        builder = ComplexBuilder(self)
+                        builder = DBComplexBuilder(self)
+                    } else if barbells {
+                        builder = BarbellComplexBuilder(self)
                     } else {
-                        builder = StubBuilder(self)   // TODO use one of A8, B8, or F8?
+                        builder = StubBuilder(self)   // TODO some sort of bodyweight routine
                     }
                 }
             case .intermediate, .advanced:  // TODO for now we handle advanced like intermediate
@@ -155,12 +157,18 @@ final class Wizard {
                         builder = FemaleAestheticBuilder(self)
                     }
                 case .conditioning:
-                    builder = ComplexBuilder(self)
+                    if fullDumbbells {
+                        builder = DBComplexBuilder(self)
+                    } else if barbells {
+                        builder = BarbellComplexBuilder(self)
+                    } else {
+                        builder = StubBuilder(self)   // TODO some sort of bodyweight routine
+                    }
                 }
             }
         } else if partialDumbbells {
             // User has only a few dumbbells, so we will generate a complex program.
-            builder = ComplexBuilder(self)
+            builder = DBComplexBuilder(self)
         } else {
             // User has no equipment, so we will generate a bodyweight program.
             builder = StubBuilder(self)   // TODO

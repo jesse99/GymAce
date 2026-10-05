@@ -776,7 +776,7 @@ final class BasicMachineBuilder: BaseBasic {
     }
 }
 
-final class ComplexBuilder: Builder {
+final class DBComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
@@ -795,6 +795,64 @@ final class ComplexBuilder: Builder {
         } else {
             make("Complex", "Complex - intermediate", "Complex", weights: "Dumbbells", weight: 10)
         }
+        program.exercises.append(exercise)
+    
+        switch wizard.schedule {
+        case .weekly(let days) where days == 1:
+            let schedule = Schedule.days(Weekdays([.monday]))
+            let workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 2:
+            let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            let workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 3:
+            let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+            let workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+        case .cycle(let count, let rest) where count == 1 && rest == 1:
+            let schedule = Schedule.cyclic
+            var workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+
+            workout = Workout("Rest", schedule)
+            program.addWorkout(workout)
+        case .cycle(let count, let rest) where count == 1 && rest == 2:
+            let schedule = Schedule.cyclic
+            var workout = Workout("Complex", schedule)
+            workout.addExercise(name: "Complex")
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 1", schedule)
+            program.addWorkout(workout)
+            workout = Workout("Rest 2", schedule)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
+        }
+        initGroups(program)
+    }
+}
+
+final class BarbellComplexBuilder: Builder {
+    override var name: String {return "Complex"}
+    
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
+
+    override var defaultSchedule: Int {return 2}
+
+    override func build(_ program: Program) {
+        program.summary = "[Complexes](https://dumbbellsdirect.com/blogs/barbell-programming-styles/barbell-complexes-for-conditioning) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
+    
+        // Styles
+        program.styles["Complex"] = manualStyle(warmup: "", workset: "1 1 1", rest: "90s")
+
+        // Exercises
+        let exercise = make("Complex", "F8", "Complex", weights: "Dumbbells", weight: 45)
         program.exercises.append(exercise)
     
         switch wizard.schedule {
