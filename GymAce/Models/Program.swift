@@ -14,7 +14,7 @@ final class Program: Codable, Identifiable {
     /// Mapping from a group name to a list of exercise names, e.g, "Squat" : ["High bar Squat", "Front Squat", "Hack Squat"].
     /// These are used with the wizard to allow users to switch in different versions of an exercise and with body weight
     /// exercises to support progression, e.g. from a Plank to a Foot Elevated Plank.
-    var groups: [String: [String]]? = [:]   // TODO make this non-optional after it gets added to phone
+    var groups: [String: [String]] = [:]
 
     var workouts: [Workout] = []
     
@@ -41,7 +41,7 @@ final class Program: Codable, Identifiable {
 //            workout.weeks = 8...8
 //            addWorkout(workout)
 //        }
-
+        
         for e in exercises {
             e.fixup()
         }
@@ -52,12 +52,10 @@ final class Program: Codable, Identifiable {
     
     func valid(_ model: Model) -> Bool {
         var valid = true
-        if let g = groups {
-            for (name, exercises) in g {
-                if Set(exercises).count != exercises.count {
-                    print("Group \(name) has duplicate exercise names")
-                    valid = false
-                }
+        for (name, exercises) in groups {
+            if Set(exercises).count != exercises.count {
+                print("Group \(name) has duplicate exercise names")
+                valid = false
             }
         }
         for name in exercises.findDupes(using: {$0.name}) {

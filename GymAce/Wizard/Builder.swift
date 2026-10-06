@@ -57,7 +57,7 @@ class Builder {
             }
             program.groups = groups
         } else {
-            program.groups = nil
+            program.groups = [:]
         }
     }
     
