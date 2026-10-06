@@ -78,7 +78,11 @@ final class ExercisePlan {
             }
         }
         if amounts.count == 1 && hasReps {
-            return "\(joinReps(amounts)) reps"
+            if amounts == ["1"] {
+                return "1 rep"
+            } else {
+                return "\(joinReps(amounts)) reps"
+            }
         } else {
             return joinReps(amounts)
         }

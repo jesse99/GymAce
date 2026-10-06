@@ -140,6 +140,8 @@ final class Wizard {
                         builder = DBComplexBuilder(self)
                     } else if barbells {
                         builder = BarbellComplexBuilder(self)
+                    } else if machines {
+                        builder = CircuitBuilder(self)
                     } else {
                         builder = StubBuilder(self)   // TODO some sort of bodyweight routine
                     }
@@ -161,6 +163,8 @@ final class Wizard {
                         builder = DBComplexBuilder(self)
                     } else if barbells {
                         builder = BarbellComplexBuilder(self)
+                    } else if machines {
+                        builder = CircuitBuilder(self)
                     } else {
                         builder = StubBuilder(self)   // TODO some sort of bodyweight routine
                     }

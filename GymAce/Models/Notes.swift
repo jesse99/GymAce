@@ -717,6 +717,11 @@ extension Notes {
             [("Link", "https://experiencelife.com/article/the-dumbbell-complex-workout")],
         )
         
+        add("Circuit Rest",
+            ["Rest for 1-2 minutes."],
+            [("Link", "https://livehealthy.chron.com/much-time-rest-before-lifting-weights-again-2499.html")],
+        )
+        
         add("Clam",
             ["Lay on your side.",
                 "Move your hips back about 45 degrees.",
@@ -2457,14 +2462,6 @@ extension Notes {
                 ),
                 ("Video", "https://www.youtube.com/watch?v=LccyTxiUrhg"),
             ],
-        )
-        
-        add("Rest",
-            ["For conditioning 30-90 seconds.",
-                "For hypertrophy 1-2 minutes.",
-                "For strength 3-5 minutes.",
-            ],
-            [("Link", "https://livehealthy.chron.com/much-time-rest-before-lifting-weights-again-2499.html")],
         )
         
         add("Reverse Crunch",

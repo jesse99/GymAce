@@ -275,8 +275,8 @@ class BaseBasic: Builder {
             buildWorkout2(program, workout)
             program.addWorkout(workout)
         case .weekly(let days) where days == 3:
-            var schedule = Schedule.days(Weekdays([.monday]))
-            var workout = Workout("\(workout1Name) 1a", schedule)
+            var schedule = Schedule.days(Weekdays([.monday, .friday]))
+            var workout = Workout("\(workout1Name) 1", schedule)
             buildWorkout1(program, workout)
             workout.weeks = 1...1
             program.addWorkout(workout)
@@ -284,17 +284,11 @@ class BaseBasic: Builder {
             schedule = Schedule.days(Weekdays([.wednesday]))
             workout = Workout("\(workout2Name) 1", schedule)
             buildWorkout2(program, workout)
-            workout.weeks = 1...1
-            program.addWorkout(workout)
-
-            schedule = Schedule.days(Weekdays([.friday]))
-            workout = Workout("\(workout1Name) 1b", schedule)
-            buildWorkout1(program, workout)
             workout.weeks = 1...1
             program.addWorkout(workout)
             
-            schedule = Schedule.days(Weekdays([.monday]))
-            workout = Workout("\(workout2Name) 2a", schedule)
+            schedule = Schedule.days(Weekdays([.monday, .friday]))
+            workout = Workout("\(workout2Name) 2", schedule)
             buildWorkout2(program, workout)
             workout.weeks = 2...2
             program.addWorkout(workout)
@@ -304,30 +298,14 @@ class BaseBasic: Builder {
             buildWorkout1(program, workout)
             workout.weeks = 2...2
             program.addWorkout(workout)
-
-            schedule = Schedule.days(Weekdays([.friday]))
-            workout = Workout("\(workout2Name) 2b", schedule)
-            buildWorkout2(program, workout)
-            workout.weeks = 2...2
-            program.addWorkout(workout)
         case .weekly(let days) where days == 4:
-            var schedule = Schedule.days(Weekdays([.monday]))
-            var workout = Workout("\(workout1Name) 1", schedule)
+            var schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            var workout = Workout("\(workout1Name)", schedule)
             buildWorkout1(program, workout)
             program.addWorkout(workout)
 
-            schedule = Schedule.days(Weekdays([.tuesday]))
-            workout = Workout("\(workout2Name) 1", schedule)
-            buildWorkout2(program, workout)
-            program.addWorkout(workout)
-
-            schedule = Schedule.days(Weekdays([.thursday]))
-            workout = Workout("\(workout1Name) 2", schedule)
-            buildWorkout1(program, workout)
-            program.addWorkout(workout)
-
-            schedule = Schedule.days(Weekdays([.friday]))
-            workout = Workout("\(workout2Name) 2", schedule)
+            schedule = Schedule.days(Weekdays([.tuesday, .friday]))
+            workout = Workout("\(workout2Name)", schedule)
             buildWorkout2(program, workout)
             program.addWorkout(workout)
         case .cycle(let count, let rest) where count == 2 && rest == 2:
@@ -639,33 +617,18 @@ final class BasicPPLDBBuilder: Builder {
             buildLegWorkout(program, workout)
             program.addWorkout(workout)
         case .weekly(let days) where days == 6:
-            var schedule = Schedule.days(Weekdays([.monday]))
-            var workout = Workout("Push 1", schedule)
+            var schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            var workout = Workout("Push", schedule)
             buildPushWorkout(program, workout)
             program.addWorkout(workout)
             
-            schedule = Schedule.days(Weekdays([.tuesday]))
-            workout = Workout("Pull 1", schedule)
+            schedule = Schedule.days(Weekdays([.tuesday, .friday]))
+            workout = Workout("Pull", schedule)
             buildPullWorkout(program, workout)
             program.addWorkout(workout)
             
-            schedule = Schedule.days(Weekdays([.wednesday]))
-            workout = Workout("Legs 1", schedule)
-            buildLegWorkout(program, workout)
-            program.addWorkout(workout)
-            
-            schedule = Schedule.days(Weekdays([.thursday]))
-            workout = Workout("Push 2", schedule)
-            buildPushWorkout(program, workout)
-            program.addWorkout(workout)
-            
-            schedule = Schedule.days(Weekdays([.friday]))
-            workout = Workout("Pull 2", schedule)
-            buildPullWorkout(program, workout)
-            program.addWorkout(workout)
-            
-            schedule = Schedule.days(Weekdays([.saturday]))
-            workout = Workout("Legs 2", schedule)
+            schedule = Schedule.days(Weekdays([.wednesday, .saturday]))
+            workout = Workout("Legs", schedule)
             buildLegWorkout(program, workout)
             program.addWorkout(workout)
         case .cycle(let count, let rest) where count == 3 && rest == 1:
@@ -893,6 +856,69 @@ final class BarbellComplexBuilder: Builder {
             fatalError("\(wizard.schedule) shouldn't have happened")
         }
         initGroups(program)
+    }
+}
+
+final class CircuitBuilder: Builder {
+    override var name: String {return "Circuit"}
+    
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3)]}
+    
+    override var defaultSchedule: Int {return 1}
+    
+    override func build(_ program: Program) {
+        program.summary = "A [circuit](https://gym-mikolo.com/blogs/home-gym/the-ultimate-guide-to-machine-circuit-training-boost-strength-endurance-and-efficiency?srsltid=AU7gw4Ush3mkMnNNTDDvQ8x4TjJQNM9vr7QLLPrIp5ECEXxz_ITk8y_x) based routine where a set of exercises are done all at once with minimal rest. When the set is completed you rest and repeat the circuit."
+        
+        // Styles
+        program.styles["Primary"] = variableStyle(warmup: "", workset: "8-12", rest: "0")
+        program.styles["Crunch"]  = variableStyle(warmup: "", workset: "10-15", rest: "0")
+        program.styles["Rest"]    = basicStyle(warmup: "", workset: "1", rest: "90s")
+        
+        switch wizard.schedule {
+        case .weekly(let days) where days == 2:
+            let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            let workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 3:
+            let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+            let workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
+        }
+        initGroups(program)
+    }
+    
+    private func buildWorkout(_ p: Program, _ w: Workout) {
+        // TODO It'd be nice to enable curls but that results in so many exercises that they aren't all
+        // visible in the workout view (and Grid doesn't support vertical scrolling). Though even this
+        // might have problems with small phones.
+        addExercise(p, w, make("Leg Press 1",       "Leg Press",              "Primary", weights: "Dual Lower Plates no bar", weight: 135))
+        addExercise(p, w, make("Chest Press 1",     "Chest Press Machine",    "Primary", weights: "Dual Upper Plates no bar", weight: 30))
+        addExercise(p, w, make("Lat Pulldown 1",    "Lat Pulldown",           "Primary", weights: "Cable Machine", weight: 40))
+        addExercise(p, w, make("Seated Leg Curl 1", "Seated Leg Curl",        "Primary", weights: "Cable Machine", weight: 20))
+        addExercise(p, w, make("Shoulder Press 1",  "Machine Shoulder Press", "Primary", weights: "Dual Upper Plates no bar", weight: 20))
+        addExercise(p, w, make("Cable Row 1",       "Seated Cable Row",       "Primary", weights: "Cable Machine", weight: 40))
+//        addExercise(p, w, make("Hammer Curls 1",    "Cable Hammer Curls",     "Primary", weights: "Cable Machine", weight: 10))
+        addExercise(p, w, make("Crunch 1",          "Cable Crunch",           "Crunch", weights: "Cable Machine", weight: 20))
+        addExercise(p, w, make("Rest 1",            "Circuit Rest",           "Rest"))
+
+        let max = 3
+        for n in 2...max {
+            addExercise(p, w, make("Leg Press \(n)",       "Leg Press",              "Primary", weights: "Dual Lower Plates no bar", base: .other))
+            addExercise(p, w, make("Chest Press \(n)",     "Chest Press Machine",    "Primary", weights: "Dual Upper Plates no bar", base: .other))
+            addExercise(p, w, make("Lat Pulldown \(n)",    "Lat Pulldown",           "Primary", weights: "Cable Machine", base: .other))
+            addExercise(p, w, make("Seated Leg Curl \(n)", "Seated Leg Curl",        "Primary", weights: "Cable Machine", base: .other))
+            addExercise(p, w, make("Shoulder Press \(n)",  "Machine Shoulder Press", "Primary", weights: "Dual Upper Plates no bar", base: .other))
+            addExercise(p, w, make("Cable Row \(n)",       "Seated Cable Row",       "Primary", weights: "Cable Machine", base: .other))
+//            addExercise(p, w, make("Hammer Curls \(n)",    "Cable Hammer Curls",     "Primary", weights: "Cable Machine", base: .other))
+            addExercise(p, w, make("Crunch \(n)",          "Cable Crunch",           "Crunch", weights: "Cable Machine", base: .other))
+            if n < max {
+                addExercise(p, w, make("Rest \(n)",        "Circuit Rest",           "Rest"))
+            }
+        }
     }
 }
 
@@ -1170,10 +1196,14 @@ final class GzclBuilder: Builder {
             addExercise(p, w, make("T2.\(week) Barbell Shrug", "Barbell Shrug", "T2.\(week)", weights: "Cable Machine", weight: 20))
         } else if wizard.fullDumbbells {
             addGroup(p, w, makeOHP("Dumbbell Shoulder Press", style: "T1", prefix: "T1 ", group: "T1 OHP"))
-            addExercise(p, w, make("T2.\(week) Pec Deck Fly", "Pec Deck Fly", "T2.\(week)", weights: "Cable Machine", weight: 20))
+            addExercise(p, w, make("T2.\(week) Lateral Raise", "Side Lateral Raise", "T2.\(week)", weights: "Dumbbells", weight: 10))
         } else {
             addGroup(p, w, makeOHP("Machine Shoulder Press", style: "T1", prefix: "T1 ", group: "T1 OHP"))
-            addExercise(p, w, make("T2.\(week) Smith Machine Shrug", "Smith Machine Shrug", "T2.\(week)", weights: "Dual Lower Plates no bar", weight: 20))
+            if wizard.smith {
+                addExercise(p, w, make("T2.\(week) Smith Machine Shrug", "Smith Machine Shrug", "T2.\(week)", weights: "Dual Lower Plates no bar", weight: 20))
+            } else {
+                addExercise(p, w, make("T2.\(week) Pec Deck Fly", "Pec Deck Fly", "T2.\(week)", weights: "Cable Machine", weight: 20))
+            }
         }
 
         if wizard.age < 50 {
@@ -1194,6 +1224,7 @@ final class GzclBuilder: Builder {
             addGroup(p, w, makeDeadlift("Dumbbell Deadlift", style: "T1", prefix: "T1 ", group: "T1 Deadlift"))
             addGroup(p, w, makeDeadlift("Dumbbell Deadlift", style: "T2", prefix: "T2 Deficit ", group: "T2 Deadlift"))
         } else {
+            // Really should only do this if smith is set but not sure what we'd do if not.
             addGroup(p, w, makeDeadlift("Smith Deadlift", style: "T1", prefix: "T1 ", group: "T1 Deadlift"))
             addGroup(p, w, makeDeadlift("Smith Deadlift", style: "T2", prefix: "T2 Deficit ", group: "T2 Deadlift"))
         }
@@ -1380,51 +1411,27 @@ final class MaleAestheticBuilder: Builder {
             buildLegWorkout(program, workout)
             program.addWorkout(workout)
         case .weekly(let days) where days == 4:
-            var schedule = Schedule.days(Weekdays([.monday]))
+            var schedule = Schedule.days(Weekdays([.monday, .thursday]))
             var workout = Workout("Push", schedule)
             buildPushWorkout(program, workout)
             program.addWorkout(workout)
             
-            schedule = Schedule.days(Weekdays([.tuesday]))
-            workout = Workout("Pull", schedule)
-            buildPullWorkout(program, workout)
-            program.addWorkout(workout)
-
-            schedule = Schedule.days(Weekdays([.thursday]))
-            workout = Workout("Push", schedule)
-            buildPushWorkout(program, workout)
-            program.addWorkout(workout)
-            
-            schedule = Schedule.days(Weekdays([.friday]))
+            schedule = Schedule.days(Weekdays([.tuesday, .friday]))
             workout = Workout("Pull", schedule)
             buildPullWorkout(program, workout)
             program.addWorkout(workout)
         case .weekly(let days) where days == 6:
-            var schedule = Schedule.days(Weekdays([.monday]))
+            var schedule = Schedule.days(Weekdays([.monday, .thursday]))
             var workout = Workout("Push", schedule)
             buildPushWorkout(program, workout)
             program.addWorkout(workout)
             
-            schedule = Schedule.days(Weekdays([.tuesday]))
+            schedule = Schedule.days(Weekdays([.tuesday, .friday]))
             workout = Workout("Pull", schedule)
             buildPullWorkout(program, workout)
             program.addWorkout(workout)
                         
-            schedule = Schedule.days(Weekdays([.wednesday]))
-            workout = Workout("Legs", schedule)
-            buildLegWorkout(program, workout)
-
-            schedule = Schedule.days(Weekdays([.thursday]))
-            workout = Workout("Push", schedule)
-            buildPushWorkout(program, workout)
-            program.addWorkout(workout)
-            
-            schedule = Schedule.days(Weekdays([.friday]))
-            workout = Workout("Pull", schedule)
-            buildPullWorkout(program, workout)
-            program.addWorkout(workout)
-                        
-            schedule = Schedule.days(Weekdays([.saturday]))
+            schedule = Schedule.days(Weekdays([.wednesday, .saturday]))
             workout = Workout("Legs", schedule)
             buildLegWorkout(program, workout)
         default:
@@ -1494,7 +1501,11 @@ final class MaleAestheticBuilder: Builder {
         } else if wizard.fullDumbbells {
             addGroup(p, w, makeDeadlift("Dumbbell Deadlift", style: "Primary"))
         } else {
-            addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+            if wizard.smith {
+                addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+            } else {
+                addExercise(p, w, make("Seated Leg Curl", "Seated Leg Curl", "Accessory", weights: "Cable Machine", weight: 30))
+            }
         }
         
         if wizard.machines {
@@ -1564,7 +1575,11 @@ final class FemaleAestheticBuilder: Builder {
         } else if wizard.fullDumbbells {
             addGroup(p, w, makeSquat("Split Squat", style: "Primary"))
         } else {
-            addGroup(p, w, makeSquat("Smith Squat", style: "Primary"))
+            if wizard.smith {
+                addGroup(p, w, makeSquat("Smith Squat", style: "Primary"))
+            } else {
+                addGroup(p, w, makeSquat("Leg Press", style: "Primary"))
+            }
         }
         addGroup(p, w, makeAbs("Ab Wheel Rollout", style: "Accessory"))
         if wizard.machines {
@@ -1610,7 +1625,9 @@ final class FemaleAestheticBuilder: Builder {
         } else if wizard.fullDumbbells {
             addGroup(p, w, makeDeadlift("Dumbbell Deadlift", style: "Primary"))
         } else {
-            addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+            if wizard.smith {
+                addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
+            }
         }
 
         if wizard.machines {
