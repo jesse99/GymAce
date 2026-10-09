@@ -395,7 +395,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     private func canAdvance() -> String? {
         if case .none = exercise.baseWeight, let gname = entry.group, exercise.hitTarget(program) {
             if let group = program.groups[gname], let i = group.firstIndex(of: exercise.name), i + 1 < group.count {
-                let ename = exercisesgroup[i + 1]
+                let ename = group[i + 1]
                 if let entry = workout.entries.first(where: {$0.name == ename}), !entry.enabled {
                     return ename
                 }

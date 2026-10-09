@@ -1073,6 +1073,15 @@ extension Exercise {
                         return reps.maxReps
                     }
                 }
+            } else if case .none = baseWeight {
+                // 2) the exercise has no weight so the expected is whatever
+                // they last did clamped to what the current min/max is.
+                let r = last.values[index]
+                if r >= reps.minReps && r < reps.maxReps {
+                    return r
+                } else if r >= reps.maxReps {
+                    return reps.maxReps
+                }
             }
         }
         return reps.minReps
