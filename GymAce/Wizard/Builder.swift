@@ -10,7 +10,7 @@ class Builder {
     
     /// The schedules supported by the program. The user will pick one of these before the program is populated.
     var schedules: [Wizard.Schedule] {fatalError("override this")}
-
+    
     /// Index of the default schedule.
     var defaultSchedule: Int {fatalError("override this")}
     
@@ -21,7 +21,7 @@ class Builder {
     /// Used to update the program after the user has had a chance to switch around exercises using GroupView.
     func fixup(_ program: Program) {
     }
-
+    
     fileprivate func addExercise(_ program: Program, _ workout: Workout, _ exercise: Exercise, enabled: Bool = true) {
         if exercise.name.lowercased().contains("db ") || exercise.name.lowercased().contains("dumbbell") {
             assert(exercise.weightSet! == "Dumbbells")
@@ -30,7 +30,7 @@ class Builder {
         } else if exercise.name.lowercased().contains("machine ") {
             assert(exercise.weightSet!.contains("no bar"))
         }
-
+        
         if program.findExercise(exercise.name) == nil {
             program.exercises.append(exercise)
         }
@@ -47,7 +47,7 @@ class Builder {
             workout.entries.last!.group = group
         }
     }
-
+    
     func initGroups(_ program: Program) {
         if !wizard.groups.isEmpty {
             var groups: [String: [String]] = [:]
@@ -70,7 +70,7 @@ class Builder {
             }
         }
     }
-        
+    
     private func upper(_ weight: Double, floor: Double = 0.0) -> Float {
         var multiplier = 1.0
         if wizard.male {
@@ -113,87 +113,82 @@ class Builder {
     
     fileprivate func makeSquat(_ primary: String, style: String, prefix: String = "", suffix: String = "", group: String = "Squat") -> (String, Int, [Exercise]) {
         let exercises = [
-             make("\(prefix)High Bar Squat\(suffix)", "High bar Squat", style, weights: "Dual Lower Plates", weight: lower(45 + 2*5)),
-             make("\(prefix)Low Bar Squat\(suffix)", "Low bar Squat", style, weights: "Dual Lower Plates", weight: lower(45 + 2*5)),
-             make("\(prefix)Front Squat\(suffix)", "Front Squat", style, weights: "Dual Lower Plates", weight: lower(45)),
-             make("\(prefix)Hack Squat\(suffix)", "Hack Squat", style, weights: "Dual Lower Plates no bar", weight: lower(45 + 2*5)),
-             make("\(prefix)Smith Squat\(suffix)", "Smith Machine Squat", style, weights: "Dual Lower Plates no bar", weight: lower(45 + 2*5)),
-             make("\(prefix)Split Squat\(suffix)", "DB Split Squat", style, weights: "Dumbbells", weight: lower(15)),
-             make("\(prefix)Goblet Squat\(suffix)", "DB Goblet Squat", style, weights: "Dumbbells", weight: lower(25)),
-             make("\(prefix)Leg Press\(suffix)", "Leg Press", style, weights: "Dual Lower Plates no bar", weight: lower(2*35)),
+            make("\(prefix)Front Squat\(suffix)", "Front Squat", style, weights: "Dual Lower Plates", weight: lower(45)),
+            make("\(prefix)Goblet Squat\(suffix)", "DB Goblet Squat", style, weights: "Dumbbells", weight: lower(25)),
+            make("\(prefix)Hack Squat\(suffix)", "Hack Squat", style, weights: "Dual Lower Plates no bar", weight: lower(45 + 2*5)),
+            make("\(prefix)High Bar Squat\(suffix)", "High bar Squat", style, weights: "Dual Lower Plates", weight: lower(45 + 2*5)),
+            make("\(prefix)Leg Press\(suffix)", "Leg Press", style, weights: "Dual Lower Plates no bar", weight: lower(2*35)),
+            make("\(prefix)Low Bar Squat\(suffix)", "Low bar Squat", style, weights: "Dual Lower Plates", weight: lower(45 + 2*5)),
+            make("\(prefix)Smith Squat\(suffix)", "Smith Machine Squat", style, weights: "Dual Lower Plates no bar", weight: lower(45 + 2*5)),
+            make("\(prefix)Split Squat\(suffix)", "DB Split Squat", style, weights: "Dumbbells", weight: lower(15)),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary + suffix})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary + suffix})!
+        return (group, enabledIndex, exercises)
     }
     
     fileprivate func makeDeadlift(_ primary: String, style: String, prefix: String = "", group: String = "Deadlift") -> (String, Int, [Exercise]) {
         let exercises = [
             make("\(prefix)American Deadlift", "Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*20)),
-            make("\(prefix)Romanian Deadlift", "Romanian Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*20)),
-            make("\(prefix)Stiff-Legged Deadlift", "Stiff-Legged Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*10)),
-            make("\(prefix)Sumo Deadlift", "Sumo Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*20)),
-            make("\(prefix)Trap Bar Deadlift", "Trap Bar Deadlift", style, weights: "Trapbar", weight: lower(45 + 2*20)),
             make("\(prefix)Dumbbell Deadlift", "Dumbbell Deadlift", style, weights: "Dumbbells", weight: lower(20)),
             make("\(prefix)Dumbbell Romanian Deadlift", "Dumbbell Romanian Deadlift", style, weights: "Dumbbells", weight: lower(20)),
+            make("\(prefix)Romanian Deadlift", "Romanian Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*20)),
             make("\(prefix)Single Leg Dumbbell Deadlift", "Single Leg Dumbbell Deadlift", style, weights: "Dumbbells", weight: lower(20)),
             make("\(prefix)Smith Deadlift", "Smith Machine Deadlift", style, weights: "Dual Lower Plates no bar", weight: lower(2*35)),
             make("\(prefix)Smith Romanian Deadlift", "Smith Machine Romanian Deadlift", style, weights: "Dual Lower Plates no bar", weight: lower(2*35)),
+            make("\(prefix)Stiff-Legged Deadlift", "Stiff-Legged Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*10)),
+            make("\(prefix)Sumo Deadlift", "Sumo Deadlift", style, weights: "Dual Lower Plates", weight: lower(45 + 2*20)),
+            make("\(prefix)Trap Bar Deadlift", "Trap Bar Deadlift", style, weights: "Trapbar", weight: lower(45 + 2*20)),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
     
     fileprivate func makeBench(_ primary: String, style: String, prefix: String = "", group: String = "Bench") -> (String, Int, [Exercise]) {
         let exercises = [
             make("\(prefix)Bench Press", "Bench Press", style, weights: "Dual Upper Plates", weight: upper(40, floor: 45)),
+            make("\(prefix)Chest Press Machine", "Chest Press Machine", style, weights: "Dual Upper Plates no bar", weight: upper(2*20)),
             make("\(prefix)Close-Grip Bench", "Close-Grip Bench Press", style, weights: "Dual Upper Plates", weight: upper(35, floor: 45)),
-            make("\(prefix)Incline Bench Press", "Incline Bench Press", style, weights: "Dual Upper Plates", weight: upper(35, floor: 45)),
             make("\(prefix)Dumbbell Bench Press", "Dumbbell Bench Press", style, weights: "Dumbbells", weight: upper(15)),
             make("\(prefix)Dumbbell Incline Press", "Dumbbell Incline Press", style, weights: "Dumbbells", weight: upper(15)),
-            make("\(prefix)Chest Press Machine", "Chest Press Machine", style, weights: "Dual Upper Plates no bar", weight: upper(2*20)),
+            make("\(prefix)Incline Bench Press", "Incline Bench Press", style, weights: "Dual Upper Plates", weight: upper(35, floor: 45)),
             make("\(prefix)Smith Bench", "Smith Machine Bench", style, weights: "Dual Upper Plates no bar", weight: upper(2*20)),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
     
     fileprivate func makeOHP(_ primary: String, style: String, prefix: String = "", group: String = "OHP") -> (String, Int, [Exercise]) {
         let exercises = [
-            make("\(prefix)Overhead Press", "Overhead Press", style, weights: "Dual Upper Plates", weight: upper(25, floor: 45)),
-            make("\(prefix)Dumbbell Shoulder Press", "Dumbbell Shoulder Press", style, weights: "Dumbbells", weight: upper(10)),
-            make("\(prefix)Machine Shoulder Press", "Machine Shoulder Press", style, weights: "Dual Upper Plates no bar", weight: upper(2*10)),
             make("\(prefix)Dumbbell Arnold Press", "Dumbbell Arnold Press", style, weights: "Dumbbells", weight: upper(10)),
-            make("\(prefix)Seated Smith Press", "Seated Smith Machine Press", style, weights: "Dual Upper Plates no bar", weight: upper(2*10)),
+            make("\(prefix)Dumbbell Shoulder Press", "Dumbbell Shoulder Press", style, weights: "Dumbbells", weight: upper(10)),
             make("\(prefix)Landmine Press", "Landmine Press", style, weights: "Single Upper Plates no bar", weight: upper(15)),
+            make("\(prefix)Machine Shoulder Press", "Machine Shoulder Press", style, weights: "Dual Upper Plates no bar", weight: upper(2*10)),
+            make("\(prefix)Overhead Press", "Overhead Press", style, weights: "Dual Upper Plates", weight: upper(25, floor: 45)),
+            make("\(prefix)Seated Smith Press", "Seated Smith Machine Press", style, weights: "Dual Upper Plates no bar", weight: upper(2*10)),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
     
     fileprivate func makeRow(_ primary: String, style: String, prefix: String = "", group: String = "Row") -> (String, Int, [Exercise]) {
         let exercises = [
-            make("\(prefix)Pendlay Row", "Pendlay Row", style, weights: "Dual Lower Plates", weight: upper(35, floor: 45)),
+            make("\(prefix)Bent Over Dumbbell Row", "Bent Over Dumbbell Row", style, weights: "Dumbbells", weight: upper(15)),
             make("\(prefix)Chest Supported Row", "Chest Supported Row", style, weights: "Dumbbells", weight: upper(15)),
             make("\(prefix)Kroc Row", "Kroc Row", style, weights: "Dumbbells", weight: upper(20)),
-            make("\(prefix)Bent Over Dumbbell Row", "Bent Over Dumbbell Row", style, weights: "Dumbbells", weight: upper(15)),
+            make("\(prefix)Pendlay Row", "Pendlay Row", style, weights: "Dual Lower Plates", weight: upper(35, floor: 45)),
+            make("\(prefix)Smith Bent-Over Row", "Smith Machine Bent-Over Row", style, weights: "Dual Lower Plates no bar", weight: upper(25)),
             make("\(prefix)Seated Cable Row", "Seated Cable Row", style, weights: "Cable Machine", weight: upper(25)),
             make("\(prefix)Standing One Arm Cable Row", "Standing One Arm Cable Row", style, weights: "Cable Machine", weight: upper(10)),
-            make("\(prefix)Smith Bent-Over Row", "Smith Machine Bent-Over Row", style, weights: "Dual Lower Plates no bar", weight: upper(25)),
             make("\(prefix)T-Bar Row", "T-Bar Row", style, weights: "Single Lower Plates no bar", weight: upper(30)),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
-
+    
     fileprivate func makeAbs(_ primary: String, style: String, prefix: String = "", group: String = "Abs") -> (String, Int, [Exercise]) {
         var exercises = [
-            make("\(prefix)Cable Crunch", "Cable Crunch", style, weights: "Cable Machine", weight: upper(10)),
             make("\(prefix)Ab Wheel Rollout", "Ab Wheel Rollout", style),
+            make("\(prefix)Cable Crunch", "Cable Crunch", style, weights: "Cable Machine", weight: upper(10)),
             make("\(prefix)Decline Situp", "Decline Situp", style, weights: "Single Lower Plates no bar", weight: 0),
             make("\(prefix)Hanging Leg Raise", "Hanging Leg Raise", style),
             make("\(prefix)Landmines", "Landmine 180's", style, weights: "Single Upper Plates no bar", weight: upper(10)),
@@ -201,32 +196,43 @@ class Builder {
         if style != "T3" {
             exercises += [make("Plank", "Plank", "Plank")]
         }
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
-
+    
     fileprivate func makePullup(_ primary: String, style: String, prefix: String = "", group: String = "Pullup") -> (String, Int, [Exercise]) {
         let exercises = [
             make("\(prefix)Chin-up", "Chin-up", style, weights: "Single Lower Plates no bar", weight: 0),
-            make("\(prefix)Pull-up", "Pull-up", style, weights: "Single Lower Plates no bar", weight: 0),
             make("\(prefix)Lat Pulldown", "Lat Pulldown", style, weights: "Cable Machine", weight: upper(25)),
+            make("\(prefix)Pull-up", "Pull-up", style, weights: "Single Lower Plates no bar", weight: 0),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
     
     fileprivate func makeCurl(_ primary: String, style: String, prefix: String = "", group: String = "Curl") -> (String, Int, [Exercise]) {
         let exercises = [
             make("\(prefix)Barbell Curl", "Barbell Curl", style, weights: "Dual Upper Plates", weight: upper(10, floor: 45)),
+            make("\(prefix)Cable Hammer Curls", "Cable Hammer Curls", style, weights: "Cable Machine", weight: upper(10)),
             make("\(prefix)Concentration Curls", "Concentration Curls", style, weights: "Dumbbells", weight: upper(10)),
             make("\(prefix)Spider Curls", "Spider Curls", style, weights: "Dumbbells", weight: upper(10)),
-            make("\(prefix)Cable Hammer Curls", "Cable Hammer Curls", style, weights: "Cable Machine", weight: upper(10)),
         ]
-        let r = exercises.sorted(by: {$0.name < $1.name})
-        let enabledIndex = r.firstIndex(where: {$0.name == prefix + primary})!
-        return (group, enabledIndex, r)
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    // For the most part, groups are only used in the wizard to allow the user to select an alternate
+    // version of the exercise. When used this way we want to keep the group sorted so that it's easier
+    // for users to scan through the list. But here the group is used for advancement so we want to
+    // order the list by increasing difficulty.
+    fileprivate func makePlank(_ primary: String, prefix: String = "", styles: (String, String), group: String = "Plank") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("\(prefix)Plank", "Plank", styles.0),
+            make("\(prefix)Kneeling Ab Wheel", "Ab Wheel Rollout", styles.1),
+            make("\(prefix)Standing Ab Wheel", "Ab Wheel Rollout", styles.1),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == prefix + primary})!
+        return (group, enabledIndex, exercises)
     }
 }
 
@@ -1654,3 +1660,41 @@ final class FemaleAestheticBuilder: Builder {
     }
 }
 
+final class BodyWeightBuilder: Builder {
+    override var name: String {return "Body Weight"}
+    
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3)]}
+
+    override var defaultSchedule: Int {return 1}
+
+    override func build(_ program: Program) {
+        program.summary = "Body weight [routine](https://old.reddit.com/r/bodyweightfitness/wiki/kb/recommended_routine) from Reddit."
+        
+        program.styles["Primary"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "90")
+        program.styles["Plank"] = durationsStyle(secs: "10 10 10", targetSecs: "30")
+
+        scheduleWorkouts(program)
+        initGroups(program)
+    }
+    
+    private func scheduleWorkouts(_ program: Program) {
+        switch wizard.schedule {
+        case .weekly(let days) where days == 2:
+            let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            let workout = Workout("Workout", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 3:
+            let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+            let workout = Workout("Workout", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
+        }
+    }
+    
+    private func buildWorkout(_ p: Program, _ w: Workout) {
+        addGroup(p, w, makePlank("Plank", styles: ("Plank", "Primary")))
+    }
+}

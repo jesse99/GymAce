@@ -56,6 +56,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     @State var showHeartRate = false
     @State var confirmClear = false
     @State var progressed = 0
+    @State var advance = false
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
@@ -121,9 +122,15 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 if canSetWeight() {             // user has done all sets
                     Stepper("Weight", onIncrement: advanceWeight, onDecrement: dropWeight)
                     .fixedSize()
+                } else if let newExercise = canAdvance() {
+                    Toggle("Advance to \(newExercise)", isOn: $advance)
+                        .padding()
                 }
                 Button("Finished") {
                     entry.finishedExercise()
+                    if advance {
+                        doAdvance()
+                    }
                     if healthKit.enabled && healthKit.inProgress && workout.allFinished(program) {
                         healthKit.stop(workout.name)
                     }
@@ -344,7 +351,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         if case .durations(let d) = program.findStyle(exercise.styleName), let target = d.targetSecs {
             for set in plan.sets {
                 if case .duration = set.expected, let r = set.rest, r < target {
-                    notes = "Target up to \(target) seconds."
+                    notes = "Target is \(target) seconds."
                 }
             }
         }
@@ -362,7 +369,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         // If the exercise has weight and a valid weight set then show the weight picker.
         return exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
     }
-    
+
     private func advanceWeight() {
         if case .weight(let w) = exercise.baseWeight {
             if let wn = exercise.weightSet {
@@ -378,6 +385,34 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             if let wn = exercise.weightSet {
                 if let ws = model.weightSets[wn] {
                     exercise.baseWeight = .weight(ws.lower(target: w - 0.001).value())
+                }
+            }
+        }
+    }
+    
+    // If the exercise is part of a group and the user can advance to the next exercise
+    // in the group then return that exercise name.
+    private func canAdvance() -> String? {
+        if case .none = exercise.baseWeight, let gname = entry.group, exercise.hitTarget(program) {
+            if let group = program.groups[gname], let i = group.firstIndex(of: exercise.name), i + 1 < group.count {
+                let ename = exercisesgroup[i + 1]
+                if let entry = workout.entries.first(where: {$0.name == ename}), !entry.enabled {
+                    return ename
+                }
+            }
+        }
+        return nil
+    }
+    
+    private func doAdvance() {
+        if let newName = canAdvance() {
+            let oldName = exercise.name
+            for entry in workout.entries {
+                if entry.name == oldName {
+                    entry.enabled = false
+                }
+                if entry.name == newName {
+                    entry.enabled = true
                 }
             }
         }

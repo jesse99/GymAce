@@ -75,7 +75,8 @@ extension Notes {
                 "Roll the wheel straight forward as far as you can without touching the floor with your body.",
                 "Pause and slowly roll back."],
             [("Link", "https://www.muscleandfitness.com/workouts/full-body-exercises/the-ab-wheel-rollout-how-to-benefits-variations/"),
-             ("Video", "https://www.youtube.com/watch?v=uYBOBBv9GzY")])
+             ("Kneeling", "https://www.youtube.com/watch?v=uYBOBBv9GzY"),
+             ("Standing", "https://www.youtube.com/watch?v=uYBOBBv9GzY")])
         
         add("Adductor Foam Roll",
             ["Lay face down on the floor using upper hands to support your upper body.",
@@ -3451,19 +3452,12 @@ extension Notes {
                 ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
-        add(
-            "Tuck Front Lever Row",
-            [
-                "Get into a tuck front level position.",
+        add("Tuck Front Lever Row",
+            ["Get into a tuck front level position.",
                 "Pull your body up as high as possible while remaining horizontal.",
             ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=F-xEL0Ot0HA"),
-                (
-                    "Body Weight Rows",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row",
-                ),
-            ],
+            [("Link", "https://www.youtube.com/watch?v=F-xEL0Ot0HA"),
+                ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
         add("Tuck Ice Cream Maker",

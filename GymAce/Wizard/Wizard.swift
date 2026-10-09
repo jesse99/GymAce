@@ -140,10 +140,8 @@ final class Wizard {
                         builder = DBComplexBuilder(self)
                     } else if barbells {
                         builder = BarbellComplexBuilder(self)
-                    } else if machines {
-                        builder = CircuitBuilder(self)
                     } else {
-                        builder = StubBuilder(self)   // TODO some sort of bodyweight routine
+                        builder = CircuitBuilder(self)
                     }
                 }
             case .intermediate, .advanced:  // TODO for now we handle advanced like intermediate
@@ -163,10 +161,8 @@ final class Wizard {
                         builder = DBComplexBuilder(self)
                     } else if barbells {
                         builder = BarbellComplexBuilder(self)
-                    } else if machines {
-                        builder = CircuitBuilder(self)
                     } else {
-                        builder = StubBuilder(self)   // TODO some sort of bodyweight routine
+                        builder = CircuitBuilder(self)
                     }
                 }
             }
@@ -175,7 +171,7 @@ final class Wizard {
             builder = DBComplexBuilder(self)
         } else {
             // User has no equipment, so we will generate a bodyweight program.
-            builder = StubBuilder(self)   // TODO
+            builder = BodyWeightBuilder(self)   // TODO should we have a conditioning version?
         }
         
         return builder

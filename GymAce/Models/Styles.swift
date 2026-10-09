@@ -12,7 +12,7 @@ enum Style: Codable {
     /// Exercise is done for a specified number of seconds up to a target value.
     case durations(DurationsInfo)
 
-    /// Like variable except weights only change via the user..
+    /// Like variable except weights only change via the user.
     case manual(VariableInfo)
     
     /// Used for exercises that have a styleName that isn't in the program. This allows the
@@ -618,6 +618,27 @@ extension Exercise {
         }
         return progressed
     }
+
+    // This is used for exercise advancement so we don't bother handling all styles.
+    func hitTarget(_ program: Program) -> Bool {
+        switch program.findStyle(self.styleName) {
+        case .durations(let info):
+            if let actualSecs = getCurrentSecs(n: -1), let target = info.targetSecs {
+                return actualSecs.allSatisfy({$0 >= target})
+            }
+        case .manual(let info):
+            if let actualReps = getCurrentReps(n: -1), actualReps.count == info.workset.count {
+                return (0..<actualReps.count).allSatisfy({actualReps[$0] >= info.workset[$0].maxReps})
+            }
+        case .variable(let info):
+            if let actualReps = getCurrentReps(n: -1), actualReps.count == info.workset.count {
+                return (0..<actualReps.count).allSatisfy({actualReps[$0] >= info.workset[$0].maxReps})
+            }
+        case .amrap, .basic, .missing, .oneRepMax, .timed:
+            break      // exercise advancing doesn't make sense for these
+        }
+        return false
+    }
     
     private func getLastReps(n: Int) -> Int? {
         if self.history.count + n >= 0 {
@@ -634,6 +655,26 @@ extension Exercise {
             let c = self.history[self.history.count + n]
             if case .reps = c.type {
                 return c.values.reduce(0, +)
+            }
+        }
+        return nil
+    }
+
+    private func getCurrentReps(n: Int) -> [Int]? {
+        if self.history.count + n >= 0 {
+            let c = self.history[self.history.count + n]
+            if case .reps = c.type {
+                return c.values
+            }
+        }
+        return nil
+    }
+
+    private func getCurrentSecs(n: Int) -> [Int]? {
+        if self.history.count + n >= 0 {
+            let c = self.history[self.history.count + n]
+            if case .secs = c.type {
+                return c.values
             }
         }
         return nil
