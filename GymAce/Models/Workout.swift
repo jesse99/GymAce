@@ -96,9 +96,14 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
             }
             
             // Group must be present
-            if let group = entry.group {
-                if program.groups[group] == nil {
-                    print("Exercise \(entry.name) has group \(group) but the program has no group with that name")
+            if let groupName = entry.group {
+                if let group = program.groups[groupName] {
+                    if group.firstIndex(of: entry.name) == nil {
+                        print("Exercise \(entry.name) has group \(groupName) but the group doesn't have the exercise")
+                        valid = false
+                    }
+                } else {
+                    print("Exercise \(entry.name) has group \(groupName) but the program has no group with that name")
                     valid = false
                 }
             }
