@@ -71,7 +71,7 @@ class Builder {
         }
     }
     
-    private func upper(_ weight: Double, floor: Double = 0.0) -> Float {
+    fileprivate func upper(_ weight: Double, floor: Double = 0.0) -> Float {
         var multiplier = 1.0
         if wizard.male {
             multiplier *= 2.0
@@ -91,7 +91,7 @@ class Builder {
         return Float(max(multiplier * weight, floor))
     }
     
-    private func lower(_ weight: Double, floor: Double = 0.0) -> Float {
+    fileprivate func lower(_ weight: Double, floor: Double = 0.0) -> Float {
         var multiplier = 1.0
         if wizard.male {
             multiplier *= 1.5
@@ -386,7 +386,7 @@ final class BasicBarbellBuilder: BaseBasic {
                 addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"))
                 addGroup(p, w, makeCurl("Barbell Curl", style: "Accessory"))
             } else {
-                addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Lower Plates", weight: 85))
+                addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Lower Plates", weight: lower(45 + 2*5)))
                 addGroup(p, w, makeRow("Pendlay Row", style: "Accessory"), enabled: false)
             }
         case .conditioning:
@@ -487,7 +487,7 @@ final class BasicSmithBuilder: BaseBasic {
                     addGroup(p, w, makeRow("Seated Cable Row", style: "Accessory"))
                 }
             } else {
-                addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Lower Plates", weight: 85))
+                addExercise(p, w, make("Hip Thrust", "Hip Thrust", "Primary", weights: "Dual Lower Plates", weight: lower(45 + 2*5)))
                 if wizard.machines {
                     addExercise(p, w, make("Hip Abduction", "Cable Hip Abduction", "Accessory", weights: "Cable Machine", weight: 10))
                 } else {
@@ -695,9 +695,9 @@ final class BasicPPLDBBuilder: Builder {
 
     private func buildLegWorkout(_ p: Program, _ w: Workout) {
         addGroup(p, w, makeSquat("Goblet Squat", style: "Primary"))
-        addExercise(p, w, make("Lunge", "Dumbbell Lunge", "Accessory", weights: "Dumbbells", weight: 20))
+        addExercise(p, w, make("Lunge", "Dumbbell Lunge", "Accessory", weights: "Dumbbells", weight: lower(10)))
         addGroup(p, w, makeDeadlift("Single Leg Dumbbell Deadlift", style: "Primary"))
-        addExercise(p, w, make("Calf Raise", "One-Leg DB Calf Raises", "Accessory", weights: "Dumbbells", weight: 40))
+        addExercise(p, w, make("Calf Raise", "One-Leg DB Calf Raises", "Accessory", weights: "Dumbbells", weight: lower(25)))
     }
 }
 
@@ -720,7 +720,7 @@ final class BasicMachineBuilder: BaseBasic {
         if case .aesthetic = wizard.goal, !wizard.male {
             addGroup(p, w, makeSquat("Leg Press", style: "Primary"))
             addGroup(p, w, makeBench("Chest Press Machine", style: "Primary"))
-            addExercise(p, w, make("Leg Curl", "Seated Leg Curl", "Accessory", weights: "Cable Machine", weight: 20))
+            addExercise(p, w, make("Leg Curl", "Seated Leg Curl", "Accessory", weights: "Cable Machine", weight: lower(15)))
             addExercise(p, w, make("Hip Abduction", "Cable Hip Abduction", "Accessory", weights: "Cable Machine", weight: 10), enabled: false)
         } else {
             addGroup(p, w, makeSquat("Leg Press", style: "Primary"))
@@ -1136,16 +1136,16 @@ final class GzclBuilder: Builder {
 
         if wizard.age < 60 {
             if wizard.machines {
-                addExercise(p, w, make("T3 Leg Extensions", "Leg Extensions", "T3", weights: "Cable Machine", weight: 20))
+                addExercise(p, w, make("T3 Leg Extensions", "Leg Extensions", "T3", weights: "Cable Machine", weight: lower(20)))
             }
         }
         if wizard.age < 50 {
             if wizard.barbells {
-                addExercise(p, w, make("T3 Calf Raises", "Standing Calf Raises", "T3", weights: "Dual Lower Plates", weight: 2*45))
+                addExercise(p, w, make("T3 Calf Raises", "Standing Calf Raises", "T3", weights: "Dual Lower Plates", weight: lower(40)))
             }
         }
         if wizard.machines {
-            addExercise(p, w, make("T3 Leg Curl", "Seated Leg Curl", "T3", weights: "Cable Machine", weight: 20))
+            addExercise(p, w, make("T3 Leg Curl", "Seated Leg Curl", "T3", weights: "Cable Machine", weight: lower(15)))
         }
     }
     
@@ -1177,7 +1177,7 @@ final class GzclBuilder: Builder {
     private func buildOhpWorkout(_ p: Program, _ w: Workout, _ week: Int) {
         if wizard.barbells {
             addGroup(p, w, makeOHP("Overhead Press", style: "T1", prefix: "T1 ", group: "T1 OHP"))
-            addExercise(p, w, make("T2.\(week) Barbell Shrug", "Barbell Shrug", "T2.\(week)", weights: "Cable Machine", weight: 20))
+            addExercise(p, w, make("T2.\(week) Barbell Shrug", "Barbell Shrug", "T2.\(week)", weights: "Cable Machine", weight: upper(20)))
         } else if wizard.fullDumbbells {
             addGroup(p, w, makeOHP("Dumbbell Shoulder Press", style: "T1", prefix: "T1 ", group: "T1 OHP"))
             addExercise(p, w, make("T2.\(week) Lateral Raise", "Side Lateral Raise", "T2.\(week)", weights: "Dumbbells", weight: 10))
@@ -1221,7 +1221,7 @@ final class GzclBuilder: Builder {
             }
         }
         if wizard.machines {
-            addExercise(p, w, make("T3 Face Pulls", "Face Pull", "T3", weights: "Cable Machine", weight: 20))
+            addExercise(p, w, make("T3 Face Pulls", "Face Pull", "T3", weights: "Cable Machine", weight: upper(15)))
         }
         addGroup(p, w, makePullup("Pull-up", style: "T3", prefix: "T3 ", group: "T3 Pullup"))
     }
@@ -1471,9 +1471,9 @@ final class MaleAestheticBuilder: Builder {
         }
 
         if wizard.barbells {
-            addExercise(p, w, make("Shrug", "Barbell Shrug", "Accessory", weights: "Dual Upper Plates", weight: 45 + 2*25))
+            addExercise(p, w, make("Shrug", "Barbell Shrug", "Accessory", weights: "Dual Upper Plates", weight: upper(30)))
         } else if wizard.fullDumbbells {
-            addExercise(p, w, make("DB Shrug", "Dumbbell Shrug", "Accessory", weights: "Dumbbells", weight: 30))
+            addExercise(p, w, make("DB Shrug", "Dumbbell Shrug", "Accessory", weights: "Dumbbells", weight: upper(15)))
         } else {
             addExercise(p, w, make("Pec Deck Fly", "Pec Deck Fly", "Accessory", weights: "Cable Machine", weight: 40))
         }
@@ -1488,7 +1488,7 @@ final class MaleAestheticBuilder: Builder {
             if wizard.smith {
                 addGroup(p, w, makeDeadlift("Smith Deadlift", style: "Primary"))
             } else {
-                addExercise(p, w, make("Seated Leg Curl", "Seated Leg Curl", "Accessory", weights: "Cable Machine", weight: 30))
+                addExercise(p, w, make("Seated Leg Curl", "Seated Leg Curl", "Accessory", weights: "Cable Machine", weight: lower(20)))
             }
         }
         

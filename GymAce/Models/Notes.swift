@@ -1227,23 +1227,16 @@ extension Notes {
                 ("Tips", "https://youtu.be/HSoHeSjvIdY")],
         )
         
-        add(
-            "Farmer's Walk",
-            [
-                "Use heavy dumbbells or custom equipment.",
+        add("Farmer's Walk",
+            ["Use heavy dumbbells or custom equipment.",
                 "Walk, taking short quick steps.",
                 "Walk 50-100 feet.",
             ],
-            [(
-                "Link",
-                "https://www.verywellfit.com/how-to-do-a-farmer-carry-techniques-benefits-variations-4796615",
-            )],
+            [("Link", "https://www.verywellfit.com/how-to-do-a-farmer-carry-techniques-benefits-variations-4796615")],
         )
         
-        add(
-            "Finger Curls",
-            [
-                "Sit on a bench and hold a barbell with your palms facing up.",
+        add("Finger Curls",
+            ["Sit on a bench and hold a barbell with your palms facing up.",
                 "Your hands should be about shoulder width apart.",
                 "Allow the bar to roll forward, catching it at the final joint of your fingers.",
                 "Lower the bar as far as possible.",
@@ -1271,10 +1264,8 @@ extension Notes {
             [("Video", "https://www.youtube.com/watch?v=f-GRxDrMC4Y"), ("Gallery", "https://imgur.com/gallery/iEsaS"), ("Notes", "https://www.bodybuilding.com/fun/limber-11-the-only-lower-body-warm-up-youll-ever-need.html")],
         )
         
-        add(
-            "Foam Roll Lats",
-            [
-                "Place a foam roller under your arm pit.",
+        add("Foam Roll Lats",
+            ["Place a foam roller under your arm pit.",
                 "Roll backwards a bit.",
                 "Roll back and forth.",
             ],
@@ -1282,16 +1273,14 @@ extension Notes {
         )
         
         add("Foam Roll Pec Stretch",
-            [
-                "Lie down on top of a foam roller with the roller running length wise from your shoulders to your hips.",
+            ["Lie down on top of a foam roller with the roller running length wise from your shoulders to your hips.",
                 "Extend your hands straight above your chest and then allow them to fall to either side.",
                 "Difficulty can be increased by placing the foam roller on a bench so that your arms can be lowered further."],
             [("Link", "https://breakingmuscle.com/mobility-recovery/why-does-the-front-of-my-shoulder-hurt")],
         )
         
         add("Foot Elevated Hamstring Stretch",
-            [
-                "Stand facing an elevated surface (ideally about 15\" high).",
+            ["Stand facing an elevated surface (ideally about 15\" high).",
                 "Place one foot onto the surface keeping your knee straight.",
                 "The foot on the ground should be pointed straight ahead.",
                 "The toes of the elevated foot should be pointed straight upwards (or backwards to also stretch the calf).",
@@ -1301,8 +1290,7 @@ extension Notes {
         )
         
         add("Forearm Supination & Pronation",
-            [
-                "Sit in a chair with your arm resting on a table or your thigh with your palm facing sideways.",
+            ["Sit in a chair with your arm resting on a table or your thigh with your palm facing sideways.",
                 "To start with use no weight and bend your elbow so that your arm forms a 90 degree angle.",
                 "Slowly turn your palm upwards, to the side, down, and back to the side.",
                 "Keep your forearm in place the entire time.",
@@ -1320,28 +1308,16 @@ extension Notes {
             [("Link", "https://www.topendsports.com/medicine/stretches/lunge-forward.htm"), ("Video", "https://www.doyogawithme.com/content/lunge-psoas-stretch")],
         )
         
-        add(
-            "Freestanding Handstand",
-            [
-                "Lock out your elbows and knees.",
+        add("Freestanding Handstand",
+            ["Lock out your elbows and knees.",
                 "Glue your legs together and point the toes.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/handstand",
-                ),
-                (
-                    "Handstands",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/handstand",
-                ),
-            ],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/handstand"),
+                ("Handstands", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/handstand")],
         )
         
-        add(
-            "French Press",
-            [
-                "Load a barbell or EZ-bar and place it on the ground.",
+        add("French Press",
+            ["Load a barbell or EZ-bar and place it on the ground.",
                 "Bend at the knees and grab the bar with palms facing down.",
                 "Set your hands 8-12 inches apart.",
                 "Stand up with your feet about shoulder width and a slight bend in your knees.",
@@ -1349,10 +1325,7 @@ extension Notes {
                 "Lower the bar behind your head keeping your elbows in place.",
                 "Raise the bar back to the starting position.",
             ],
-            [(
-                "Link",
-                "https://www.muscleandstrength.com/exercises/french-press.html",
-            )],
+            [("Link", "https://www.muscleandstrength.com/exercises/french-press.html")],
         )
         
         add("Frog Stance",
