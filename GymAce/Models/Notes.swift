@@ -66,7 +66,7 @@ extension Notes {
                 "[Power Clean](https://experiencelife.com/article/learn-to-power-clean)",
                 "[Front Squat](https://www.verywellfit.com/how-to-do-a-barbell-front-squat-4842368)",
                 "[Military Press](https://www.muscleandstrength.com/exercises/military-press.html)",
-                "[Back Squat](https://strengtheory.com/how-to-squat)",
+                "[Back Squat](https://squatuniversity.com/2016/03/18/how-to-perfect-the-high-bar-back-squat-2)",
                 "[Good Morning](https://www.verywellfit.com/how-to-do-the-good-morning-exercise-with-barbell-3498255)"],
             [("Link", "https://www.t-nation.com/training/rebuild-yourself-with-complexes")])
         
@@ -75,8 +75,7 @@ extension Notes {
                 "Roll the wheel straight forward as far as you can without touching the floor with your body.",
                 "Pause and slowly roll back."],
             [("Link", "https://www.muscleandfitness.com/workouts/full-body-exercises/the-ab-wheel-rollout-how-to-benefits-variations/"),
-             ("Kneeling", "https://www.youtube.com/watch?v=uYBOBBv9GzY"),
-             ("Standing", "https://www.youtube.com/watch?v=uYBOBBv9GzY")])
+             ("Mistakes", "https://www.youtube.com/watch?v=uYBOBBv9GzY")])
         
         add("Adductor Foam Roll",
             ["Lay face down on the floor using upper hands to support your upper body.",
@@ -156,16 +155,14 @@ extension Notes {
             ["Use a chair or something else to support you as you squat.",
                 "Reduce the use of the support over time.",
             ],
-            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat"),
-                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/squat"),
-                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat")],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/squat")],
         )
         
         add("B8",
             ["[Deadlift](https://stronglifts.com/deadlift)",
                 "[Clean-grip High Pull](https://www.t-nation.com/training/clean-high-pull)",
                 "[Clean-grip Snatch](https://www.catalystathletics.com/exercise/383/Clean-Grip-Snatch/)",
-                "[Back Squats](https://strengtheory.com/how-to-squat)",
+                "[Back Squats](https://squatuniversity.com/2016/03/18/how-to-perfect-the-high-bar-back-squat-2)",
                 "[Good Morning](https://www.verywellfit.com/how-to-do-the-good-morning-exercise-with-barbell-3498255)",
                 "[Rows](https://stronglifts.com/barbell-row)"],
             [("Link", "https://www.t-nation.com/training/rebuild-yourself-with-complexes")],
@@ -439,7 +436,7 @@ extension Notes {
             ["Stand up straight with one hand on your chest and another on your belly.",
                 "Keeping your back straight and your chest out bend at the waist.",
             ],
-            [("Video", "https://www.youtube.com/watch?v=diyzGOtiPCM")],
+            [("Video", "https://www.youtube.com/watch?v=fucEkgO3_4E")],
         )
         
         add("Body-weight Single-Leg Romanian Deadlift",
@@ -555,7 +552,7 @@ extension Notes {
         add("C8",
             ["[Hang Snatch](https://www.bodybuilding.com/exercises/hang-snatch)",
                 "[Overhead Squat](https://barbend.com/overhead-squat/)",
-                "[Back Squat](https://strengtheory.com/how-to-squat)",
+                "[Back Squat](https://squatuniversity.com/2016/03/18/how-to-perfect-the-high-bar-back-squat-2)",
                 "[Good Morning](https://www.verywellfit.com/how-to-do-the-good-morning-exercise-with-barbell-3498255)",
                 "[Rows](https://stronglifts.com/barbell-row)",
                 "[Deadlift](https://stronglifts.com/deadlift)"],
@@ -954,9 +951,7 @@ extension Notes {
                 "Keep your forearms straight up and down the whole time.",
                 "Go down until your arms form a ninety degree angle."],
             [("Link", "https://www.youtube.com/watch?v=_4EGPVJuqfA"),
-             ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
-             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"),
-             ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")],
+             ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup")],
         )
         
         add("Dips",
@@ -1211,8 +1206,8 @@ extension Notes {
         )
         
         add("F8",
-            ["[Overhead Squat](https://barbend.com/overhead-squat)",
-                "[Back Squat](https://strengtheory.com/how-to-squat)",
+            ["[Overhead Squat](https://www.crossfit.com/essentials/the-overhead-squat)",
+                "[Back Squat](https://squatuniversity.com/2016/03/18/how-to-perfect-the-high-bar-back-squat-2)",
                 "[Good Morning](https://www.verywellfit.com/how-to-do-the-good-morning-exercise-with-barbell-3498255)",
                 "[Front Squat](https://www.verywellfit.com/how-to-do-a-barbell-front-squat-4842368)",
                 "[Rows](https://stronglifts.com/barbell-row)",
@@ -1629,8 +1624,7 @@ extension Notes {
                 "Don't let your shoulders shrug up.",
             ],
             [("Link", "https://www.youtube.com/watch?v=dvkIaarnf0g"),
-                ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"),
-                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/row")],
+                ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
         add("Ido's Squat Routine",
@@ -1689,10 +1683,7 @@ extension Notes {
                 "Lock out arms and push shoulders forward.",
                 "Keep elbows in, don't let them flare outwards from your torso."],
             [("Link", "https://www.youtube.com/watch?v=4dF1DOWzf20&feature=youtu.be&t=3m56s"),
-                ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
-                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"),
-                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression"),
-            ],
+                ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup")],
         )
         
         add("Incline Rows",
@@ -1702,8 +1693,7 @@ extension Notes {
                 "Keep your body straight and elbows in.",
                 "Arms should be straight at the bottom.",
                 "Don't let your shoulders shrug up."],
-            [("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"),
-              ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/row")],
+            [("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
         add("Intermediate Shrimp Squat",
@@ -2169,8 +2159,7 @@ extension Notes {
             ["Arms straight.",
                 "Body straight or slightly hollow.",
                 "Depress the shoulders."],
-            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support"),
-                ("Supports", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
         )
         
         add("Pause Bench",
@@ -2306,8 +2295,7 @@ extension Notes {
         add("Pseudo Planche Pushups",
             ["Pushup but with your body scooted forward."],
             [("Video", "https://www.youtube.com/watch?v=Cdmg0CfMZeo"),
-                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
-                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")])
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup")])
         
         add("Cable Pull Through",
             ["Attach a rope handle to a low pulley.",
@@ -2369,8 +2357,7 @@ extension Notes {
                 "Difficulty can be lessened by keeping knees on the floor or by placing hands on a support.",
                 "Difficulty can be increased by placing feet on a bench."],
             [("Video", "https://www.youtube.com/watch?v=4dF1DOWzf20&feature=youtu.be"),
-             ("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
-             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"), ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")],
+             ("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup")],
         )
         
         add("Pushup Plus",
@@ -2543,8 +2530,7 @@ extension Notes {
                 "Depress the shoulders.",
                 "For the turned out version, turn your thumbs out more."
             ],
-            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support"),
-                ("Supports", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
         )
         
         add("Rings L-sit Dips",
@@ -3469,10 +3455,7 @@ extension Notes {
                 "Lock out arms and push shoulders forward.",
                 "Keep elbows in, don't let them flare outwards from your torso.",
             ],
-            [("Link", "https://www.youtube.com/watch?v=a6YHbXD2XlU"),
-                ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
-                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"),
-                ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression")],
+            [("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup")],
         )
         
         add("Vertical Rows",
@@ -3482,8 +3465,7 @@ extension Notes {
                 "Don't let your shoulders shrug up.",
             ],
             [("Link", "https://www.youtube.com/watch?v=e5fdh9_kH_Y"),
-                ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"),
-                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/row")],
+                ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")],
         )
         
         add("Walking Knee Hugs",
@@ -3602,7 +3584,7 @@ extension Notes {
         
         add("Weighted Inverted Row",
             ["Can use a belt with attached weight a weight vest or a plate on your chest/belly."],
-            [("Link", "https://bit.ly/37B9D1Q")])
+            [("Link", "https://www.muscleandstrength.com/exercises/high-inverted-row.html"), ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")])
         
         add("Wide Rows",
             ["Setup a pull-up bar, a barbell, or rings. Use a grip at 1.5x shoulder width.",
@@ -3611,9 +3593,7 @@ extension Notes {
                 "Arms should be straight at the bottom.",
                 "Don't let your shoulders shrug up.",
             ],
-            [("Link", "https://www.youtube.com/watch?v=1yMRvsuk9Xg"),
-             ("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row"),
-             ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")])
+            [("Body Weight Rows", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/row")])
         
         add("Wrist Curls",
             ["Sit down on the end of a bench and grab a dumbbell with your palm facing up.",
