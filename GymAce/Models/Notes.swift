@@ -384,6 +384,14 @@ extension Notes {
             [("Link", "https://www.nerdfitness.com/blog/2014/03/03/strength-training-101-how-to-squat-properly/")],
         )
         
+        add("Body-weight Conditioning",
+            ["[Pull-ups x5](https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup)",
+                "[Medicine Ball Slams x10](https://www.menshealth.com/fitness/a29340497/ball-slam-workout)",
+                "[Burpees x15](https://www.youtube.com/watch?v=qNLiCX8gYWo)",
+                "[Jumping Jacks x20](https://www.nasm.org/resource-center/exercise-library/jumping-jacks)"],
+            [("Link", "https://rosstraining.com/blog/work-capacity-101")],
+        )
+        
         add("Body-weight Hip Thrust",
             ["Use a low bench to elevate your shoulders.",
                 "Move feet about shoulder width apart.",
@@ -1734,6 +1742,14 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/jump-squat")],
         )
         
+        add("Jumping Jacks",
+            ["Stand with your feet together and your arms at your sides.",
+                "Brace your core and explode into a jump off the floor.",
+                "At the same time bring your legs out and your hands up.",
+                "Land with your feet hip-width apart and your hands overhead."],
+            [("Link", "https://www.nasm.org/resource-center/exercise-library/jumping-jacks")],
+        )
+        
         add("Kettlebell One-Legged Deadlift",
             ["Hold a kettlebell in one hand.",
                 "Move the leg opposite the weight behind you.",
@@ -2682,36 +2698,24 @@ extension Notes {
             ],
         )
         
-        add(
-            "RTO Support Hold",
-            [
-                "Arms straight.",
+        add("RTO Support Hold",
+            ["Arms straight.",
                 "Body straight or slightly hollow.",
                 "Depress the shoulders.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support",
-                ),
-                (
-                    "Supports",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support",
-                ),
-            ],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support"),
+                ("Supports", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
         )
         
         add("Run and Jump (intro)",
-            [
-                "Run in place at a brisk pace lifting your feet 4-6 inches from the floor with each step.",
+            ["Run in place at a brisk pace lifting your feet 4-6 inches from the floor with each step.",
                 "Every 75th time your left foot touches the ground stop and do 7 introductory jumping jacks.",
                 "For the jumping jacks stand with legs together, arms at your sides, and jump into the air extending your legs to the side and arms level with your shoulders."],
             [("Link", "https://www.fourmilab.ch/hackdiet/e4/")],
         )
         
         add("Run and Jump",
-            [
-                "Run in place at a brisk pace lifting your feet 4-6 inches from the floor with each step.",
+            ["Run in place at a brisk pace lifting your feet 4-6 inches from the floor with each step.",
                 "Every 75th time your left foot touches the ground stop and do 10 jumping jacks.",
                 "For the jumping jacks stand with legs together, arms at your sides, and jump into the air extending your legs to the side and arms as high as you can."],
             [("Link", "https://www.fourmilab.ch/hackdiet/e4/")],

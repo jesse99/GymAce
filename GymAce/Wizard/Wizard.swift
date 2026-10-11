@@ -167,11 +167,17 @@ final class Wizard {
                 }
             }
         } else if partialDumbbells {
-            // User has only a few dumbbells, so we will generate a complex program.
+            // User has only a few dumbbells, so we will generate a complex program (this should work
+            // reasonably well for both strength and conditioning).
             builder = DBComplexBuilder(self)
         } else {
             // User has no equipment, so we will generate a bodyweight program.
-            builder = BodyWeightBuilder(self)   // TODO should we have a conditioning version?
+            switch goal {
+            case .strength, .bodybuilding, .aesthetic:
+                builder = BodyWeightBuilder(self)
+            case .conditioning:
+                builder = BodyWeightConditioningBuilder(self)
+            }
         }
         
         return builder

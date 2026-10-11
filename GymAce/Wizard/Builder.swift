@@ -928,28 +928,6 @@ final class CircuitBuilder: Builder {
     }
 }
 
-// TODO for intermediate and advanced need to account for age
-
-// TODO for bodyweight use
-// https://www.reddit.com/r/bodyweightfitness/wiki/index/?utm_source=reddit&utm_medium=usertext&utm_name=bodyweightfitness&utm_content=t5_2tf0a
-// may want to add a Progression style
-
-// TODO get rid of this once we handle all the cases
-final class StubBuilder: Builder {
-    override var name: String {return "Not implemented"}
-    
-    override var schedules: [Wizard.Schedule] {return []}
-
-    override var defaultSchedule: Int {return 0}
-
-    override func build(_ program: Program) {
-        program.summary = "Place holder until we can handle this case."
-        let workout = Workout("Workout", Schedule.days(Weekdays([.monday])))
-        program.addWorkout(workout)
-        initGroups(program)
-    }
-}
-
 /// Intermediate and advanced strength program
 final class GzclBuilder: Builder {
     override var name: String {return "GZCL"}
@@ -1824,3 +1802,63 @@ final class BodyWeightBuilder: Builder {
         return (group, enabledIndex, exercises)
     }
 }
+
+final class BodyWeightConditioningBuilder: Builder {
+    override var name: String {return "Conditioning"}
+    
+    override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
+
+    override var defaultSchedule: Int {return 2}
+
+    override func build(_ program: Program) {
+        program.summary = "A [routine](https://rosstraining.com/blog/work-capacity-101) that takes minimal equipment and is focused on conditioning."
+    
+        program.styles["Primary"] = basicStyle(warmup: "", workset: "1", rest: "45s")
+    
+        switch wizard.schedule {
+        case .weekly(let days) where days == 1:
+            let schedule = Schedule.days(Weekdays([.monday]))
+            let workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 2:
+            let schedule = Schedule.days(Weekdays([.monday, .thursday]))
+            let workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        case .weekly(let days) where days == 3:
+            let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
+            let workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+        case .cycle(let count, let rest) where count == 1 && rest == 1:
+            let schedule = Schedule.cyclic
+            var workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+
+            workout = Workout("Rest", schedule)
+            program.addWorkout(workout)
+        case .cycle(let count, let rest) where count == 1 && rest == 2:
+            let schedule = Schedule.cyclic
+            var workout = Workout("Circuit", schedule)
+            buildWorkout(program, workout)
+            program.addWorkout(workout)
+
+            workout = Workout("Rest 1", schedule)
+            program.addWorkout(workout)
+            workout = Workout("Rest 2", schedule)
+            program.addWorkout(workout)
+        default:
+            fatalError("\(wizard.schedule) shouldn't have happened")
+        }
+        initGroups(program)
+    }
+    
+    private func buildWorkout(_ p: Program, _ w: Workout) {
+        for i in 1...10 {
+            addExercise(p, w, make("Circuit \(i)", "Body-weight Conditioning", "Primary"))
+        }
+    }
+}
+
