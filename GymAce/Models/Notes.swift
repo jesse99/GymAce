@@ -1438,7 +1438,9 @@ extension Notes {
                 "Rear Facing Wrist Stretch Palms Down: palms facing knees, rock your body forward and backward.",
                 "Rear Facing Wrist Stretch Palms Up: palms facing knees, rock your body forward and backward.",
                 "Rear Facing Elbow Rotations: palms down facing knees, rotate elbows left and right.",
-                "Forward Facing Wrist Stretch: palms down facing forward, rock your body forward and backward."],
+                "Forward Facing Wrist Stretch: palms down facing forward, rock your body forward and backward.",
+                "Do as many reps as you want for these.",
+            ],
             [("Video", "https://www.youtube.com/watch?v=mSZWSQSSEjE")],
         )
         
@@ -1670,36 +1672,23 @@ extension Notes {
             [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/incline-dumbbell-curl")],
         )
         
-        add(
-            "Incline Pushup",
-            [
-                "Extend your arms and place both hands on a table or some other support.",
+        add("Incline Pushup",
+            ["Extend your arms and place both hands on a table or some other support.",
                 "Walk your feet backward.",
                 "Lower yourself until your chest touches the support and and then push yourself away.",
                 "Difficulty can be increased by using a lower platform.",
                 "Keep your body in a straight line.",
                 "Lock out arms and push shoulders forward.",
                 "Keep elbows in, don't let them flare outwards from your torso."],
-            [
-                (
-                    "Link",
-                    "https://www.youtube.com/watch?v=4dF1DOWzf20&feature=youtu.be&t=3m56s",
-                ),
-                (
-                    "Pushups",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup",
-                ),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup",
-                ),
+            [("Link", "https://www.youtube.com/watch?v=4dF1DOWzf20&feature=youtu.be&t=3m56s"),
+                ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup"),
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase2/pushup"),
                 ("Progression", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup/#wiki_recommended_progression"),
             ],
         )
         
         add("Incline Rows",
-            [
-                "Grab onto something that will support you and also allow you to be between vertical and horizontal.",
+            ["Grab onto something that will support you and also allow you to be between vertical and horizontal.",
                 "Pull your body into the support and then allow it to move back.",
                 "Difficulty can be increased by using a support that will allow you to get more horizontal.",
                 "Keep your body straight and elbows in.",
@@ -2065,23 +2054,25 @@ extension Notes {
             [("Link", "https://backintelligence.com/how-to-fix-forward-head-posture/")],
         )
         
-        add(
-            "Oblique Crunches",
-            [
-                "Lie on your back with your feet elevated.",
+        add("Nordic Curl",
+            ["Kneel on the ground with your feet wedged into something sturdy.",
+                "Lean forward.",
+                "Keep your back straight at all times.",
+            ],
+            [("Video", "https://www.youtube.com/watch?v=d8AAPcYxPo8")],
+        )
+        
+        add("Oblique Crunches",
+            ["Lie on your back with your feet elevated.",
                 "Place one hand behind your head and the other on the floor along your side.",
                 "Elevate your body until your raised elbow touches your knee.",
                 "Switch hands.",
             ],
-            [(
-                "Link",
-                "https://www.bodybuilding.com/exercises/detail/view/name/oblique-crunches",
-            )],
+            [("Link", "https://www.bodybuilding.com/exercises/detail/view/name/oblique-crunches")],
         )
         
         add("One-Arm Kettlebell Snatch",
-            [
-                "Place a kettlebell between your feet.",
+            ["Place a kettlebell between your feet.",
                 "Bend your knees and push your butt back.",
                 "Look straight ahead and swing the kettlebell backwards.",
                 "Immediately reverse direction and use your knees and hips to accelerate the kettlebell.",
@@ -2090,8 +2081,7 @@ extension Notes {
         )
         
         add("One-Arm Pec Stretch",
-            [
-                "Stand close to a wall and stretch one arm out behind you.",
+            ["Stand close to a wall and stretch one arm out behind you.",
                 "Palm should be on the wall.",
                 "Pull in your stomach but don't arch back.",
                 "Lean forward and slightly away from your extended arm.",
@@ -2531,57 +2521,34 @@ extension Notes {
             [("Link", "https://www.youtube.com/watch?v=2Vymm8nH4wM"),
                 ("Dips", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip")])
         
-        add(
-            "Ring Support Hold",
-            [
-                "Arms straight.",
+        add("Ring Support Hold",
+            ["Arms straight.",
                 "Body straight or slightly hollow.",
                 "Depress the shoulders.",
+                "For the turned out version, turn your thumbs out more."
             ],
-            [
-                (
-                    "Link",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support",
-                ),
-                (
-                    "Supports",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support",
-                ),
-            ],
+            [("Link", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support"),
+                ("Supports", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/support")],
         )
         
-        add(
-            "Rings L-sit Dips",
-            [
-                "Do a ring dip with your legs extended straight outward.",
+        add("Rings L-sit Dips",
+            ["Do a ring dip with your legs extended straight outward.",
                 "Difficulty can be lessened by tucking your legs.",
             ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=2Vymm8nH4wM"),
-                (
-                    "Dips",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip",
-                ),
-            ],
+            [("Link", "https://www.youtube.com/watch?v=2Vymm8nH4wM"),
+                ("Dips", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/dip")],
         )
         
-        add(
-            "Rings Pushup",
-            [
-                "Start from a plank position on the rings.",
+        add("Rings Pushup",
+            ["Start from a plank position on the rings.",
                 "Perform the pushup.",
                 "Turn out the rings at the top (rotate so that your thumbs are pointed out).",
                 "Keep your body in a straight line.",
                 "Lock out arms and push shoulders forward.",
                 "Keep elbows in, don't let them flare outwards from your torso.",
             ],
-            [
-                ("Link", "https://www.youtube.com/watch?v=vBviFvN3rHw"),
-                (
-                    "Pushups",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup",
-                ),
-            ],
+            [("Link", "https://www.youtube.com/watch?v=vBviFvN3rHw"),
+                ("Pushups", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pushup")],
         )
         
         add("Rings Wide Pushup",
@@ -2750,57 +2717,34 @@ extension Notes {
             [("Link", "https://www.fourmilab.ch/hackdiet/e4/")],
         )
         
-        add(
-            "Russian Leg Curl",
-            [
-                "Lie down on your stomach.",
+        add("Russian Leg Curl",
+            ["Lie down on your stomach.",
                 "Secure your feet.",
                 "Cross your hands over your chest.",
                 "Bring your torso up as high as possible.",
                 "Keep your back straight at all times.",
             ],
-            [
-                (
-                    "Link",
-                    "https://bretcontreras.com/nordic-ham-curl-staple-exercise-athletes/",
-                ),
+            [("Link", "https://bretcontreras.com/nordic-ham-curl-staple-exercise-athletes/"),
                 ("Video", "https://www.youtube.com/watch?v=d8AAPcYxPo8"),
             ],
         )
         
-        add(
-            "Scapular Pulls",
-            [
-                "Hang down from a pull-up bar.",
+        add("Scapular Pulls",
+            ["Hang down from a pull-up bar.",
                 "Keeping your arms straight.",
             ],
-            [
-                (
-                    "Video",
-                    "https://www.youtube.com/watch?v=FgYoc4O-cio&feature=youtu.be&t=1m21s",
-                ),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup",
-                ),
-            ],
+            [("Video", "https://www.youtube.com/watch?v=FgYoc4O-cio&feature=youtu.be&t=1m21s"),
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/exercises/pullup")],
         )
         
-        add(
-            "Scapular Rows",
-            [
-                "Lay down and use a bar to elevate your torso above the ground.",
+        add("Scapular Rows",
+            ["Lay down and use a bar to elevate your torso above the ground.",
                 "Use your arms to lift your shoulders upwards.",
                 "Keeping your arms straight raise your torso by shrugging your shoulders forward.",
                 "Move slowly, pinch your shoulder blades together.",
             ],
-            [
-                ("Video", "https://www.youtube.com/watch?v=XzSNFureSCE"),
-                (
-                    "Cues",
-                    "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1",
-                ),
-            ],
+            [("Video", "https://www.youtube.com/watch?v=XzSNFureSCE"),
+                ("Cues", "https://www.reddit.com/r/bodyweightfitness/wiki/move/phase1")],
         )
         
         add("Scapular Shrugs",

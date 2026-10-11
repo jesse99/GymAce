@@ -157,6 +157,10 @@ final class ExerciseEntry: Codable {
 
     var enabled: Bool = true
     
+    /// Shown in the workout view if the entry is disabled. If the exercise is part of a group then this is shown if
+    /// all the exercises in the group are disabled.
+    var enableIf: String? = nil
+    
     // This is here instead of ExerciseView so that the user can back up to do things
     // like supersets without losing stuff like timers.
     var mode: Mode = .performing

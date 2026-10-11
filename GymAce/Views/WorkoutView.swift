@@ -72,8 +72,8 @@ struct WorkoutView: View {
                 .font(.footnote)
                 .padding(.leading, 20)
                 .padding(.trailing, 20)
-        } else if !workout.notes.isEmpty {
-            Text(LocalizedStringKey(workout.notes))
+        } else if let n = notes() {
+            Text(LocalizedStringKey(n))
                 .font(.footnote)
                 .padding(.leading, 20)
                 .padding(.trailing, 20)
@@ -88,15 +88,51 @@ struct WorkoutView: View {
                 s = "Worked out for \(secsToLongStr(Int(elapsed))). "
             }
         }
+
+        return s
+    }
+    
+    private func notes() -> String? {
+        var s: [String] = []
+        
+        if !workout.notes.isEmpty {
+            s.append(workout.notes)
+        }
+        
         if let status = healthKit.status, let h = status.text(workout.name) {
-            if let t = s {
-                s = t + h
-            } else {
-                s = h
+            s.append(h)
+        }
+
+        for e in workout.entries {
+            if let eif = e.enableIf, useEnableIf(e), s.firstIndex(of: eif) == nil {
+                s.append(eif)
             }
         }
 
-        return s
+        if s.isEmpty {
+            return nil
+        } else {
+            return s.joined(separator: " ")
+        }
+    }
+    
+    private func useEnableIf(_ entry: ExerciseEntry) -> Bool {
+        func isDisabled(_ workout: Workout, _ name: String) -> Bool {
+            if let entry = workout.entries.first(where: {$0.name == name}) {
+                return !entry.enabled
+            } else {
+                return false
+            }
+        }
+        
+        if let groupName = entry.group {
+            if let group = program.groups[groupName] {
+                return group.allSatisfy({isDisabled(workout, $0)})
+            }
+        } else {
+            return !entry.enabled
+        }
+        return false
     }
     
     private func fgColor(_ entry: ExerciseEntry, _ exercise: Exercise) -> Color {

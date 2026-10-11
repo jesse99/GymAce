@@ -22,7 +22,7 @@ class Builder {
     func fixup(_ program: Program) {
     }
     
-    fileprivate func addExercise(_ program: Program, _ workout: Workout, _ exercise: Exercise, enabled: Bool = true) {
+    fileprivate func addExercise(_ program: Program, _ workout: Workout, _ exercise: Exercise, enabled: Bool = true, enableIf: String? = nil) {
         if exercise.name.lowercased().contains("db ") || exercise.name.lowercased().contains("dumbbell") {
             assert(exercise.weightSet! == "Dumbbells")
         } else if exercise.name.lowercased().contains("smith ") {
@@ -34,16 +34,16 @@ class Builder {
         if program.findExercise(exercise.name) == nil {
             program.exercises.append(exercise)
         }
-        workout.addExercise(name: exercise.name, enabled: enabled)
+        workout.addExercise(name: exercise.name, enabled: enabled, enableIf: enableIf)
     }
     
-    fileprivate func addGroup(_ program: Program, _ workout: Workout, _ inExercises: (String, Int, [Exercise]), enabled: Bool = true) {
+    fileprivate func addGroup(_ program: Program, _ workout: Workout, _ inExercises: (String, Int, [Exercise]), enabled: Bool = true, enableIf: String? = nil) {
         let group = inExercises.0
         let enabledIndex = inExercises.1
         let exercises = inExercises.2
         for (i, e) in exercises.enumerated() {
             assert(exercises.count(where: {$0.name == e.name}) == 1)    // names in a group must be unique
-            addExercise(program, workout, e, enabled: enabled && i == enabledIndex)
+            addExercise(program, workout, e, enabled: enabled && i == enabledIndex, enableIf: enableIf)
             workout.entries.last!.group = group
         }
     }
@@ -1664,37 +1664,163 @@ final class BodyWeightBuilder: Builder {
     override var name: String {return "Body Weight"}
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 2), .weekly(count: 3)]}
-
+    
     override var defaultSchedule: Int {return 1}
-
+    
     override func build(_ program: Program) {
         program.summary = "Body weight [routine](https://old.reddit.com/r/bodyweightfitness/wiki/kb/recommended_routine) from Reddit."
         
-        program.styles["Primary"] = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "90")
-        program.styles["Plank"] = durationsStyle(secs: "10 10 10", targetSecs: "30")
-
+        program.styles["Primary"] = variableStyle(warmup: "", workset: "5-8 5-8 5-8", rest: "90")
+        program.styles["5-10"] = variableStyle(warmup: "", workset: "5-10", rest: "0")
+        program.styles["10"] = variableStyle(warmup: "", workset: "10", rest: "0")
+        program.styles["10s"] = durationsStyle(secs: "10", targetSecs: "30")
+        program.styles["30s"] = durationsStyle(secs: "30", targetSecs: "")
+        
         scheduleWorkouts(program)
         initGroups(program)
     }
     
     private func scheduleWorkouts(_ program: Program) {
+        let schedule = Schedule.anyDay
+        let workout = Workout("Warmup", schedule)
+        buildWarmupWorkout(program, workout)
+        program.addWorkout(workout)
+        
         switch wizard.schedule {
         case .weekly(let days) where days == 2:
             let schedule = Schedule.days(Weekdays([.monday, .thursday]))
-            let workout = Workout("Workout", schedule)
-            buildWorkout(program, workout)
+            let workout = Workout("Strength", schedule)
+            buildStrengthWorkout(program, workout)
             program.addWorkout(workout)
         case .weekly(let days) where days == 3:
             let schedule = Schedule.days(Weekdays([.monday, .wednesday, .friday]))
-            let workout = Workout("Workout", schedule)
-            buildWorkout(program, workout)
+            let workout = Workout("Strength", schedule)
+            buildStrengthWorkout(program, workout)
             program.addWorkout(workout)
         default:
             fatalError("\(wizard.schedule) shouldn't have happened")
         }
     }
     
-    private func buildWorkout(_ p: Program, _ w: Workout) {
-        addGroup(p, w, makePlank("Plank", styles: ("Plank", "Primary")))
+    private func buildWarmupWorkout(_ p: Program, _ w: Workout) {
+        addExercise(p, w, make("Yuri's Shoulder Band", "Yuri's Shoulder Band", "5-10"))
+        addExercise(p, w, make("Squat Sky Reaches", "Squat Sky Reaches", "5-10"))
+        addExercise(p, w, make("GMB Wrist Prep", "GMB Wrist Prep", "10"))
+        addExercise(p, w, make("Deadbugs", "Deadbugs", "30s"))
+        addExercise(p, w, make("Arch Hangs", "Arch Hangs", "10"), enabled: false, enableIf: "Enable Arch Hangs once you can do negative pullups.")
+        addGroup(p, w, makeSupportHold("Parallel Bar Support"), enabled: false, enableIf: "Enable Parallel Bar Hold once you can do negative dips.")
+        addGroup(p, w, makeSquat("Assisted Squat", style: "10", group: "Squat Warmup"), enabled: false, enableIf: "Enable Assisted Squat once you can do bulgarian split squats.")
+        addGroup(p, w, makeHinge("Romanian Deadlift", style: "10", group: "Hinge Warmup"), enabled: false, enableIf: "Enable Romanian Deadlift once you can do banded nordic curls.")
+    }
+    
+    private func buildStrengthWorkout(_ p: Program, _ w: Workout) {
+        addGroup(p, w, makePullup("Scapular Pulls Pair 1"))
+        addGroup(p, w, makeSquat("Assisted Squat Pair 1", style: "Primary", group: "Squat", suffix: " Pair 1"))
+        
+        addGroup(p, w, makeDips("Bar Support Pair 2"))
+        addGroup(p, w, makeHinge("Romanian Deadlift Pair 2", style: "Primary", group: "Hinge", suffix: " Pair 2"))
+        
+        addGroup(p, w, makeRows("Vertical Rows Pair 3"))
+        addGroup(p, w, makePushups("Vertical Pushup Pair 3"))
+        
+        addGroup(p, w, makePlank("Plank Triplet"))
+        addExercise(p, w, make("Pallof Press Triplet", "Pallof Press", "Primary"))
+        addExercise(p, w, make("Reverse Hyper Triplet", "Reverse Hyperextension", "Primary"))
+
+        w.notes = "For the pairs do one set of the first pair, rest, and then do a set of the second pair. Then go back to the first pair and continue. For the triplet do all three and then continue."
+    }
+    
+    fileprivate func makeSupportHold(_ primary: String, group: String = "Support Hold") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Parallel Bar Support", "Parallel Bar Support", "30s"),
+            make("Ring Support Hold", "Ring Support Hold", "30s"),
+            make("Ring Turned Out Support Hold", "Ring Support Hold", "30s"),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makeSquat(_ primary: String, style: String, group: String, suffix: String = "") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Assisted Squat\(suffix)", "Assisted Squat", style),
+            make("Squat\(suffix)", "Body-weight Squat", style),
+            make("Split Squat\(suffix)", "Body-weight Split Squat", style),
+            make("Bulgarian Split Squat\(suffix)", "Body-weight Bulgarian Split Squat", style),
+            make("Beginner Shrimp Squat\(suffix)", "Beginner Shrimp Squat", style),
+            make("Intermediate Shrimp Squat\(suffix)", "Intermediate Shrimp Squat", style),
+            make("Advanced Shrimp Squat\(suffix)", "Advanced Shrimp Squat", style),
+            make("Weighted Shrimp Squats\(suffix)", "Advanced Shrimp Squat", style),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makeHinge(_ primary: String, style: String, group: String, suffix: String = "") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Romanian Deadlift\(suffix)", "Body-weight Romanian Deadlift", style),
+            make("Single Leg Deadlift\(suffix)", "Body-weight Single Leg Deadlift", style),
+            make("Banded Nordic Curl Negatives\(suffix)", "Banded Nordic Curl", style),
+            make("Banded Nordic Curl\(suffix)", "Banded Nordic Curl", style),
+            make("Nordic Curl\(suffix)", "Nordic Curl", style),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makePullup(_ primary: String, group: String = "Pullup") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Scapular Pulls Pair 1", "Scapular Pulls", "Primary"),
+            make("Arch Hangs Pair 1", "Arch Hangs", "Primary"),
+            make("Negative Pull-up Pair 1", "Pull-up", "Primary"),
+            make("Pull-up Pair 1", "Pull-up", "Primary"),
+            make("Weighted Pull-up Pair 1", "Pull-up", "Primary"),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makeDips(_ primary: String, group: String = "Dips") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Bar Support Pair 2", "Parallel Bar Support", "Primary"),
+            make("Negative Dips Pair 2", "Dips", "Primary"),
+            make("Dips Pair 2", "Dips", "Primary"),
+            make("Weighted Dips Pair 2", "Dips", "Primary"),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makeRows(_ primary: String, group: String = "Rows") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Vertical Rows Pair 3", "Vertical Rows", "Primary"),
+            make("Incline Rows Pair 3", "Incline Rows", "Primary"),
+            make("Horizontal Rows Pair 3", "Horizontal Rows", "Primary"),
+            make("Wide Rows Pair 3", "Wide Rows", "Primary"),
+            make("Weighted Inverted Row Pair 3", "Weighted Inverted Row", "Primary"),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makePushups(_ primary: String, group: String = "Pushups") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Vertical Pushup Pair 3", "Vertical Pushup", "Primary"),
+            make("Incline Pushup Pair 3", "Incline Pushup", "Primary"),
+            make("Pushup Pair 3", "Pushup", "Primary"),
+            make("Diamond Pushup Pair 3", "Diamond Pushup", "Primary"),
+            make("Planche Pushups Pair 3", "Pseudo Planche Pushups", "Primary"),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
+    }
+    
+    fileprivate func makePlank(_ primary: String, group: String = "Plank") -> (String, Int, [Exercise]) {
+        let exercises = [
+            make("Plank Triplet", "Plank", "10s"),
+            make("Kneeling Ab Wheel Triplet", "Ab Wheel Rollout", "Primary"),
+            make("Standing Ab Wheel Triplet", "Ab Wheel Rollout", "Primary"),
+        ]
+        let enabledIndex = exercises.firstIndex(where: {$0.name == primary})!
+        return (group, enabledIndex, exercises)
     }
 }
