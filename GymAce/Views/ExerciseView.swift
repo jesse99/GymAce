@@ -393,7 +393,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     // If the exercise is part of a group and the user can advance to the next exercise
     // in the group then return that exercise name.
     private func canAdvance() -> String? {
-        if case .none = exercise.baseWeight, let gname = entry.group, exercise.hitTarget(program) {
+        if case .none = exercise.baseWeight, let gname = exercise.group, exercise.hitTarget(program) {
             if let group = program.groups[gname], let i = group.firstIndex(of: exercise.name), i + 1 < group.count {
                 let ename = group[i + 1]
                 if let entry = workout.entries.first(where: {$0.name == ename}), !entry.enabled {

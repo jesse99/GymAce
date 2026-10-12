@@ -53,9 +53,17 @@ final class Exercise: Codable {
     /// The weight to use for an exercise before percentage modifiers are applied.
     var baseWeight: BaseWeight
     
+    /// Set if the exercise is part of a family of related exercises.
+    var group: String? = nil
+
+    /// Shown in the workout view if the entry is disabled. If the exercise is part of a group then this is shown if
+    /// all the exercises in the group are disabled.
+    var enableIf: String? = nil
+    
     /// Record of when and what the user did for a workout. Last is the most recent.
     var history: [Completed] = []
         
+
     init (name: String, formalName: String, styleName: String, weights: String? = nil, weight: BaseWeight = .none, group: String? = nil) {
         self.name = name
         self.formalName = formalName

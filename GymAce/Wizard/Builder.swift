@@ -22,7 +22,7 @@ class Builder {
     func fixup(_ program: Program) {
     }
     
-    fileprivate func addExercise(_ program: Program, _ workout: Workout, _ exercise: Exercise, enabled: Bool = true, enableIf: String? = nil) {
+    fileprivate func addExercise(_ program: Program, _ workout: Workout, _ exercise: Exercise, enabled: Bool = true, enableIf: String? = nil, group: String? = nil) {
         if exercise.name.lowercased().contains("db ") || exercise.name.lowercased().contains("dumbbell") {
             assert(exercise.weightSet! == "Dumbbells")
         } else if exercise.name.lowercased().contains("smith ") {
@@ -31,10 +31,15 @@ class Builder {
             assert(exercise.weightSet!.contains("no bar"))
         }
         
-        if program.findExercise(exercise.name) == nil {
+        if let oldExercise = program.findExercise(exercise.name) {
+            assert(oldExercise.enableIf == enableIf)
+            assert(oldExercise.group == group)
+        } else {
             program.exercises.append(exercise)
+            exercise.enableIf = enableIf
+            exercise.group = group
         }
-        workout.addExercise(name: exercise.name, enabled: enabled, enableIf: enableIf)
+        workout.addExercise(name: exercise.name, enabled: enabled)
     }
     
     fileprivate func addGroup(_ program: Program, _ workout: Workout, _ inExercises: (String, Int, [Exercise]), enabled: Bool = true, enableIf: String? = nil) {
@@ -43,8 +48,7 @@ class Builder {
         let exercises = inExercises.2
         for (i, e) in exercises.enumerated() {
             assert(exercises.count(where: {$0.name == e.name}) == 1)    // names in a group must be unique
-            addExercise(program, workout, e, enabled: enabled && i == enabledIndex, enableIf: enableIf)
-            workout.entries.last!.group = group
+            addExercise(program, workout, e, enabled: enabled && i == enabledIndex, enableIf: enableIf, group: group)
         }
     }
     
@@ -64,7 +68,7 @@ class Builder {
     fileprivate func enableGroup(_ program: Program, _ groupName: String, _ activeName: String) {
         for w in program.workouts {
             for e in w.entries {
-                if e.group == groupName {
+                if let exercise = program.findExercise(e.name), exercise.group == groupName {
                     e.enabled = e.name == activeName
                 }
             }

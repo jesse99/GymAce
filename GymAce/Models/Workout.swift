@@ -96,7 +96,7 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
             }
             
             // Group must be present
-            if let groupName = entry.group {
+            if let exercise = program.findExercise(entry.name), let groupName = exercise.group {
                 if let group = program.groups[groupName] {
                     if group.firstIndex(of: entry.name) == nil {
                         print("Exercise \(entry.name) has group \(groupName) but the group doesn't have the exercise")
@@ -139,10 +139,9 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         return true
     }
 
-    func addExercise(name: String, enabled: Bool = true, enableIf: String? = nil) {
+    func addExercise(name: String, enabled: Bool = true) {
         let entry = ExerciseEntry(name: name)
         entry.enabled = enabled
-        entry.enableIf = enableIf
         entries.append(entry)
     }
 

@@ -70,7 +70,7 @@ func updateGroups(_ program: Program, _ wizard: Wizard) {
     // Build new groups
     for w in program.workouts {
         for e in w.entries {
-            if let groupName = e.group {
+            if let exercise = program.findExercise(e.name), let groupName = exercise.group {
                 let g = groups[groupName, default: Wizard.Group()]
                 if !g.exercises.contains(e.name) {
                     g.exercises.append(e.name)

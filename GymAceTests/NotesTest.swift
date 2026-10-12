@@ -36,6 +36,12 @@ struct NotesTests {
         UITextChecker.learnWord("www.verywellfit.com")
         UITextChecker.learnWord("dumbbell-romanian")
         UITextChecker.learnWord("unrack")
+        UITextChecker.learnWord("squatuniversity.com")
+        UITextChecker.learnWord("bodyweightfitness")
+        UITextChecker.learnWord("www.menshealth.com")
+        UITextChecker.learnWord("qNLiCX8gYWo")
+        UITextChecker.learnWord("www.crossfit.com")
+        UITextChecker.learnWord("pullup")
         for line in lines {
             if let word = validateSpelling(checker, text: line), !word.isEmpty {
                 print("\(name) has mis-spelled '\(word)'")

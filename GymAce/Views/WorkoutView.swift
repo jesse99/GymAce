@@ -103,8 +103,8 @@ struct WorkoutView: View {
             s.append(h)
         }
 
-        for e in workout.entries {
-            if let eif = e.enableIf, useEnableIf(e), s.firstIndex(of: eif) == nil {
+        for entry in workout.entries {
+            if let e = program.findExercise(entry.name), let eif = e.enableIf, useEnableIf(entry), s.firstIndex(of: eif) == nil {
                 s.append(eif)
             }
         }
@@ -125,7 +125,7 @@ struct WorkoutView: View {
             }
         }
         
-        if let groupName = entry.group {
+        if let exercise = program.findExercise(entry.name), let groupName = exercise.group {
             if let group = program.groups[groupName] {
                 return group.allSatisfy({isDisabled(workout, $0)})
             }

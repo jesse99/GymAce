@@ -141,9 +141,6 @@ struct Working: Codable {
 final class ExerciseEntry: Codable {
     /// The name of the actual exercise.
     var name: String
-
-    /// Set if the exercise is part of a family of related exercises.
-    var group: String? = nil
     
     /// The set the user is currently performing in an exercise screen (this doesn't
     /// belong to the view because we want the user to be able to go to another
@@ -156,10 +153,6 @@ final class ExerciseEntry: Codable {
     var working: Working? = nil
 
     var enabled: Bool = true
-    
-    /// Shown in the workout view if the entry is disabled. If the exercise is part of a group then this is shown if
-    /// all the exercises in the group are disabled.
-    var enableIf: String? = nil
     
     // This is here instead of ExerciseView so that the user can back up to do things
     // like supersets without losing stuff like timers.
