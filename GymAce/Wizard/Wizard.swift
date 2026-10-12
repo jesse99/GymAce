@@ -132,10 +132,11 @@ final class Wizard {
                         }
                     } else if smith {
                         builder = BasicSmithBuilder(self)
-                    } else {    // TODO verify links in notes
+                    } else {
                         builder = BasicMachineBuilder(self)
                     }
                 case .conditioning:
+                    // Usually we prefer barbells, but for complexes dumbbells are better.
                     if fullDumbbells {
                         builder = DBComplexBuilder(self)
                     } else if barbells {

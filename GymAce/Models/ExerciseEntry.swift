@@ -165,8 +165,6 @@ final class ExerciseEntry: Codable {
     // like supersets without losing stuff like timers.
     var mode: Mode = .performing
     
-    var version: Int = 1
-
     init (name: String) {
         self.name = name
         self.setIndex = 0
