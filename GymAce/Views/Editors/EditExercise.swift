@@ -14,6 +14,8 @@ struct EditExercise: View {
     @State private var showFormalHelp = false
     @State private var formalNames: [MenuItem] = []
     @State private var showStylePickerHelp = false
+    @State private var showGroupPickerHelp = false
+    @State private var showEnableIfHelp = false
     private var workoutsLabel: String = ""
     private let badNames: [String]
 
@@ -113,6 +115,45 @@ struct EditExercise: View {
 
             WeightView(model: model, exercise: exercise)
 
+            // Group picker
+            HStack {
+                Picker("", selection: groupBinding) {
+                    let keys: [String] = (Array(program.groups.keys) + ["None"]).sorted(by: {$0 < $1})
+                    ForEach(keys, id: \.self) {name in
+                        Text(name).tag(name)
+                    }
+                }
+                .pickerStyle(.menu)
+                .labelsHidden()
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showGroupPickerHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showGroupPickerHelp {
+                Text("Used to assign a group name from the program. These are used when creating programs and by bodyweight exercises to progress to a harder version of the exercise.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+            
+            // enableIf
+            HStack {
+                noteTextField("Enable If", enableIfBinding)
+                Spacer()
+                Button("", systemImage: "info.circle") {
+                    showEnableIfHelp.toggle()
+                }
+                .buttonStyle(.plain)
+                .padding(.leading, 5)
+            }
+            if showEnableIfHelp {
+                Text("Instructions on when to enable an exercise. This is shown in the workout view if the exercise is disabled.")
+                    .foregroundColor(.blue)
+                    .font(.footnote)
+            }
+
             Text(workoutsLabel)
                 .font(.footnote)
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -176,6 +217,32 @@ struct EditExercise: View {
         Binding(
             get: {return exercise.styleName},
             set: {exercise.styleName = $0}
+        )
+    }
+
+    private var groupBinding: Binding<String> {
+        Binding(
+            get: {return exercise.group ?? "None"},
+            set: {
+                if $0 != "None" {
+                    exercise.group = $0
+                } else {
+                    exercise.group = nil
+                }
+            }
+        )
+    }
+
+    private var enableIfBinding: Binding<String> {
+        Binding(
+            get: {return exercise.enableIf ?? ""},
+            set: {
+                if $0.isBlankOrEmpty {
+                    exercise.enableIf = nil
+                } else {
+                    exercise.enableIf = $0
+                }
+            }
         )
     }
 
