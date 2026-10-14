@@ -4,7 +4,7 @@ let numStages = Wizard.Stage.allCases.max()!.rawValue
 
 struct WizardView: View {
     @State var wizard: Wizard
-    @State var stage: Wizard.Stage = .apparatus
+    @State var stage: Wizard.Stage = .intro
     @Environment(\.dismiss) var dismiss
 
     init(_ model: Model) {
@@ -14,6 +14,7 @@ struct WizardView: View {
     var body: some View {
         VStack {
             switch stage {
+            case .intro: IntroView(wizard: wizard)
             case .apparatus: ApparatusView(wizard: wizard)
             case .goal: GoalView(wizard: wizard)
             case .schedule: ScheduleView(wizard: wizard)
@@ -44,7 +45,8 @@ struct WizardView: View {
     
     private func previousStage() {
         switch stage {
-        case .apparatus: fatalError("should be disabled")
+        case .intro: fatalError("should be disabled")
+        case .apparatus: stage = .intro
         case .goal: stage = .apparatus
         case .schedule: stage = .goal
         case .group: stage = .schedule
@@ -53,6 +55,7 @@ struct WizardView: View {
 
     private func nextStage() {
         switch stage {
+        case .intro: stage = .apparatus
         case .apparatus: stage = .goal
         case .goal: stage = .schedule
         case .schedule: stage = .group

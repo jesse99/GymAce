@@ -5,10 +5,11 @@ import SwiftUI
 @Observable
 final class Wizard {
     enum Stage: Int, Comparable, CaseIterable {    // used by views to show one page of the wizard
-        case apparatus = 1
-        case goal = 2
-        case schedule = 3
-        case group = 4
+        case intro = 1
+        case apparatus = 2
+        case goal = 3
+        case schedule = 4
+        case group = 5
         
         static func < (lhs: Stage, rhs: Stage) -> Bool {
             return lhs.rawValue < rhs.rawValue
