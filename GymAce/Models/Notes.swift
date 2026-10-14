@@ -1741,23 +1741,13 @@ extension Notes {
                 ("Progression", "https://www.startbodyweight.com/p/plank-progression.html")],
         )
         
-        add(
-            "Kneeling Shoulder Rolls",
-            [
-                "Lie prone on a mat keeping elbows below shoulders.",
+        add("Kneeling Shoulder Rolls",
+            ["Lie prone on a mat keeping elbows below shoulders.",
                 "Raise upper body upwards to create a straight line.",
                 "Keep your knees on the ground.",
             ],
-            [
-                (
-                    "Link",
-                    "https://www.exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank.html",
-                ),
-                (
-                    "Progression",
-                    "https://www.startbodyweight.com/p/plank-progression.html",
-                ),
-            ],
+            [("Link", "https://www.exrx.net/WeightExercises/RectusAbdominis/BWFrontPlank.html"),
+                ("Progression", "https://www.startbodyweight.com/p/plank-progression.html")],
         )
         
         add("Kneeling Side Plank",
@@ -1774,6 +1764,7 @@ extension Notes {
                 "At the bottom allow your shoulders to roll forward, at the top retract.",
                 "Keep your shoulders higher than your hips, your back should be at a 15 degree angle to the floor.",
                 "Pull the dumbbell in a straight line from directly below your chest to the lower part of your rib cage.",
+                "Pull until your elbow is behind youe back.",
                 "It's OK to do less than the full ROM as you fatigue and to do these to failure."],
             [("Link", "https://www.setforset.com/blogs/news/kroc-rows"), ("Video", "https://www.youtube.com/watch?v=D7jAIdoORxI")],
         )

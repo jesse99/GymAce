@@ -77,6 +77,9 @@ struct ProgramView: View {
                                 NavigationLink(destination: EditExercises(model: model, program: program)) {
                                     Text("Edit Exercises")
                                 }
+                                NavigationLink(destination: EditGroups(model: model, program: program)) {
+                                    Text("Edit Groups")
+                                }
                                 NavigationLink(destination: EditNotes(model: model, program: program)) {
                                     Text("Edit Notes")
                                 }

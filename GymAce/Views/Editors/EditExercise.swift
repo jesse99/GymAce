@@ -224,10 +224,14 @@ struct EditExercise: View {
         Binding(
             get: {return exercise.group ?? "None"},
             set: {
-                if $0 != "None" {
-                    exercise.group = $0
-                } else {
-                    exercise.group = nil
+                if $0 != exercise.group {
+                    program.removeFromGroup(exercise)
+                    if $0 != "None" {
+                        exercise.group = $0
+                        program.addToGroup(exercise)
+                    } else {
+                        exercise.group = nil
+                    }
                 }
             }
         )

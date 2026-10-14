@@ -213,6 +213,28 @@ final class Program: Codable, Identifiable {
         styles[newName] = old
     }
     
+    func removeFromGroup(_ exercise: Exercise) {
+        if let name = exercise.group, var group = groups[name] {
+            if let i = group.firstIndex(of: name) {
+                group.remove(at: i)
+                groups[name] = group
+            }
+        }
+    }
+
+    func addToGroup(_ exercise: Exercise) {
+        if let name = exercise.group {
+            if groups[name] == nil {
+                groups[name] = []
+            }
+            if var group = groups[name], group.firstIndex(of: name) == nil {
+                group.append(name)
+                groups[name] = group
+            }
+        }
+
+    }
+    
     private func oldestWorkout() -> Date {
         var candidate = Date()  // we'll go ahead and use today if the user hasn't actually finished anything
         for e in exercises {
