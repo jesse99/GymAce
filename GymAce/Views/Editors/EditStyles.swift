@@ -57,6 +57,10 @@ struct EditStyles: View {
                 }
             }
             Spacer()
+            Text("Styles control how exercises are performed, e.g. how long to rest between sets, how many reps to do, how progression is handled, etc.")
+                .font(.footnote)
+                .padding(.leading, 20)
+                .padding(.trailing, 20)
         }
         .navigationTitle("Edit Styles")
         .navigationBarTitleDisplayMode(.inline)
