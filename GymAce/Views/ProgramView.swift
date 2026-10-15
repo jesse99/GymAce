@@ -63,7 +63,7 @@ struct ProgramView: View {
                             }
                         }
                     } else {
-                        ContentUnavailableView("Use Edit Programs on the top right to select a program to use, or to create a new custom program.", systemImage: "figure.run.square.stack.fill")
+                        ContentUnavailableView("Use Create Program on the top right to create a workout routine customized for you. Note that you can edit this program after it's created to make it work even better for you. You can also use Edit Programs on the top right to crate a new program from scratch.", systemImage: "figure.run.square.stack.fill")
                         .padding()
                     }
                 }

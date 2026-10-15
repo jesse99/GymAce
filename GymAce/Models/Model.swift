@@ -17,15 +17,10 @@ final class Model: Codable {
         
     static func load() -> Model {
         do {
-#if targetEnvironment(simulator)
-            print("skipping load")
-            return Model()
-#else
             let data = try Data(contentsOf: url)
             let model = try JSONDecoder().decode(Model.self, from: data)
             model.fixup()
             return model
-#endif
         } catch {
             // Note that new fields are OK if they are optionals. Otherwise
             // a cusom init(from decoder: Decoder) method is required to
@@ -159,10 +154,11 @@ final class Model: Codable {
     
     func deletePrograms(_ names: [String]) {
         for name in names {
-            if name != activeProgram {      // TODO little weird, but w/o this wind up with a blank screen (because parent view is now whacked?)
-                if let index = self.programs.firstIndex(where: {$0.name == name}) {
-                    self.programs.remove(at: index)
-                }
+            if let index = self.programs.firstIndex(where: {$0.name == name}) {
+                self.programs.remove(at: index)
+            }
+            if activeProgram == name {
+                activeProgram = ""
             }
         }
     }

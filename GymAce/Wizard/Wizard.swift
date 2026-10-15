@@ -198,10 +198,11 @@ final class Wizard {
         model.programs.append(program)
         model.activeProgram = program.name
         model.addMissingWeightsets()
-
+        
         if !program.valid(model) {      // TODO this should probably check links
             fatalError("bad program")   // TODO handle this better, e.g. show an error message
         }
+        model.save()
     }
     
     private func hasName(_ name: String) -> Bool {
