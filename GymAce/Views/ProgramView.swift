@@ -70,9 +70,6 @@ struct ProgramView: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Menu {
-                            NavigationLink(destination: WizardView(model)) {
-                                Text("Create Program")
-                            }
                             if let program = model.active() {
                                 NavigationLink(destination: EditExercises(model: model, program: program)) {
                                     Text("Edit Exercises")
@@ -98,9 +95,16 @@ struct ProgramView: View {
                             NavigationLink(destination: EditWeightSets(model: model)) {
                                 Text("Edit Weight Sets")
                             }
-                            if model.active() != nil {
-                                Button("Email Program", action: sendEmail)  // TODO add an option to email completed, maybe as json
+                            
+                            Divider()
+
+                            NavigationLink(destination: WizardView(model)) {
+                                Text("Create Program")
                             }
+                            if model.active() != nil {
+                                Button("Email Program", action: emailProgram)  // TODO add an option to email completed, maybe as json
+                            }
+                            Button("Email Feedback", action: emailFeedback)
                         } label: {
                             Image(systemName: "line.horizontal.3")
                                 .foregroundColor(.blue)
@@ -118,8 +122,8 @@ struct ProgramView: View {
     private func workoutName(_ workout: Workout) -> String {
         return workout.name
     }
-        
-    private func sendEmail() {
+    
+    private func emailProgram() {
         if let program = model.active() {
             let body = model.dump()
             let urlString = "mailto:?subject=\(program.name) Program&body=\(body)"
@@ -129,6 +133,17 @@ struct ProgramView: View {
                 if !accepted {
                     // TODO Handle the error, e.g., show an alert
                 }
+            }
+        }
+    }
+
+    private func emailFeedback() {
+        let urlString = "mailto:jesse.vorisek@gmail.com?subject=GymAce Feedback"
+        guard let url = URL(string: urlString) else { return }
+        
+        openUrl(url) {accepted in
+            if !accepted {
+                // TODO Handle the error, e.g., show an alert
             }
         }
     }
