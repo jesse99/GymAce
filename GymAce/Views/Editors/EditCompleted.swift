@@ -1,5 +1,6 @@
 import SwiftUI
 
+// TODO re-run progress if completed changes? are there issues with that running twice?
 struct EditCompleted: View {
     var program: Program
     var model: Model
