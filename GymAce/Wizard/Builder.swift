@@ -359,7 +359,7 @@ class BaseBasic: Builder {
 }
 
 // Greyskull LP looks even better, see https://9to5strength.com/greyskull-lp-program/
-// TODO Should we switch tp that? Or somehow allow the user to choose?
+// TODO Should we switch tp that? Or somehow allow the user to choose? Maybe a flavor drop down?
 final class BasicBarbellBuilder: BaseBasic {
     override func setup(_ program: Program) {
         program.summary = "A simple [program](https://thefitness.wiki/routines/r-fitness-basic-beginner-routine) for beginners. It's meant to be run for about three months after which you should switch to an intermediate program. For the last sets do as many reps as you can but try to stop when you have 1-2 reps left."
@@ -981,7 +981,9 @@ final class GzclBuilder: Builder {
                         let baseName = exercise.name.dropFirst(3)
                         new.styleName += ".\(workout.weeks!.lowerBound)"
                         new.name = "\(new.styleName) \(baseName)"
-                        new.baseWeight = .other
+                        if exercise.styleName == "T1" {
+                            new.baseWeight = .other
+                        }
                         entry.name = new.name
                         if program.findExercise(new.name) == nil {
                             program.exercises.append(new)
@@ -1025,7 +1027,7 @@ final class GzclBuilder: Builder {
             program.styles["T1.1"] = basicStyle(warmup: "5/45 3/65 1/75", workset: "5/85 5/85", rest: "5m")          // 10 reps
             program.styles["T1.2"] = basicStyle(warmup: "5/50 3/70 1/80", workset: "4/90 4/90", rest: "5m")          // 8 reps
             program.styles["T1.3"] = basicStyle(warmup: "5/47 3/67 1/77", workset: "3/87 2/92 1/97", rest: "5m")     // 6 reps
-            program.styles["T1.4"] = amrapStyle(warmup: "5/50 3/70 1/80", workset: "1/90 1/95 1", rest: "5m")        // 3+ reps
+            program.styles["T1.4"] = oneRepMaxStyle(warmup: "5/50 3/70 1/80", workset: "1/90 1/95 1", rest: "5m")    // 3+ reps
 
             program.styles["T2.1"] = basicStyle(warmup: "5/25 3/45 1/55", workset: "6/65 6/65 6/65", rest: "3.5m")   // 18 reps
             program.styles["T2.2"] = basicStyle(warmup: "5/30 3/50 1/60", workset: "5/70 5/70 5/70", rest: "3.5m")   // 15 reps
@@ -1038,7 +1040,7 @@ final class GzclBuilder: Builder {
             program.styles["T1.1"] = basicStyle(warmup: "5/45 3/65 1/75", workset: "4/85 4/85 4/85", rest: "4m")        // 12 reps
             program.styles["T1.2"] = basicStyle(warmup: "5/50 3/70 1/80", workset: "3/90 3/90 3/90", rest: "4m")        // 9 reps
             program.styles["T1.3"] = basicStyle(warmup: "5/47 3/67 1/77", workset: "3/87 2/92 2/92 1/97", rest: "4m")   // 8 reps
-            program.styles["T1.4"] = amrapStyle(warmup: "5/50 3/70 1/80", workset: "2/90 2/95 1", rest: "4m")           // 5+ reps
+            program.styles["T1.4"] = oneRepMaxStyle(warmup: "5/50 3/70 1/80", workset: "2/90 2/95 1", rest: "4m")       // 5+ reps
 
             program.styles["T2.1"] = basicStyle(warmup: "5/25 3/45 1/55", workset: "6/65 6/65 6/65 6/65", rest: "3m")   // 24 reps
             program.styles["T2.2"] = basicStyle(warmup: "5/30 3/50 1/60", workset: "5/70 5/70 5/70 5/70", rest: "3m")   // 20 reps
@@ -1051,7 +1053,7 @@ final class GzclBuilder: Builder {
             program.styles["T1.1"] = basicStyle(warmup: "5/45 3/65 1/75", workset: "5/85 5/85 5/85", rest: "4m")                  // 15 reps
             program.styles["T1.2"] = basicStyle(warmup: "5/50 3/70 1/80", workset: "3/90 3/90 3/90 3/90", rest: "4m")             // 12 reps
             program.styles["T1.3"] = basicStyle(warmup: "5/47 3/67 1/77", workset: "3/87 2/92 2/92 1/97 1/97 1/97", rest: "4m")   // 10 reps
-            program.styles["T1.4"] = amrapStyle(warmup: "5/50 3/70 1/80", workset: "3/90 2/95 1", rest: "4m")                     // 6+ reps
+            program.styles["T1.4"] = oneRepMaxStyle(warmup: "5/50 3/70 1/80", workset: "3/90 2/95 1", rest: "4m")                 // 6+ reps
 
             program.styles["T2.1"] = basicStyle(warmup: "5/25 3/45 1/55", workset: "8/65 8/65 8/65 8/65", rest: "2.5m")           // 32 reps
             program.styles["T2.2"] = basicStyle(warmup: "5/30 3/50 1/60", workset: "6/70 6/70 6/70 6/70 6/70", rest: "2.5m")      // 30 reps

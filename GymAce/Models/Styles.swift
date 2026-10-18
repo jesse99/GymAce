@@ -19,7 +19,7 @@ enum Style: Codable {
     /// logic to be simplified.
     case missing
     
-    /// Used to compute a one rep max. This is usally used in conjunction with the percent and/or amrap styles.
+    /// Used to compute a one rep max. This is usally used in conjunction with the amrap or variable styles.
     case oneRepMax(OneRepMaxInfo)
     
     /// Exercise is done for an arbitrary amount of time, e.g. jogging.
@@ -951,23 +951,27 @@ extension Exercise {
             valid = false
         }
         if case .other = self.baseWeight {
-            var count = 0
             var active = false
-            for w in program.workouts { // logic needs to match findOtherExercise
+            for w in program.workouts {
                 for n in w.entries {
-                    if let e = program.findExercise(n.name), e.formalName == formalName, n.enabled {
-                        if case .weight = e.baseWeight {
-                            count += 1
-                        }
-                    }
                     if n.name == name && n.enabled {
                         active = true
+                        break
                     }
                 }
             }
-            if active && count != 1 {
-                print("Program \(program.name) exercise \(name) has \(count) other exercises (expected 1)")
-                valid = false
+
+            if active {
+                let matches = findOtherExercises(program)
+                if matches.count == 0 {
+                    print("Program \(program.name) exercise \(name) has no 'other' exercises")
+                    valid = false
+                } else if matches.count > 1 {
+                    let names = matches.map {$0.0.name}
+                    let s = names.joined(separator: ", ")
+                    print("Program \(program.name) exercise \(name) has \(matches.count) other exercises: \(s)")
+                    valid = false
+                }
             }
         }
         return valid
@@ -1033,28 +1037,61 @@ extension Exercise {
 
     // Return the first exercise with the same formalName that doesn't use percent style.
     func findOtherExercise(_ program: Program) -> (Exercise, Workout)? {
-        // Prefer other exercises that are enabled.
+        let results = findOtherExercises(program)
+        if !results.isEmpty {
+            return results[0]
+        } else {
+            return nil
+        }
+    }
+    
+    // We find "other" exercises by looking for exercises with a matching formalName. Usually this
+    // works fine, but for more complex programs like GZCL, it gets tricky. So we use heuristics to
+    // find the right other exercise.
+    func findOtherExercises(_ program: Program) -> [(Exercise, Workout)] {
+        var result: [(Exercise, Workout)] = []
+        
+        // If there's an other exercise that is 1RM then that is almost cerainly what we should use.
         for w in program.workouts {
             for n in w.entries {
-                if let e = program.findExercise(n.name), e.formalName == formalName, n.enabled {
-                    if case .weight = e.baseWeight {
-                        return (e, w)
+                if let e = program.findExercise(n.name), n.name != name, e.formalName == formalName, n.enabled {
+                    let style = program.findStyle(e.styleName)
+                    if case .oneRepMax = style, case .weight = e.baseWeight {
+                        result.append((e, w))
                     }
                 }
             }
         }
-        // But fallback to disabled exercises if we have to (this is a bit icky because there can
+        if !result.isEmpty {
+            return result
+        }
+
+        // Otherwise use other exercises that are enabled and have a weight.
+        for w in program.workouts {
+            for n in w.entries {
+                if let e = program.findExercise(n.name), n.name != name, e.formalName == formalName, n.enabled {
+                    if case .weight = e.baseWeight {
+                        result.append((e, w))
+                    }
+                }
+            }
+        }
+        if !result.isEmpty {
+            return result
+        }
+
+        // Fallback to disabled exercises if we have to (this is a bit icky because there can
         // be multiple matches but validate should catch that).
         for w in program.workouts {
             for n in w.entries {
-                if let e = program.findExercise(n.name), e.formalName == formalName {
+                if let e = program.findExercise(n.name), n.name != name, e.formalName == formalName {
                     if case .weight = e.baseWeight {
-                        return (e, w)
+                        result.append((e, w))
                     }
                 }
             }
         }
-        return nil
+        return result
     }
     
     private func findMinAMRAP(_ model: Model, _ program: Program, _ reps: Int, _ index: Int) -> Int {
