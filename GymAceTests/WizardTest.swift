@@ -9,15 +9,12 @@ struct WizardTests {
         for goal in [Wizard.Goal.strength, Wizard.Goal.bodybuilding, Wizard.Goal.aesthetic, Wizard.Goal.conditioning] {
             for fitness in [Wizard.Fitness.beginner, Wizard.Fitness.intermediate, Wizard.Fitness.advanced] {
                 for age in [20, 50, 60, 80] {
+                    // no apparatus
                     var model = Model()
                     var wizard = Wizard(model)
                     wizard.goal = goal
                     wizard.fitness = fitness
                     wizard.age = age
-                    
-                    // no apparatus
-                    model = Model()
-                    wizard = Wizard(model)
                     wizard.barbells = false
                     wizard.fullDumbbells = false
                     wizard.partialDumbbells = false
@@ -28,6 +25,9 @@ struct WizardTests {
                     // one apparatus
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = true
                     wizard.fullDumbbells = false
                     wizard.partialDumbbells = false
@@ -37,6 +37,9 @@ struct WizardTests {
 
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = false
                     wizard.fullDumbbells = false
                     wizard.partialDumbbells = true
@@ -46,6 +49,9 @@ struct WizardTests {
 
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = false
                     wizard.fullDumbbells = true
                     wizard.partialDumbbells = false
@@ -55,6 +61,9 @@ struct WizardTests {
 
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = false
                     wizard.fullDumbbells = false
                     wizard.partialDumbbells = false
@@ -64,6 +73,9 @@ struct WizardTests {
 
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = false
                     wizard.fullDumbbells = false
                     wizard.partialDumbbells = false
@@ -74,6 +86,9 @@ struct WizardTests {
                     // multiple apparatus
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = true
                     wizard.fullDumbbells = true
                     wizard.partialDumbbells = false
@@ -83,6 +98,9 @@ struct WizardTests {
 
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = true
                     wizard.fullDumbbells = true
                     wizard.partialDumbbells = false
@@ -92,6 +110,9 @@ struct WizardTests {
 
                     model = Model()
                     wizard = Wizard(model)
+                    wizard.goal = goal
+                    wizard.fitness = fitness
+                    wizard.age = age
                     wizard.barbells = false
                     wizard.fullDumbbells = false
                     wizard.partialDumbbells = false
@@ -112,6 +133,7 @@ struct WizardTests {
             updateGroups(program, wizard)
             builder.initGroups(program)
 
+            builder.fixup(program)
             model.programs.append(program)
             model.activeProgram = program.name
             model.addMissingWeightsets()

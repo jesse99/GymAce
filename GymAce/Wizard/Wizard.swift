@@ -94,6 +94,7 @@ final class Wizard {
     var partialDumbbells: Bool  // user has a limited selection of dumbbells
     var machines: Bool
     var smith: Bool
+    var units: Units? = nil
     
     var age: Int                // can affect volume
     var schedule: Schedule      // set after we can create a program
@@ -110,6 +111,11 @@ final class Wizard {
         self.smith = true
         self.goal = .strength
         self.fitness = .beginner
+        if Locale.current.region?.identifier == "US" {
+            self.units = .Imperial
+        } else {
+            self.units = .Metric
+        }
         self.male = true
         self.schedule = .weekly(count: 8)   // so we wind up using defaultSchedule
         self.groups = [:]
@@ -188,6 +194,9 @@ final class Wizard {
     func make(_ builder: Builder) -> Program {
         let name = findName(hasName, prefix: builder.name)
         let program = Program(name)
+        if let u = self.units, model.units == nil {
+            model.units = u
+        }
         builder.build(program)
         return program
     }

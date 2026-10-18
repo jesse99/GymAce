@@ -1764,7 +1764,7 @@ extension Notes {
                 "At the bottom allow your shoulders to roll forward, at the top retract.",
                 "Keep your shoulders higher than your hips, your back should be at a 15 degree angle to the floor.",
                 "Pull the dumbbell in a straight line from directly below your chest to the lower part of your rib cage.",
-                "Pull until your elbow is behind youe back.",
+                "Pull until your elbow is behind your back.",
                 "It's OK to do less than the full ROM as you fatigue and to do these to failure."],
             [("Link", "https://www.setforset.com/blogs/news/kroc-rows"), ("Video", "https://www.youtube.com/watch?v=D7jAIdoORxI")],
         )

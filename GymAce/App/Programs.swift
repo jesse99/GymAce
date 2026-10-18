@@ -1,43 +1,45 @@
 // TODO should rename this file
 import Foundation
 
-func defaultWeightSets() -> [String: WeightSet] {
+func defaultWeightSets(_ units: Units) -> [String: WeightSet] {
+    if case .Metric = units {
+        return metricWeights()
+    } else {
+        return imperialWeights()
+    }
+}
+
+fileprivate func imperialWeights() -> [String: WeightSet] {
     var sets: [String: WeightSet] = [:]
     
-    var plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    var dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
+    let upperPlates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+    let lowerPlates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
+
+    var dual = PlateWeights(dual: true, plates: lowerPlates, bar: 45.0, units: .Imperial)
     sets["Dual Lower Plates"] = WeightSet.plates(dual)
 
-    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    dual = PlateWeights(dual: true, plates: plates, bar: 45.0, units: .Imperial)
+    dual = PlateWeights(dual: true, plates: upperPlates, bar: 45.0, units: .Imperial)
     sets["Dual Upper Plates"] = WeightSet.plates(dual)
     
-    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    var single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+    var single = PlateWeights(dual: false, plates: lowerPlates, bar: 45.0, units: .Imperial)
     sets["Single Lower Plates"] = WeightSet.plates(single)
     
-    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    single = PlateWeights(dual: false, plates: plates, bar: 45.0, units: .Imperial)
+    single = PlateWeights(dual: false, plates: upperPlates, bar: 45.0, units: .Imperial)
     sets["Single Upper Plates"] = WeightSet.plates(single)
 
-    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+    dual = PlateWeights(dual: true, plates: lowerPlates, bar: 0.0, units: .Imperial)
     sets["Dual Lower Plates no bar"] = WeightSet.plates(dual)
 
-    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    dual = PlateWeights(dual: true, plates: plates, bar: 0.0, units: .Imperial)
+    dual = PlateWeights(dual: true, plates: upperPlates, bar: 0.0, units: .Imperial)
     sets["Dual Upper Plates no bar"] = WeightSet.plates(dual)
 
-    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
+    single = PlateWeights(dual: false, plates: lowerPlates, bar: 0.0, units: .Imperial)
     sets["Single Lower Plates no bar"] = WeightSet.plates(single)
 
-    plates = [Plate(2.5, 2), Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    single = PlateWeights(dual: false, plates: plates, bar: 0.0, units: .Imperial)
+    single = PlateWeights(dual: false, plates: upperPlates, bar: 0.0, units: .Imperial)
     sets["Single Upper Plates no bar"] = WeightSet.plates(single)
     
-    plates = [Plate(5.0, 4), Plate(10.0, 4), Plate(25.0, 4), Plate(45.0, 6)]
-    dual = PlateWeights(dual: true, plates: plates, bar: 60.0, units: .Imperial)
+    dual = PlateWeights(dual: true, plates: lowerPlates, bar: 60.0, units: .Imperial)
     sets["Trapbar"] = WeightSet.plates(dual)
 
     let cable = DiscreteWeights(weights: [2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 47.5, 52.5, 57.5, 62.5, 67.5, 72.5, 77.5, 82.5, 87.5, 92.5, 97.5], units: .Imperial)
@@ -50,6 +52,60 @@ func defaultWeightSets() -> [String: WeightSet] {
     sets["Home Dumbbells"] = WeightSet.discrete(dumbbells)
 
     let kettlebells = DiscreteWeights(weights: [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50], units: .Imperial)
+    sets["Kettlebells"] = WeightSet.discrete(kettlebells)
+    
+    return sets
+}
+
+fileprivate func metricWeights() -> [String: WeightSet] {
+    var sets: [String: WeightSet] = [:]
+    
+    let upperPlates = [Plate(1.25, 2), Plate(2.5, 4), Plate(5.0, 4), Plate(10.0, 4), Plate(20.0, 6)]
+    let lowerPlates = [Plate(2.5, 4), Plate(5.0, 4), Plate(10.0, 4), Plate(20.0, 6)]
+
+    var dual = PlateWeights(dual: true, plates: lowerPlates, bar: 20, units: .Metric)
+    sets["Dual Lower Plates"] = WeightSet.plates(dual)
+
+    dual = PlateWeights(dual: true, plates: upperPlates, bar: 20, units: .Metric)
+    sets["Dual Upper Plates"] = WeightSet.plates(dual)
+    
+    var single = PlateWeights(dual: false, plates: lowerPlates, bar: 20, units: .Metric)
+    sets["Single Lower Plates"] = WeightSet.plates(single)
+    
+    single = PlateWeights(dual: false, plates: upperPlates, bar: 20, units: .Metric)
+    sets["Single Upper Plates"] = WeightSet.plates(single)
+
+    dual = PlateWeights(dual: true, plates: lowerPlates, bar: 0.0, units: .Metric)
+    sets["Dual Lower Plates no bar"] = WeightSet.plates(dual)
+
+    dual = PlateWeights(dual: true, plates: upperPlates, bar: 0.0, units: .Metric)
+    sets["Dual Upper Plates no bar"] = WeightSet.plates(dual)
+
+    single = PlateWeights(dual: false, plates: lowerPlates, bar: 0.0, units: .Metric)
+    sets["Single Lower Plates no bar"] = WeightSet.plates(single)
+
+    single = PlateWeights(dual: false, plates: upperPlates, bar: 0.0, units: .Metric)
+    sets["Single Upper Plates no bar"] = WeightSet.plates(single)
+    
+    dual = PlateWeights(dual: true, plates: lowerPlates, bar: 25, units: .Metric)
+    sets["Trapbar"] = WeightSet.plates(dual)
+
+    let cable = DiscreteWeights(weights: [2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0], units: .Metric)
+    sets["Cable Machine"] = WeightSet.discrete(cable)
+
+    var dumbbells = DiscreteWeights(weights: [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0, 26.0, 28.0, 30.0, 32.0, 34.0, 36.0, 38.0, 40.0, 42.0, 44.0, 46.0, 48.0, 50.0], units: .Metric)
+    sets["Dumbbells"] = WeightSet.discrete(dumbbells)
+
+    dumbbells = DiscreteWeights(weights: [2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0, 27.5, 30.0, 32.5, 35.0, 37.5, 40.0, 42.5, 45.0, 47.5, 50.0], units: .Metric)
+    sets["Dumbbells2"] = WeightSet.discrete(dumbbells)
+
+    dumbbells = DiscreteWeights(weights: [2.0, 4.0, 6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0, 22.0, 24.0], units: .Metric)
+    sets["Home Dumbbells"] = WeightSet.discrete(dumbbells)
+
+    dumbbells = DiscreteWeights(weights: [2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 17.5, 20.0, 22.5, 25.0], units: .Metric)
+    sets["Home Dumbbells2"] = WeightSet.discrete(dumbbells)
+
+    let kettlebells = DiscreteWeights(weights: [4, 6, 8, 12, 16, 20, 24, 28], units: .Metric)
     sets["Kettlebells"] = WeightSet.discrete(kettlebells)
     
     return sets

@@ -186,8 +186,13 @@ func completedDetails(_ values: [Int], _ type: ValueType, _ weights: [Float]?, _
         trailer = " @ " + trailer
     }
     if let distance = distance {
-        let s = String(format: "%.2f", distance*0.000621371)   // TODO use meters if metric
-        trailer += " \(s) miles"
+        if case .Metric = units {
+            let s = String(format: "%.3f", distance/1000)
+            trailer += " \(s) km"
+        } else {
+            let s = String(format: "%.2f", distance*0.000621371)
+            trailer += " \(s) miles"
+        }
     }
 
     switch type {

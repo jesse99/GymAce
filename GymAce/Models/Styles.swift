@@ -947,21 +947,25 @@ extension Exercise {
         case .basic, .durations, .manual, .timed, .variable:
             break
         case .missing:
-            print("Program \(program.name) exercise \(name) is the missing style)")
+            print("Program \(program.name) exercise \(name) is using style \(self.styleName) which is missing)")
             valid = false
         }
         if case .other = self.baseWeight {
             var count = 0
+            var active = false
             for w in program.workouts { // logic needs to match findOtherExercise
                 for n in w.entries {
-                    if let e = program.findExercise(n.name), e.formalName == formalName {
+                    if let e = program.findExercise(n.name), e.formalName == formalName, n.enabled {
                         if case .weight = e.baseWeight {
                             count += 1
                         }
                     }
+                    if n.name == name && n.enabled {
+                        active = true
+                    }
                 }
             }
-            if count != 1 {
+            if active && count != 1 {
                 print("Program \(program.name) exercise \(name) has \(count) other exercises (expected 1)")
                 valid = false
             }
@@ -1029,6 +1033,18 @@ extension Exercise {
 
     // Return the first exercise with the same formalName that doesn't use percent style.
     func findOtherExercise(_ program: Program) -> (Exercise, Workout)? {
+        // Prefer other exercises that are enabled.
+        for w in program.workouts {
+            for n in w.entries {
+                if let e = program.findExercise(n.name), e.formalName == formalName, n.enabled {
+                    if case .weight = e.baseWeight {
+                        return (e, w)
+                    }
+                }
+            }
+        }
+        // But fallback to disabled exercises if we have to (this is a bit icky because there can
+        // be multiple matches but validate should catch that).
         for w in program.workouts {
             for n in w.entries {
                 if let e = program.findExercise(n.name), e.formalName == formalName {

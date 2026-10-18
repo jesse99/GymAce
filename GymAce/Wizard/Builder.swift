@@ -606,7 +606,8 @@ final class BasicPPLDBBuilder: Builder {
         
         program.styles["Primary"]   = variableStyle(warmup: "5/60 3/80 1/90", workset: "6-12 6-12 6-12", rest: "90s")
         program.styles["Accessory"] = variableStyle(warmup: "", workset: "6-12 6-12 6-12", rest: "90s")
-        
+        program.styles["Plank"]     = durationsStyle(secs: "30 30 30", targetSecs: "")
+
         scheduleWorkouts(program)
         initGroups(program)
     }
@@ -1005,6 +1006,16 @@ final class GzclBuilder: Builder {
                 program.exercises.removeAll(where: {$0.name == old.name})
             }
         }
+        
+        // There's no real reason to keep these groups around (unless this program is updated to include
+        // bodyweight exercises). And if we do keep it around we need to update the names in the groups to
+        // include the week numbers. TODO it would be better to do this for all the builders but we'd have
+        // to take care not to nuke the groups that are used for progression. Note that if we do this we
+        // should update the Edit groups footer.
+        for exercise in program.exercises {
+            exercise.group = nil
+        }
+        program.groups = [:]
     }
     
     private func initStyles(_ program: Program) {
@@ -1242,19 +1253,22 @@ final class PHATBuilder: Builder {
     override var defaultSchedule: Int {return 0}
 
     override func build(_ program: Program) {
-        program.summary = "Five day a week bodybuilding [program](https://thefitness.wiki/reddit-archive/dumbbell-stopgap-ppl/)."
+        program.summary = "Five day a week bodybuilding [program](https://simplyshredded.com/mega-feature-layne-norton-training-series-full-powerhypertrophy-routine-updated-2011.html)."
         
         program.styles["Power"] = variableStyle(warmup: "5/60 3/80 1/90", workset: "3-5 3-5 3-5", rest: "4m")
         program.styles["Speed"] = manualStyle(warmup: "5/35 3/55", workset: "3/65 3/65 3/65 3/65 3/65 3/65", rest: "60s")
         
         program.styles["2x6-10"]  = variableStyle(warmup: "", workset: "6-10 6-10", rest: "90s")
         program.styles["2x12-15"] = variableStyle(warmup: "", workset: "12-15 12-15", rest: "90s")
+        program.styles["2x15-20"] = variableStyle(warmup: "", workset: "15-20 15-20", rest: "90s")
         program.styles["3x5-8"]   = variableStyle(warmup: "", workset: "5-8 5-8 5-8", rest: "90s")
         program.styles["3x6-10"]  = variableStyle(warmup: "", workset: "6-10 6-10 6-10", rest: "90s")
         program.styles["3x8-12"]  = variableStyle(warmup: "", workset: "8-12 8-12 8-12", rest: "90s")
         program.styles["3x12-20"] = variableStyle(warmup: "", workset: "12-20 12-20 12-20", rest: "90s")
+        program.styles["3x12-15"] = variableStyle(warmup: "", workset: "12-15 12-15 12-15", rest: "90s")
         program.styles["3x15-20"] = variableStyle(warmup: "", workset: "15-20 15-20 15-20", rest: "90s")
         program.styles["4x10-15"] = variableStyle(warmup: "", workset: "10-15 10-15 10-15 10-15", rest: "90s")
+        program.styles["4x10-25"] = variableStyle(warmup: "", workset: "10-25 10-25 10-25 10-25", rest: "90s")
 
         scheduleWorkouts(program)
         initGroups(program)
@@ -1332,7 +1346,7 @@ final class PHATBuilder: Builder {
     private func buildLowerWorkout(_ p: Program, _ w: Workout) {
         addExercise(p, w, make("Speed Squat",        "Low bar Squat",     "Speed", weights: "Dual Lower Plates", base: .other))
         addGroup(p, w, makeSquat("Hack Squat", style: "3x8-12", suffix: " 1"))
-        addExercise(p, w, make("Leg Press",          "Leg Press",          "2x12-15", weights: "Dual Lower Plates no bar", base: .other))
+        addExercise(p, w, make("Leg Press",          "Leg Press",          "2x12-15", weights: "Dual Lower Plates no bar", weight: 180))
         addExercise(p, w, make("Leg Extensions",     "Leg Extensions",     "3x15-20", weights: "Cable Machine", weight: 40))
         addExercise(p, w, make("Romanian Deadlift",  "Romanian Deadlift",  "3x8-12", weights: "Dual Lower Plates", weight: 250))
         addExercise(p, w, make("Lying Leg Curls",    "Lying Leg Curls",    "2x12-15", weights: "Cable Machine", weight: 40))

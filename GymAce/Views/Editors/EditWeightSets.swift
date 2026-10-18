@@ -36,9 +36,9 @@ struct EditWeightSets: View {
                 ToolbarItem {
                     Menu {
                         // TODO use current region to figure out default units
-                        Button("Add Discrete", action: {addWeightSet(.discrete(DiscreteWeights(weights: [], units: .Imperial)))})
-                        Button("Add Dual Plates", action: {addWeightSet(.plates(PlateWeights(dual: true, plates: [], units: .Imperial)))})
-                        Button("Add Single Plates", action: {addWeightSet(.plates(PlateWeights(dual: false, plates: [], units: .Imperial)))})
+                        Button("Add Discrete", action: {addWeightSet(.discrete(DiscreteWeights(weights: [], units: model.defaultUnits())))})
+                        Button("Add Dual Plates", action: {addWeightSet(.plates(PlateWeights(dual: true, plates: [], units: model.defaultUnits())))})
+                        Button("Add Single Plates", action: {addWeightSet(.plates(PlateWeights(dual: false, plates: [], units: model.defaultUnits())))})
                     } label: {
                         Image(systemName: "plus")
                     }

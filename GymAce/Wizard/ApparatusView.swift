@@ -7,6 +7,7 @@ struct ApparatusView: View {
     @State private var showPartialDumbbellsHelp = false
     @State private var showMachineHelp = false
     @State private var showSmithHelp = false
+    @State private var showMetricHelp = false
     
     var body: some View {
         VStack {
@@ -115,8 +116,34 @@ struct ApparatusView: View {
                     .padding(.leading, 15)
             }
             
-            // TODO add a toggle for metric units (init based on current locale)
-            
+            // Metric units
+            // This is a bit annoying: weight sets are part of models not programs so that users can
+            // play around with different programs without having to tweak their weight sets for what
+            // ever their gym is using. But this does break down a bit if they want to create a different
+            // program for home (or another gym) AND they want to use different units. But that should
+            // be rare...
+            if wizard.model.units == nil {
+                HStack {
+                    Toggle("Metric Units", isOn: metricBinding)
+                        .padding()
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showMetricHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.top, 5)
+                .padding(.leading, 5)
+                .padding(.trailing, 5)
+                if showMetricHelp {
+                    Text("Use kilograms and meters if Metric is enabled and pounds and feet otherwise.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 15)
+                }
+            }
+
             Spacer()
             Text("Toggle on the equipment that you have available and that you want to use. For example, if you have access to a full gym but only want to use dumbbells and machines then only enable those two.")
                 .font(.footnote)
@@ -148,6 +175,21 @@ struct ApparatusView: View {
                     wizard.partialDumbbells = true
                 } else {
                     wizard.partialDumbbells = false
+                }
+            }
+        )
+    }
+
+    private var metricBinding: Binding<Bool> {
+        Binding(
+            get: {
+                if case .Metric = wizard.units {true} else {false}
+            },
+            set: {
+                if $0 {
+                    wizard.units = .Metric
+                } else {
+                    wizard.units = .Imperial
                 }
             }
         )

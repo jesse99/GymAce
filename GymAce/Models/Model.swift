@@ -10,6 +10,9 @@ final class Model: Codable {
     var programs: [Program] = []
     var activeProgram: String = ""
 
+    /// Used by the wizard when adding default weight sets.
+    var units: Units? = nil
+    
     /// Set if the model (and child objects) may be dirty. Note that we don't track this exactly because it's cumbersome to
     /// track each bit of state (and doing something like a crc of the persisted model state is about as expensive as just
     /// doing a save and chews up CPU and battery if state didn't actually change).
@@ -111,6 +114,10 @@ final class Model: Codable {
         for name in names {
             self.weightSets[name] = nil
         }
+        
+        if weightSets.isEmpty {
+            units = nil // this way the wizard will again ask the user what units they want to use
+        }
     }
     
     func weightSetsInUse(_ name: String) -> Bool {
@@ -140,8 +147,19 @@ final class Model: Codable {
         return exercises.joined(separator: ", ")
     }
     
+    func defaultUnits() -> Units {
+        if let u = self.units {
+            u
+        } else if Locale.current.region?.identifier == "US" {
+            Units.Imperial
+        } else {
+            Units.Metric
+        }
+    }
+    
     func addMissingWeightsets() {
-        for (name, ws) in defaultWeightSets() {
+        let units = defaultUnits()
+        for (name, ws) in defaultWeightSets(units) {
             if weightSets[name] == nil {
                 weightSets[name] = ws
             }
