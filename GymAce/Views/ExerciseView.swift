@@ -367,7 +367,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
         
         // If the exercise has weight and a valid weight set then show the weight picker.
-        return exercise.weightSet != nil && model.weightSets[exercise.weightSet!] != nil
+        if case .weight = exercise.baseWeight, exercise.weightSet != nil, model.weightSets[exercise.weightSet!] != nil {
+            return true
+        }
+        
+        return false
     }
 
     private func advanceWeight() {

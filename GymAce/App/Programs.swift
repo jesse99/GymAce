@@ -111,7 +111,6 @@ fileprivate func metricWeights() -> [String: WeightSet] {
     return sets
 }
 
-/// For previews, TODO don't include this in program list?
 func previewModel() -> Model {
     let model = Model()
     model.activeProgram = "Preview"

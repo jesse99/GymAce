@@ -872,7 +872,7 @@ extension Exercise {
                 }
                 let m = findMinVariable(model, program, s, i)
                 let e = PlanSet.Amount.reps(min: m, max: s.maxReps)
-                let p = parentPercent
+                let p = (Float(s.percent) / 100.0) * parentPercent
                 let w = findActualWeight(model, program, p)
                 let set = PlanSet(kind: k, expected: e, baseWeight: b, percent: p, weight: w, rest: r)
                 sets.append(set)

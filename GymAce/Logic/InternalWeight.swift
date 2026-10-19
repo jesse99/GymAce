@@ -62,8 +62,6 @@ struct InternalPlates: Codable, Comparable, Equatable {
     }
 }
 
-// TODO need to sort plates before calling enumeratePlates, largest to smallest
-
 // Returns all combinations of plates sorted from smallest total weight to largest.
 // For duplicate total weights the combination with the least plates is returned,
 // so [45] is returned but not [10, 35]. Plates should be sorted by plate weight
@@ -120,7 +118,6 @@ func enumeratePlates(_ plates: [Plate], bar: Float?, dual: Bool, units: Units) -
             if index >= plates.count {
                 return .Overflow
             } else if 2 * count > plates[Int(index)].count {
-                // TODO 2* should only be done for dual plates
                 return .Invalid
             }
         }
