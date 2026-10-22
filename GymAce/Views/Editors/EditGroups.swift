@@ -46,7 +46,7 @@ struct EditGroups: View {
                     .padding(.leading, 20)
                     .padding(.trailing, 20)
             } else {
-                Text("Groups are used by Create Program to allow users to swap in a different version of an exercise and by bodyweight exercises to allow progression to a harder version of the eercise.")
+                Text("Groups are normally used by bodyweight exercises to allow progression to a harder version of the exercise.")
                     .font(.footnote)
                     .padding(.leading, 20)
                     .padding(.trailing, 20)

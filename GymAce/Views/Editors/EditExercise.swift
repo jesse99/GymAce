@@ -116,26 +116,28 @@ struct EditExercise: View {
             WeightView(model: model, exercise: exercise)
 
             // Group picker
-            HStack {
-                Picker("", selection: groupBinding) {
-                    let keys: [String] = (Array(program.groups.keys) + ["None"]).sorted(by: {$0 < $1})
-                    ForEach(keys, id: \.self) {name in
-                        Text(name).tag(name)
+            if !program.groups.isEmpty {
+                HStack {
+                    Picker("", selection: groupBinding) {
+                        let keys: [String] = (Array(program.groups.keys) + ["None"]).sorted(by: {$0 < $1})
+                        ForEach(keys, id: \.self) {name in
+                            Text(name).tag(name)
+                        }
                     }
+                    .pickerStyle(.menu)
+                    .labelsHidden()
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showGroupPickerHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
                 }
-                .pickerStyle(.menu)
-                .labelsHidden()
-                Spacer()
-                Button("", systemImage: "info.circle") {
-                    showGroupPickerHelp.toggle()
+                if showGroupPickerHelp {
+                    Text("Used to assign a group name from the program. These are used when creating programs and by bodyweight exercises to progress to a harder version of the exercise.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
                 }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
-            }
-            if showGroupPickerHelp {
-                Text("Used to assign a group name from the program. These are used when creating programs and by bodyweight exercises to progress to a harder version of the exercise.")
-                    .foregroundColor(.blue)
-                    .font(.footnote)
             }
             
             // enableIf

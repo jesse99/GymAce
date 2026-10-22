@@ -75,6 +75,17 @@ class Builder {
         }
     }
     
+    fileprivate func clearGroups(_ program: Program) {
+        // Once a program is fully created there's no need for groups and retaining them is just
+        // an annoyance for users so we'll nuke them here. But note that this is not true of
+        // bodyweight exercises that use progression (which is currently just BodyWeightBuilder).
+        program.groups = [:]
+        
+        for e in program.exercises {
+            e.group = nil
+        }
+    }
+    
     fileprivate func upper(_ weight: Double, floor: Double = 0.0) -> Float {
         var multiplier = 1.0
         if wizard.male {
@@ -260,6 +271,10 @@ class BaseBasic: Builder {
         initGroups(program)
     }
     
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
+
     func setup(_ program: Program) {
         fatalError("override this")
     }
@@ -612,6 +627,10 @@ final class BasicPPLDBBuilder: Builder {
         initGroups(program)
     }
     
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
+
     private func scheduleWorkouts(_ program: Program) {
         switch wizard.schedule {
         case .weekly(let days) where days == 3:
@@ -756,15 +775,15 @@ final class DBComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
-
+    
     override var defaultSchedule: Int {return 2}
-
+    
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://lipsticklifters.com/articles/dumbbell-complex/) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
-    
+        
         // Styles
         program.styles["Complex"] = manualStyle(warmup: "", workset: "1 1 1", rest: "90s")
-
+        
         // Exercises
         let exercise = if case .beginner = wizard.fitness {
             make("Complex", "Complex - beginner", "Complex", weights: "Dumbbells", weight: 5)
@@ -772,7 +791,7 @@ final class DBComplexBuilder: Builder {
             make("Complex", "Complex - intermediate", "Complex", weights: "Dumbbells", weight: 10)
         }
         program.exercises.append(exercise)
-    
+        
         switch wizard.schedule {
         case .weekly(let days) where days == 1:
             let schedule = Schedule.days(Weekdays([.monday]))
@@ -794,7 +813,7 @@ final class DBComplexBuilder: Builder {
             var workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")
             program.addWorkout(workout)
-
+            
             workout = Workout("Rest", schedule)
             program.addWorkout(workout)
         case .cycle(let count, let rest) where count == 1 && rest == 2:
@@ -802,7 +821,7 @@ final class DBComplexBuilder: Builder {
             var workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")
             program.addWorkout(workout)
-
+            
             workout = Workout("Rest 1", schedule)
             program.addWorkout(workout)
             workout = Workout("Rest 2", schedule)
@@ -812,25 +831,29 @@ final class DBComplexBuilder: Builder {
         }
         initGroups(program)
     }
+    
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
 }
 
 final class BarbellComplexBuilder: Builder {
     override var name: String {return "Complex"}
     
     override var schedules: [Wizard.Schedule] {return [.weekly(count: 1), .weekly(count: 2), .weekly(count: 3), .cycle(count: 1, rest: 1), .cycle(count: 1, rest: 2)]}
-
+    
     override var defaultSchedule: Int {return 2}
-
+    
     override func build(_ program: Program) {
         program.summary = "[Complexes](https://dumbbellsdirect.com/blogs/barbell-programming-styles/barbell-complexes-for-conditioning) are a blend between cardio and weight lifting. The idea is that you peform a set of exercises with a fixed weight without resting or setting the weight down, do a short rest, and repeat. Unless you are in great shape this will quickly get intense so start with a weight much lighter than what you can do for one of the exercises."
-    
+        
         // Styles
         program.styles["Complex"] = manualStyle(warmup: "", workset: "1 1 1", rest: "90s")
-
+        
         // Exercises
         let exercise = make("Complex", "F8", "Complex", weights: "Dumbbells", weight: 45)
         program.exercises.append(exercise)
-    
+        
         switch wizard.schedule {
         case .weekly(let days) where days == 1:
             let schedule = Schedule.days(Weekdays([.monday]))
@@ -852,7 +875,7 @@ final class BarbellComplexBuilder: Builder {
             var workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")
             program.addWorkout(workout)
-
+            
             workout = Workout("Rest", schedule)
             program.addWorkout(workout)
         case .cycle(let count, let rest) where count == 1 && rest == 2:
@@ -860,7 +883,7 @@ final class BarbellComplexBuilder: Builder {
             var workout = Workout("Complex", schedule)
             workout.addExercise(name: "Complex")
             program.addWorkout(workout)
-
+            
             workout = Workout("Rest 1", schedule)
             program.addWorkout(workout)
             workout = Workout("Rest 2", schedule)
@@ -869,6 +892,10 @@ final class BarbellComplexBuilder: Builder {
             fatalError("\(wizard.schedule) shouldn't have happened")
         }
         initGroups(program)
+    }
+    
+    override func fixup(_ program: Program) {
+        clearGroups(program)
     }
 }
 
@@ -904,6 +931,10 @@ final class CircuitBuilder: Builder {
         initGroups(program)
     }
     
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
+
     private func buildWorkout(_ p: Program, _ w: Workout) {
         // TODO It'd be nice to enable curls but that results in so many exercises that they aren't all
         // visible in the workout view (and Grid doesn't support vertical scrolling). Though even this
@@ -960,7 +991,7 @@ final class GzclBuilder: Builder {
         scheduleWorkouts(program)
         initGroups(program)
     }
-    
+        
     override func fixup(_ program: Program) {
         var oldExercises: [(Exercise, Bool)] = []
         let maxWorkout = program.workouts.first(where: {$0.name == "One Rep Max"})!
@@ -1009,15 +1040,7 @@ final class GzclBuilder: Builder {
             }
         }
         
-        // There's no real reason to keep these groups around (unless this program is updated to include
-        // bodyweight exercises). And if we do keep it around we need to update the names in the groups to
-        // include the week numbers. TODO it would be better to do this for all the builders but we'd have
-        // to take care not to nuke the groups that are used for progression. Note that if we do this we
-        // should update the Edit groups footer.
-        for exercise in program.exercises {
-            exercise.group = nil
-        }
-        program.groups = [:]
+        clearGroups(program)
     }
     
     private func initStyles(_ program: Program) {
@@ -1276,6 +1299,10 @@ final class PHATBuilder: Builder {
         initGroups(program)
     }
     
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
+
     private func scheduleWorkouts(_ program: Program) {
         switch wizard.schedule {
         case .weekly(let days) where days == 5:
@@ -1389,6 +1416,10 @@ final class MaleAestheticBuilder: Builder {
         initGroups(program)
     }
     
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
+
     private func scheduleWorkouts(_ program: Program) {
         switch wizard.schedule {
         case .weekly(let days) where days == 2:
@@ -1543,6 +1574,10 @@ final class FemaleAestheticBuilder: Builder {
         initGroups(program)
     }
     
+    override func fixup(_ program: Program) {
+        clearGroups(program)
+    }
+
     private func scheduleWorkouts(_ program: Program) {
         switch wizard.schedule {
         case .weekly(let days) where days == 2:
