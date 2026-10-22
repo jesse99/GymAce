@@ -141,19 +141,21 @@ struct EditExercise: View {
             }
             
             // enableIf
-            HStack {
-                noteTextField("Enable If", enableIfBinding)
-                Spacer()
-                Button("", systemImage: "info.circle") {
-                    showEnableIfHelp.toggle()
+            if isDisabled() {
+                HStack {
+                    noteTextField("Enable If", enableIfBinding)
+                    Spacer()
+                    Button("", systemImage: "info.circle") {
+                        showEnableIfHelp.toggle()
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, 5)
                 }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
-            }
-            if showEnableIfHelp {
-                Text("Instructions on when to enable an exercise. This is shown in the workout view if the exercise is disabled.")
-                    .foregroundColor(.blue)
-                    .font(.footnote)
+                if showEnableIfHelp {
+                    Text("Instructions on when to enable an exercise. This is shown in the workout view if the exercise is disabled.")
+                        .foregroundColor(.blue)
+                        .font(.footnote)
+                }
             }
 
             Text(workoutsLabel)
@@ -263,6 +265,17 @@ struct EditExercise: View {
     private func setFormalName(_ name: String) {
         exercise.formalName = name
         formalNames = []
+    }
+    
+    private func isDisabled() -> Bool {
+        for workout in program.workouts {
+            for entry in workout.entries {
+                if entry.name == exercise.name && entry.enabled {
+                    return false
+                }
+            }
+        }
+        return true // disabled or not part of a workout
     }
 
     private var isValid: Bool {
