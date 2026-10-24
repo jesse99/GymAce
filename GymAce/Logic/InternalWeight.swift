@@ -1,6 +1,8 @@
 // These items should only be used by WeightSet.
 import Foundation
 
+let MaxPlates: Int = 9  // can make this much larger if enumeratePlates is changed to use UInt128
+
 enum InternalWeight: Codable {
     case Discrete(Float, Units)
     case Error(String, Float)
@@ -110,10 +112,9 @@ func enumeratePlates(_ plates: [Plate], bar: Float?, dual: Bool, units: Units) -
         case Invalid
         case Overflow
     }
-
+    
     // Returns .Valid if n is compatible with the specified plates.
     func isValid(_ n: UInt64, _ plates: [Plate]) -> Status {
-        // TODO: need to restrict max plate count to 9 (could relax this with UInt128)
         for (count, index) in EncodedCounts(n: n) {
             if index >= plates.count {
                 return .Overflow

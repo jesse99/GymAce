@@ -97,7 +97,7 @@ struct Plate: CustomDebugStringConvertible, Codable, Comparable, Equatable {
     
     init(_ weight: Float, _ count: Int) {
         self.weight = weight
-        self.count = count
+        self.count = min(count, MaxPlates)
     }
     
     func totalWeight() -> Float {

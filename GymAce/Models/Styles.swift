@@ -132,8 +132,8 @@ struct AMRAPInfo: Codable {
     /// workset is formatted as reps with an optional percent
     /// rest is formatted as "2.5m", "150s", "150", or "2h"
     init?(warmup: String, workset: String, rest: String) {
-        switch parseOtherReps(warmup) {     // TODO should verify that these all increase and last is less than workset
-        case .success(let reps): self.warmup = reps // TODO some below need to do the same thing
+        switch parseOtherReps(warmup) {
+        case .success(let reps): self.warmup = reps
         case .failure: return nil
         }
 

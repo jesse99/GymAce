@@ -142,12 +142,7 @@ final class Program: Codable, Identifiable {
         }
         return total
     }
-        
-    // TODO get rid of this
-    func startWorkout() -> Date? {
-        return started ?? oldestWorkout()
-    }
-        
+                
     func addWorkout(_ workout: Workout) {
         workouts.append(workout)
     }

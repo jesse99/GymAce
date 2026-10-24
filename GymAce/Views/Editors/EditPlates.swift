@@ -182,6 +182,10 @@ struct EditPlates: View {
             addErr = "Expected a number for Count, but found '\(self.pcount)'."
             return
         }
+        if count > MaxPlates {
+            addErr = "For now, the number of plates must be \(MaxPlates) or less."
+            return
+        }
 
         if let ws = model.weightSets[name] {
             let p = Plate(weight, count)
