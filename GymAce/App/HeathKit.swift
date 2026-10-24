@@ -107,6 +107,9 @@ final class HealthKit: NSObject, HKWorkoutSessionDelegate, HKLiveWorkoutBuilderD
     }
 
     // TODO stop this (for walk type exercises at least) after a few mins of no activity
+    // should be able to use a DispatchQueue instead of a timer, see https://stackoverflow.com/questions/70993093/swiftui-5-5-timeout-after-x-of-inactivity
+    // might want to record a timestamp of last distance set
+    // probably also need to ask the user whether to stop
     func stop(_ workout: String) {
         guard inProgress && enabled else {
             return

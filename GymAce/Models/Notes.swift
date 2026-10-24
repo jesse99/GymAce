@@ -3665,6 +3665,3 @@ extension Notes {
         defaults[name] = "\(body)\n\n\(trailer)"
     }
 }
-
-// TODO add unit tests to spell check
-// TODO add unit tests to check links

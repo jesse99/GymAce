@@ -49,16 +49,6 @@ struct WorkoutView: View {
                 // We automatically stop the workout once the user finishes all the exercises
                 // but, if they're only doing some of the exercises, we also allow them to stop
                 // recording early.
-                //
-                // TODO it'd be nice if there was a way to end the workout if the
-                // user forgot to hit stop. A timer is a possibility but it's not
-                // clear that will run when the app is in the background (they
-                // normally won't but I think when a HeathKit workout is running
-                // they might). Or if the user goes back to the ProgramView we
-                // could stop the workout? Note that if we use a timer we'll
-                // probably want to reset it as the user does stuff. And it'd
-                // have to have a pretty long duration in case the workout is
-                // something like walking or a long run.
                 Button("Stop Recording", action: {healthKit.stop(workout.name)})
                     .padding(.top, 25)
             }

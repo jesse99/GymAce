@@ -10,8 +10,6 @@ func findName(_ has: (String) -> Bool, prefix: String = "Untitled") -> String {
     return candidate
 }
 
-// TODO might want some canned programs here (instead of a wizard)
-// TODO possibly add a way to filter shown programs based on stuff like equipment, days/week, etc
 struct EditPrograms: View {
     @Bindable var model: Model
     

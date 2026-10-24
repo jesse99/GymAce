@@ -1025,7 +1025,7 @@ extension Exercise {
         case .none:
             return nil
         case .other:
-            if let (e, _) = findOtherExercise(program) {    // TODO validate should verify that there is only one match
+            if let (e, _) = findOtherExercise(program) {
                 return e.findBaseWeight(program)
             } else {
                 return nil

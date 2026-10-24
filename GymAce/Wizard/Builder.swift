@@ -374,7 +374,7 @@ class BaseBasic: Builder {
 }
 
 // Greyskull LP looks even better, see https://9to5strength.com/greyskull-lp-program/
-// TODO Should we switch tp that? Or somehow allow the user to choose? Maybe a flavor drop down?
+// TODO Should we switch to that? Or somehow allow the user to choose? Maybe a flavor drop down?
 final class BasicBarbellBuilder: BaseBasic {
     override func setup(_ program: Program) {
         program.summary = "A simple [program](https://thefitness.wiki/routines/r-fitness-basic-beginner-routine) for beginners. It's meant to be run for about three months after which you should switch to an intermediate program. For the last sets do as many reps as you can but try to stop when you have 1-2 reps left."
