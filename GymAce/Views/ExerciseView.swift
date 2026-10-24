@@ -591,3 +591,6 @@ private func completedView(_ model: Model, _ program: Program, _ exercise: Exerc
         ExerciseView(model: model, program: program, workout: workout, exercise: exercise, entry: entry)
     }
 }
+
+
+
