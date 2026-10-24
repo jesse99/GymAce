@@ -113,6 +113,13 @@ struct ProgramView: View {
                 }
             }
         }
+        if let p = model.active(), let s = p.findIssues(model) {
+            Spacer()
+            Text(s)
+                .font(.footnote)
+                .foregroundStyle(.red)
+                .padding(.top, 10)
+        }
     }
     
     private func programTitle() -> String {

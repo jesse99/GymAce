@@ -21,7 +21,7 @@ struct WizardTests {
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
-
+                    
                     // one apparatus
                     model = Model()
                     wizard = Wizard(model)
@@ -34,7 +34,7 @@ struct WizardTests {
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
-
+                    
                     model = Model()
                     wizard = Wizard(model)
                     wizard.goal = goal
@@ -46,7 +46,7 @@ struct WizardTests {
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
-
+                    
                     model = Model()
                     wizard = Wizard(model)
                     wizard.goal = goal
@@ -58,7 +58,7 @@ struct WizardTests {
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
-
+                    
                     model = Model()
                     wizard = Wizard(model)
                     wizard.goal = goal
@@ -70,7 +70,7 @@ struct WizardTests {
                     wizard.machines = true
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
-
+                    
                     model = Model()
                     wizard = Wizard(model)
                     wizard.goal = goal
@@ -82,7 +82,7 @@ struct WizardTests {
                     wizard.machines = false
                     wizard.smith = true
                     #expect(validProgram(model, wizard))
-
+                    
                     // multiple apparatus
                     model = Model()
                     wizard = Wizard(model)
@@ -95,7 +95,7 @@ struct WizardTests {
                     wizard.machines = true
                     wizard.smith = true
                     #expect(validProgram(model, wizard))
-
+                    
                     model = Model()
                     wizard = Wizard(model)
                     wizard.goal = goal
@@ -107,7 +107,7 @@ struct WizardTests {
                     wizard.machines = false
                     wizard.smith = false
                     #expect(validProgram(model, wizard))
-
+                    
                     model = Model()
                     wizard = Wizard(model)
                     wizard.goal = goal
@@ -132,17 +132,41 @@ struct WizardTests {
             builder.build(program)
             updateGroups(program, wizard)
             builder.initGroups(program)
-
+            
             builder.fixup(program)
             model.programs.append(program)
             model.activeProgram = program.name
             model.addMissingWeightsets()
-
-            if !program.valid(model) {
+            
+            if let s = findAllIssues(model, program) {
+                print(s)
+                model.programs = []
                 return false
             }
             model.programs = []
         }
         return true
+    }
+    
+    private func findAllIssues(_ model: Model, _ program: Program) -> String? {
+        var issues = ""
+
+        if let s = program.findIssues(model) {
+            issues += "program: \(program.name) \(s)\n"
+        }
+        
+        for w in program.workouts {
+            if let s = w.findIssues(model, program) {
+                issues += "program: \(program.name) workout: \(w.name) \(s)\n"
+            }
+        }
+
+        for e in program.exercises {
+            if let s = e.findIssues(model, program) {
+                issues += "program: \(program.name) exercise: \(e.name) \(s)\n"
+            }
+        }
+        
+        return issues.isEmpty ? nil : issues
     }
 }

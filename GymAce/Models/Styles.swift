@@ -930,25 +930,23 @@ extension Exercise {
         return filtered
     }
     
-    func validateStyle(_ program: Program) -> Bool {
-        var valid = true
+    func findStyleIssues(_ program: Program) -> String {
+        var issues = ""
+
         let b = findBaseWeight(program)
         switch program.findStyle(self.styleName) {
         case .amrap:
             if b == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's AMRAP style)")
-                valid = false
+                issues = "Base weight is missing (style is AMRAP). "
             }
         case .oneRepMax:
             if b == nil {
-                print("Program \(program.name) exercise \(name) is missing a base weight (it's one rep max style)")
-                valid = false
+                issues = "Base weight is missing (style is one rep max). "
             }
         case .basic, .durations, .manual, .timed, .variable:
             break
         case .missing:
-            print("Program \(program.name) exercise \(name) is using style \(self.styleName) which is missing)")
-            valid = false
+            issues = "Style '\(self.styleName)' is missing. "
         }
         if case .other = self.baseWeight {
             var active = false
@@ -964,17 +962,16 @@ extension Exercise {
             if active {
                 let matches = findOtherExercises(program)
                 if matches.count == 0 {
-                    print("Program \(program.name) exercise \(name) has no 'other' exercises")
-                    valid = false
+                    issues += "Couldn't find the 'other' exercise."
                 } else if matches.count > 1 {
                     let names = matches.map {$0.0.name}
                     let s = names.joined(separator: ", ")
-                    print("Program \(program.name) exercise \(name) has \(matches.count) other exercises: \(s)")
-                    valid = false
+                    issues += "Found \(matches.count) 'other' exercises: \(s)."
                 }
             }
         }
-        return valid
+        
+        return issues
     }
     
     func usesOther(_ program: Program) -> Bool {

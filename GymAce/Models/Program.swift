@@ -50,33 +50,25 @@ final class Program: Codable, Identifiable {
         }
     }
     
-    func valid(_ model: Model) -> Bool {
-        var valid = true
+    func findIssues(_ model: Model) -> String? {
+        var issues = ""
+
+        for name in model.programs.findDupes(using: {$0.name}) {
+            issues += "There's more than one program named '\(name)'. "
+        }
         for (name, exercises) in groups {
             if Set(exercises).count != exercises.count {
-                print("Group \(name) has duplicate exercise names")
-                valid = false
+                issues += "Group '\(name)' has duplicate exercise names. "
             }
         }
         for name in exercises.findDupes(using: {$0.name}) {
-            print("There's already an exercise named \(name) in \(self.name)")
-            valid = false
+            issues += "There's already an exercise named '\(name)'. "
         }
         for name in workouts.findDupes(using: {$0.name}) {
-            print("There's already a workout named \(name) in \(self.name)")
-            valid = false
+            issues += "There's already a workout named '\(name)'. "
         }
-        for exercise in exercises {
-            if !exercise.valid(model, self) {
-                valid = false
-            }
-        }
-        for workout in workouts {
-            if !workout.valid(model, self) {
-                valid = false
-            }
-        }
-        return valid
+        
+        return issues.isEmpty ? nil : issues
     }
     
     func dump(_ model: Model) -> String {

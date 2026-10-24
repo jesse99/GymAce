@@ -43,32 +43,30 @@ final class Workout: Codable, Identifiable {   // TODO may want to use CustomRef
         }
     }
         
-    func valid(_ model: Model, _ program: Program) -> Bool {
-        var valid = true
+    func findIssues(_ model: Model, _ program: Program) -> String? {
+        var issues = ""
+        
         for name in entries.findDupes(using: {$0.name}) {   // technically OK but shouldn't normally happen
-            print("There's already an exercise named \(name) in \(self.name)")
-            valid = false
+            issues += "There's already an exercise named '\(name)'. "
         }
         for entry in entries {
             if program.findExercise(entry.name) == nil {
-                print("Couldn't find exercise \(entry.name) from workout \(name)")
-                valid = false
+                issues += "Couldn't find exercise '\(entry.name)'. "
             }
             
             // Group must be present
             if let exercise = program.findExercise(entry.name), let groupName = exercise.group {
                 if let group = program.groups[groupName] {
                     if group.firstIndex(of: entry.name) == nil {
-                        print("Exercise \(entry.name) has group \(groupName) but the group doesn't have the exercise")
-                        valid = false
+                        issues += "Exercise '\(entry.name)' has group '\(groupName)' but the group doesn't have the exercise. "
                     }
                 } else {
-                    print("Exercise \(entry.name) has group \(groupName) but the program has no group with that name")
-                    valid = false
+                    issues += "Exercise '\(entry.name)' has group '\(groupName)' but the program has no group with that name. "
                 }
             }
         }
-        return valid
+
+        return issues.isEmpty ? nil : issues
     }
 
     func dump(_ model: Model, _ program: Program) -> String {

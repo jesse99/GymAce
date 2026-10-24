@@ -68,6 +68,12 @@ struct WorkoutView: View {
                 .padding(.leading, 20)
                 .padding(.trailing, 20)
         }
+        if let s = workout.findIssues(model, program) {
+            Text(s)
+                .font(.footnote)
+                .foregroundStyle(.red)
+                .padding(.top, 10)
+        }
     }
     
     private func footer() -> String? {

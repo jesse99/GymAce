@@ -227,7 +227,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .font(.footnote)
                     .padding(.top, 10)
             }
-            if let s = findIssues() {
+            if let s = exercise.findIssues(model, program) {
                 Text(s)
                     .font(.footnote)
                     .foregroundStyle(.red)
@@ -321,30 +321,6 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         )
     }
 
-    // TODO probably want to merge this and validate
-    private func findIssues() -> String? {
-        var issues = ""
-        
-        if let wn = exercise.weightSet, !wn.isBlankOrEmpty {
-            if model.weightSets[wn] == nil {
-                issues += "There is no weight set named '\(wn)'. "
-            }
-        }
-        if case .other = exercise.baseWeight {
-            if exercise.findOtherExercise(program) == nil {
-                issues += "Couldn't find a base exercise named '\(exercise.formalName)'. "
-            }
-        }
-        if !exercise.formalName.isBlankOrEmpty && !model.notes.has(exercise.formalName) {
-            issues += "There's no note for '\(exercise.formalName)'. "
-        }
-        if exercise.name != entry.name {
-            issues += "The exercise is named \(exercise.name) but the entry is named \(entry.name). "  // shouldn't happen
-        }
-
-        return issues.isEmpty ? nil : issues
-    }
-    
     private func findNotes(_ plan: ExercisePlan) -> String? {
         var notes: String? = nil
                 

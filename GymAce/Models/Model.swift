@@ -58,20 +58,6 @@ final class Model: Codable {
         }
     }
     
-    func validate() {
-        var valid = true
-        for name in programs.findDupes(using: {$0.name}) {
-            print("There's already a program named \(name)")
-            valid = false
-        }
-        for program in programs {
-            if !program.valid(self) {
-                valid = false
-            }
-        }
-        assert(valid)   // TODO these need to be shown to the user
-    }
-    
     /// Human readable copy of the model. Used for emailing the current program.
     func dump() -> String { // TODO may want to support a json form of this
         var result = ""

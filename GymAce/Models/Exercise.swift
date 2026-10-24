@@ -80,24 +80,29 @@ final class Exercise: Codable {
 //        }
     }
         
-    func valid(_ model: Model, _ program: Program) -> Bool {
-        var valid = true
-        if !model.notes.has(formalName) {
-            print("Program \(program.name) formal name \(formalName) is missing for exercise \(name)")
-            valid = false
-        }
-        if let ws = weightSet {
-            if model.weightSets[ws] == nil {
-                if let p = model.active(), p.name == program.name { // we only add weight sets for the active program
-                    print("Program \(program.name) weight set \(ws) is missing for exercise \(name)")
-                    valid = false
-                }
+    func findIssues(_ model: Model, _ program: Program) -> String? {
+        var issues = ""
+        
+        if !self.formalName.isBlankOrEmpty && !model.notes.has(self.formalName) {
+            if let p = model.active(), p.name == program.name { // we only add weight sets for the active program
+                issues += "There's no note for '\(self.formalName)'. "
             }
         }
-        if !validateStyle(program) {
-            valid = false
+
+        if let wn = self.weightSet, !wn.isBlankOrEmpty {
+            if model.weightSets[wn] == nil {
+                issues += "There is no weight set named '\(wn)'. "
+            }
         }
-        return valid
+        if case .other = self.baseWeight {
+            if self.findOtherExercise(program) == nil {
+                issues += "Couldn't find a base exercise named '\(self.formalName)'. "
+            }
+        }
+        
+        issues += findStyleIssues(program)
+
+        return issues.isEmpty ? nil : issues
     }
 
     func clone() throws -> Self {
