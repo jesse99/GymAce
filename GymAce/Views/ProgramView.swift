@@ -9,6 +9,8 @@ struct ProgramView: View {
     @Bindable var model: Model
     @State private var newWorkout: Workout? = nil
     @State private var viewID = UUID()
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
     @Environment(\.openURL) private var openUrl
     @Environment(\.scenePhase) private var scenePhase
 
@@ -113,6 +115,9 @@ struct ProgramView: View {
                 }
             }
         }
+        .alert(errorMessage, isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        }
         if let p = model.active(), let s = p.findIssues(model) {
             Spacer()
             Text(s)
@@ -134,23 +139,28 @@ struct ProgramView: View {
         if let program = model.active() {
             let body = model.dump()
             let urlString = "mailto:?subject=\(program.name) Program&body=\(body)"
-            guard let url = URL(string: urlString) else { return }
-            
-            openUrl(url) {accepted in
-                if !accepted {
-                    // TODO Handle the error, e.g., show an alert
-                }
-            }
+            sendEmail(urlString)
         }
     }
 
     private func emailFeedback() {
         let urlString = "mailto:jesse.vorisek@gmail.com?subject=GymAce Feedback"
-        guard let url = URL(string: urlString) else { return }
+        sendEmail(urlString)
+    }
+
+    private func sendEmail(_ urlString: String) {
+        // Note that the URL class will do any necessary encoding.
+        guard let url = URL(string: urlString) else {
+            errorMessage = "Failed to send the email: bad URL." // this shouldn't happen
+            showErrorAlert = true
+            return
+        }
         
         openUrl(url) {accepted in
             if !accepted {
-                // TODO Handle the error, e.g., show an alert
+                // Unfortunately there's no way to get error information.
+                errorMessage = "Failed to send the email."
+                showErrorAlert = true
             }
         }
     }
