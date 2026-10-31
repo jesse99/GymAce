@@ -25,10 +25,14 @@ final class Model: Codable {
 
     static func load() -> Model {
         do {
-            let data = try Data(contentsOf: url)
-            let model = try JSONDecoder().decode(Model.self, from: data)
-            model.fixup()
-            return model
+            if FileManager.default.fileExists(atPath: url.path()) {
+                let data = try Data(contentsOf: url)
+                let model = try JSONDecoder().decode(Model.self, from: data)
+                model.fixup()
+                return model
+            } else {
+                return Model()
+            }
         } catch {
             // Note that new fields are OK if they are optionals. Otherwise
             // a cusom init(from decoder: Decoder) method is required to

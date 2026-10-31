@@ -263,17 +263,19 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         .foregroundColor(.blue)
                 }
             }
-            ToolbarItem {
-                Button {
-                    showHeartRate.toggle()
-                    if showHeartRate {
-                        heartRates = []
-                        lastSecs = -1
-                        healthKit.resetHeartRate()
+            if healthKit.enabled {
+                ToolbarItem {
+                    Button {
+                        showHeartRate.toggle()
+                        if showHeartRate {
+                            heartRates = []
+                            lastSecs = -1
+                            healthKit.resetHeartRate()
+                        }
+                    } label: {
+                        Image(systemName: showHeartRate ? "bolt.heart.fill" : "heart.fill")
+                            .foregroundStyle(healthKit.enabled && healthKit.inProgress ? .red : .gray)
                     }
-                } label: {
-                    Image(systemName: showHeartRate ? "bolt.heart.fill" : "heart.fill")
-                        .foregroundStyle(healthKit.enabled && healthKit.inProgress ? .red : .gray)
                 }
             }
         }
@@ -492,7 +494,6 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             progressed = p          // special case for oneRepmax style
         }
         
-        print("would ask for review here")
         if let n = model.numCompleted, n > 15 {
             askForReviewIfNeeded()
         }
