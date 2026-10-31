@@ -25,7 +25,7 @@ struct EditEntries: View {
                 Section(header: Text("\(workout.name) Exercises")) {
                     ForEach($workout.entries, id: \.name, editActions: .move) {$entry in    // TODO this does mean names must be unique in a workout
                         Text(entry.name)
-                            .foregroundColor(entry.enabled ? .black : .gray)
+                            .foregroundColor(entry.enabled ? Color(UIColor.label) : Color(UIColor.systemGray))
                             .onTapGesture {
                                 entry.enabled = !entry.enabled
                             }

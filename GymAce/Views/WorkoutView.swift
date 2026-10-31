@@ -5,7 +5,8 @@ struct WorkoutView: View {
     var model: Model
     var program: Program
     @Bindable var workout: Workout
-    
+    @Environment(\.colorScheme) var colorScheme
+
     // TODO may want to allow background processing via workout-processing
     //      see https://developer.apple.com/documentation/xcode/configuring-background-execution-modes
     //      just need to add Audio background capability?
@@ -133,9 +134,9 @@ struct WorkoutView: View {
     
     private func fgColor(_ entry: ExerciseEntry, _ exercise: Exercise) -> Color {
         if let latest = exercise.latestCompleted(), latest.completed.daysBetween(Date()) == 0 {
-            return .black
+            return Color(UIColor.label)
         } else {
-            return .blue
+            return blueColor(colorScheme)
         }
     }
 }

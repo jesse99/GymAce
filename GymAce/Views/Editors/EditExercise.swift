@@ -18,6 +18,7 @@ struct EditExercise: View {
     @State private var showEnableIfHelp = false
     private var workoutsLabel: String = ""
     private let badNames: [String]
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program, exercise: Exercise) {
         self.model = model
@@ -55,7 +56,7 @@ struct EditExercise: View {
             }
             if showNameHelp {
                 Text("The name shown in the Workout view.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             if let e = nameErr {
@@ -86,7 +87,7 @@ struct EditExercise: View {
             }
             if showFormalHelp {
                 Text("The name used to lookup notes for the exercise.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             
@@ -109,7 +110,7 @@ struct EditExercise: View {
             if showStylePickerHelp {
                 let style = program.findStyle(exercise.styleName)
                 Text(style.description() + "\n" + style.summary().joined(separator: "\n"))
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
 
@@ -135,7 +136,7 @@ struct EditExercise: View {
                 }
                 if showGroupPickerHelp {
                     Text("Used to assign a group name from the program. These are used when creating programs and by bodyweight exercises to progress to a harder version of the exercise.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             }
@@ -153,7 +154,7 @@ struct EditExercise: View {
                 }
                 if showEnableIfHelp {
                     Text("Instructions on when to enable an exercise. This is shown in the workout view if the exercise is disabled.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             }
@@ -256,7 +257,7 @@ struct EditExercise: View {
 
     private func formalColor(_ name: String) -> Color {
         if model.notes.defaults[name] != nil || model.notes.custom[name] != nil {
-            return .black
+            return Color(UIColor.label)
         } else {
             return .red
         }

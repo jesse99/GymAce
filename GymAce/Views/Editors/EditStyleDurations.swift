@@ -13,6 +13,7 @@ struct EditDurations: View {
     @State private var secsErr: String? = nil
     @State private var targetErr: String? = nil
     private let badNames: [String]
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program, name: String) {
         self.model = model
@@ -37,7 +38,7 @@ struct EditDurations: View {
                 }
                 if showNameHelp {
                     Text("Edit Exercise uses this to pick a style for the exercise.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = nameErr {
@@ -58,7 +59,7 @@ struct EditDurations: View {
                 }
                 if showSecsHelp {
                     Text("Space separated list of times. An s suffix can be used for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = secsErr {
@@ -79,7 +80,7 @@ struct EditDurations: View {
                 }
                 if showTargetHelp {
                     Text("Optional goal time. This can be used as a trigger to switch to a more advanced form of the exercise, e.g. planks to feet elevated planks.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = targetErr {

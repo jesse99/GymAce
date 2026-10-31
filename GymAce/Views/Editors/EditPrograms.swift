@@ -12,7 +12,8 @@ func findName(_ has: (String) -> Bool, prefix: String = "Untitled") -> String {
 
 struct EditPrograms: View {
     @Bindable var model: Model
-    
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         VStack {
             List {
@@ -55,9 +56,9 @@ struct EditPrograms: View {
     
     private func labelColor(_ program: Program) -> Color {
         if program.name == model.activeProgram {
-            return .blue
+            return blueColor(colorScheme)
         }
-        return .black
+        return Color(UIColor.label)
     }
     
     private func addProgram() {

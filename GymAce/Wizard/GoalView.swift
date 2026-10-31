@@ -6,7 +6,8 @@ struct GoalView: View {
     @State private var showFitnessHelp = false
     @State private var showAgeHelp = false
     @State private var showSexHelp = false
-    
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         VStack {
             // Goal picker
@@ -35,7 +36,7 @@ struct GoalView: View {
                 case .conditioning: "Will build a program with a focus on endurance."
                 }
                 Text(s)
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -65,7 +66,7 @@ struct GoalView: View {
                 case .advanced: "Use this if you've been seriously lifting for years. Similar to intermediate but even more so."
                 }
                 Text(s)
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -91,7 +92,7 @@ struct GoalView: View {
             .padding(.trailing, 5)
             if showAgeHelp {
                 Text("Some programs (especially intermediate and advanced) will make changes to ease recovery for older lifters. For example they may reduce exercise volume or add additional rest days.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -112,7 +113,7 @@ struct GoalView: View {
             .padding(.trailing, 5)
             if showSexHelp {
                 Text("Initial weights for males will be somewhat higher though, in general, most users will want to use Edit Exercise to adjust the weights.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)

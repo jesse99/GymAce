@@ -26,6 +26,7 @@ struct EditDiscrete: View {
     @State private var addErr: String? = nil
     @State var name: String
     private let badNames: [String]
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, name: String) {
         self.model = model
@@ -50,7 +51,7 @@ struct EditDiscrete: View {
             .padding(5)
             if showNameHelp {
                 Text("The name of the weight set.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -77,7 +78,7 @@ struct EditDiscrete: View {
             .padding(5)
             if showWeight1Help {
                 Text("An extra weight the user can add, e.g. a magnet to a dumbbell or a small weight on a cable machine.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .padding(.leading, 15)
                     .padding(.trailing, 5)
@@ -97,7 +98,7 @@ struct EditDiscrete: View {
             .padding(5)
             if showWeight2Help {
                 Text("An extra weight the user can add, e.g. a magnet to a dumbbell or a small weight on a cable machine.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .padding(.leading, 15)
                     .padding(.trailing, 5)
@@ -121,7 +122,7 @@ struct EditDiscrete: View {
             .padding(.trailing, 5)
             if showUnitsHelp {
                 Text("Imperial will use pounds. Metric will use kilograms.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)

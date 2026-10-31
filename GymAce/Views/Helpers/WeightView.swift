@@ -12,7 +12,8 @@ struct WeightView: View {
     @State private var showWeightSetHelp = false
     private let weightDelta = 10
     private let weightSets: [String]
-    
+    @Environment(\.colorScheme) var colorScheme
+
     init(model: Model, exercise: Exercise) {
         self.model = model
         self.exercise = exercise
@@ -45,15 +46,15 @@ struct WeightView: View {
             switch exercise.baseWeight {
             case .none:
                 Text("The exercise doesn't have a weight.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             case .other:
                 Text("The exercise uses the weight of another exercise found using the formal name.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             case .weight:
                 Text("The exercise has a weight.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
         }
@@ -80,16 +81,16 @@ struct WeightView: View {
                 if let n = exercise.weightSet {
                     if let ws = model.weightSets[n] {
                         Text(ws.description())
-                            .foregroundColor(.blue)
+                            .foregroundColor(blueColor(colorScheme))
                             .font(.footnote)
                     } else {
                         Text("\(n) has no associated weight set.")
-                            .foregroundColor(.blue)
+                            .foregroundColor(blueColor(colorScheme))
                             .font(.footnote)
                     }
                 } else {
                     Text("This exercise has no weights associated with it.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             }
@@ -115,7 +116,7 @@ struct WeightView: View {
                 }
                 if showWeightPickerHelp {
                     Text("The weight the user should do next using the \(n) weight set.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             } else {
@@ -130,7 +131,7 @@ struct WeightView: View {
                 }
                 if showWeightHelp {
                     Text("The weight the user should do next (with no weight set).")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             }

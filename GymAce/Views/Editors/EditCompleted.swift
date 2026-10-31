@@ -1,5 +1,13 @@
 import SwiftUI
 
+func blueColor(_ scheme: ColorScheme) -> Color {
+    if case .dark = scheme {
+        return .teal
+    } else {
+        return .blue
+    }
+}
+
 // TODO re-run progress if completed changes? are there issues with that running twice?
 struct EditCompleted: View {
     var program: Program
@@ -12,6 +20,7 @@ struct EditCompleted: View {
     @State private var repsError: String? = nil
     @State private var weightsError: String? = nil
     @State private var showNoteHelp = false
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         Form {
@@ -27,7 +36,7 @@ struct EditCompleted: View {
             }
             if showRepsHelp {
                 Text("The \(repsTitle(program)) the user did for each set.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             if let e = repsError {
@@ -48,7 +57,7 @@ struct EditCompleted: View {
             }
             if showWeightHelp {
                 Text("The weight the user used when performing the exercise.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             if let e = weightsError {
@@ -69,7 +78,7 @@ struct EditCompleted: View {
             }
             if showNoteHelp {
                 Text("Arbitrary message shown together with what the user did for this exercise.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
 

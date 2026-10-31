@@ -24,6 +24,7 @@ struct EditPlates: View {
     @State private var addErr: String? = nil
     @State var name: String
     private let badNames: [String]
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, name: String) {
         self.model = model
@@ -48,7 +49,7 @@ struct EditPlates: View {
             .padding(5)
             if showNameHelp {
                 Text("The name of the weight set.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -75,7 +76,7 @@ struct EditPlates: View {
             .padding(5)
             if showBarHelp {
                 Text("Optional weight for something like a barbell (which are usually 45 pounds).")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .padding(.leading, 15)
                     .padding(.trailing, 5)
@@ -107,7 +108,7 @@ struct EditPlates: View {
             .padding(.trailing, 5)
             if showUnitsHelp {
                 Text("Imperial will use pounds. Metric will use kilograms.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)

@@ -18,6 +18,7 @@ struct EditWorkout: View {
     @State private var anySchedule = Schedule.anyDay
     @State private var cyclicSchedule = Schedule.cyclic
     @State private var daysSchedule = Schedule.anyDay
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program, workout: Workout) {
         self.model = model
@@ -253,7 +254,7 @@ struct EditWorkout: View {
             }
             if showNameHelp {
                 Text("The name shown in the Program view.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             if let e = nameErr {
@@ -274,7 +275,7 @@ struct EditWorkout: View {
             }
             if showWeeksHelp {
                 Text("Schedule the workout only for this inclusive range of weeks, e.g. weeks 1-7 for most workouts, and week 8 for a deload or rest week.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             if let m = malformedWeeks {
@@ -295,7 +296,7 @@ struct EditWorkout: View {
             }
             if showNotesHelp {
                 Text("Shown in the Workout view. Can style with **bold**, *italic*, or [text](url).")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
 
@@ -305,7 +306,7 @@ struct EditWorkout: View {
                     EditEntries(model: model, program: program, workout: workout)
                 } label: {
                     Text("Exercises")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                 }
                 Spacer()
                 Button("", systemImage: "info.circle") {
@@ -315,7 +316,7 @@ struct EditWorkout: View {
             }
             if showEntriesHelp {
                 Text("Add, remove, or re-order the exercises in this workout.")
-                    .foregroundColor(.blue) // TODO do we want this as blue? should we do this else where?
+                    .foregroundColor(blueColor(colorScheme)) // TODO do we want this as blue? should we do this else where?
                     .font(.footnote)
             }
 
@@ -366,7 +367,7 @@ struct EditWorkout: View {
             }
             if showTypeHelp {
                 Text("The workout type listed in the Health app when you use Start Recording in the workout view. Use none if you don't want to record the workout in the Health app.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
             }
             
@@ -390,15 +391,15 @@ struct EditWorkout: View {
                 switch workout.schedule {
                     case .anyDay:
                     Text("The workout can be done whenever, e.g. cardio.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                     case .cyclic:
                     Text("Cyclic workouts are done one after the other, in the order they are listed. Typically explicit rest days are used.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                     case .days(_):
                     Text("The workout should be done on specified days, e.g. Mon and Wed.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             }

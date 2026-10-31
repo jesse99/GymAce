@@ -5,7 +5,8 @@ struct ScheduleView: View {
     @State private var builder: Builder
     @State private var showScheduleHelp = false
     let scheduleNames: [String]
-    
+    @Environment(\.colorScheme) var colorScheme
+
     init(wizard: Wizard) {
         self.wizard = wizard
         
@@ -40,7 +41,7 @@ struct ScheduleView: View {
                 case .block: "Workouts are arranged into weekly blocks, e.g. an intermediate program might start with low weights but high volume and then ramp up to high weights with low volume."
                 }
                 Text(s)
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)

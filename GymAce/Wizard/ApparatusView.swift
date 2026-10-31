@@ -8,7 +8,8 @@ struct ApparatusView: View {
     @State private var showMachineHelp = false
     @State private var showSmithHelp = false
     @State private var showMetricHelp = false
-    
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
         VStack {
             // Barbells
@@ -26,7 +27,7 @@ struct ApparatusView: View {
             .padding(.trailing, 5)
             if showBarbellHelp {
                 Text("If this is on then programs may assume you also have access to a bench, a squat rack, and a place to deadlift. Though you can change that up in the Exercises screen of the wizard.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -47,7 +48,7 @@ struct ApparatusView: View {
             .padding(.trailing, 5)
             if showFullDumbbellsHelp {
                 Text("Enable this if you have a good selection of dumbbells, e.g. if you're using a commercial gym or have a good set of adjustable dumbbells.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -68,7 +69,7 @@ struct ApparatusView: View {
             .padding(.trailing, 5)
             if showPartialDumbbellsHelp {
                 Text("Enable this if you have a limited number of dumbbells.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -89,7 +90,7 @@ struct ApparatusView: View {
             .padding(.trailing, 5)
             if showMachineHelp {
                 Text("Enable if you have access to things like cable machines and leg press machines.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -110,7 +111,7 @@ struct ApparatusView: View {
             .padding(.trailing, 5)
             if showSmithHelp {
                 Text("Note that most programs will prefer to use barbells or dumbbells if those are available.")
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .font(.footnote)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 15)
@@ -137,7 +138,7 @@ struct ApparatusView: View {
                 .padding(.trailing, 5)
                 if showMetricHelp {
                     Text("Use kilograms and meters if Metric is enabled and pounds and feet otherwise.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 15)

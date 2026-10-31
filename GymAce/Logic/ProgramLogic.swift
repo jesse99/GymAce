@@ -13,15 +13,15 @@ struct WorkoutEntry: Identifiable {
         self.color = .orange
     }
 
-    init(_ workout: Workout, delta: Int, today: Date) {
+    init(_ workout: Workout, delta: Int, today: Date, _ scheme: ColorScheme) {
         self.workout = workout
         self.label = today.daysStr(delta)
         if delta == 0 {
             self.color = .orange
         } else if delta == 1 {
-            self.color = .blue
+            self.color = blueColor(scheme)
         } else {
-            self.color = .black
+            self.color = Color(UIColor.label)
         }
     }
 }
@@ -29,7 +29,7 @@ struct WorkoutEntry: Identifiable {
 extension Program {
     /// Returns the workouts that are scheduled for today, tomorrow, etc. Note that this can return empty
     /// lists if no workouts are scheduled for a day.
-    func findScheduledWorkouts(today: Date = Date.now) -> [[WorkoutEntry]] {
+    func findScheduledWorkouts(today: Date = Date.now, _ scheme: ColorScheme) -> [[WorkoutEntry]] {
         let N = 30
         var entries: [[WorkoutEntry]] = Array(repeating: [], count: N)
 
@@ -52,15 +52,15 @@ extension Program {
                             let entry = WorkoutEntry(workout, anyDay: true)
                             entries[i].append(entry)  // show these after the others
                         } else if workout.weeks != nil {
-                            let entry = WorkoutEntry(workout, delta: i, today: today)
-                            entries[i].append(entry)  
+                            let entry = WorkoutEntry(workout, delta: i, today: today, scheme)
+                            entries[i].append(entry)
                         }
                     case .cyclic: // we'll special case this below
                         break
                     case .days(let days):
                         let day: Int = calendar.component(.weekday, from: on)
                         if days.includes(day) {
-                            let entry = WorkoutEntry(workout, delta: i, today: today)
+                            let entry = WorkoutEntry(workout, delta: i, today: today, scheme)
                             entries[i].insert(entry, at: 0)
                         }
                     }
@@ -77,7 +77,7 @@ extension Program {
                         if let r = workout.weeks, let w = week, !r.contains(w) {
                             // skip this one
                         } else {
-                            let entry = WorkoutEntry(workout, delta: i, today: today)
+                            let entry = WorkoutEntry(workout, delta: i, today: today, scheme)
                             entries[i].insert(entry, at: 0)
                         }
                         

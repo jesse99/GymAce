@@ -13,7 +13,7 @@ struct EditGroups: View {
                 Section(header: Text("Groups")) {
                     ForEach(program.groups.keys.sorted() {$0 < $1}, id: \.self) {name in
                         Text(name)
-                            .foregroundColor(.black)
+                            .foregroundColor(Color(UIColor.label))
                             .onTapGesture {
                                 selected = name
                             }

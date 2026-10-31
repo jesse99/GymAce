@@ -60,6 +60,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     @State var advance = false
     @Environment(\.dismiss) var dismiss
     @Environment(\.requestReview) var requestReview
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         VStack {
@@ -260,7 +261,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                 } label: {
                     Image(systemName: "line.horizontal.3")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                 }
             }
             if healthKit.enabled {
@@ -274,7 +275,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                         }
                     } label: {
                         Image(systemName: showHeartRate ? "bolt.heart.fill" : "heart.fill")
-                            .foregroundStyle(healthKit.enabled && healthKit.inProgress ? .red : .gray)
+                            .foregroundStyle(healthKit.enabled && healthKit.inProgress ? .red : Color(UIColor.systemGray))
                     }
                 }
             }
@@ -290,7 +291,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     workingView(model, program, exercise, w)
                 }
                 ForEach((0..<exercise.history.count).reversed().suffix(20), id: \.self) {
-                    completedView(model, program, exercise, $0)
+                    completedView(model, program, exercise, $0, colorScheme)
                 }
             }
             .listStyle(.plain)
@@ -468,7 +469,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 return .red
             }
         }
-        return .black
+        return Color(UIColor.label)
     }
     
     private func gotoFinished() {
@@ -533,7 +534,7 @@ private func workingView(_ model: Model, _ program: Program, _ exercise: Exercis
 
 // View for a line in the history tab.
 @ViewBuilder
-private func completedView(_ model: Model, _ program: Program, _ exercise: Exercise,_ index: Int) -> some View {
+private func completedView(_ model: Model, _ program: Program, _ exercise: Exercise,_ index: Int, _ scheme: ColorScheme) -> some View {
     let current = exercise.history[index]
     VStack {
         HStack {
@@ -568,7 +569,7 @@ private func completedView(_ model: Model, _ program: Program, _ exercise: Exerc
             }
             .navigationLinkIndicatorVisibility(.hidden)
             .gridColumnAlignment(.leading)
-            .foregroundColor(.blue)
+            .foregroundColor(blueColor(scheme))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         if let n = current.note {

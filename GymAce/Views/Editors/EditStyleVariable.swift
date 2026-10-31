@@ -15,6 +15,7 @@ struct EditVariable: View {
     @State private var worksetErr: String? = nil
     @State private var restErr: String? = nil
     private let badNames: [String]
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program, name: String) {
         self.model = model
@@ -38,7 +39,7 @@ struct EditVariable: View {
                 }
                 if showNameHelp {
                     Text("Edit Exercise uses this to pick a style for the exercise.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = nameErr {
@@ -59,7 +60,7 @@ struct EditVariable: View {
                 }
                 if showWarmupHelp {
                     Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the base weight.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = warmupErr {
@@ -80,7 +81,7 @@ struct EditVariable: View {
                 }
                 if showWorksetHelp {
                     Text("Sets to do after warming up. Formatted as \"6/80 3-5/90 3 for one set of 6 at 80% of the base weight, one set of 3-5 reps at 90%, and 3 sets at 100%.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = worksetErr {
@@ -101,7 +102,7 @@ struct EditVariable: View {
                 }
                 if showRestHelp {
                     Text("The amount of time to do rest after each work set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = restErr {

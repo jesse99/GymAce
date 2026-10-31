@@ -9,6 +9,7 @@ struct EditProgram: View {
     @State private var showCurrentWeekHelp = false
     @State private var malformedCurrentWeek: String? = nil
     private let badNames: [String]
+    @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program) {
         self.model = model
@@ -30,12 +31,12 @@ struct EditProgram: View {
                         showNameHelp.toggle()
                     }
                     .buttonStyle(.plain)
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .padding(.leading, 5)
                 }
                 if showNameHelp {
                     Text("The program name, e.g. \"My\" or \"Gym\" and \"Home\".")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
                 if let e = nameErr {
@@ -53,12 +54,12 @@ struct EditProgram: View {
                             showCurrentWeekHelp.toggle()
                         }
                         .buttonStyle(.plain)
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .padding(.leading, 5)
                     }
                     if showCurrentWeekHelp {
                         Text("The 1-based week number for the current week. Used when scheduling workouts that happen on specified weeks.")
-                            .foregroundColor(.blue)
+                            .foregroundColor(blueColor(colorScheme))
                             .font(.footnote)
                     }
                     if let m = malformedCurrentWeek {
@@ -77,12 +78,12 @@ struct EditProgram: View {
                         showSummaryHelp.toggle()
                     }
                     .buttonStyle(.plain)
-                    .foregroundColor(.blue)
+                    .foregroundColor(blueColor(colorScheme))
                     .padding(.leading, 5)
                 }
                 if showSummaryHelp {
                     Text(verbatim: "Shown in the Edit Programs view. Can style with **bold**, *italic*, or [text](url).")
-                        .foregroundColor(.blue)
+                        .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
             }

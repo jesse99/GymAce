@@ -13,11 +13,12 @@ struct ProgramView: View {
     @State private var errorMessage = ""
     @Environment(\.openURL) private var openUrl
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) var colorScheme
 
     private var entries: [WorkoutEntry] {
         let today = self.today ?? Date()
         let program = model.active()
-        let entries = program?.findScheduledWorkouts(today: today)
+        let entries = program?.findScheduledWorkouts(today: today, colorScheme)
         return entries?.flatMap {$0} ?? []
     }
 
@@ -109,7 +110,7 @@ struct ProgramView: View {
                             }
                         } label: {
                             Image(systemName: "line.horizontal.3")
-                                .foregroundColor(.blue)
+                                .foregroundColor(blueColor(colorScheme))
                         }
                     }
                 }
