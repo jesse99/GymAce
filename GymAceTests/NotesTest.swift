@@ -14,17 +14,20 @@ struct NotesTests {
         _ = Notes(self.validateNote)
         #expect(valid)
 
-        var codes: [(URL, Int)] = []
-        let semaphore = DispatchSemaphore(value: 0)
-        Task {
-            codes = await validateURLs()
-            for (url, code) in codes {
-                print("\(url) returned code \(code)")
-            }
-            semaphore.signal()
-        }
-        semaphore.wait()
-        #expect(codes.isEmpty)
+        // TODO we test links in parallel but it's still really slow
+        // 1) might be able to get rid of the sleep
+        // 2) could cache results for links: if it's been less than N days since the link was changed then use cache
+//        var codes: [(URL, Int)] = []
+//        let semaphore = DispatchSemaphore(value: 0)
+//        Task {
+//            codes = await validateURLs()
+//            for (url, code) in codes {
+//                print("\(url) returned code \(code)")
+//            }
+//            semaphore.signal()
+//        }
+//        semaphore.wait()
+//        #expect(codes.isEmpty)
     }
     
     private func validateNote(_ name: String, _ lines: [String], _ links: [(String, String)]) {

@@ -103,10 +103,10 @@ struct ProgramView: View {
                             NavigationLink(destination: WizardView(model)) {
                                 Text("Create Program")
                             }
+                            Button("Email Feedback", action: emailFeedback)
                             if model.active() != nil {
                                 Button("Email Program", action: emailProgram)  // TODO add an option to email completed, maybe as json
                             }
-                            Button("Email Feedback", action: emailFeedback)
                         } label: {
                             Image(systemName: "line.horizontal.3")
                                 .foregroundColor(.blue)

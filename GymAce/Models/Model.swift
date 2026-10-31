@@ -13,11 +13,16 @@ final class Model: Codable {
     /// Used by the wizard when adding default weight sets.
     var units: Units? = nil
     
+    /// Number of exercises the user has completed. Used to determine when to ask the user to rate the app.
+    var numCompleted: Int? = nil
+
     /// Set if the model (and child objects) may be dirty. Note that we don't track this exactly because it's cumbersome to
     /// track each bit of state (and doing something like a crc of the persisted model state is about as expensive as just
     /// doing a save and chews up CPU and battery if state didn't actually change).
     var dirty = false
-        
+
+    var lastVersionPromptedForReview: String? = nil
+
     static func load() -> Model {
         do {
             let data = try Data(contentsOf: url)

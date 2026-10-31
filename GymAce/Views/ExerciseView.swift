@@ -1,5 +1,6 @@
 import AudioToolbox
 import Foundation
+import StoreKit // Required for requestReview
 import SwiftUI
 
 fileprivate var heartRates: [String] = []
@@ -58,6 +59,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
     @State var progressed = 0
     @State var advance = false
     @Environment(\.dismiss) var dismiss
+    @Environment(\.requestReview) var requestReview
 
     var body: some View {
         VStack {
@@ -66,12 +68,12 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             Text(entry.headline(plan))
                 .font(.headline)
                 .padding(2)
-
+            
             // 5 reps @ 225 lbs
             Text(entry.subhead(plan, model, program, workout, exercise))
                 .font(Font.body)
                 .foregroundColor(subheadColor())
-
+            
             // 45x2
             if let s = entry.footer(plan) {
                 Text(s)
@@ -113,7 +115,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     }
                 }
             }
-
+            
             // The way this works is that the user does a set.
             // View will have a Next button (and optionally a picker for actual reps).
             // When that Next is pressed we will show a timer (if there is rest enabled).
@@ -125,7 +127,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             if case .finished = entry.mode {
                 if canSetWeight() {             // user has done all sets
                     Stepper("Weight", onIncrement: advanceWeight, onDecrement: dropWeight)
-                    .fixedSize()
+                        .fixedSize()
                 } else if let newExercise = canAdvance() {
                     Toggle("Advance to \(newExercise)", isOn: $advance)
                         .padding()
@@ -221,11 +223,11 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                     .padding(.top, 20)
                 }
             }
-//            if case .oneRepMax = exercise.data, !entry.isFinished(program, exercise) {
-//                Text("Set the exercise weight to 90% or so of your one rep max. After finishing, the weight will be updated to reflect your actual one rep max.")
-//                    .font(.footnote)
-//                    .padding(.top, 10)
-//            }
+            //            if case .oneRepMax = exercise.data, !entry.isFinished(program, exercise) {
+            //                Text("Set the exercise weight to 90% or so of your one rep max. After finishing, the weight will be updated to reflect your actual one rep max.")
+            //                    .font(.footnote)
+            //                    .padding(.top, 10)
+            //            }
             if let s = findNotes(plan) {
                 Text(s)
                     .font(.footnote)
@@ -240,7 +242,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
         .navigationTitle(entry.name)
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {   
+            ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     Button("Clear History", action: {confirmClear = true})
                         .disabled(exercise.history.isEmpty)
@@ -293,7 +295,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             .tabItem {Label("History", systemImage: "figure.run")}
             .confirmationDialog(
                 "Are you sure you want to delete all the history entries for this exercise?",
-                 isPresented: $confirmClear,
+                isPresented: $confirmClear,
                 titleVisibility: .visible,
             ) {
                 Button("Delete", role: .destructive) {
@@ -303,7 +305,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
                 }
                 Button("Cancel", role: .cancel) {}  // this isn't notmally shown now: users are expected to click outside the alert to cancel
             }
-
+            
             // Note tab
             ScrollView {
                 Text(LocalizedStringKey(model.notes.find(exercise.formalName))) // localized so that markdown works
@@ -324,10 +326,10 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             set: {entry.setActualReps(plan, $0)}
         )
     }
-
+    
     private func findNotes(_ plan: ExercisePlan) -> String? {
         var notes: String? = nil
-                
+        
         if case .durations(let d) = program.findStyle(exercise.styleName), let target = d.targetSecs {
             for set in plan.sets {
                 if case .duration = set.expected, let r = set.rest, r < target {
@@ -353,7 +355,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         
         return false
     }
-
+    
     private func advanceWeight() {
         if case .weight(let w) = exercise.baseWeight {
             if let wn = exercise.weightSet {
@@ -363,7 +365,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
         }
     }
-
+    
     private func dropWeight() {
         if case .weight(let w) = exercise.baseWeight {
             if let wn = exercise.weightSet {
@@ -431,7 +433,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         progressed = 0
         entry.reset(model, program, workout, exercise)
     }
-
+    
     private func startTimer(_ oldMode: Int) {
         entry.mode = .manualTimer(Date(), oldMode)
     }
@@ -443,7 +445,7 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
         }
         return remaining
     }
-
+    
     private func elapsedSecs(now: Date, start: Date) -> Int {
         return Int(now.timeIntervalSince(start))
     }
@@ -488,6 +490,22 @@ struct ExerciseView: View { // TODO can use @Environment(\.dynamicTypeSize) to s
             }
         } else if let p = p1rm {
             progressed = p          // special case for oneRepmax style
+        }
+        
+        print("would ask for review here")
+        if let n = model.numCompleted, n > 15 {
+            askForReviewIfNeeded()
+        }
+    }
+    
+    func askForReviewIfNeeded() {
+        guard let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String else { return }
+        
+        guard currentVersion != model.lastVersionPromptedForReview else {return}
+        
+        Task {@MainActor in
+            requestReview()
+            model.lastVersionPromptedForReview = currentVersion
         }
     }
 }

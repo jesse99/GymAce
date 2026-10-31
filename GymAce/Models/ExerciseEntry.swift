@@ -327,6 +327,7 @@ final class ExerciseEntry: Codable {
                 Completed(values: w.values, type: w.type, weights: w.weights, baseWeight: b, units: w.units)
             }
             exercise.history.append(c)
+            model.numCompleted = (model.numCompleted ?? 0) + 1
             w.values = []
             self.working = w
         }
