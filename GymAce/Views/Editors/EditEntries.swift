@@ -66,7 +66,6 @@ struct EditEntries: View {
         workout.addExercise(name: name)
     }
     
-    // TODO need to confirm this
     private func deleteExercises(offsets: IndexSet) {
         let names = offsets.map {workout.entries[$0].name}
         withAnimation {

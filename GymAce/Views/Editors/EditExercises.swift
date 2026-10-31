@@ -55,8 +55,6 @@ struct EditExercises: View {
         return program.exercises.contains(where: {$0.name == name})
     }
 
-    // TODO need to confirm this, mention which workouts are using the exercise, also mention percent exercises
-    // don't mention if the exercise is disabled
     private func deleteExercises(offsets: IndexSet) {
         let e = self.program.exercises.sorted {$0.name < $1.name}
         let names = offsets.map {e[$0].name}

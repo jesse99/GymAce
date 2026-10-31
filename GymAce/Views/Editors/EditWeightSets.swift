@@ -86,7 +86,6 @@ struct EditWeightSets: View {
         self.model.addWeightSet(name, ws)
     }
     
-    // TODO need to confirm this, mention if any exercises are using it
     private func deleteWeightSets(offsets: IndexSet) {
         let keys = model.weightSets.keys.sorted()
         let names = offsets.map {keys[$0]}

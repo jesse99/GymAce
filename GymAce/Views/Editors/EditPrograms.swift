@@ -66,7 +66,6 @@ struct EditPrograms: View {
         self.model.addProgram(program)
     }
     
-    // TODO need to confirm this (maybe in EditProgram too)
     private func deletePrograms(offsets: IndexSet) {
         let programs = model.programs.sorted() {$0.name < $1.name}
         let names = offsets.map {programs[$0].name}

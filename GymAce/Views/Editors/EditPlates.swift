@@ -273,7 +273,6 @@ struct EditPlates: View {
         return []
     }
     
-    // TODO need to confirm this
     private func deleteWeights(offsets: IndexSet) {
         if let ws = model.weightSets[name] {
             if case .plates(let w) = ws {

@@ -337,7 +337,6 @@ struct EditDiscrete: View {
         return []
     }
     
-    // TODO need to confirm this
     private func deleteWeights(offsets: IndexSet) {
         if let ws = model.weightSets[name] {
             if case .discrete(let w) = ws {

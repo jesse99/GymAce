@@ -96,7 +96,6 @@ struct EditStyles: View {
         self.program.styles[name] = Style.variable(VariableInfo(warmup: "5/60 3/80 1/90", workset: "8-12 8-12 8-12", rest: "2.5m")!)
     }
     
-    // TODO need to confirm this
     private func deleteStyles(offsets: IndexSet) {
         let styles = program.styles.sorted(by: {$0.key < $1.key})
         let names = offsets.map {styles[$0].0}
