@@ -14,7 +14,7 @@ struct EditBasic: View {
     @State private var warmupErr: String? = nil
     @State private var worksetErr: String? = nil
     @State private var restErr: String? = nil
-    private let badNames: [String]
+    private var badNames: [String] = []
     @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program, name: String) {

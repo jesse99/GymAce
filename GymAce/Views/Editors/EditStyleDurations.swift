@@ -12,7 +12,7 @@ struct EditDurations: View {
     @State private var nameErr: String? = nil
     @State private var secsErr: String? = nil
     @State private var targetErr: String? = nil
-    private let badNames: [String]
+    private var badNames: [String] = []
     @Environment(\.colorScheme) var colorScheme
 
     init(model: Model, program: Program, name: String) {
