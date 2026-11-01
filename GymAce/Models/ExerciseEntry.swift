@@ -365,7 +365,9 @@ extension ExerciseEntry {
             // the last set.
             if let bottom = exercise.bottomWeight(model, program), let top = exercise.topWeight(model, program) {
                 if bottom.value().sameWeight(top.value()) {
-                    return bottom.text()
+                    if bottom.value() > 0.0 {
+                        return bottom.text()
+                    }
                 } else {
                     return "\(bottom.text()) - \(top.text())"
                 }
@@ -389,13 +391,15 @@ extension ExerciseEntry {
             ""
         }
         
-        let suffix = plan.sets[setIndex].weight?.text() ?? ""
-        if prefix.isBlankOrEmpty {
-            return suffix
-        } else if suffix.isBlankOrEmpty {
-            return prefix
+        if let weight = plan.sets[setIndex].weight, weight.value() > 0.0 {
+            let suffix = weight.text()
+            if prefix.isBlankOrEmpty {
+                return suffix
+            } else {
+                return "\(prefix) @ \(suffix)"
+            }
         } else {
-            return "\(prefix) @ \(suffix)"
+            return prefix
         }
     }
     

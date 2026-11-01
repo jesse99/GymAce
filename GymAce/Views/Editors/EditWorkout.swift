@@ -246,11 +246,7 @@ struct EditWorkout: View {
             HStack {
                 nameTextField("Name", nameBinding)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showNameHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showNameHelp, colorScheme)
             }
             if showNameHelp {
                 Text("The name shown in the Program view.")
@@ -267,11 +263,7 @@ struct EditWorkout: View {
             HStack {
                 rangeTextField("Weeks, e.g. 1-4", weeksBinding)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showWeeksHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showWeeksHelp, colorScheme)
             }
             if showWeeksHelp {
                 Text("Schedule the workout only for this inclusive range of weeks, e.g. weeks 1-7 for most workouts, and week 8 for a deload or rest week.")
@@ -288,11 +280,7 @@ struct EditWorkout: View {
             HStack {
                 noteTextField("Notes", $workout.notes)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showNotesHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showNotesHelp, colorScheme)
             }
             if showNotesHelp {
                 Text("Shown in the Workout view. Can style with **bold**, *italic*, or [text](url).")
@@ -309,10 +297,7 @@ struct EditWorkout: View {
                         .foregroundColor(blueColor(colorScheme))
                 }
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showEntriesHelp.toggle()
-                }
-                .buttonStyle(.plain)
+                helpButton($showEntriesHelp, colorScheme)
             }
             if showEntriesHelp {
                 Text("Add, remove, or re-order the exercises in this workout.")
@@ -360,10 +345,7 @@ struct EditWorkout: View {
                 .padding(.leading, -10)
                 .labelsHidden()
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showTypeHelp.toggle()
-                }
-                .buttonStyle(.plain)
+                helpButton($showTypeHelp, colorScheme)
             }
             if showTypeHelp {
                 Text("The workout type listed in the Health app when you use Start Recording in the workout view. Use none if you don't want to record the workout in the Health app.")
@@ -382,10 +364,7 @@ struct EditWorkout: View {
                 .padding(.leading, -10)
                 .labelsHidden()
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showScheduleHelp.toggle()
-                }
-                .buttonStyle(.plain)
+                helpButton($showScheduleHelp, colorScheme)
             }
             if showScheduleHelp {
                 switch workout.schedule {

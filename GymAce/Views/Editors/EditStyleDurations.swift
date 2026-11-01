@@ -30,14 +30,10 @@ struct EditDurations: View {
                 HStack {
                     nameTextField("Name", nameBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showNameHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showNameHelp, colorScheme)
                 }
                 if showNameHelp {
-                    Text("Edit Exercise uses this to pick a style for the exercise.")
+                    Text("Shown in Edit Exercise to allow you to pick one of the styles to use for an exercise.")
                         .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
@@ -51,11 +47,7 @@ struct EditDurations: View {
                 HStack {
                     durationsTextField("Durations", durationsBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showSecsHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showSecsHelp, colorScheme)
                 }
                 if showSecsHelp {
                     Text("Space separated list of times. An s suffix can be used for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
@@ -72,11 +64,7 @@ struct EditDurations: View {
                 HStack {
                     durationsTextField("Target", targetBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showTargetHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showTargetHelp, colorScheme)
                 }
                 if showTargetHelp {
                     Text("Optional goal time. This can be used as a trigger to switch to a more advanced form of the exercise, e.g. planks to feet elevated planks.")

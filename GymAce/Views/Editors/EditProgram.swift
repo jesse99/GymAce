@@ -27,12 +27,7 @@ struct EditProgram: View {
                     
                     // TODO what if we just toggle a field to show/hide a text field?
                     // TODO use questionmark.circle?                    
-                    Button("", systemImage: "info.circle") {
-                        showNameHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundColor(blueColor(colorScheme))
-                    .padding(.leading, 5)
+                    helpButton($showNameHelp, colorScheme)
                 }
                 if showNameHelp {
                     Text("The program name, e.g. \"My\" or \"Gym\" and \"Home\".")
@@ -50,12 +45,7 @@ struct EditProgram: View {
                     HStack {
                         intTextField("Current week, e.g. 1", currentWeekBinding)
                         Spacer()
-                        Button("", systemImage: "info.circle") {
-                            showCurrentWeekHelp.toggle()
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundColor(blueColor(colorScheme))
-                        .padding(.leading, 5)
+                        helpButton($showCurrentWeekHelp, colorScheme)
                     }
                     if showCurrentWeekHelp {
                         Text("The 1-based week number for the current week. Used when scheduling workouts that happen on specified weeks.")
@@ -73,13 +63,7 @@ struct EditProgram: View {
                 HStack {
                     noteTextField("Summary", summaryBinding)
                     Spacer()
-                    
-                    Button("", systemImage: "info.circle") {
-                        showSummaryHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundColor(blueColor(colorScheme))
-                    .padding(.leading, 5)
+                    helpButton($showSummaryHelp, colorScheme)
                 }
                 if showSummaryHelp {
                     Text(verbatim: "Shown in the Edit Programs view. Can style with **bold**, *italic*, or [text](url).")

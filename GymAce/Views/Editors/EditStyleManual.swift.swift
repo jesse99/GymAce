@@ -31,14 +31,10 @@ struct EditManual: View {
                 HStack {
                     nameTextField("Name", nameBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showNameHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showNameHelp, colorScheme)
                 }
                 if showNameHelp {
-                    Text("Edit Exercise uses this to pick a style for the exercise.")
+                    Text("Shown in Edit Exercise to allow you to pick one of the styles to use for an exercise.")
                         .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
@@ -52,11 +48,7 @@ struct EditManual: View {
                 HStack {
                     repsTextField("Warmups", warmupBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showWarmupHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showWarmupHelp, colorScheme)
                 }
                 if showWarmupHelp {
                     Text("Sets to do before the work sets. Formated as 5/80, i.e. 5 reps at 80% of the base weight.")
@@ -73,11 +65,7 @@ struct EditManual: View {
                 HStack {
                     repsTextField("Worksets", worksetBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showWorksetHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showWorksetHelp, colorScheme)
                 }
                 if showWorksetHelp {
                     Text("Sets to do after warming up. Formatted as \"6/80 3-5/90 3 for one set of 6 at 80% of the base weight, one set of 3-5 reps at 90%, and 3 sets at 100%.")
@@ -94,11 +82,7 @@ struct EditManual: View {
                 HStack {
                     durationsTextField("Rest", restBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showRestHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showRestHelp, colorScheme)
                 }
                 if showRestHelp {
                     Text("The amount of time to do rest after each work set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")

@@ -28,11 +28,7 @@ struct EditCompleted: View {
             HStack {
                 repsTextField(repsTitle(program).capitalized, repsBinding)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showRepsHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showRepsHelp, colorScheme)
             }
             if showRepsHelp {
                 Text("The \(repsTitle(program)) the user did for each set.")
@@ -49,11 +45,7 @@ struct EditCompleted: View {
             HStack {
                 weightsTextField("Weights", weightsBinding)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showWeightHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showWeightHelp, colorScheme)
             }
             if showWeightHelp {
                 Text("The weight the user used when performing the exercise.")
@@ -70,11 +62,7 @@ struct EditCompleted: View {
             HStack {
                 noteTextField("note", noteBinding)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showNoteHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showNoteHelp, colorScheme)
             }
             if showNoteHelp {
                 Text("Arbitrary message shown together with what the user did for this exercise.")

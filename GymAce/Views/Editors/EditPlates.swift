@@ -40,11 +40,7 @@ struct EditPlates: View {
                 nameTextField("Name", nameBinding)
                     .padding(.leading, 10)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showNameHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showNameHelp, colorScheme)
             }
             .padding(5)
             if showNameHelp {
@@ -67,11 +63,7 @@ struct EditPlates: View {
                 weightTextField("Bar", barBinding)
                     .padding(.leading, 10)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showBarHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showBarHelp, colorScheme)
             }
             .padding(5)
             if showBarHelp {
@@ -98,10 +90,7 @@ struct EditPlates: View {
                 }
                 .labelsHidden()
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showUnitsHelp.toggle()
-                }
-                .buttonStyle(.plain)
+                helpButton($showUnitsHelp, colorScheme)
             }
             .padding(.top, 5)
             .padding(.leading, 5)

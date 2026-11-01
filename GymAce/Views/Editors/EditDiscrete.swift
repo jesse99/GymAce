@@ -42,11 +42,7 @@ struct EditDiscrete: View {
                 nameTextField("Name", nameBinding)
                     .padding(.leading, 10)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showNameHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showNameHelp, colorScheme)
             }
             .padding(5)
             if showNameHelp {
@@ -69,11 +65,7 @@ struct EditDiscrete: View {
                 weightTextField("Extra weight 1", extra1Binding)
                     .padding(.leading, 10)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showWeight1Help.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showWeight1Help, colorScheme)
             }
             .padding(5)
             if showWeight1Help {
@@ -89,11 +81,7 @@ struct EditDiscrete: View {
                 weightTextField("Extra weight 2", extra2Binding)
                     .padding(.leading, 10)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showWeight2Help.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showWeight2Help, colorScheme)
             }
             .padding(5)
             if showWeight2Help {
@@ -112,10 +100,7 @@ struct EditDiscrete: View {
                 }
                 .labelsHidden()
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showUnitsHelp.toggle()
-                }
-                .buttonStyle(.plain)
+                helpButton($showUnitsHelp, colorScheme)
             }
             .padding(.top, 5)
             .padding(.leading, 5)

@@ -48,11 +48,7 @@ struct EditExercise: View {
             HStack {
                 nameTextField("Name", nameBinding)
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showNameHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showNameHelp, colorScheme)
             }
             if showNameHelp {
                 Text("The name shown in the Workout view.")
@@ -79,11 +75,7 @@ struct EditExercise: View {
                 }
                 .id(formalNames.hashValue) // force redraw if the list changes
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showFormalHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showFormalHelp, colorScheme)
             }
             if showFormalHelp {
                 Text("The name used to lookup notes for the exercise.")
@@ -101,11 +93,7 @@ struct EditExercise: View {
                 .pickerStyle(.menu)
                 .labelsHidden()
                 Spacer()
-                Button("", systemImage: "info.circle") {
-                    showStylePickerHelp.toggle()
-                }
-                .buttonStyle(.plain)
-                .padding(.leading, 5)
+                helpButton($showStylePickerHelp, colorScheme)
             }
             if showStylePickerHelp {
                 let style = program.findStyle(exercise.styleName)
@@ -128,11 +116,7 @@ struct EditExercise: View {
                     .pickerStyle(.menu)
                     .labelsHidden()
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showGroupPickerHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showGroupPickerHelp, colorScheme)
                 }
                 if showGroupPickerHelp {
                     Text("Used to assign a group name from the program. These are used when creating programs and by bodyweight exercises to progress to a harder version of the exercise.")
@@ -146,11 +130,7 @@ struct EditExercise: View {
                 HStack {
                     noteTextField("Enable If", enableIfBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showEnableIfHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showEnableIfHelp, colorScheme)
                 }
                 if showEnableIfHelp {
                     Text("Instructions on when to enable an exercise. This is shown in the workout view if the exercise is disabled.")

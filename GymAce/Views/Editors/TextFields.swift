@@ -75,3 +75,13 @@ func weightsTextField(_ title: String, _ text: Binding<String>) -> some View {
         .autocorrectionDisabled(true)
 }
 
+// TODO this should really be somewhere else
+@ViewBuilder
+func helpButton(_ showHelp: Binding<Bool>, _ scheme: ColorScheme) -> some View {
+    Button("", systemImage: "info.circle") {
+        showHelp.wrappedValue.toggle()
+    }
+    .buttonStyle(.plain)
+    .foregroundColor(showHelp.wrappedValue ? blueColor(scheme) : Color(UIColor.label))
+    .padding(.leading, 5)
+}

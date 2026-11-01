@@ -31,14 +31,10 @@ struct EditOneRepMax: View {
                 HStack {
                     nameTextField("Name", nameBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showNameHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showNameHelp, colorScheme)
                 }
                 if showNameHelp {
-                    Text("Edit Exercise uses this to pick a style for the exercise.")
+                    Text("Shown in Edit Exercise to allow you to pick one of the styles to use for an exercise.")
                         .foregroundColor(blueColor(colorScheme))
                         .font(.footnote)
                 }
@@ -52,11 +48,7 @@ struct EditOneRepMax: View {
                 HStack {
                     repsTextField("Warmups", warmupBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showWarmupHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showWarmupHelp, colorScheme)
                 }
                 if showWarmupHelp {
                     Text("Sets to do before the work set. Formated as 5/80, i.e. 5 reps at 80% of the base weight.")
@@ -73,11 +65,7 @@ struct EditOneRepMax: View {
                 HStack {
                     repsTextField("Worksets", worksetBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showWorksetHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showWorksetHelp, colorScheme)
                 }
                 if showWorksetHelp {
                     Text("Sets to do after warming up. Formatted as \"5 5\" for two sets of five reps or \"5/80 3/90\" for two sets at an increasing percentage of the exercise's base weight. The last set must be at 100% (when you do the exercise the percent will be adjusted so that the weight corresponds to your current 1RM for that number of reps).")
@@ -94,11 +82,7 @@ struct EditOneRepMax: View {
                 HStack {
                     durationsTextField("Rest", restBinding)
                     Spacer()
-                    Button("", systemImage: "info.circle") {
-                        showRestHelp.toggle()
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.leading, 5)
+                    helpButton($showRestHelp, colorScheme)
                 }
                 if showRestHelp {
                     Text("The amount of time to do rest after the work set. Suffixes can be used, s for seconds, m for minutes, and h for hours. Seconds are assumed if there is no suffix.")
